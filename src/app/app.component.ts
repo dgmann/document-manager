@@ -1,5 +1,9 @@
 import { Component } from '@angular/core';
+import { Store } from "@ngrx/store";
+
+import * as fromRoot from './reducers';
 import { Element } from "./document-list/document-list.component";
+import * as fromCore from "./core/reducers";
 
 @Component({
   selector: 'app-root',
@@ -7,6 +11,11 @@ import { Element } from "./document-list/document-list.component";
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
+
+  constructor(private store: Store<fromRoot.State>) {
+    this.store.select(fromCore.selectRecordState).select(fromCore.selectCurrentRecordId).subscribe(r => console.log(r));
+  }
+
   ELEMENT_DATA: Element[] = [
     {position: 1, name: 'Hydrogen', weight: 1.0079, symbol: 'H'},
     {position: 2, name: 'Helium', weight: 4.0026, symbol: 'He'},

@@ -7,10 +7,14 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from "@angular/material";
 import { MatButtonModule } from '@angular/material/button';
+import { StoreModule } from "@ngrx/store";
+import { StoreDevtoolsModule } from "@ngrx/store-devtools";
 
 
 import { AppComponent } from './app.component';
 import { DocumentListModule } from "./document-list";
+import { CoreModule } from "./core/core.module";
+import { reducers, metaReducers } from './reducers';
 
 
 @NgModule({
@@ -26,7 +30,12 @@ import { DocumentListModule } from "./document-list";
     MatToolbarModule,
     MatIconModule,
     MatButtonModule,
-    DocumentListModule
+    DocumentListModule,
+    StoreModule.forRoot(reducers, { metaReducers }),
+    StoreDevtoolsModule.instrument({
+      maxAge: 25 //  Retains last 25 states
+    }),
+    CoreModule
   ],
   providers: [],
   bootstrap: [AppComponent]

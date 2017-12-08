@@ -51,7 +51,7 @@ export function reducer(state = initialState, action: PayloadAction
       return adapter.removeMany(action.payload.ids, state);
     }
 
-    case RecordActions.LOAD_RECORDS: {
+    case RecordActions.LOAD_INBOX: {
       return adapter.addAll(action.payload.records, state);
     }
 

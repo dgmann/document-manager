@@ -1,7 +1,7 @@
 import { Record } from './record.model';
 import { PayloadAction } from "../payload-action";
 
-export const LOAD_RECORDS = '[Record] Load Records';
+export const LOAD_INBOX = '[Record] Load Inbox';
 export const ADD_RECORD = '[Record] Add Record';
 export const ADD_RECORDS = '[Record] Add Records';
 export const UPDATE_RECORD = '[Record] Update Record';
@@ -10,10 +10,8 @@ export const DELETE_RECORD = '[Record] Delete Record';
 export const DELETE_RECORDS = '[Record] Delete Records';
 export const CLEAR_RECORDS = '[Record] Clear Records';
 
-export class LoadRecords implements PayloadAction {
-  readonly type = LOAD_RECORDS;
-
-  constructor(public payload: { records: Record[] }) {}
+export class LoadInbox implements PayloadAction {
+  readonly type = LOAD_INBOX;
 }
 
 export class AddRecord implements PayloadAction {
@@ -58,7 +56,7 @@ export class ClearRecords implements PayloadAction {
 }
 
 export type All =
-  LoadRecords
+  LoadInbox
   | AddRecord
   | AddRecords
   | UpdateRecord

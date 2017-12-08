@@ -2,7 +2,7 @@ import { Store } from "@ngrx/store";
 import * as fromRecords from "./record.selectors";
 import { State } from "./record.reducer";
 import { Record } from "./record.model";
-import { AddRecords } from "./record.actions";
+import { AddRecords, LoadInbox } from "./record.actions";
 
 export class RecordService {
   private state: Store<State>;
@@ -25,5 +25,9 @@ export class RecordService {
 
   public add(records: Record[]) {
     return this.state.dispatch(new AddRecords({ records: records }))
+  }
+
+  public load() {
+    this.state.dispatch(new LoadInbox())
   }
 }

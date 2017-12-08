@@ -4,7 +4,7 @@ import * as RecordActions from "./record.actions"
 import { PayloadAction } from "../payload-action";
 
 export interface State extends EntityState<Record> {
-  selectedRecordId: number | null;
+  selectedRecordId: string | null;
 }
 
 export function sortByDate(a: Record, b: Record): number {

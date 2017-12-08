@@ -1,9 +1,7 @@
 import { Component } from '@angular/core';
-import { Store } from "@ngrx/store";
 
-import * as fromRoot from './reducers';
+
 import { Element } from "./document-list/document-list.component";
-import * as fromCore from "./core/reducers";
 
 @Component({
   selector: 'app-root',
@@ -12,8 +10,7 @@ import * as fromCore from "./core/reducers";
 })
 export class AppComponent {
 
-  constructor(private store: Store<fromRoot.State>) {
-    this.store.select(fromCore.selectRecordState).select(fromCore.selectCurrentRecordId).subscribe(r => console.log(r));
+  constructor() {
   }
 
   ELEMENT_DATA: Element[] = [

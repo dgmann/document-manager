@@ -4,10 +4,13 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatCardModule } from '@angular/material/card';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { FlexLayoutModule } from '@angular/flex-layout';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatIconModule } from "@angular/material";
+import { MatButtonModule } from '@angular/material/button';
 
 
 import { AppComponent } from './app.component';
-import {DocumentListModule} from "./document-list";
+import { DocumentListModule } from "./document-list";
 
 
 @NgModule({
@@ -20,6 +23,9 @@ import {DocumentListModule} from "./document-list";
     FlexLayoutModule,
     MatCardModule,
     MatSidenavModule,
+    MatToolbarModule,
+    MatIconModule,
+    MatButtonModule,
     DocumentListModule
   ],
   providers: [],

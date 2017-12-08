@@ -1,7 +1,10 @@
 <div class="main-container" fxLayout="column">
-  <mat-sidenav-container fxFlex="">
-    <mat-sidenav #sidenav mode="side" [(opened)]="opened" (opened)="events.push('open!')"
-                 (closed)="events.push('close!')">
+  <mat-toolbar color="primary">
+    <button mat-icon-button (click)="sidenav.toggle()"><mat-icon>menu</mat-icon></button>
+    <h1 class="example-app-name">Document Manager</h1>
+  </mat-toolbar>
+  <mat-sidenav-container fxFlex>
+    <mat-sidenav #sidenav mode="side">
       Sidenav content
     </mat-sidenav>
 

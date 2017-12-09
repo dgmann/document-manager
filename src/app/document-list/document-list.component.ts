@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, AfterViewInit, Input } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit, Input, Output, EventEmitter } from '@angular/core';
 import { MatSort, MatTableDataSource } from "@angular/material";
 import { Observable } from "rxjs/Observable";
 
@@ -16,6 +16,7 @@ export class DocumentListComponent implements OnInit, AfterViewInit {
 
   @ViewChild(MatSort) sort: MatSort;
   @Input('data') data: Observable<Record[]>;
+  @Output('recordClicked') recordClicked = new EventEmitter<Record>();
 
   constructor() { }
 
@@ -29,5 +30,9 @@ export class DocumentListComponent implements OnInit, AfterViewInit {
    */
   ngAfterViewInit() {
     this.dataSource.sort = this.sort;
+  }
+
+  selectRow(row) {
+    this.recordClicked.emit(row);
   }
 }

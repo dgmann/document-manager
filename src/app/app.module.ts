@@ -16,11 +16,13 @@ import { DocumentListModule } from "./document-list";
 import { reducers, metaReducers } from './reducers';
 import { ApiModule } from "./api";
 import { EffectsModule } from "@ngrx/effects";
+import { RecordViewerComponent } from "./record-viewer/record-viewer.component";
 
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    RecordViewerComponent
   ],
   imports: [
     BrowserModule,

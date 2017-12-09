@@ -9,7 +9,7 @@ export class RecordService {
     return this.ngrxService.findOne({query: {
         type: 'Record',
         id: id,
-      }});
+      }}).map(r => this.toRecord(r.data));
   }
 
   public all() {
@@ -17,9 +17,12 @@ export class RecordService {
       .map<ManyQueryResult,Record[]>(r => r.data && r.data.map(data => this.toRecord(data)) || undefined)
   }
 
-
   private toRecord(data: StoreResource) {
-    return new Record(data.id, new Date(data.attributes.date), data.attributes.comment, data.attributes.sender);
+    if (!data) {
+      return null
+    }
+    const pages = data.attributes.pages.map(page => new Page(page.index, page.url, page.content));
+    return new Record(data.id, new Date(data.attributes.date), data.attributes.comment, data.attributes.sender, pages);
   }
 }
 
@@ -27,5 +30,12 @@ export class Record {
   constructor(public id: string,
               public date: Date,
               public comment: string,
-              public sender: string) {}
+              public sender: string,
+              public pages: Page[]) {}
+}
+
+export class Page {
+  constructor(public index: number,
+              public url: string,
+              public content: string) {}
 }

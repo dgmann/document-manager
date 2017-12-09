@@ -1,0 +1,9 @@
+<div fxLayout="column">
+  <mat-card *ngFor="let page of pages">
+    <mat-card-header>
+      <mat-card-title>Shiba Inu</mat-card-title>
+      <mat-card-subtitle>Dog Breed</mat-card-subtitle>
+    </mat-card-header>
+    <img mat-card-image [src]="page.url" [alt]="page.index">
+  </mat-card>
+</div>

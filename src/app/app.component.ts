@@ -11,8 +11,13 @@ import { RecordService, Record } from "./api";
 })
 export class AppComponent {
   data: Observable<Record[]>;
+  selectedRecord: Record;
 
   constructor(private recordService: RecordService) {
     this.data = recordService.all();
+  }
+
+  selectRecord(record: Record) {
+    this.selectedRecord = record;
   }
 }

@@ -13,8 +13,9 @@ import { StoreDevtoolsModule } from "@ngrx/store-devtools";
 
 import { AppComponent } from './app.component';
 import { DocumentListModule } from "./document-list";
-import { CoreModule } from "./core/core.module";
 import { reducers, metaReducers } from './reducers';
+import { ApiModule } from "./api";
+import { EffectsModule } from "@ngrx/effects";
 
 
 @NgModule({
@@ -35,7 +36,8 @@ import { reducers, metaReducers } from './reducers';
     StoreDevtoolsModule.instrument({
       maxAge: 25 //  Retains last 25 states
     }),
-    CoreModule
+    EffectsModule.forRoot([]),
+    ApiModule
   ],
   providers: [],
   bootstrap: [AppComponent]

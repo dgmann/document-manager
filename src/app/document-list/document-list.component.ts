@@ -11,8 +11,8 @@ import { Record } from "../api";
   styleUrls: ['./document-list.component.scss']
 })
 export class DocumentListComponent implements OnInit, AfterViewInit {
-  displayedColumns = ['id', 'date', 'sender', 'comment'];
-  dataSource: MatTableDataSource<Record>;
+  displayedColumns = ['date', 'sender', 'comment', 'actions'];
+  dataSource = new MatTableDataSource<Record>();
 
   @ViewChild(MatSort) sort: MatSort;
   @Input('data') data: Observable<Record[]>;
@@ -21,7 +21,7 @@ export class DocumentListComponent implements OnInit, AfterViewInit {
   constructor() { }
 
   ngOnInit() {
-    this.data.subscribe(data => this.dataSource = new MatTableDataSource(data));
+    this.data.subscribe(data => this.dataSource.data = data);
   }
 
   /**

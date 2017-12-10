@@ -14,11 +14,11 @@
                          fxLayoutGap="10px"
                          fxLayoutGap.xs="0">
 
-      <div fxFlex="50%" class="scroll-column mat-elevation-z8">
+      <div fxFlex="35%" class="scroll-column mat-elevation-z8">
         <app-document-list [data]="data" (recordClicked)="selectRecord($event)"></app-document-list>
       </div>
 
-      <div fxFlex="50%" class="scroll-column">
+      <div fxFlex class="scroll-column">
         <app-record-viewer [pages]="selectedRecord?.pages"></app-record-viewer>
       </div>
     </mat-sidenav-content>

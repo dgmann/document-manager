@@ -1,8 +1,18 @@
-<div fxLayout="column">
-  <mat-card *ngFor="let page of pages">
+<div fxLayout="row" fxLayout.lt-md="column">
+  <mat-card fxFlex="50%" *ngFor="let page of pages; let i = index">
     <mat-card-header>
-      <mat-card-title>Shiba Inu</mat-card-title>
-      <mat-card-subtitle>Dog Breed</mat-card-subtitle>
+      <mat-card-title>Seite {{ i + 1 }}</mat-card-title>
+      <mat-card-subtitle>von {{ pages.length }}</mat-card-subtitle>
+      <div fxFlex></div>
+      <button mat-icon-button color="accent">
+        <mat-icon aria-label="rotate-left">rotate_left</mat-icon>
+      </button>
+      <button mat-icon-button color="accent">
+        <mat-icon aria-label="rotate-right">rotate_right</mat-icon>
+      </button>
+      <button mat-icon-button color="accent">
+        <mat-icon aria-label="delete">delete</mat-icon>
+      </button>
     </mat-card-header>
     <img mat-card-image [src]="page.url" [alt]="page.index">
   </mat-card>

@@ -1,9 +1,15 @@
-<div fxLayout="row" fxLayout.lt-md="column">
+<div fxLayout="row" fxLayoutWrap fxLayout.lt-md="column">
   <mat-card fxFlex="50%" *ngFor="let page of pages; let i = index">
     <mat-card-header>
       <mat-card-title>Seite {{ i + 1 }}</mat-card-title>
       <mat-card-subtitle>von {{ pages.length }}</mat-card-subtitle>
       <div fxFlex></div>
+      <button mat-icon-button color="accent">
+        <mat-icon aria-label="up">arrow_upward</mat-icon>
+      </button>
+      <button mat-icon-button color="accent">
+        <mat-icon aria-label="down">arrow_downward</mat-icon>
+      </button>
       <button mat-icon-button color="accent">
         <mat-icon aria-label="rotate-left">rotate_left</mat-icon>
       </button>

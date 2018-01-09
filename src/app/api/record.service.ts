@@ -17,11 +17,22 @@ export class RecordService {
       .map<ManyQueryResult,Record[]>(r => r.data && r.data.map(data => this.toRecord(data)) || undefined)
   }
 
+  public update(id: string, attributes: any) {
+    let resource = {
+      type: 'records',
+      id: id,
+      attributes: attributes
+    };
+
+    this.ngrxService.patchResource({resource: resource,
+      toRemote: false})
+  }
+
   private toRecord(data: StoreResource) {
     if (!data) {
       return null
     }
-    const pages = data.attributes.pages.map(page => new Page(page.index, page.url, page.content));
+    const pages = data.attributes.pages.map(page => new Page( page.url, page.content));
     return new Record(data.id, new Date(data.attributes.date), data.attributes.comment, data.attributes.sender, pages);
   }
 }
@@ -35,7 +46,6 @@ export class Record {
 }
 
 export class Page {
-  constructor(public index: number,
-              public url: string,
+  constructor(public url: string,
               public content: string) {}
 }

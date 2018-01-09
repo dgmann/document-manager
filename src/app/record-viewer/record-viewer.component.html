@@ -1,13 +1,13 @@
-<div fxLayout="row" fxLayoutWrap fxLayout.lt-md="column">
-  <mat-card fxFlex="50%" *ngFor="let page of pages; let i = index">
+<div fxLayout="row" fxLayoutWrap fxLayout.lt-md="column" *ngIf="record | async; let r">
+  <mat-card fxFlex="50%" *ngFor="let page of r.pages; let i = index">
     <mat-card-header>
       <mat-card-title>Seite {{ i + 1 }}</mat-card-title>
-      <mat-card-subtitle>von {{ pages.length }}</mat-card-subtitle>
+      <mat-card-subtitle>von {{ r.pages.length }}</mat-card-subtitle>
       <div fxFlex></div>
-      <button mat-icon-button color="accent">
+      <button mat-icon-button color="accent" (click)="up(r.id, r.pages,i)" [disabled]="i == 0">
         <mat-icon aria-label="up">arrow_upward</mat-icon>
       </button>
-      <button mat-icon-button color="accent">
+      <button mat-icon-button color="accent" [disabled]="i == r.pages.length - 1">
         <mat-icon aria-label="down">arrow_downward</mat-icon>
       </button>
       <button mat-icon-button color="accent">

@@ -19,7 +19,7 @@
       </div>
 
       <div fxFlex class="scroll-column">
-        <app-record-viewer [pages]="selectedRecord?.pages"></app-record-viewer>
+        <app-record-viewer [record]="selectedRecord" (changePages)="updatePages($event)"></app-record-viewer>
       </div>
     </mat-sidenav-content>
   </mat-sidenav-container>

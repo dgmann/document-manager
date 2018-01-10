@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, AfterViewInit, Input, Output, EventEmitter } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { MatSort, MatTableDataSource } from "@angular/material";
 import { Observable } from "rxjs/Observable";
 
@@ -11,8 +11,9 @@ import { Record } from "../api";
   styleUrls: ['./document-list.component.scss']
 })
 export class DocumentListComponent implements OnInit, AfterViewInit {
-  displayedColumns = ['date', 'sender', 'comment', 'actions'];
+  displayedColumns = ['date', 'sender', 'numpages', 'comment', 'actions'];
   dataSource = new MatTableDataSource<Record>();
+  selectedRecordId = "";
 
   @ViewChild(MatSort) sort: MatSort;
   @Input('data') data: Observable<Record[]>;
@@ -32,7 +33,8 @@ export class DocumentListComponent implements OnInit, AfterViewInit {
     this.dataSource.sort = this.sort;
   }
 
-  selectRow(row) {
+  selectRow(row: Record) {
     this.recordClicked.emit(row);
+    this.selectedRecordId = row.id
   }
 }

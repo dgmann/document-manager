@@ -1,7 +1,25 @@
+@import "../../theme-variables";
+
 mat-row {
   cursor: pointer;
 }
 
 .action-group {
   text-align: right;
+}
+
+.action-group > .mat-icon-button:hover {
+  background-color: $accent;
+
+  .mat-icon {
+    color: $accent-lighter;
+  }
+}
+
+.selected {
+  background-color: $accent-lighter;
+}
+
+mat-row:hover {
+  background-color: $accent-lighter;
 }

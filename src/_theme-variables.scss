@@ -9,3 +9,6 @@ $app-warn:    mat-palette($mat-deep-orange);
 $primary: mat-color($app-primary);
 $accent: mat-color($app-accent);
 $warn: mat-color($app-warn);
+
+$primary-lighter: mat-color($app-primary, "lighter");
+$accent-lighter: mat-color($app-accent, "lighter");

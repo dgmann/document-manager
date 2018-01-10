@@ -1,9 +1,10 @@
 import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { MatSort, MatTableDataSource } from "@angular/material";
+import { MatDialog, MatSort, MatTableDataSource } from "@angular/material";
 import { Observable } from "rxjs/Observable";
 
 
 import { Record } from "../api";
+import { DocumentEditDialogComponent } from "../document-edit-dialog/document-edit-dialog.component";
 
 @Component({
   selector: 'app-document-list',
@@ -19,7 +20,8 @@ export class DocumentListComponent implements OnInit, AfterViewInit {
   @Input('data') data: Observable<Record[]>;
   @Output('recordClicked') recordClicked = new EventEmitter<Record>();
 
-  constructor() { }
+  constructor(public dialog: MatDialog) {
+  }
 
   ngOnInit() {
     this.data.subscribe(data => this.dataSource.data = data);
@@ -36,5 +38,11 @@ export class DocumentListComponent implements OnInit, AfterViewInit {
   selectRow(row: Record) {
     this.recordClicked.emit(row);
     this.selectedRecordId = row.id
+  }
+
+  openEditDialog(record: Record) {
+    this.dialog.open(DocumentEditDialogComponent, {
+      data: record
+    });
   }
 }

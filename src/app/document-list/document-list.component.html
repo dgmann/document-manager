@@ -2,7 +2,7 @@
 
   <ng-container matColumnDef="date">
     <mat-header-cell *matHeaderCellDef mat-sort-header> Datum </mat-header-cell>
-    <mat-cell *matCellDef="let element"> {{element.date | date:'shortDate'}} </mat-cell>
+    <mat-cell *matCellDef="let element"> {{element.date | date:'mediumDate'}}</mat-cell>
   </ng-container>
 
   <ng-container matColumnDef="sender">
@@ -32,6 +32,6 @@
   </ng-container>
 
   <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-  <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="selectRow(row)"
+  <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="selectRow(row)" (dblclick)="openEditDialog(row)"
            [class.selected]="row.id == selectedRecordId"></mat-row>
 </mat-table>

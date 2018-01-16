@@ -6,14 +6,10 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import {
-  MatChipsModule,
-  MatDatepickerModule,
-  MatDialogModule,
-  MatFormFieldModule,
-  MatIconModule,
-  MatInputModule,
-  MatNativeDateModule
+  MatChipsModule, MatDatepickerModule, MatDialogModule, MatFormFieldModule, MatIconModule, MatInputModule,
+  MatSnackBarModule
 } from "@angular/material";
+import { MatMomentDateModule } from '@angular/material-moment-adapter';
 import { MatButtonModule } from '@angular/material/button';
 import { StoreModule } from "@ngrx/store";
 import { StoreDevtoolsModule } from "@ngrx/store-devtools";
@@ -29,6 +25,7 @@ import { ApiModule } from "./api";
 import { EffectsModule } from "@ngrx/effects";
 import { RecordViewerComponent } from "./record-viewer/record-viewer.component";
 import { DocumentEditDialogComponent } from "./document-edit-dialog/document-edit-dialog.component";
+import { PatientService } from "./shared";
 
 
 registerLocaleData(localeDe, 'de');
@@ -55,9 +52,10 @@ registerLocaleData(localeDe, 'de');
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
-    MatNativeDateModule,
+    MatMomentDateModule,
     MatDatepickerModule,
     MatChipsModule,
+    MatSnackBarModule,
     DocumentListModule,
     StoreModule.forRoot(reducers, { metaReducers }),
     StoreDevtoolsModule.instrument({
@@ -66,7 +64,10 @@ registerLocaleData(localeDe, 'de');
     EffectsModule.forRoot([]),
     ApiModule
   ],
-  providers: [{provide: LOCALE_ID, useValue: 'de-DE'}],
+  providers: [
+    {provide: LOCALE_ID, useValue: 'de-DE'},
+    PatientService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {}

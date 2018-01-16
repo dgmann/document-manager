@@ -2,8 +2,10 @@ import { Component } from '@angular/core';
 import { Observable } from "rxjs/Observable";
 
 
-import { RecordService, Record } from "./api";
+import { Record, RecordService } from "./api";
 import { ReplaySubject } from "rxjs/ReplaySubject";
+import { DocumentEditDialogComponent } from "./document-edit-dialog/document-edit-dialog.component";
+import { MatDialog, MatSnackBar } from "@angular/material";
 
 @Component({
   selector: 'app-root',
@@ -15,7 +17,7 @@ export class AppComponent {
   selectedRecord: Observable<Record>;
   selectedRecordId = new ReplaySubject<string>();
 
-  constructor(private recordService: RecordService) {
+  constructor(private recordService: RecordService, public dialog: MatDialog, public snackbar: MatSnackBar) {
     this.data = recordService.all();
     this.selectedRecord = this.selectedRecordId.distinctUntilChanged().switchMap(id => this.recordService.find(id));
   }
@@ -26,5 +28,20 @@ export class AppComponent {
 
   updatePages(event) {
     this.recordService.update(event.id, {pages: event.pages})
+  }
+
+  editRecord(record: Record) {
+    this.dialog.open(DocumentEditDialogComponent, {
+      disableClose: true,
+      data: record
+    }).afterClosed().subscribe((result: Record) => {
+      if (!result) {
+        return;
+      }
+      this.recordService.update(result.id, {patientId: result.patientId, date: result.date, tags: result.tags});
+      this.snackbar.open('Gespeichert', '', {
+        duration: 3000
+      });
+    });
   }
 }

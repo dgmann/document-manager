@@ -33,7 +33,7 @@ export class RecordService {
       return null
     }
     const pages = data.attributes.pages.map(page => new Page( page.url, page.content));
-    return new Record(data.id, new Date(data.attributes.date), data.attributes.comment, data.attributes.sender, pages);
+    return new Record(data.id, new Date(data.attributes.date), data.attributes.comment, data.attributes.sender, pages, data.attributes.tags || [], data.relationships && data.relationships.patient && data.relationships.patient.data.id || null);
   }
 }
 
@@ -42,7 +42,10 @@ export class Record {
               public date: Date,
               public comment: string,
               public sender: string,
-              public pages: Page[]) {}
+              public pages: Page[],
+              public tags: string[],
+              public patientId: string) {
+  }
 }
 
 export class Page {

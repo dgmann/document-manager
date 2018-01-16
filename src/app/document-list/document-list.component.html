@@ -32,6 +32,6 @@
   </ng-container>
 
   <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-  <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="selectRow(row)" (dblclick)="openEditDialog(row)"
+  <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="selectRow(row)" (dblclick)="rowDoubleClick(row)"
            [class.selected]="row.id == selectedRecordId"></mat-row>
 </mat-table>

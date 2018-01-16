@@ -1,31 +1,34 @@
 <h2 mat-dialog-title>Informationen</h2>
 <mat-dialog-content>
-  <mat-form-field>
-    <input matInput placeholder="Patientennummer">
+  <mat-form-field [hintLabel]="(patient.getCurrent() | async).name">
+    <input matInput [tabindex]="tabIndex | async" [(ngModel)]="record.patientId" minlength="1"
+           placeholder="Patientennummer" #patientId="ngModel" required>
   </mat-form-field>
   <mat-form-field>
-    <input matInput [matDatepicker]="picker" [(ngModel)]="record.date">
-    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+    <input matInput [tabindex]="tabIndex | async" [matDatepicker]="picker" [(ngModel)]="record.date" required>
+    <mat-datepicker-toggle #datepickertoogle matSuffix [for]="picker"></mat-datepicker-toggle>
     <mat-datepicker #picker></mat-datepicker>
   </mat-form-field>
 
-  <mat-form-field>
-    <mat-chip-list #tagList ariaOrientation="vertical">
+  <mat-form-field class="tag-chips">
+    <mat-chip-list #tagList required>
       <mat-chip *ngFor="let tag of record.tags" [selectable]="selectable"
                 [removable]="removable" (remove)="remove(tag)">
-        {{fruit.name}}
+        {{tag}}
         <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
       </mat-chip>
+      <input placeholder="Tag hinzufügen"
+             [matChipInputFor]="tagList"
+             [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+             [matChipInputAddOnBlur]="addOnBlur"
+             (matChipInputTokenEnd)="add($event)" (focus)="tabIndex.next(0)"/>
     </mat-chip-list>
-    <input placeholder="Tag hinzufügen"
-           [matChipInputFor]="tagList"
-           [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-           [matChipInputAddOnBlur]="addOnBlur"
-           (matChipInputTokenEnd)="add($event)"/>
   </mat-form-field>
 </mat-dialog-content>
 <mat-dialog-actions>
   <button mat-button mat-dialog-close>Abbrechen</button>
   <!-- The mat-dialog-close directive optionally accepts a value as a result for the dialog. -->
-  <button mat-button [mat-dialog-close]="true">Speichern</button>
+  <button mat-button [mat-dialog-close]="record"
+          [disabled]="!(record.tags && record.tags.length > 0 && record.date && record.patientId)">Speichern
+  </button>
 </mat-dialog-actions>

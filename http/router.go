@@ -1,12 +1,16 @@
 package http
 
 import (
-	"github.com/gin-gonic/gin"
+	"github.com/dgmann/document-manager-api/repositories"
 	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
-func Run(pagesPath string) {
+var records *repositories.RecordRepository
+
+func Run(repository *repositories.RecordRepository, pagesPath string) {
+	records = repository
 	router := gin.Default()
 	router.Use(cors.Default())
 	registerRecords(router.Group("/records"), pagesPath)

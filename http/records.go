@@ -2,8 +2,10 @@ package http
 
 import (
 	"github.com/dgmann/document-manager-api/models"
+	"github.com/dgmann/document-manager-api/services"
 	"github.com/gin-gonic/gin"
 	"github.com/google/jsonapi"
+	log "github.com/sirupsen/logrus"
 	"path"
 	"time"
 )
@@ -26,6 +28,24 @@ func registerRecords(g *gin.RouterGroup, recordDir string) {
 	g.GET("/:recordId/images/:imageId", func(c *gin.Context) {
 		p := path.Join(recordDir, c.Param("recordId"), c.Param("imageId")+".png")
 		c.File(p)
+	})
+
+	g.POST("", func(c *gin.Context) {
+		file, _ := c.FormFile("pdf")
+		f, err := file.Open()
+		defer f.Close()
+		if err != nil {
+			fields := log.Fields{
+				"name":  file.Filename,
+				"size":  file.Size,
+				"error": err,
+			}
+			log.WithFields(fields).Panic("Error opening PDF")
+		}
+
+		pdfProcessor := services.NewPDFProcessor("http://localhost:8181")
+		images := pdfProcessor.ToImages(f)
+		c.JSON(200, images)
 	})
 }
 

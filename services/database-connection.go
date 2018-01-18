@@ -6,7 +6,8 @@ import (
 )
 
 func NewPostgresConnection(dsn string) *dbr.Connection {
-	conn, err := dbr.Open("postgres", dsn, nil)
+	conn, _ := dbr.Open("postgres", dsn, nil)
+	err := conn.Ping()
 	if err != nil {
 		log.WithFields(log.Fields{
 			"dialect": "postgres",

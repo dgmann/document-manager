@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/dgmann/document-manager-api/http"
 	"github.com/dgmann/document-manager-api/repositories"
 	"github.com/dgmann/document-manager-api/services"
@@ -16,10 +17,13 @@ func init() {
 
 func main() {
 	recordDir := envOrDefault("RECORD_DIR", "./records")
-	dsn, ok := os.LookupEnv("DB_CONN")
-	if !ok {
-		log.Fatal("Database connection not set")
-	}
+	host := envOrDefault("DB_HOST", "localhost")
+	port := envOrDefault("DB_PORT", "5432")
+	user := envOrDefault("DB_USER", "postgres")
+	password := envOrDefault("DB_PASSWORD", "postgres")
+	dbname := envOrDefault("DB_NAME", "manager")
+	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+		host, port, user, password, dbname)
 	db := services.NewPostgresConnection(dsn)
 	defer db.Close()
 

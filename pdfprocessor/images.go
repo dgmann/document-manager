@@ -1,4 +1,4 @@
-package main
+package pdfprocessor
 
 import (
 	pdfcontent "github.com/unidoc/unidoc/pdf/contentstream"
@@ -16,7 +16,7 @@ type ImageResult struct {
 	Image []byte `json:"image"`
 }
 
-func toImages(file io.ReadSeeker) []ImageResult {
+func ToImages(file io.ReadSeeker) []ImageResult {
 	pdfReader, err := pdf.NewPdfReader(file)
 	numPages, err := pdfReader.GetNumPages()
 	if err != nil {

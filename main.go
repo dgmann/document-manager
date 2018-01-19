@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"github.com/dgmann/document-manager-api/http"
 	"github.com/dgmann/document-manager-api/repositories"
@@ -22,14 +23,20 @@ func main() {
 	user := envOrDefault("DB_USER", "postgres")
 	password := envOrDefault("DB_PASSWORD", "postgres")
 	dbname := envOrDefault("DB_NAME", "manager")
+
+	nomigrate := flag.Bool("nomigrate", false, "Migrate the database")
+	flag.Parse()
+
 	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
 		host, port, user, password, dbname)
 	db := services.NewPostgresConnection(dsn)
 	defer db.Close()
 
-	services.MigratePostgres(db.DB)
+	if !*nomigrate {
+		services.MigratePostgres(db.DB)
+	}
 
-	records := repositories.NewRecordRepository(services.NewRecordService(db))
+	records := repositories.NewRecordRepository(services.NewRecordDataAdapter(db))
 	http.Run(records, recordDir)
 }
 

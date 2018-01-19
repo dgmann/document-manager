@@ -1,25 +1,28 @@
 package http
 
 import (
-	"github.com/dgmann/document-manager-api/models"
 	"github.com/dgmann/document-manager-api/services"
 	"github.com/gin-gonic/gin"
 	"github.com/google/jsonapi"
 	log "github.com/sirupsen/logrus"
 	"path"
-	"time"
+	"strconv"
 )
 
 func registerRecords(g *gin.RouterGroup, recordDir string) {
 	g.GET("", func(c *gin.Context) {
-		records := []*models.Record{getData(c.Request.Host)}
-		if err := jsonapi.MarshalPayload(c.Writer, records); err != nil {
+		r := records.GetInbox()
+		if err := jsonapi.MarshalPayload(c.Writer, r); err != nil {
 			c.Error(err)
 		}
 	})
 
 	g.GET("/:recordId", func(c *gin.Context) {
-		record := getData(c.Request.Host)
+		id, err := strconv.ParseInt(c.Param("recordId"), 10, 64)
+		if err != nil {
+			c.Error(jsonapi.ErrBadJSONAPIID)
+		}
+		record := records.Find(id)
 		if err := jsonapi.MarshalPayload(c.Writer, record); err != nil {
 			c.Error(err)
 		}
@@ -43,18 +46,16 @@ func registerRecords(g *gin.RouterGroup, recordDir string) {
 			log.WithFields(fields).Panic("Error opening PDF")
 		}
 
-		pdfProcessor := services.NewPDFProcessor("http://localhost:8181")
+		pdfProcessor := services.NewPDFProcessor("http://10.0.0.38:8181")
 		images := pdfProcessor.ToImages(f)
-		c.JSON(200, images)
-	})
-}
+		log.Debugf("Fetched %d images", len(images))
 
-func getData(url string) *models.Record {
-	pages := []models.Page{
-		{Index: 0, Content: "", Url: "http://" + path.Join(url, "/records/1/images/1234")},
-		{Index: 1, Content: "", Url: "http://" + path.Join(url, "/records/1/images/1234")},
-		{Index: 2, Content: "", Url: "http://" + path.Join(url, "/records/1/images/quer")},
-		{Index: 3, Content: "", Url: "http://" + path.Join(url, "/records/1/images/1234")},
-	}
-	return &models.Record{Id: "1", Date: time.Now(), Comment: "Neuer Patient? Was sollen wir mit dem Bazi machen?", Sender: "Scan", Pages: pages}
+		sender := c.PostForm("sender")
+		record := records.Create(sender)
+		c.Status(201)
+		c.Header("Content-Type", "application/json; charset=utf-8")
+		if err := jsonapi.MarshalPayload(c.Writer, record); err != nil {
+			c.Error(err)
+		}
+	})
 }

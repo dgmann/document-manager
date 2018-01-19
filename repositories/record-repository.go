@@ -3,32 +3,44 @@ package repositories
 import (
 	"github.com/dgmann/document-manager-api/models"
 	"github.com/dgmann/document-manager-api/services"
+	log "github.com/sirupsen/logrus"
 )
 
 type RecordRepository struct {
-	records *services.RecordService
+	data *services.DataAdapter
 }
 
-func NewRecordRepository(service *services.RecordService) *RecordRepository {
-	return &RecordRepository{records: service}
+func NewRecordRepository(data *services.DataAdapter) *RecordRepository {
+	return &RecordRepository{data: data}
 }
 
-func (r *RecordRepository) Find(id string) models.Record {
-	record := r.records.QuerySingle("id = ?", id)
-	return record
+func (r *RecordRepository) Find(id int64) *models.Record {
+	var record models.Record
+	if r.data.QuerySingle("id = ?", id, &record) != nil {
+		log.Panic("Cannot find record")
+	}
+	return &record
 }
 
-func (r *RecordRepository) GetInbox() []models.Record {
-	records := r.records.Query("processed = ?", false)
+func (r *RecordRepository) GetInbox() []*models.Record {
+	var records []*models.Record
+	if err := r.data.Query("processed = ?", false, &records); err != nil {
+		log.Panic(err)
+	}
 	return records
 }
 
-func (r *RecordRepository) GetEscalated() []models.Record {
-	records := r.records.Query("escalated = ?", true)
+func (r *RecordRepository) GetEscalated() []*models.Record {
+	var records []*models.Record
+
+	if r.data.Query("escalated = ?", true, &records) != nil {
+		log.Panic("Cannot find escalated records")
+	}
 	return records
 }
 
 func (r *RecordRepository) Create(sender string) *models.Record {
-	records := r.records.Insert(sender, nil)
-	return records
+	record := models.Record{Sender: sender}
+	id := r.data.Insert([]string{"sender"}, record)
+	return r.Find(id)
 }

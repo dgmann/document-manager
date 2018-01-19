@@ -37,7 +37,6 @@ func upload(url string, file io.Reader) []pdfprocessor.ImageResult {
 	// Prepare a form that you will submit to that URL.
 	var b bytes.Buffer
 	w := multipart.NewWriter(&b)
-	defer w.Close()
 
 	fw, err := w.CreateFormFile("pdf", "pdf.pdf")
 	if err != nil {
@@ -45,6 +44,9 @@ func upload(url string, file io.Reader) []pdfprocessor.ImageResult {
 	}
 	if _, err = io.Copy(fw, file); err != nil {
 		log.Panic("Error copying pdf file")
+	}
+	if w.Close() != nil {
+		log.Panic("Error closing multipart writer")
 	}
 
 	req, err := http.NewRequest("POST", url, &b)

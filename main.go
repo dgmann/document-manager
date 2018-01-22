@@ -1,11 +1,9 @@
 package main
 
 import (
-	"flag"
-	"fmt"
 	"github.com/dgmann/document-manager-api/http"
 	"github.com/dgmann/document-manager-api/repositories"
-	"github.com/dgmann/document-manager-api/services"
+	"github.com/globalsign/mgo"
 	log "github.com/sirupsen/logrus"
 	"os"
 )
@@ -19,24 +17,15 @@ func init() {
 func main() {
 	recordDir := envOrDefault("RECORD_DIR", "./records")
 	host := envOrDefault("DB_HOST", "localhost")
-	port := envOrDefault("DB_PORT", "5432")
-	user := envOrDefault("DB_USER", "postgres")
-	password := envOrDefault("DB_PASSWORD", "postgres")
 	dbname := envOrDefault("DB_NAME", "manager")
 
-	nomigrate := flag.Bool("nomigrate", false, "Migrate the database")
-	flag.Parse()
-
-	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-		host, port, user, password, dbname)
-	db := services.NewPostgresConnection(dsn)
-	defer db.Close()
-
-	if !*nomigrate {
-		services.MigratePostgres(db.DB)
+	session, err := mgo.Dial(host)
+	if err != nil {
+		panic(err)
 	}
-
-	records := repositories.NewRecordRepository(services.NewRecordDataAdapter(db))
+	defer session.Close()
+	c := session.DB(dbname).C("records")
+	records := repositories.NewRecordRepository(c)
 	http.Run(records, recordDir)
 }
 

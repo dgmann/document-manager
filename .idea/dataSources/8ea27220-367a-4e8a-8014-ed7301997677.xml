@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataSource name="manager@localhost">
+  <database-model serializer="dbm" rdbms="POSTGRES" format-version="4.7">
+    <root id="1"/>
+    <database id="2" parent="1" name="postgres">
+      <ObjectId>12292</ObjectId>
+      <Current>1</Current>
+    </database>
+    <database id="3" parent="1" name="manager">
+      <ObjectId>16384</ObjectId>
+      <Current>1</Current>
+      <Visible>1</Visible>
+    </database>
+    <role id="4" parent="1" name="api">
+      <ObjectId>16385</ObjectId>
+      <SuperRole>1</SuperRole>
+      <Inherit>1</Inherit>
+      <CanLogin>1</CanLogin>
+      <ConnectionLimit>-1</ConnectionLimit>
+    </role>
+    <role id="5" parent="1" name="pg_monitor">
+      <ObjectId>3373</ObjectId>
+      <Inherit>1</Inherit>
+      <ConnectionLimit>-1</ConnectionLimit>
+    </role>
+    <role id="6" parent="1" name="pg_read_all_settings">
+      <ObjectId>3374</ObjectId>
+      <Inherit>1</Inherit>
+      <ConnectionLimit>-1</ConnectionLimit>
+    </role>
+    <role id="7" parent="1" name="pg_read_all_stats">
+      <ObjectId>3375</ObjectId>
+      <Inherit>1</Inherit>
+      <ConnectionLimit>-1</ConnectionLimit>
+    </role>
+    <role id="8" parent="1" name="pg_signal_backend">
+      <ObjectId>4200</ObjectId>
+      <Inherit>1</Inherit>
+      <ConnectionLimit>-1</ConnectionLimit>
+    </role>
+    <role id="9" parent="1" name="pg_stat_scan_tables">
+      <ObjectId>3377</ObjectId>
+      <Inherit>1</Inherit>
+      <ConnectionLimit>-1</ConnectionLimit>
+    </role>
+    <role id="10" parent="1" name="postgres">
+      <ObjectId>10</ObjectId>
+      <SuperRole>1</SuperRole>
+      <Inherit>1</Inherit>
+      <CreateRole>1</CreateRole>
+      <CreateDb>1</CreateDb>
+      <CanLogin>1</CanLogin>
+      <Replication>1</Replication>
+      <ConnectionLimit>-1</ConnectionLimit>
+      <BypassRls>1</BypassRls>
+    </role>
+    <schema id="11" parent="3" name="public">
+      <ObjectId>2200</ObjectId>
+      <IntrospectionTimestamp>2018-01-19.12:00:56.348</IntrospectionTimestamp>
+      <IntrospectionStateNumber>560</IntrospectionStateNumber>
+      <Current>1</Current>
+      <Visible>1</Visible>
+    </schema>
+    <schema id="12" parent="3" name="pg_catalog">
+      <ObjectId>11</ObjectId>
+    </schema>
+    <schema id="13" parent="3" name="pg_toast">
+      <ObjectId>99</ObjectId>
+    </schema>
+    <schema id="14" parent="3" name="pg_temp_1">
+      <ObjectId>11736</ObjectId>
+    </schema>
+    <schema id="15" parent="3" name="pg_toast_temp_1">
+      <ObjectId>11737</ObjectId>
+    </schema>
+    <schema id="16" parent="3" name="information_schema">
+      <ObjectId>12002</ObjectId>
+    </schema>
+    <sequence id="17" parent="11" name="pages_id_seq">
+      <ObjectId>16406</ObjectId>
+      <StateNumber>559</StateNumber>
+      <SequenceIdentity>1..2147483647</SequenceIdentity>
+      <BelongsToColumn>1</BelongsToColumn>
+      <CacheSize>1</CacheSize>
+      <DataType>integer</DataType>
+    </sequence>
+    <sequence id="18" parent="11" name="records_id_seq">
+      <ObjectId>16393</ObjectId>
+      <StateNumber>559</StateNumber>
+      <SequenceIdentity>1..2147483647</SequenceIdentity>
+      <BelongsToColumn>1</BelongsToColumn>
+      <CacheSize>1</CacheSize>
+      <DataType>integer</DataType>
+    </sequence>
+    <table id="19" parent="11" name="pages">
+      <ObjectId>16408</ObjectId>
+      <StateNumber>559</StateNumber>
+    </table>
+    <table id="20" parent="11" name="records">
+      <ObjectId>16395</ObjectId>
+      <StateNumber>559</StateNumber>
+    </table>
+    <table id="21" parent="11" name="schema_migrations">
+      <ObjectId>16386</ObjectId>
+      <StateNumber>560</StateNumber>
+    </table>
+    <column id="22" parent="19" name="id">
+      <Position>1</Position>
+      <DataType>integer|0</DataType>
+      <NotNull>1</NotNull>
+      <StateNumber>559</StateNumber>
+      <TypeId>23</TypeId>
+      <SequenceName>pages_id_seq</SequenceName>
+    </column>
+    <column id="23" parent="19" name="record_id">
+      <Position>2</Position>
+      <DataType>integer|0</DataType>
+      <StateNumber>559</StateNumber>
+      <TypeId>23</TypeId>
+    </column>
+    <column id="24" parent="19" name="content">
+      <Position>3</Position>
+      <DataType>text|0</DataType>
+      <StateNumber>559</StateNumber>
+      <TypeId>25</TypeId>
+    </column>
+    <index id="25" parent="19" name="pages_pkey">
+      <ObjectId>16414</ObjectId>
+      <ColNames>id</ColNames>
+      <Unique>1</Unique>
+    </index>
+    <key id="26" parent="19" name="pages_pkey">
+      <ObjectId>16415</ObjectId>
+      <ColNames>id</ColNames>
+      <UnderlyingIndexName>pages_pkey</UnderlyingIndexName>
+      <Primary>1</Primary>
+    </key>
+    <foreign-key id="27" parent="19" name="pages_record_id_fkey">
+      <ObjectId>16416</ObjectId>
+      <ColNames>record_id</ColNames>
+      <RefTableId>16395</RefTableId>
+      <RefColPositions>1</RefColPositions>
+      <RefTableName>records</RefTableName>
+      <RefKeyName>records_pkey</RefKeyName>
+      <RefColNames>id</RefColNames>
+      <OnDelete>cascade</OnDelete>
+    </foreign-key>
+    <column id="28" parent="20" name="id">
+      <Position>1</Position>
+      <DataType>integer|0</DataType>
+      <NotNull>1</NotNull>
+      <StateNumber>559</StateNumber>
+      <TypeId>23</TypeId>
+      <SequenceName>records_id_seq</SequenceName>
+    </column>
+    <column id="29" parent="20" name="date">
+      <Position>2</Position>
+      <DataType>timestamp|0</DataType>
+      <StateNumber>559</StateNumber>
+      <DefaultExpression>now()</DefaultExpression>
+      <TypeId>1114</TypeId>
+    </column>
+    <column id="30" parent="20" name="comment">
+      <Position>3</Position>
+      <DataType>text|0</DataType>
+      <StateNumber>559</StateNumber>
+      <TypeId>25</TypeId>
+    </column>
+    <column id="31" parent="20" name="sender">
+      <Position>4</Position>
+      <DataType>varchar(100)|0</DataType>
+      <StateNumber>559</StateNumber>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="32" parent="20" name="document">
+      <Position>5</Position>
+      <DataType>varchar(200)|0</DataType>
+      <StateNumber>559</StateNumber>
+      <TypeId>1043</TypeId>
+    </column>
+    <column id="33" parent="20" name="processed">
+      <Position>6</Position>
+      <DataType>boolean|0</DataType>
+      <StateNumber>559</StateNumber>
+      <DefaultExpression>false</DefaultExpression>
+      <TypeId>16</TypeId>
+    </column>
+    <column id="34" parent="20" name="escalated">
+      <Position>7</Position>
+      <DataType>boolean|0</DataType>
+      <StateNumber>559</StateNumber>
+      <DefaultExpression>false</DefaultExpression>
+      <TypeId>16</TypeId>
+    </column>
+    <index id="35" parent="20" name="records_pkey">
+      <ObjectId>16404</ObjectId>
+      <ColNames>id</ColNames>
+      <Unique>1</Unique>
+    </index>
+    <key id="36" parent="20" name="records_pkey">
+      <ObjectId>16405</ObjectId>
+      <ColNames>id</ColNames>
+      <UnderlyingIndexName>records_pkey</UnderlyingIndexName>
+      <Primary>1</Primary>
+    </key>
+    <column id="37" parent="21" name="version">
+      <Position>1</Position>
+      <DataType>bigint|0</DataType>
+      <NotNull>1</NotNull>
+      <StateNumber>556</StateNumber>
+      <TypeId>20</TypeId>
+    </column>
+    <column id="38" parent="21" name="dirty">
+      <Position>2</Position>
+      <DataType>boolean|0</DataType>
+      <NotNull>1</NotNull>
+      <StateNumber>556</StateNumber>
+      <TypeId>16</TypeId>
+    </column>
+    <index id="39" parent="21" name="schema_migrations_pkey">
+      <ObjectId>16389</ObjectId>
+      <ColNames>version</ColNames>
+      <Unique>1</Unique>
+    </index>
+    <key id="40" parent="21" name="schema_migrations_pkey">
+      <ObjectId>16390</ObjectId>
+      <ColNames>version</ColNames>
+      <UnderlyingIndexName>schema_migrations_pkey</UnderlyingIndexName>
+      <Primary>1</Primary>
+    </key>
+  </database-model>
+</dataSource>

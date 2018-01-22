@@ -2,45 +2,69 @@ package repositories
 
 import (
 	"github.com/dgmann/document-manager-api/models"
-	"github.com/dgmann/document-manager-api/services"
+	"github.com/globalsign/mgo"
+	"github.com/globalsign/mgo/bson"
 	log "github.com/sirupsen/logrus"
 )
 
 type RecordRepository struct {
-	data *services.DataAdapter
+	records *mgo.Collection
 }
 
-func NewRecordRepository(data *services.DataAdapter) *RecordRepository {
-	return &RecordRepository{data: data}
+func NewRecordRepository(records *mgo.Collection) *RecordRepository {
+	return &RecordRepository{records: records}
 }
 
-func (r *RecordRepository) Find(id int64) *models.Record {
+func (r *RecordRepository) Find(id bson.ObjectId) *models.Record {
 	var record models.Record
-	if r.data.QuerySingle("id = ?", id, &record) != nil {
-		log.Panic("Cannot find record")
+
+	if err := r.records.FindId(id).One(&record); err != nil {
+		log.WithField("error", err).Panic("Cannot find record")
 	}
+	record.Id = record.Primary.Hex()
 	return &record
 }
 
-func (r *RecordRepository) GetInbox() []*models.Record {
+func (r *RecordRepository) Query(query interface{}) []*models.Record {
 	var records []*models.Record
-	if err := r.data.Query("processed = ?", false, &records); err != nil {
+
+	if err := r.records.Find(query).All(&records); err != nil {
 		log.Panic(err)
 	}
+
+	for _, record := range records {
+		record.Id = record.Primary.Hex()
+	}
+
 	return records
+}
+
+func (r *RecordRepository) GetInbox() []*models.Record {
+	return r.Query(bson.M{"processed": false})
 }
 
 func (r *RecordRepository) GetEscalated() []*models.Record {
 	var records []*models.Record
 
-	if r.data.Query("escalated = ?", true, &records) != nil {
-		log.Panic("Cannot find escalated records")
+	if err := r.records.Find(bson.M{"escalated": false}).All(&records); err != nil {
+		log.Panic(err)
 	}
 	return records
 }
 
 func (r *RecordRepository) Create(sender string) *models.Record {
-	record := models.Record{Sender: sender}
-	id := r.data.Insert([]string{"sender"}, record)
+	id := bson.NewObjectId()
+	record := models.NewRecord(id, sender)
+	if err := r.records.Insert(&record); err != nil {
+		log.Panic(err)
+	}
 	return r.Find(id)
+}
+
+func (r *RecordRepository) Update(id string, record map[string]interface{}) *models.Record {
+	key := bson.ObjectIdHex(id)
+	if err := r.records.UpdateId(key, bson.M{"$set": record}); err != nil {
+		log.Panic(err)
+	}
+	return r.Find(key)
 }

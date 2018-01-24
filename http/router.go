@@ -12,7 +12,10 @@ var records *repositories.RecordRepository
 func Run(repository *repositories.RecordRepository, pagesPath string) {
 	records = repository
 	router := gin.Default()
-	router.Use(cors.Default())
+	config := cors.DefaultConfig()
+	config.AllowAllOrigins = true
+	config.AddAllowMethods("PATCH")
+	router.Use(cors.New(config))
 	registerRecords(router.Group("/records"), pagesPath)
 	router.Run()
 }

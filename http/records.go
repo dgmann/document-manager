@@ -1,7 +1,7 @@
 package http
 
 import (
-	"encoding/json"
+	"github.com/dgmann/document-manager-api/models"
 	"github.com/dgmann/document-manager-api/services"
 	"github.com/gin-gonic/gin"
 	"github.com/globalsign/mgo/bson"
@@ -59,15 +59,15 @@ func registerRecords(g *gin.RouterGroup, recordDir string) {
 		}
 	})
 
-	g.PUT("/:recordId", func(c *gin.Context) {
-		var data interface{}
+	g.PATCH("/:recordId", func(c *gin.Context) {
+		var record models.Record
 
-		if err := json.NewDecoder(c.Request.Body).Decode(&data); err != nil {
+		if err := jsonapi.UnmarshalPayload(c.Request.Body, &record); err != nil {
 			c.Error(err)
 		}
-		record := records.Update(c.Param("recordId"), data.(map[string]interface{})["data"].(map[string]interface{})["attributes"].(map[string]interface{}))
+		r := records.Update(c.Param("recordId"), record)
 		c.Header("Content-Type", "application/json; charset=utf-8")
-		if err := jsonapi.MarshalPayload(c.Writer, record); err != nil {
+		if err := jsonapi.MarshalPayload(c.Writer, r); err != nil {
 			c.Error(err)
 		}
 	})

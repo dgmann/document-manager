@@ -61,7 +61,7 @@ func (r *RecordRepository) Create(sender string) *models.Record {
 	return r.Find(id)
 }
 
-func (r *RecordRepository) Update(id string, record map[string]interface{}) *models.Record {
+func (r *RecordRepository) Update(id string, record models.Record) *models.Record {
 	key := bson.ObjectIdHex(id)
 	if err := r.records.UpdateId(key, bson.M{"$set": record}); err != nil {
 		log.Panic(err)

@@ -5,32 +5,29 @@ import (
 	"github.com/dgmann/document-manager-api/models"
 	"github.com/dgmann/document-manager-api/services"
 	"github.com/gin-gonic/gin"
-	"github.com/globalsign/mgo/bson"
 	log "github.com/sirupsen/logrus"
-	"path"
 )
 
-func registerRecords(g *gin.RouterGroup, recordDir string) {
+func registerRecords(g *gin.RouterGroup) {
 	g.GET("", func(c *gin.Context) {
-		record := records.GetInbox()
+		record := app.Records.GetInbox()
 		c.Header("Content-Type", "application/json; charset=utf-8")
 		if err := json.NewEncoder(c.Writer).Encode(record); err != nil {
-			c.Error(err)
+			c.AbortWithError(400, err)
 		}
 	})
 
 	g.GET("/:recordId", func(c *gin.Context) {
 		id := c.Param("recordId")
-		record := records.Find(bson.ObjectIdHex(id))
+		record := app.Records.Find(id)
 		c.Header("Content-Type", "application/json; charset=utf-8")
 		if err := json.NewEncoder(c.Writer).Encode(record); err != nil {
-			c.Error(err)
+			c.AbortWithError(400, err)
 		}
 	})
 
 	g.GET("/:recordId/images/:imageId", func(c *gin.Context) {
-		p := path.Join(recordDir, c.Param("recordId"), c.Param("imageId")+".png")
-		c.File(p)
+		app.Images.Serve(c, c.Param("recordId"), c.Param("imageId"))
 	})
 
 	g.POST("", func(c *gin.Context) {
@@ -47,16 +44,36 @@ func registerRecords(g *gin.RouterGroup, recordDir string) {
 		}
 
 		pdfProcessor := services.NewPDFProcessor("http://10.0.0.38:8181")
-		images := pdfProcessor.ToImages(f)
+		images, err := pdfProcessor.ToImages(f)
+		if err != nil {
+			c.AbortWithError(500, err)
+			return
+		}
 		log.Debugf("Fetched %d images", len(images))
 
 		sender := c.PostForm("sender")
-		record := records.Create(sender)
+		record := app.Records.Create(sender)
+		err = app.Images.Set(record.Id, images)
+		if err != nil {
+			app.Records.Delete(record.Id)
+			c.AbortWithError(400, err)
+			return
+		}
 		c.Status(201)
 		c.Header("Content-Type", "application/json; charset=utf-8")
 		if err := json.NewEncoder(c.Writer).Encode(record); err != nil {
-			c.Error(err)
+			c.AbortWithError(400, err)
+			return
 		}
+	})
+
+	g.DELETE("/:recordId", func(c *gin.Context) {
+		err := app.Records.Delete(c.Param("recordId"))
+		c.Header("Content-Type", "application/json; charset=utf-8")
+		if err != nil {
+			c.AbortWithError(400, err)
+		}
+		c.Status(204)
 	})
 
 	g.PATCH("/:recordId", func(c *gin.Context) {
@@ -65,7 +82,7 @@ func registerRecords(g *gin.RouterGroup, recordDir string) {
 		if err := json.NewDecoder(c.Request.Body).Decode(&record); err != nil {
 			c.Error(err)
 		}
-		r := records.Update(c.Param("recordId"), record)
+		r := app.Records.Update(c.Param("recordId"), record)
 		c.Header("Content-Type", "application/json; charset=utf-8")
 		if err := json.NewEncoder(c.Writer).Encode(r); err != nil {
 			c.Error(err)

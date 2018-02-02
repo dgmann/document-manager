@@ -15,7 +15,11 @@ func NewRecordRepository(records *mgo.Collection) *RecordRepository {
 	return &RecordRepository{records: records}
 }
 
-func (r *RecordRepository) Find(id bson.ObjectId) *models.Record {
+func (r *RecordRepository) Find(id string) *models.Record {
+	return r.FindByObjectId(bson.ObjectIdHex(id))
+}
+
+func (r *RecordRepository) FindByObjectId(id bson.ObjectId) *models.Record {
 	var record models.Record
 
 	if err := r.records.FindId(id).One(&record); err != nil {
@@ -58,7 +62,16 @@ func (r *RecordRepository) Create(sender string) *models.Record {
 	if err := r.records.Insert(&record); err != nil {
 		log.Panic(err)
 	}
-	return r.Find(id)
+	return r.FindByObjectId(id)
+}
+
+func (r *RecordRepository) Delete(id string) error {
+	key := bson.ObjectIdHex(id)
+	err := r.records.RemoveId(key)
+	if err != nil {
+		log.Error(err)
+	}
+	return err
 }
 
 func (r *RecordRepository) Update(id string, record models.Record) *models.Record {
@@ -66,5 +79,5 @@ func (r *RecordRepository) Update(id string, record models.Record) *models.Recor
 	if err := r.records.UpdateId(key, bson.M{"$set": record}); err != nil {
 		log.Panic(err)
 	}
-	return r.Find(key)
+	return r.FindByObjectId(key)
 }

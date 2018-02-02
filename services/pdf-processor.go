@@ -19,8 +19,11 @@ func NewPDFProcessor(url string) *PDFProcessor {
 	return &PDFProcessor{url: url}
 }
 
-func (p *PDFProcessor) ToImages(pdf io.Reader) []image.Image {
-	response := upload(p.url+"/images/extract", pdf)
+func (p *PDFProcessor) ToImages(pdf io.Reader) ([]image.Image, error) {
+	response, err := upload(p.url+"/images/extract", pdf)
+	if err != nil {
+		return nil, err
+	}
 	images := make([]image.Image, len(response))
 	for _, element := range response {
 		img, s, err := image.Decode(bytes.NewReader(element.Image))
@@ -30,44 +33,51 @@ func (p *PDFProcessor) ToImages(pdf io.Reader) []image.Image {
 		}
 		images[element.PageNumber] = img
 	}
-	return images
+	return images, nil
 }
 
-func upload(url string, file io.Reader) []pdfprocessor.ImageResult {
+func upload(url string, file io.Reader) ([]pdfprocessor.ImageResult, error) {
 	// Prepare a form that you will submit to that URL.
 	var b bytes.Buffer
 	w := multipart.NewWriter(&b)
 
 	fw, err := w.CreateFormFile("pdf", "pdf.pdf")
 	if err != nil {
-		log.Panic("Error creating form")
+		log.Error("Error creating form")
+		return nil, err
 	}
 	if _, err = io.Copy(fw, file); err != nil {
-		log.Panic("Error copying pdf file")
+		log.Error("Error copying pdf file")
+		return nil, err
 	}
 	if w.Close() != nil {
-		log.Panic("Error closing multipart writer")
+		log.Error("Error closing multipart writer")
+		return nil, err
 	}
 
 	req, err := http.NewRequest("POST", url, &b)
 	if err != nil {
-		log.Panic("Error creating request")
+		log.Error("Error creating request")
+		return nil, err
 	}
 	req.Header.Set("Content-Type", w.FormDataContentType())
 
 	client := &http.Client{}
 	res, err := client.Do(req)
 	if err != nil {
-		log.WithField("error", err).Panic("Error sending request")
+		log.WithField("error", err).Error("Error sending request")
+		return nil, err
 	}
 
 	if res.StatusCode != http.StatusOK {
-		log.WithField("status", res.Status).Panic("Request error")
+		log.WithField("status", res.Status).Error("Request error")
+		return nil, err
 	}
 
 	var images []pdfprocessor.ImageResult
 	if json.NewDecoder(res.Body).Decode(&images) != nil {
-		log.WithField("error", err).Panic("Error decoding response")
+		log.WithField("error", err).Error("Error decoding response")
+		return nil, err
 	}
-	return images
+	return images, nil
 }

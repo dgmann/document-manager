@@ -1,22 +1,22 @@
 package http
 
 import (
-	"github.com/dgmann/document-manager-api/repositories"
+	"github.com/dgmann/document-manager-api/shared"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
-var records *repositories.RecordRepository
+var app *shared.App
 
-func Run(repository *repositories.RecordRepository, pagesPath string) {
-	records = repository
+func Run(a *shared.App) {
+	app = a
 	router := gin.Default()
 	config := cors.DefaultConfig()
 	config.AllowAllOrigins = true
-	config.AddAllowMethods("PATCH")
+	config.AddAllowMethods("PATCH", "DELETE")
 	router.Use(cors.New(config))
-	registerRecords(router.Group("/records"), pagesPath)
+	registerRecords(router.Group("/records"))
 	router.Run()
 }
 

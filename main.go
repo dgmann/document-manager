@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/dgmann/document-manager-api/http"
 	"github.com/dgmann/document-manager-api/repositories"
+	"github.com/dgmann/document-manager-api/shared"
 	"github.com/globalsign/mgo"
 	log "github.com/sirupsen/logrus"
 	"os"
@@ -15,7 +16,7 @@ func init() {
 }
 
 func main() {
-	recordDir := envOrDefault("RECORD_DIR", "./records")
+	recordDir := envOrDefault("RECORD_DIR", "C:\\Users\\David\\Desktop\\Images")
 	host := envOrDefault("DB_HOST", "localhost")
 	dbname := envOrDefault("DB_NAME", "manager")
 
@@ -25,8 +26,11 @@ func main() {
 	}
 	defer session.Close()
 	c := session.DB(dbname).C("records")
-	records := repositories.NewRecordRepository(c)
-	http.Run(records, recordDir)
+	app := shared.App{
+		Records: repositories.NewRecordRepository(c),
+		Images:  repositories.NewFileSystemImageRepository(recordDir),
+	}
+	http.Run(&app)
 }
 
 func envOrDefault(key, def string) string {

@@ -6,13 +6,16 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import {
-  MatChipsModule, MatDatepickerModule, MatDialogModule, MatFormFieldModule, MatIconModule, MatInputModule,
+  MatChipsModule,
+  MatDatepickerModule,
+  MatDialogModule,
+  MatFormFieldModule,
+  MatIconModule,
+  MatInputModule,
   MatSnackBarModule
 } from "@angular/material";
 import { MatMomentDateModule } from '@angular/material-moment-adapter';
 import { MatButtonModule } from '@angular/material/button';
-import { StoreModule } from "@ngrx/store";
-import { StoreDevtoolsModule } from "@ngrx/store-devtools";
 import { FormsModule } from "@angular/forms";
 import { registerLocaleData } from '@angular/common';
 import localeDe from '@angular/common/locales/de';
@@ -20,12 +23,10 @@ import localeDe from '@angular/common/locales/de';
 
 import { AppComponent } from './app.component';
 import { DocumentListModule } from "./document-list";
-import { metaReducers, reducers } from './reducers';
-import { ApiModule } from "./api";
-import { EffectsModule } from "@ngrx/effects";
 import { RecordViewerComponent } from "./record-viewer/record-viewer.component";
 import { DocumentEditDialogComponent } from "./document-edit-dialog/document-edit-dialog.component";
 import { PatientService } from "./shared";
+import { StoreModule } from "./store";
 
 
 registerLocaleData(localeDe, 'de');
@@ -57,12 +58,7 @@ registerLocaleData(localeDe, 'de');
     MatChipsModule,
     MatSnackBarModule,
     DocumentListModule,
-    StoreModule.forRoot(reducers, { metaReducers }),
-    StoreDevtoolsModule.instrument({
-      maxAge: 25 //  Retains last 25 states
-    }),
-    EffectsModule.forRoot([]),
-    ApiModule
+    StoreModule
   ],
   providers: [
     {provide: LOCALE_ID, useValue: 'de-DE'},

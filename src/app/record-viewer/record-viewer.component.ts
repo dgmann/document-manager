@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Observable } from "rxjs/Observable";
 
 
-import { Page, Record } from "../api";
+import { Page, Record } from "../store";
 
 @Component({
   selector: 'app-record-viewer',

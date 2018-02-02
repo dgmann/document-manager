@@ -3,9 +3,10 @@ import { MAT_DIALOG_DATA, MatChipInputEvent, MatDialogRef } from "@angular/mater
 import { COMMA, ENTER } from "@angular/cdk/keycodes";
 
 
-import { Record } from "../api";
+import { Record } from "../store";
 import { Patient, PatientService } from "../shared";
 import { ReplaySubject } from "rxjs/ReplaySubject";
+import { take } from "rxjs/operators";
 
 
 @Component({
@@ -28,7 +29,7 @@ export class DocumentEditDialogComponent implements AfterViewInit {
     this.record = Object.assign({}, record);
     this.record.tags = record.tags.slice();
     if (!this.record.patientId) {
-      this.patient.getCurrent().take(1).subscribe((patient: Patient) => this.record.patientId = this.record.patientId || patient.id);
+      this.patient.getCurrent().pipe(take(1)).subscribe((patient: Patient) => this.record.patientId = this.record.patientId || patient.id);
     }
     if (this.record.patientId && this.record.date) {
       this.tabIndex.next(-1);

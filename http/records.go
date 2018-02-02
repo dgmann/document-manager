@@ -1,20 +1,20 @@
 package http
 
 import (
+	"encoding/json"
 	"github.com/dgmann/document-manager-api/models"
 	"github.com/dgmann/document-manager-api/services"
 	"github.com/gin-gonic/gin"
 	"github.com/globalsign/mgo/bson"
-	"github.com/google/jsonapi"
 	log "github.com/sirupsen/logrus"
 	"path"
 )
 
 func registerRecords(g *gin.RouterGroup, recordDir string) {
 	g.GET("", func(c *gin.Context) {
-		r := records.GetInbox()
+		record := records.GetInbox()
 		c.Header("Content-Type", "application/json; charset=utf-8")
-		if err := jsonapi.MarshalPayload(c.Writer, r); err != nil {
+		if err := json.NewEncoder(c.Writer).Encode(record); err != nil {
 			c.Error(err)
 		}
 	})
@@ -23,7 +23,7 @@ func registerRecords(g *gin.RouterGroup, recordDir string) {
 		id := c.Param("recordId")
 		record := records.Find(bson.ObjectIdHex(id))
 		c.Header("Content-Type", "application/json; charset=utf-8")
-		if err := jsonapi.MarshalPayload(c.Writer, record); err != nil {
+		if err := json.NewEncoder(c.Writer).Encode(record); err != nil {
 			c.Error(err)
 		}
 	})
@@ -54,7 +54,7 @@ func registerRecords(g *gin.RouterGroup, recordDir string) {
 		record := records.Create(sender)
 		c.Status(201)
 		c.Header("Content-Type", "application/json; charset=utf-8")
-		if err := jsonapi.MarshalPayload(c.Writer, record); err != nil {
+		if err := json.NewEncoder(c.Writer).Encode(record); err != nil {
 			c.Error(err)
 		}
 	})
@@ -62,12 +62,12 @@ func registerRecords(g *gin.RouterGroup, recordDir string) {
 	g.PATCH("/:recordId", func(c *gin.Context) {
 		var record models.Record
 
-		if err := jsonapi.UnmarshalPayload(c.Request.Body, &record); err != nil {
+		if err := json.NewDecoder(c.Request.Body).Decode(&record); err != nil {
 			c.Error(err)
 		}
 		r := records.Update(c.Param("recordId"), record)
 		c.Header("Content-Type", "application/json; charset=utf-8")
-		if err := jsonapi.MarshalPayload(c.Writer, r); err != nil {
+		if err := json.NewEncoder(c.Writer).Encode(r); err != nil {
 			c.Error(err)
 		}
 	})

@@ -27,6 +27,12 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/globalsign/mgo"
+  packages = [".","bson","internal/json","internal/sasl","internal/scram"]
+  revision = "896bbb89d21253a28cd5a7f8b81fe091410cb94d"
+
+[[projects]]
+  branch = "master"
   name = "github.com/gocraft/dbr"
   packages = [".","dialect"]
   revision = "a61db664e3bd3e7507d596f8e013439d72d7b80a"
@@ -38,22 +44,10 @@
   revision = "1e59b77b52bf8e4b449a57e6f79f21226d571845"
 
 [[projects]]
-  name = "github.com/google/jsonapi"
+  name = "github.com/google/uuid"
   packages = ["."]
-  revision = "46d3ced0434461be12e555852e2f1a9ed382e139"
-  version = "1.0.0"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/lib/pq"
-  packages = [".","oid"]
-  revision = "27ea5d92de30060e7121ddd543fe14e9a327e0cc"
-
-[[projects]]
-  name = "github.com/mattes/migrate"
-  packages = [".","database","database/postgres","source","source/file"]
-  revision = "035c07716cd373d88456ec4d701402df52584cb4"
-  version = "v3.0.1"
+  revision = "064e2069ce9c359c118179501254f67d7d37ba24"
+  version = "0.2"
 
 [[projects]]
   name = "github.com/mattn/go-isatty"
@@ -112,6 +106,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "aa0b7a06d97f2535884f71e22885019780be71ed8eb9c08bc7a767815e3e5bb6"
+  inputs-digest = "f8b5c9de45a3176d4bd21cf25e54a2fa783e035668bb83019e706e8595f6df1c"
   solver-name = "gps-cdcl"
   solver-version = 1

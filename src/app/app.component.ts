@@ -50,4 +50,8 @@ export class AppComponent {
       });
     });
   }
+
+  deleteRecord(record: Record) {
+    this.recordService.delete(record.id);
+  }
 }

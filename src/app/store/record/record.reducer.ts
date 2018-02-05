@@ -15,28 +15,16 @@ export const initialState: State = adapter.getInitialState({
 export function reducer(state = initialState,
                         action: RecordActions): State {
   switch (action.type) {
-    case RecordActionTypes.AddRecord: {
-      return adapter.addOne(action.payload.record, state);
-    }
-
-    case RecordActionTypes.AddRecords: {
+    case RecordActionTypes.LoadRecordsSuccess: {
       return adapter.addMany(action.payload.records, state);
     }
 
-    case RecordActionTypes.UpdateRecord: {
+    case RecordActionTypes.UpdateRecordSuccess: {
       return adapter.updateOne(action.payload.record, state);
     }
 
-    case RecordActionTypes.UpdateRecords: {
-      return adapter.updateMany(action.payload.records, state);
-    }
-
-    case RecordActionTypes.DeleteRecord: {
+    case RecordActionTypes.DeleteRecordSuccess: {
       return adapter.removeOne(action.payload.id, state);
-    }
-
-    case RecordActionTypes.DeleteRecords: {
-      return adapter.removeMany(action.payload.ids, state);
     }
 
     case RecordActionTypes.ClearRecords: {

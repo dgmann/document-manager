@@ -4,33 +4,35 @@ import { Record } from './record.model';
 
 export enum RecordActionTypes {
   LoadRecords = '[Record] Load Records',
-  AddRecord = '[Record] Add Record',
-  AddRecords = '[Record] Add Records',
+  LoadRecordsFail = '[Record] Load Records Fail',
+  LoadRecordsSuccess = '[Record] Load Records Success',
   UpdateRecord = '[Record] Update Record',
-  UpdateRecords = '[Record] Update Records',
+  UpdateRecordSuccess = '[Record] Update Records Success',
+  UpdateRecordFail = '[Record] Update Records Fail',
   DeleteRecord = '[Record] Delete Record',
-  DeleteRecords = '[Record] Delete Records',
+  DeleteRecordSuccess = '[Record] Delete Record Success',
+  DeleteRecordFail = '[Record] Delete Records Fail',
   ClearRecords = '[Record] Clear Records'
 }
 
 export class LoadRecords implements Action {
   readonly type = RecordActionTypes.LoadRecords;
 
+  constructor(public payload: {}) {
+  }
+}
+
+export class LoadRecordsSuccess implements Action {
+  readonly type = RecordActionTypes.LoadRecordsSuccess;
+
   constructor(public payload: { records: Record[] }) {
   }
 }
 
-export class AddRecord implements Action {
-  readonly type = RecordActionTypes.AddRecord;
+export class LoadRecordsFail implements Action {
+  readonly type = RecordActionTypes.LoadRecordsFail;
 
-  constructor(public payload: { record: Record }) {
-  }
-}
-
-export class AddRecords implements Action {
-  readonly type = RecordActionTypes.AddRecords;
-
-  constructor(public payload: { records: Record[] }) {
+  constructor(public payload: { error: any }) {
   }
 }
 
@@ -41,10 +43,17 @@ export class UpdateRecord implements Action {
   }
 }
 
-export class UpdateRecords implements Action {
-  readonly type = RecordActionTypes.UpdateRecords;
+export class UpdateRecordSuccess implements Action {
+  readonly type = RecordActionTypes.UpdateRecordSuccess;
 
-  constructor(public payload: { records: Update<Record>[] }) {
+  constructor(public payload: { record: Update<Record> }) {
+  }
+}
+
+export class UpdateRecordFail implements Action {
+  readonly type = RecordActionTypes.UpdateRecordFail;
+
+  constructor(public payload: { error: any }) {
   }
 }
 
@@ -55,10 +64,17 @@ export class DeleteRecord implements Action {
   }
 }
 
-export class DeleteRecords implements Action {
-  readonly type = RecordActionTypes.DeleteRecords;
+export class DeleteRecordSuccess implements Action {
+  readonly type = RecordActionTypes.DeleteRecordSuccess;
 
-  constructor(public payload: { ids: string[] }) {
+  constructor(public payload: { id: string }) {
+  }
+}
+
+export class DeleteRecordFail implements Action {
+  readonly type = RecordActionTypes.DeleteRecordFail;
+
+  constructor(public payload: { error: any }) {
   }
 }
 
@@ -68,10 +84,12 @@ export class ClearRecords implements Action {
 
 export type RecordActions =
   LoadRecords
-  | AddRecord
-  | AddRecords
+  | LoadRecordsSuccess
+  | LoadRecordsFail
   | UpdateRecord
-  | UpdateRecords
+  | UpdateRecordSuccess
+  | UpdateRecordFail
   | DeleteRecord
-  | DeleteRecords
+  | DeleteRecordSuccess
+  | DeleteRecordFail
   | ClearRecords;

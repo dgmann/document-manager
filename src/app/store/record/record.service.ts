@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { Store } from "@ngrx/store";
 import { State } from "../reducers";
 import { selectAllRecords, selectRecordEntities } from "./record.selectors";
-import { LoadRecords, UpdateRecord } from "./record.actions";
+import { DeleteRecord, LoadRecords, UpdateRecord } from "./record.actions";
 import { Record } from "./record.model";
 import { Dictionary } from "@ngrx/entity/src/models";
 import { map } from "rxjs/operators";
@@ -22,6 +22,10 @@ export class RecordService {
 
   public all() {
     return this.store.select<Record[]>(selectAllRecords)
+  }
+
+  public delete(id: string) {
+    this.store.dispatch(new DeleteRecord({id: id}))
   }
 
   public update(id: string, changes: any) {

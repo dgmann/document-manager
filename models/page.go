@@ -1,8 +1,7 @@
 package models
 
 type Page struct {
-	Id      int    `json:"-"`
-	Index   int    `json:"index"`
-	Url     string `json:"url"`
+	Id      string `bson:"id" json:"-"`
+	Url     string `bson:"-" json:"url"`
 	Content string `json:"content"`
 }

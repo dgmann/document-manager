@@ -12,10 +12,13 @@ import (
 	"path/filepath"
 )
 
+const fileExtension = ".png"
+
 type ImageRepository interface {
 	Get(id string) map[string]image.Image
-	Set(id string, images []image.Image)
-	Serve(context *gin.Context)
+	Set(id string, images []image.Image) ([]string, error)
+	Delete(id string) error
+	Serve(context *gin.Context, recordId string, imageId string)
 }
 
 type FileSystemImageRepository struct {
@@ -48,7 +51,8 @@ func (f *FileSystemImageRepository) Get(id string) map[string]image.Image {
 	return images
 }
 
-func (f *FileSystemImageRepository) Set(id string, images []image.Image) (err error) {
+func (f *FileSystemImageRepository) Set(id string, images []image.Image) (results []string, err error) {
+	results = make([]string, 0)
 	p := path.Join(f.directory, id)
 	if _, err := os.Stat(p); os.IsNotExist(err) {
 		os.MkdirAll(p, os.ModePerm)
@@ -58,17 +62,25 @@ func (f *FileSystemImageRepository) Set(id string, images []image.Image) (err er
 			log.Errorf("Recovering: %v", r)
 			os.RemoveAll(p)
 			err = errors.New("failed to save images")
+			results = make([]string, 0)
 		}
 	}()
 	for _, img := range images {
-		fp := path.Join(p, uuid.New().String())
+		imgId := uuid.New().String()
+		fp := path.Join(p, imgId)
 		save(fp, img)
+		results = append(results, imgId)
 	}
-	return nil
+	return results, nil
+}
+
+func (f *FileSystemImageRepository) Delete(id string) error {
+	p := path.Join(f.directory, id)
+	return os.RemoveAll(p)
 }
 
 func save(filePath string, img image.Image) {
-	imageFile, err := os.Create(filePath + ".png")
+	imageFile, err := os.Create(filePath + fileExtension)
 	defer imageFile.Close()
 	if err != nil {
 		log.WithFields(log.Fields{
@@ -90,6 +102,6 @@ func save(filePath string, img image.Image) {
 }
 
 func (f *FileSystemImageRepository) Serve(context *gin.Context, recordId string, imageId string) {
-	p := path.Join(f.directory, recordId, imageId)
+	p := path.Join(f.directory, recordId, imageId+fileExtension)
 	context.File(p)
 }

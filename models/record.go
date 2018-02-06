@@ -20,26 +20,30 @@ type Record struct {
 	Escalated  *bool         `bson:"escalated,omitempty" json:"escalated"`
 }
 
-func (p *Record) MarshalJSON() ([]byte, error) {
-	tags := p.Tags
+func (r *Record) MarshalJSON() ([]byte, error) {
+	tags := r.Tags
 	if tags == nil {
 		tags = []string{}
 	}
-	pages := p.Pages
+	pages := r.Pages
 	if pages == nil {
 		pages = []Page{}
 	}
+	for i := range pages {
+
+		pages[i].Url = "/records/" + r.Id + "/images/" + pages[i].Id
+	}
 	m := map[string]interface{}{
-		"id":         p.Id,
-		"date":       p.Date,
-		"receivedAt": p.ReceivedAt,
-		"patientId":  p.PatientId,
-		"comment":    p.Comment,
-		"sender":     p.Sender,
+		"id":         r.Id,
+		"date":       r.Date,
+		"receivedAt": r.ReceivedAt,
+		"patientId":  r.PatientId,
+		"comment":    r.Comment,
+		"sender":     r.Sender,
 		"tags":       tags,
 		"pages":      pages,
-		"processed":  p.Processed,
-		"escalated":  p.Escalated,
+		"processed":  r.Processed,
+		"escalated":  r.Escalated,
 	}
 	return json.Marshal(m)
 }
@@ -61,4 +65,10 @@ func NewRecord(id bson.ObjectId, sender string) *Record {
 func newFalse() *bool {
 	b := false
 	return &b
+}
+
+func (r *Record) SetPages(ids []string) {
+	for _, id := range ids {
+		r.Pages = append(r.Pages, Page{Id: id})
+	}
 }

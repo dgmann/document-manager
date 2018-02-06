@@ -52,10 +52,8 @@ func registerRecords(g *gin.RouterGroup) {
 		log.Debugf("Fetched %d images", len(images))
 
 		sender := c.PostForm("sender")
-		record := app.Records.Create(sender)
-		err = app.Images.Set(record.Id, images)
+		record, err := app.Records.Create(sender, images)
 		if err != nil {
-			app.Records.Delete(record.Id)
 			c.AbortWithError(400, err)
 			return
 		}

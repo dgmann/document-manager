@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"github.com/dgmann/document-manager-api/models"
+	"github.com/dgmann/document-manager-api/services"
 	"github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
 	log "github.com/sirupsen/logrus"
@@ -9,10 +10,11 @@ import (
 
 type RecordRepository struct {
 	records *mgo.Collection
+	events  *services.EventService
 }
 
 func NewRecordRepository(records *mgo.Collection) *RecordRepository {
-	return &RecordRepository{records: records}
+	return &RecordRepository{records: records, events: services.GetEventService()}
 }
 
 func (r *RecordRepository) Find(id string) *models.Record {
@@ -62,7 +64,9 @@ func (r *RecordRepository) Create(sender string) *models.Record {
 	if err := r.records.Insert(&record); err != nil {
 		log.Panic(err)
 	}
-	return r.FindByObjectId(id)
+	created := r.FindByObjectId(id)
+	r.events.Send(services.EventCreated, created)
+	return created
 }
 
 func (r *RecordRepository) Delete(id string) error {
@@ -71,6 +75,7 @@ func (r *RecordRepository) Delete(id string) error {
 	if err != nil {
 		log.Error(err)
 	}
+	r.events.Send(services.EventDeleted, id)
 	return err
 }
 
@@ -79,5 +84,7 @@ func (r *RecordRepository) Update(id string, record models.Record) *models.Recor
 	if err := r.records.UpdateId(key, bson.M{"$set": record}); err != nil {
 		log.Panic(err)
 	}
-	return r.FindByObjectId(key)
+	updated := r.FindByObjectId(key)
+	r.events.Send(services.EventUpdated, updated)
+	return updated
 }

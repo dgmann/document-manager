@@ -2,6 +2,7 @@ package services
 
 import (
 	"github.com/cskr/pubsub"
+	log "github.com/sirupsen/logrus"
 	"sync"
 	"time"
 )
@@ -11,7 +12,7 @@ type EventType string
 const (
 	EventCreated EventType = "CREATE"
 	EventUpdated           = "UPDATE"
-	EventDeleted           = "Delete"
+	EventDeleted           = "DELETE"
 )
 
 type EventService struct {
@@ -19,9 +20,9 @@ type EventService struct {
 }
 
 type Event struct {
-	Type      EventType
-	Timestamp time.Time
-	Data      interface{}
+	Type      EventType   `json:"type"`
+	Timestamp time.Time   `json:"timestamp"`
+	Data      interface{} `json:"data"`
 }
 
 var instance *EventService
@@ -35,7 +36,19 @@ func GetEventService() *EventService {
 }
 
 func newEventService() *EventService {
-	return &EventService{ps: pubsub.New(300)}
+	e := &EventService{ps: pubsub.New(300)}
+	go func() {
+		c := e.Subscribe(EventCreated, EventDeleted, EventUpdated)
+		for event := range c {
+			e := event.(Event)
+			log.WithFields(log.Fields{
+				"Type":      e.Type,
+				"Timestamp": e.Timestamp,
+				"Data":      e.Data,
+			}).Info("New Event")
+		}
+	}()
+	return e
 }
 
 func (e *EventService) Send(t EventType, data interface{}) {
@@ -49,8 +62,8 @@ func (e *EventService) Send(t EventType, data interface{}) {
 
 func (e *EventService) Subscribe(t ...EventType) chan interface{} {
 	types := make([]string, len(t))
-	for et := range t {
-		types = append(types, string(et))
+	for i, et := range t {
+		types[i] = string(et)
 	}
 	return e.ps.Sub(types...)
 }

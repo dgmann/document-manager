@@ -26,10 +26,8 @@ func main() {
 	}
 	defer session.Close()
 	c := session.DB(dbname).C("records")
-	app := shared.App{
-		Records: repositories.NewRecordRepository(c),
-		Images:  repositories.NewFileSystemImageRepository(recordDir),
-	}
+	images := repositories.NewFileSystemImageRepository(recordDir)
+	app := shared.App{Records: repositories.NewRecordRepository(c, images), Images: images}
 	http.Run(&app)
 }
 

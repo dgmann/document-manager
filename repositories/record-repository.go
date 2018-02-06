@@ -6,15 +6,17 @@ import (
 	"github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
 	log "github.com/sirupsen/logrus"
+	"image"
 )
 
 type RecordRepository struct {
 	records *mgo.Collection
 	events  *services.EventService
+	images  ImageRepository
 }
 
-func NewRecordRepository(records *mgo.Collection) *RecordRepository {
-	return &RecordRepository{records: records, events: services.GetEventService()}
+func NewRecordRepository(records *mgo.Collection, images ImageRepository) *RecordRepository {
+	return &RecordRepository{records: records, events: services.GetEventService(), images: images}
 }
 
 func (r *RecordRepository) Find(id string) *models.Record {
@@ -58,15 +60,26 @@ func (r *RecordRepository) GetEscalated() []*models.Record {
 	return records
 }
 
-func (r *RecordRepository) Create(sender string) *models.Record {
+func (r *RecordRepository) Create(sender string, images []image.Image) (*models.Record, error) {
 	id := bson.NewObjectId()
+
 	record := models.NewRecord(id, sender)
+	imageIds, err := r.images.Set(id.Hex(), images)
+	if err != nil {
+		log.Error(err)
+		return nil, err
+	}
+	record.SetPages(imageIds)
+
 	if err := r.records.Insert(&record); err != nil {
-		log.Panic(err)
+		log.Error(err)
+		r.images.Delete(id.Hex())
+		return nil, err
 	}
 	created := r.FindByObjectId(id)
+
 	r.events.Send(services.EventCreated, created)
-	return created
+	return created, nil
 }
 
 func (r *RecordRepository) Delete(id string) error {

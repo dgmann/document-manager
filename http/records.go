@@ -12,18 +12,14 @@ func registerRecords(g *gin.RouterGroup) {
 	g.GET("", func(c *gin.Context) {
 		records := app.Records.GetInbox()
 		c.Header("Content-Type", "application/json; charset=utf-8")
-		if err := ToJSON(c, records); err != nil {
-			c.AbortWithError(400, err)
-		}
+		RespondAsJSON(c, records)
 	})
 
 	g.GET("/:recordId", func(c *gin.Context) {
 		id := c.Param("recordId")
 		record := app.Records.Find(id)
 		c.Header("Content-Type", "application/json; charset=utf-8")
-		if err := ToJSON(c, record); err != nil {
-			c.AbortWithError(400, err)
-		}
+		RespondAsJSON(c, record)
 	})
 
 	g.GET("/:recordId/images/:imageId", func(c *gin.Context) {
@@ -32,6 +28,7 @@ func registerRecords(g *gin.RouterGroup) {
 
 	g.POST("", func(c *gin.Context) {
 		file, _ := c.FormFile("pdf")
+		sender := c.PostForm("sender")
 		f, err := file.Open()
 		defer f.Close()
 		if err != nil {
@@ -42,16 +39,12 @@ func registerRecords(g *gin.RouterGroup) {
 			}
 			log.WithFields(fields).Panic("Error opening PDF")
 		}
-
-		pdfProcessor := services.NewPDFProcessor("http://10.0.0.38:8181")
-		images, err := pdfProcessor.ToImages(f)
+		images, err := app.PDFProcessor.Convert(f)
 		if err != nil {
-			c.AbortWithError(500, err)
+			c.AbortWithError(400, err)
 			return
 		}
-		log.Debugf("Fetched %d images", len(images))
 
-		sender := c.PostForm("sender")
 		record, err := app.Records.Create(sender, images)
 		if err != nil {
 			c.AbortWithError(400, err)
@@ -59,10 +52,7 @@ func registerRecords(g *gin.RouterGroup) {
 		}
 		c.Status(201)
 		c.Header("Content-Type", "application/json; charset=utf-8")
-		if err := ToJSON(c, record); err != nil {
-			c.AbortWithError(400, err)
-			return
-		}
+		RespondAsJSON(c, record)
 	})
 
 	g.DELETE("/:recordId", func(c *gin.Context) {
@@ -82,8 +72,6 @@ func registerRecords(g *gin.RouterGroup) {
 		}
 		r := app.Records.Update(c.Param("recordId"), record)
 		c.Header("Content-Type", "application/json; charset=utf-8")
-		if err := ToJSON(c, r); err != nil {
-			c.Error(err)
-		}
+		RespondAsJSON(c, r)
 	})
 }

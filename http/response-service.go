@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func ToJSON(c *gin.Context, data interface{}) error {
+func RespondAsJSON(c *gin.Context, data interface{}) {
 	url := location.Get(c)
 	switch data.(type) {
 	case *models.Record:
@@ -17,5 +17,7 @@ func ToJSON(c *gin.Context, data interface{}) error {
 			m.SetURL(url)
 		}
 	}
-	return json.NewEncoder(c.Writer).Encode(data)
+	if err := json.NewEncoder(c.Writer).Encode(data); err != nil {
+		c.AbortWithError(400, err)
+	}
 }

@@ -7,6 +7,7 @@ import (
 	"github.com/globalsign/mgo"
 	log "github.com/sirupsen/logrus"
 	"os"
+	"github.com/dgmann/document-manager-api/services"
 )
 
 func init() {
@@ -27,7 +28,11 @@ func main() {
 	defer session.Close()
 	c := session.DB(dbname).C("records")
 	images := repositories.NewFileSystemImageRepository(recordDir)
-	app := shared.App{Records: repositories.NewRecordRepository(c, images), Images: images}
+	app := shared.App{
+		Records: repositories.NewRecordRepository(c, images),
+		Images: images,
+		PDFProcessor: services.NewPDFProcessor("http://10.0.0.38:8181"),
+	}
 	http.Run(&app)
 }
 

@@ -1,4 +1,4 @@
-package services
+package database
 
 import (
 	"github.com/gocraft/dbr"

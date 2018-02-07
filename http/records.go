@@ -12,7 +12,7 @@ func registerRecords(g *gin.RouterGroup) {
 	g.GET("", func(c *gin.Context) {
 		records := app.Records.GetInbox()
 		c.Header("Content-Type", "application/json; charset=utf-8")
-		if err := services.ToJSON(c, records); err != nil {
+		if err := ToJSON(c, records); err != nil {
 			c.AbortWithError(400, err)
 		}
 	})
@@ -21,7 +21,7 @@ func registerRecords(g *gin.RouterGroup) {
 		id := c.Param("recordId")
 		record := app.Records.Find(id)
 		c.Header("Content-Type", "application/json; charset=utf-8")
-		if err := services.ToJSON(c, record); err != nil {
+		if err := ToJSON(c, record); err != nil {
 			c.AbortWithError(400, err)
 		}
 	})
@@ -59,7 +59,7 @@ func registerRecords(g *gin.RouterGroup) {
 		}
 		c.Status(201)
 		c.Header("Content-Type", "application/json; charset=utf-8")
-		if err := services.ToJSON(c, record); err != nil {
+		if err := ToJSON(c, record); err != nil {
 			c.AbortWithError(400, err)
 			return
 		}
@@ -82,7 +82,7 @@ func registerRecords(g *gin.RouterGroup) {
 		}
 		r := app.Records.Update(c.Param("recordId"), record)
 		c.Header("Content-Type", "application/json; charset=utf-8")
-		if err := services.ToJSON(c, r); err != nil {
+		if err := ToJSON(c, r); err != nil {
 			c.Error(err)
 		}
 	})

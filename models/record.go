@@ -2,7 +2,9 @@ package models
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/globalsign/mgo/bson"
+	"net/url"
 	"time"
 )
 
@@ -20,19 +22,20 @@ type Record struct {
 	Escalated  *bool         `bson:"escalated,omitempty" json:"escalated"`
 }
 
-func (r *Record) MarshalJSON() ([]byte, error) {
-	tags := r.Tags
-	if tags == nil {
-		tags = []string{}
+func (r *Record) SetURL(url *url.URL) {
+	if r.Tags == nil {
+		r.Tags = []string{}
 	}
-	pages := r.Pages
-	if pages == nil {
-		pages = []Page{}
+	if r.Pages == nil {
+		r.Pages = []Page{}
 	}
-	for i := range pages {
 
-		pages[i].Url = "/records/" + r.Id + "/images/" + pages[i].Id
+	for i := range r.Pages {
+		r.Pages[i].Url = fmt.Sprintf("%s/records/%s/images/%s", url.String(), r.Id, r.Pages[i].Id)
 	}
+}
+
+func (r *Record) MarshalJSON() ([]byte, error) {
 	m := map[string]interface{}{
 		"id":         r.Id,
 		"date":       r.Date,
@@ -40,8 +43,8 @@ func (r *Record) MarshalJSON() ([]byte, error) {
 		"patientId":  r.PatientId,
 		"comment":    r.Comment,
 		"sender":     r.Sender,
-		"tags":       tags,
-		"pages":      pages,
+		"tags":       r.Tags,
+		"pages":      r.Pages,
 		"processed":  r.Processed,
 		"escalated":  r.Escalated,
 	}

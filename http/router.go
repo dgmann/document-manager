@@ -3,6 +3,7 @@ package http
 import (
 	"github.com/dgmann/document-manager-api/shared"
 	"github.com/gin-contrib/cors"
+	"github.com/gin-contrib/location"
 	"github.com/gin-gonic/gin"
 )
 
@@ -15,6 +16,7 @@ func Run(a *shared.App) {
 	config.AllowAllOrigins = true
 	config.AddAllowMethods("PATCH", "DELETE")
 	router.Use(cors.New(config))
+	router.Use(location.Default())
 
 	registerWebsocket(router)
 	registerRecords(router.Group("/records"))

@@ -31,6 +31,7 @@ func main() {
 	app := shared.App{
 		Records: repositories.NewRecordRepository(c, images),
 		Images: images,
+		Tags: repositories.NewTagRepository(c),
 		PDFProcessor: pdf.NewPDFProcessor("http://10.0.0.38:8181"),
 	}
 	http.Run(&app)

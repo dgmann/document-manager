@@ -16,7 +16,6 @@ func TestDoSuccess(t *testing.T) {
 	defer httpmock.DeactivateAndReset()
 
 	pdfResponse := NewResult()
-
 	responder, _ := httpmock.NewJsonResponder(200, pdfResponse)
 	httpmock.RegisterResponder("POST", url, responder)
 

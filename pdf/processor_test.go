@@ -3,28 +3,36 @@ package pdf
 import (
 	"testing"
 	"io"
-	"io/ioutil"
 	"encoding/json"
 	"bytes"
 	"image/png"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+	"io/ioutil"
 )
 
-type RequesterMock struct {}
+type RequesterMock struct {
+	mock.Mock
+}
 
 func(m *RequesterMock) Do(b io.Reader) (io.ReadCloser, error) {
-	result := NewResult()
-	r, _ := json.Marshal(result)
-	return ioutil.NopCloser(bytes.NewReader(r)), nil
+	args := m.Called(b)
+	return ioutil.NopCloser(args.Get(0).(io.Reader)), args.Error(1)
 }
 
 
 func TestConvert(t *testing.T) {
-	originalImage, err := png.Decode(bytes.NewBuffer(GetTestImage()))
+	requester := new(RequesterMock)
+	input := bytes.NewBuffer(GetTestImage())
+	r, _ := json.Marshal(NewResult())
+	output := bytes.NewBuffer(r)
 
-	processor := PDFProcessor{requester:&RequesterMock{}}
+	requester.On("Do", input).Return(output, nil)
+
+	processor := PDFProcessor{requester:requester}
 	result, err := processor.Convert(bytes.NewBuffer(GetTestImage()))
 	assert.Nil(t, err)
 
+	originalImage, err := png.Decode(bytes.NewBuffer(GetTestImage()))
 	assert.Equal(t, originalImage, result[0], "Images should be equal")
 }

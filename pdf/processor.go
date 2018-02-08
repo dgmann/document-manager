@@ -33,6 +33,11 @@ func (p *PDFProcessor) Convert(f io.Reader) ([]image.Image, error) {
 
 func (p * PDFProcessor) Upload(file io.Reader) (Result, error) {
 	result, err := p.requester.Do(file)
+	if err != nil {
+		log.WithField("error", err).Error("Error transforming pdf to images")
+		return nil, err
+	}
+	defer result.Close()
 	var images Result
 	if json.NewDecoder(result).Decode(&images) != nil {
 		log.WithField("error", err).Error("Error decoding response")

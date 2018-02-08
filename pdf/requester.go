@@ -6,6 +6,9 @@ import (
 	"io"
 	"mime/multipart"
 	"bytes"
+	"errors"
+	"fmt"
+	"io/ioutil"
 )
 
 type Requester interface {
@@ -49,8 +52,14 @@ func(h *HttpRequester) Do(file io.Reader) (io.ReadCloser, error) {
 	}
 
 	if res.StatusCode != http.StatusOK {
-		log.WithField("status", res.Status).Error("Request error")
-		return nil, err
+		bodyBytes, _ := ioutil.ReadAll(res.Body)
+		defer res.Body.Close()
+		bodyString := string(bodyBytes)
+		log.WithFields(log.Fields{
+			"status": res.Status,
+			"error": bodyString,
+		}).Error("Request error")
+		return nil, errors.New(fmt.Sprintf("processor responded with error code %d: %s", res.StatusCode, bodyString))
 	}
 
 	if err != nil {

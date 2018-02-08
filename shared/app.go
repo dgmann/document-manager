@@ -8,5 +8,6 @@ import (
 type App struct {
 	Records *repositories.RecordRepository
 	Images  *repositories.FileSystemImageRepository
+	Tags *repositories.TagRepository
 	PDFProcessor *pdf.PDFProcessor
 }

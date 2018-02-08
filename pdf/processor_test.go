@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"io/ioutil"
+	"errors"
 )
 
 type RequesterMock struct {
@@ -21,7 +22,7 @@ func(m *RequesterMock) Do(b io.Reader) (io.ReadCloser, error) {
 }
 
 
-func TestConvert(t *testing.T) {
+func TestConvertSuccess(t *testing.T) {
 	requester := new(RequesterMock)
 	input := bytes.NewBuffer(GetTestImage())
 	r, _ := json.Marshal(NewResult())
@@ -35,4 +36,15 @@ func TestConvert(t *testing.T) {
 
 	originalImage, err := png.Decode(bytes.NewBuffer(GetTestImage()))
 	assert.Equal(t, originalImage, result[0], "Images should be equal")
+}
+
+func TestConvertError(t *testing.T) {
+	requester := new(RequesterMock)
+	input := bytes.NewBuffer(GetTestImage())
+	output := errors.New("error")
+	requester.On("Do", input).Return(bytes.NewBuffer(nil), output)
+
+	processor := PDFProcessor{requester:requester}
+	_, err := processor.Convert(bytes.NewBuffer(GetTestImage()))
+	assert.Equal(t, output, err)
 }

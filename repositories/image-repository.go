@@ -6,17 +6,17 @@ import (
 	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
 	"image"
-	"image/png"
 	"os"
 	"path"
 	"path/filepath"
+	"bytes"
 )
 
 const fileExtension = ".png"
 
 type ImageRepository interface {
 	Get(id string) map[string]image.Image
-	Set(id string, images []image.Image) ([]string, error)
+	Set(id string, images []*bytes.Buffer) ([]string, error)
 	Delete(id string) error
 	Serve(context *gin.Context, recordId string, imageId string)
 }
@@ -51,7 +51,7 @@ func (f *FileSystemImageRepository) Get(id string) map[string]image.Image {
 	return images
 }
 
-func (f *FileSystemImageRepository) Set(id string, images []image.Image) (results []string, err error) {
+func (f *FileSystemImageRepository) Set(id string, images []*bytes.Buffer) (results []string, err error) {
 	results = make([]string, 0)
 	p := path.Join(f.directory, id)
 	if _, err := os.Stat(p); os.IsNotExist(err) {
@@ -68,7 +68,7 @@ func (f *FileSystemImageRepository) Set(id string, images []image.Image) (result
 	for _, img := range images {
 		imgId := uuid.New().String()
 		fp := path.Join(p, imgId)
-		save(fp, img)
+		save(fp, img.Bytes())
 		results = append(results, imgId)
 	}
 	return results, nil
@@ -79,7 +79,7 @@ func (f *FileSystemImageRepository) Delete(id string) error {
 	return os.RemoveAll(p)
 }
 
-func save(filePath string, img image.Image) {
+func save(filePath string, img []byte) {
 	imageFile, err := os.Create(filePath + fileExtension)
 	defer imageFile.Close()
 	if err != nil {
@@ -90,15 +90,7 @@ func save(filePath string, img image.Image) {
 		}).Error("Error creating image file")
 		panic(err)
 	}
-	err = png.Encode(imageFile, img)
-	if err != nil {
-		log.WithFields(log.Fields{
-			"name":      imageFile.Name(),
-			"directory": filePath,
-			"error":     err,
-		}).Error("Error saving image")
-		panic(err)
-	}
+	imageFile.Write(img)
 }
 
 func (f *FileSystemImageRepository) Serve(context *gin.Context, recordId string, imageId string) {

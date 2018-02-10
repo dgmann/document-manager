@@ -4,8 +4,6 @@ import (
 	"net/http"
 	log "github.com/sirupsen/logrus"
 	"io"
-	"mime/multipart"
-	"bytes"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -21,29 +19,11 @@ type HttpRequester struct {
 }
 
 func(h *HttpRequester) Do(file io.Reader) (io.ReadCloser, error) {
-	var b bytes.Buffer
-	w := multipart.NewWriter(&b)
-
-	fw, err := w.CreateFormFile("pdf", "pdf.pdf")
-	if err != nil {
-		log.Error("Error creating form")
-		return nil, err
-	}
-	if _, err = io.Copy(fw, file); err != nil {
-		log.Error("Error copying pdf file")
-		return nil, err
-	}
-	if w.Close() != nil {
-		log.Error("Error closing multipart writer")
-		return nil, err
-	}
-
-	req, err := http.NewRequest("POST", h.url, &b)
+	req, err := http.NewRequest("POST", h.url, file)
 	if err != nil {
 		log.Error("Error creating request")
 		return nil, err
 	}
-	req.Header.Set("Content-Type", w.FormDataContentType())
 
 	res, err := h.client.Do(req)
 	if err != nil {

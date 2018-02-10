@@ -6,7 +6,7 @@ import (
 	"github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
 	log "github.com/sirupsen/logrus"
-	"image"
+	"bytes"
 )
 
 type RecordRepository struct {
@@ -60,7 +60,7 @@ func (r *RecordRepository) GetEscalated() []*models.Record {
 	return records
 }
 
-func (r *RecordRepository) Create(sender string, images []image.Image) (*models.Record, error) {
+func (r *RecordRepository) Create(sender string, images []*bytes.Buffer) (*models.Record, error) {
 	id := bson.NewObjectId()
 
 	record := models.NewRecord(id, sender)

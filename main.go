@@ -12,29 +12,13 @@ func main() {
 	router := gin.Default()
 	router.Use(cors.Default())
 	router.POST("images/extract", func(c *gin.Context) {
-		file, err := c.FormFile("pdf")
+		images, err := pdfprocessor.ToImages(c.Request.Body)
 		if err != nil {
-			fields := log.Fields{
-				"name": file.Filename,
-				"size": file.Size,
-				"error": err,
-			}
-			log.WithFields(fields).Panic("Error reading form field")
+			c.Status(400)
+			c.Error(err)
+			log.Error(err)
+			return
 		}
-
-		f, err := file.Open()
-		defer f.Close()
-		if err != nil {
-			fields := log.Fields{
-				"name": file.Filename,
-				"size": file.Size,
-				"error": err,
-			}
-			log.WithFields(fields).Panic("Error opening PDF")
-		}
-
-
-		images := pdfprocessor.ToImages(f)
 		c.JSON(200, images)
 	})
 	router.GET("", func(c *gin.Context) {

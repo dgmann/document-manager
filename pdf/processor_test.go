@@ -5,7 +5,6 @@ import (
 	"io"
 	"encoding/json"
 	"bytes"
-	"image/png"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"io/ioutil"
@@ -34,8 +33,7 @@ func TestConvertSuccess(t *testing.T) {
 	result, err := processor.Convert(bytes.NewBuffer(GetTestImage()))
 	assert.Nil(t, err)
 
-	originalImage, err := png.Decode(bytes.NewBuffer(GetTestImage()))
-	assert.Equal(t, originalImage, result[0], "Images should be equal")
+	assert.Equal(t, bytes.NewBuffer(GetTestImage()), result[0], "Images should be equal")
 }
 
 func TestConvertError(t *testing.T) {

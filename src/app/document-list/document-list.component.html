@@ -25,7 +25,7 @@
   <ng-container matColumnDef="actions">
     <mat-header-cell *matHeaderCellDef> </mat-header-cell>
     <mat-cell class="action-group" *matCellDef="let element">
-      <button mat-icon-button color="accent" (click)="recordDelete.next(element)">
+      <button mat-icon-button color="accent" (click)="deleteRecord($event, element)">
         <mat-icon aria-label="done">delete</mat-icon>
       </button>
     </mat-cell>

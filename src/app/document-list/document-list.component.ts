@@ -41,4 +41,9 @@ export class DocumentListComponent implements OnInit, AfterViewInit {
   rowDoubleClick(record: Record) {
     this.recordDbClick.emit(record);
   }
+
+  deleteRecord(event, row: Record) {
+    this.recordDelete.next(row);
+    event.stopPropagation();
+  }
 }

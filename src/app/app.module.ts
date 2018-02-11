@@ -4,6 +4,7 @@ import {LOCALE_ID, NgModule} from '@angular/core';
 import {FlexLayoutModule} from '@angular/flex-layout';
 import {FormsModule} from "@angular/forms";
 import {
+  MatAutocompleteModule,
   MatChipsModule,
   MatDatepickerModule,
   MatDialogModule,
@@ -28,6 +29,7 @@ import {DocumentListModule} from "./document-list";
 import {RecordViewerComponent} from "./record-viewer/record-viewer.component";
 import {PatientService} from "./shared";
 import {NotificationService} from "./shared/notification-service";
+import {TagService} from "./shared/tag-service";
 import {WebsocketService} from "./shared/websocket-service";
 import {StoreModule} from "./store";
 
@@ -60,6 +62,7 @@ registerLocaleData(localeDe, 'de');
     MatDatepickerModule,
     MatChipsModule,
     MatSnackBarModule,
+    MatAutocompleteModule,
     DocumentListModule,
     StoreModule,
     NgDragDropModule.forRoot()
@@ -68,7 +71,8 @@ registerLocaleData(localeDe, 'de');
     {provide: LOCALE_ID, useValue: 'de-DE'},
     PatientService,
     WebsocketService,
-    NotificationService
+    NotificationService,
+    TagService
   ],
   bootstrap: [AppComponent]
 })

@@ -18,11 +18,20 @@
         <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
       </mat-chip>
       <input placeholder="Tag hinzufügen"
+             #tagInput
+             matInput
+             (input)="inputChanged($event)"
+             [matAutocomplete]="auto"
              [matChipInputFor]="tagList"
              [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
              [matChipInputAddOnBlur]="addOnBlur"
-             (matChipInputTokenEnd)="add($event)" (focus)="tabIndex.next(0)"/>
+             (matChipInputTokenEnd)="add($event, auto)" (focus)="tabIndex.next(0)">
     </mat-chip-list>
+    <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete" (optionSelected)="addOption($event, tagInput)">
+      <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+        {{ option }}
+      </mat-option>
+    </mat-autocomplete>
   </mat-form-field>
 </mat-dialog-content>
 <mat-dialog-actions>

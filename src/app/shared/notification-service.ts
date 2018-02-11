@@ -15,7 +15,7 @@ export class NotificationService {
   }
 
   logToConsole() {
-    this.events.subscribe(event => console.log(`${event.timestamp} ${event.message}: ${event.record.id}`))
+    this.events.subscribe(event => console.log(`${event.timestamp} ${event.message}: ${event.record && event.record.id}`))
   }
 
   logToSnackBar() {

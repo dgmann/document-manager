@@ -19,6 +19,7 @@ import {MatSidenavModule} from '@angular/material/sidenav';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {BrowserModule} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {DndModule} from "ng2-dnd";
 
 
 import {AppComponent} from './app.component';
@@ -26,7 +27,7 @@ import {DocumentEditDialogComponent} from "./document-edit-dialog/document-edit-
 import {DocumentListModule} from "./document-list";
 import {RecordViewerComponent} from "./record-viewer/record-viewer.component";
 import {PatientService} from "./shared";
-import {NotificationService} from "./shared/NotificationService";
+import {NotificationService} from "./shared/notification-service";
 import {WebsocketService} from "./shared/websocket-service";
 import {StoreModule} from "./store";
 
@@ -60,7 +61,8 @@ registerLocaleData(localeDe, 'de');
     MatChipsModule,
     MatSnackBarModule,
     DocumentListModule,
-    StoreModule
+    StoreModule,
+    DndModule.forRoot()
   ],
   providers: [
     {provide: LOCALE_ID, useValue: 'de-DE'},

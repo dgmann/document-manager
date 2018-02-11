@@ -4,7 +4,7 @@ import {Observable} from "rxjs/Observable";
 import {distinctUntilChanged, switchMap} from 'rxjs/operators';
 import {ReplaySubject} from "rxjs/ReplaySubject";
 import {DocumentEditDialogComponent} from "./document-edit-dialog/document-edit-dialog.component";
-import {NotificationService} from "./shared/NotificationService";
+import {NotificationService} from "./shared/notification-service";
 
 
 import {Record, RecordService} from "./store";
@@ -59,5 +59,9 @@ export class AppComponent {
 
   deleteRecord(record: Record) {
     this.recordService.delete(record.id);
+  }
+
+  upload(event) {
+    this.recordService.upload(event.mouseEvent.dataTransfer.files[0]);
   }
 }

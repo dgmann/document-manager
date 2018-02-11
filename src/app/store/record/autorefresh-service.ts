@@ -2,7 +2,7 @@ import {Injectable} from "@angular/core";
 import {Store} from "@ngrx/store";
 import {filter} from "rxjs/operators";
 import {environment} from "../../../environments/environment"
-import {NotificationService} from "../../shared/NotificationService";
+import {NotificationService} from "../../shared/notification-service";
 import {NotificationMessage, NotificationMessageType, WebsocketService} from "../../shared/websocket-service";
 import {State} from "../reducers";
 import {DeleteRecordSuccess, LoadRecordsSuccess, UpdateRecordSuccess} from "./record.actions";

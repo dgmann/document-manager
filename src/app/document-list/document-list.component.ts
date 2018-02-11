@@ -1,9 +1,9 @@
-import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { MatSort, MatTableDataSource } from "@angular/material";
-import { Observable } from "rxjs/Observable";
+import {AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
+import {MatSort, MatTableDataSource} from "@angular/material";
+import {Observable} from "rxjs/Observable";
 
 
-import { Record } from "../store";
+import {Record} from "../store";
 
 @Component({
   selector: 'app-document-list',
@@ -45,5 +45,9 @@ export class DocumentListComponent implements OnInit, AfterViewInit {
   deleteRecord(event, row: Record) {
     this.recordDelete.next(row);
     event.stopPropagation();
+  }
+
+  append(event) {
+    console.log(event.dragData);
   }
 }

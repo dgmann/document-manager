@@ -33,5 +33,6 @@
 
   <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
   <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="selectRow(row)" (dblclick)="rowDoubleClick(row)"
-           [class.selected]="row.id == selectedRecordId"></mat-row>
+           [class.selected]="row.id == selectedRecordId" dnd-draggable dnd-droppable [dragEnabled]="true"
+           [dragData]="row" (onDropSuccess)="append($event)"></mat-row>
 </mat-table>

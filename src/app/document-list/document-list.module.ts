@@ -1,9 +1,10 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { DocumentListComponent } from './document-list.component';
-import { MatTableModule } from "@angular/material/table";
-import { MatSortModule } from "@angular/material/sort";
-import { MatButtonModule, MatDialogModule, MatIconModule, MatTooltipModule } from "@angular/material";
+import {CommonModule} from '@angular/common';
+import {NgModule} from '@angular/core';
+import {MatButtonModule, MatDialogModule, MatIconModule, MatTooltipModule} from "@angular/material";
+import {MatSortModule} from "@angular/material/sort";
+import {MatTableModule} from "@angular/material/table";
+import {DndModule} from "ng2-dnd";
+import {DocumentListComponent} from './document-list.component';
 
 @NgModule({
   imports: [
@@ -13,7 +14,8 @@ import { MatButtonModule, MatDialogModule, MatIconModule, MatTooltipModule } fro
     MatIconModule,
     MatButtonModule,
     MatTooltipModule,
-    MatDialogModule
+    MatDialogModule,
+    DndModule
   ],
   declarations: [DocumentListComponent],
   exports: [

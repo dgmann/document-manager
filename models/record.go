@@ -17,7 +17,7 @@ type Record struct {
 	Comment    string        `bson:"comment,omitempty" json:"comment"`
 	Sender     string        `bson:"sender,omitempty" json:"sender" form:"user" binding:"required"`
 	Tags       []string      `bson:"tags,omitempty" json:"tags"`
-	Pages      []Page        `json:"pages"`
+	Pages      []Page        `bson:"pages,omitempty" json:"pages"`
 	Processed  *bool         `bson:"processed,omitempty" json:"processed"`
 	Escalated  *bool         `bson:"escalated,omitempty" json:"escalated"`
 }

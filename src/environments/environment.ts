@@ -5,5 +5,6 @@
 
 export const environment = {
   production: false,
-  api: "http://localhost:8080"
+  api: "http://localhost:8080",
+  websocket: "ws://localhost:8080/notifications"
 };

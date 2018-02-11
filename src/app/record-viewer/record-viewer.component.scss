@@ -1,3 +1,11 @@
 .button-group > button {
   margin-bottom: 16px;
 }
+
+.page-container {
+  padding-bottom: 10px;
+}
+
+.page-container:last-of-type {
+  margin-right: 10px;
+}

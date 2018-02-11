@@ -1,12 +1,14 @@
-import { Component } from '@angular/core';
-import { Observable } from "rxjs/Observable";
-import { distinctUntilChanged, switchMap } from 'rxjs/operators';
+import {Component} from '@angular/core';
+import {MatDialog, MatSnackBar} from "@angular/material";
+import {Observable} from "rxjs/Observable";
+import {distinctUntilChanged, switchMap} from 'rxjs/operators';
+import {ReplaySubject} from "rxjs/ReplaySubject";
+import {DocumentEditDialogComponent} from "./document-edit-dialog/document-edit-dialog.component";
+import {NotificationService} from "./shared/NotificationService";
 
 
-import { Record, RecordService } from "./store";
-import { ReplaySubject } from "rxjs/ReplaySubject";
-import { DocumentEditDialogComponent } from "./document-edit-dialog/document-edit-dialog.component";
-import { MatDialog, MatSnackBar } from "@angular/material";
+import {Record, RecordService} from "./store";
+import {AutorefreshService} from "./store/record/autorefresh-service";
 
 @Component({
   selector: 'app-root',
@@ -18,7 +20,11 @@ export class AppComponent {
   selectedRecord: Observable<Record>;
   selectedRecordId = new ReplaySubject<string>();
 
-  constructor(private recordService: RecordService, public dialog: MatDialog, public snackbar: MatSnackBar) {
+  constructor(private recordService: RecordService,
+              private autorefreshService: AutorefreshService,
+              private notificationService: NotificationService,
+              public dialog: MatDialog,
+              public snackbar: MatSnackBar) {
     recordService.load();
     this.data = recordService.all();
     const find = switchMap((id: string) => {
@@ -26,6 +32,9 @@ export class AppComponent {
       return s;
     });
     this.selectedRecord = this.selectedRecordId.pipe(distinctUntilChanged(), find);
+    autorefreshService.start();
+    this.notificationService.logToConsole();
+    this.notificationService.logToSnackBar();
   }
 
   selectRecord(record: Record) {
@@ -45,9 +54,6 @@ export class AppComponent {
         return;
       }
       this.recordService.update(result.id, {patientId: result.patientId, date: result.date, tags: result.tags});
-      this.snackbar.open('Gespeichert', '', {
-        duration: 3000
-      });
     });
   }
 

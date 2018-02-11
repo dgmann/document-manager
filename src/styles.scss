@@ -3,7 +3,7 @@ $material-design-icons-font-path: "../node_modules/material-design-icons-iconfon
 @import '~material-design-icons-iconfont/dist/material-design-icons.scss';
 @import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
 @import "theme.scss";
-@import '~ng2-dnd/bundles/style.css';
+@import '~ng-drag-drop/style.css';
 
 html, body {
   margin: 0;

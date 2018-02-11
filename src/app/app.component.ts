@@ -62,6 +62,6 @@ export class AppComponent {
   }
 
   upload(event) {
-    this.recordService.upload(event.mouseEvent.dataTransfer.files[0]);
+    this.recordService.upload(event.nativeEvent.dataTransfer.files[0]);
   }
 }

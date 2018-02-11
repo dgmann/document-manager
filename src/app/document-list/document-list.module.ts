@@ -3,7 +3,7 @@ import {NgModule} from '@angular/core';
 import {MatButtonModule, MatDialogModule, MatIconModule, MatTooltipModule} from "@angular/material";
 import {MatSortModule} from "@angular/material/sort";
 import {MatTableModule} from "@angular/material/table";
-import {DndModule} from "ng2-dnd";
+import {NgDragDropModule} from "ng-drag-drop";
 import {DocumentListComponent} from './document-list.component';
 
 @NgModule({
@@ -15,7 +15,7 @@ import {DocumentListComponent} from './document-list.component';
     MatButtonModule,
     MatTooltipModule,
     MatDialogModule,
-    DndModule
+    NgDragDropModule
   ],
   declarations: [DocumentListComponent],
   exports: [

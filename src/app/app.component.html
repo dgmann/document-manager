@@ -1,4 +1,4 @@
-<div class="main-container" fxLayout="column" dnd-droppable (onDropSuccess)="upload($event)">
+<div class="main-container" fxLayout="column" droppable (onDrop)="upload($event)" (dragover)="$event.preventDefault();">
   <mat-toolbar color="primary">
     <button mat-icon-button (click)="sidenav.toggle()"><mat-icon>menu</mat-icon></button>
     <h1 class="example-app-name">Document Manager</h1>

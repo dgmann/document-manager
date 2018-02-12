@@ -25,8 +25,7 @@ import {NgDragDropModule} from "ng-drag-drop";
 
 import {AppComponent} from './app.component';
 import {DocumentEditDialogComponent} from "./document-edit-dialog/document-edit-dialog.component";
-import {DocumentListModule} from "./document-list";
-import {RecordViewerComponent} from "./record-viewer/record-viewer.component";
+import {InboxModule} from "./inbox/index";
 import {PatientService} from "./shared";
 import {NotificationService} from "./shared/notification-service";
 import {TagService} from "./shared/tag-service";
@@ -39,7 +38,6 @@ registerLocaleData(localeDe, 'de');
 @NgModule({
   declarations: [
     AppComponent,
-    RecordViewerComponent,
     DocumentEditDialogComponent
   ],
   entryComponents: [
@@ -63,9 +61,9 @@ registerLocaleData(localeDe, 'de');
     MatChipsModule,
     MatSnackBarModule,
     MatAutocompleteModule,
-    DocumentListModule,
     StoreModule,
-    NgDragDropModule.forRoot()
+    NgDragDropModule.forRoot(),
+    InboxModule
   ],
   providers: [
     {provide: LOCALE_ID, useValue: 'de-DE'},

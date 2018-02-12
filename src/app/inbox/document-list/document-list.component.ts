@@ -3,7 +3,7 @@ import {MatSort, MatTableDataSource} from "@angular/material";
 import {Observable} from "rxjs/Observable";
 
 
-import {Record} from "../store";
+import {Record} from "../../store/index";
 
 @Component({
   selector: 'app-document-list',

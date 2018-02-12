@@ -1,8 +1,8 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { Observable } from "rxjs/Observable";
+import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Observable} from "rxjs/Observable";
 
 
-import { Page, Record } from "../store";
+import {Page, Record} from "../../store";
 
 @Component({
   selector: 'app-record-viewer',
@@ -11,12 +11,13 @@ import { Page, Record } from "../store";
 })
 export class RecordViewerComponent {
   @Input('record') record: Observable<Record>;
-  @Output('changePages') changePages = new EventEmitter<{id: number, pages: Page[]}>();
+  @Output('changePages') changePages = new EventEmitter<{ id: number, pages: Page[] }>();
 
-  constructor() { }
+  constructor() {
+  }
 
   public up(recordId: number, pages: Page[], index: number) {
-    if(index == 0) {
+    if (index == 0) {
       return;
     }
 

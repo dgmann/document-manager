@@ -1,14 +1,13 @@
-import {Component} from '@angular/core';
-import {MatDialog, MatSnackBar} from "@angular/material";
-import {Observable} from "rxjs/Observable";
-import {distinctUntilChanged, switchMap} from 'rxjs/operators';
-import {ReplaySubject} from "rxjs/ReplaySubject";
-import {DocumentEditDialogComponent} from "./document-edit-dialog/document-edit-dialog.component";
-import {NotificationService} from "./shared/notification-service";
+import { Component } from '@angular/core';
+import { MatDialog, MatSnackBar } from "@angular/material";
+import { Observable } from "rxjs/Observable";
+import { distinctUntilChanged, switchMap } from 'rxjs/operators';
+import { ReplaySubject } from "rxjs/ReplaySubject";
+import { NotificationService } from "./shared/notification-service";
 
 
-import {Record, RecordService} from "./store";
-import {AutorefreshService} from "./store/record/autorefresh-service";
+import { Record, RecordService } from "./store";
+import { AutorefreshService } from "./store/record/autorefresh-service";
 
 @Component({
   selector: 'app-root',
@@ -35,33 +34,5 @@ export class AppComponent {
     autorefreshService.start();
     this.notificationService.logToConsole();
     this.notificationService.logToSnackBar();
-  }
-
-  selectRecord(record: Record) {
-    this.selectedRecordId.next(record.id);
-  }
-
-  updatePages(event) {
-    this.recordService.update(event.id, {pages: event.pages})
-  }
-
-  editRecord(record: Record) {
-    this.dialog.open(DocumentEditDialogComponent, {
-      disableClose: true,
-      data: record
-    }).afterClosed().subscribe((result: Record) => {
-      if (!result) {
-        return;
-      }
-      this.recordService.update(result.id, {patientId: result.patientId, date: result.date, tags: result.tags});
-    });
-  }
-
-  deleteRecord(record: Record) {
-    this.recordService.delete(record.id);
-  }
-
-  upload(event) {
-    this.recordService.upload(event.nativeEvent.dataTransfer.files[0]);
   }
 }

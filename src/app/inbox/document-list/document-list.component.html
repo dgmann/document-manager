@@ -34,5 +34,5 @@
   <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
   <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="selectRow(row)" (dblclick)="rowDoubleClick(row)"
            [class.selected]="row.id == selectedRecordId" draggable droppable [dragData]="row" [dragScope]="'record'"
-           [dropScope]="'record'" (onDrop)="append($event)"></mat-row>
+           [dropScope]="'record'" (onDrop)="drop(row, $event)"></mat-row>
 </mat-table>

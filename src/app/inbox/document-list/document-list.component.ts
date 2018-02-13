@@ -1,9 +1,10 @@
-import {AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
-import {MatSort, MatTableDataSource} from "@angular/material";
-import {Observable} from "rxjs/Observable";
+import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { MatSort, MatTableDataSource } from "@angular/material";
+import { Observable } from "rxjs/Observable";
 
 
-import {Record} from "../../store/index";
+import { Record } from "../../store/index";
+import { DropEvent } from "ng-drag-drop";
 
 @Component({
   selector: 'app-document-list',
@@ -20,6 +21,7 @@ export class DocumentListComponent implements OnInit, AfterViewInit {
   @Output('recordDelete') recordDelete = new EventEmitter<Record>();
   @Output('recordClick') recordClick = new EventEmitter<Record>();
   @Output('recordDbClick') recordDbClick = new EventEmitter<Record>();
+  @Output('recordDrop') recordDrop = new EventEmitter<{ source: Record, target: Record }>();
 
   ngOnInit() {
     this.data.subscribe(data => this.dataSource.data = data);
@@ -43,11 +45,14 @@ export class DocumentListComponent implements OnInit, AfterViewInit {
   }
 
   deleteRecord(event, row: Record) {
-    this.recordDelete.next(row);
+    this.recordDelete.emit(row);
     event.stopPropagation();
   }
 
-  append(event) {
-    console.log(event.dragData);
+  drop(source: Record, event: DropEvent) {
+    this.recordDrop.emit({
+      source: source,
+      target: event.dragData
+    });
   }
 }

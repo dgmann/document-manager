@@ -1,10 +1,10 @@
-import {Component} from '@angular/core';
-import {MatDialog} from "@angular/material";
-import {Observable} from "rxjs/Observable";
-import {distinctUntilChanged, switchMap} from "rxjs/operators";
-import {ReplaySubject} from "rxjs/ReplaySubject";
-import {DocumentEditDialogComponent} from "../document-edit-dialog/document-edit-dialog.component";
-import {Record, RecordService} from "../store";
+import { Component } from '@angular/core';
+import { MatDialog } from "@angular/material";
+import { Observable } from "rxjs/Observable";
+import { distinctUntilChanged, switchMap } from "rxjs/operators";
+import { ReplaySubject } from "rxjs/ReplaySubject";
+import { DocumentEditDialogComponent } from "../document-edit-dialog/document-edit-dialog.component";
+import { Record, RecordService } from "../store";
 
 @Component({
   selector: 'app-inbox',
@@ -48,5 +48,9 @@ export class InboxComponent {
 
   deleteRecord(record: Record) {
     this.recordService.delete(record.id);
+  }
+
+  appendRecord(event) {
+    this.recordService.append(event.source.id, event.target.id);
   }
 }

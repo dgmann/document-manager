@@ -8,6 +8,12 @@
   revision = "b312bed961a5b2746a79024e40b7c37e31091a6e"
 
 [[projects]]
+  name = "github.com/davecgh/go-spew"
+  packages = ["spew"]
+  revision = "346938d642f2ec3594ed81d874461961cd0faa76"
+  version = "v1.1.0"
+
+[[projects]]
   branch = "master"
   name = "github.com/dgmann/pdf-processor"
   packages = ["pdfprocessor"]
@@ -33,33 +39,20 @@
 
 [[projects]]
   name = "github.com/gin-gonic/gin"
-  packages = [
-    ".",
-    "binding",
-    "render"
-  ]
+  packages = [".","binding","render"]
   revision = "d459835d2b077e44f7c9b453505ee29881d5d12d"
   version = "v1.2"
 
 [[projects]]
   branch = "master"
   name = "github.com/globalsign/mgo"
-  packages = [
-    ".",
-    "bson",
-    "internal/json",
-    "internal/sasl",
-    "internal/scram"
-  ]
+  packages = [".","bson","internal/json","internal/sasl","internal/scram"]
   revision = "896bbb89d21253a28cd5a7f8b81fe091410cb94d"
 
 [[projects]]
   branch = "master"
   name = "github.com/gocraft/dbr"
-  packages = [
-    ".",
-    "dialect"
-  ]
+  packages = [".","dialect"]
   revision = "a61db664e3bd3e7507d596f8e013439d72d7b80a"
 
 [[projects]]
@@ -87,10 +80,28 @@
   version = "v0.0.3"
 
 [[projects]]
+  name = "github.com/pmezard/go-difflib"
+  packages = ["difflib"]
+  revision = "792786c7400a136282c1664665ae0a8db921c6c2"
+  version = "v1.0.0"
+
+[[projects]]
   name = "github.com/sirupsen/logrus"
   packages = ["."]
   revision = "d682213848ed68c0a260ca37d6dd5ace8423f5ba"
   version = "v1.0.4"
+
+[[projects]]
+  name = "github.com/stretchr/objx"
+  packages = ["."]
+  revision = "facf9a85c22f48d2f52f2380e4efce1768749a89"
+  version = "v0.1"
+
+[[projects]]
+  name = "github.com/stretchr/testify"
+  packages = ["assert","mock"]
+  revision = "12b6f73e6084dad08a7c6e575284b177ecafbc71"
+  version = "v1.2.1"
 
 [[projects]]
   branch = "master"
@@ -100,17 +111,7 @@
 
 [[projects]]
   name = "github.com/unidoc/unidoc"
-  packages = [
-    "common",
-    "common/license",
-    "pdf/contentstream",
-    "pdf/core",
-    "pdf/model",
-    "pdf/model/fonts",
-    "pdf/model/sampling",
-    "pdf/model/textencoding",
-    "pdf/ps"
-  ]
+  packages = ["common","common/license","pdf/contentstream","pdf/core","pdf/model","pdf/model/fonts","pdf/model/sampling","pdf/model/textencoding","pdf/ps"]
   revision = "144fa3f75be7cab29ecd8d3bfb9673fcc649f372"
   version = "v2.0.1"
 
@@ -129,10 +130,7 @@
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
-  packages = [
-    "unix",
-    "windows"
-  ]
+  packages = ["unix","windows"]
   revision = "2c42eef0765b9837fbdab12011af7830f55f88f0"
 
 [[projects]]
@@ -140,6 +138,12 @@
   packages = ["."]
   revision = "5f1438d3fca68893a817e4a66806cea46a9e4ebf"
   version = "v8.18.2"
+
+[[projects]]
+  branch = "v1"
+  name = "gopkg.in/jarcoal/httpmock.v1"
+  packages = ["."]
+  revision = "cf52904a3cf0f78f199ecade6a6df8e245d5b25a"
 
 [[projects]]
   name = "gopkg.in/olahol/melody.v1"
@@ -156,6 +160,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "a12588597ca506670de5d58420163f715d7613deaad69d3f76df5c80482dcd24"
+  inputs-digest = "c066da7bfd88d066f74b7c693ef02b85e7c46b1a4025796027942d1fe5e5f62c"
   solver-name = "gps-cdcl"
   solver-version = 1

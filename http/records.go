@@ -10,14 +10,12 @@ import (
 func registerRecords(g *gin.RouterGroup) {
 	g.GET("", func(c *gin.Context) {
 		records := app.Records.GetInbox()
-		c.Header("Content-Type", "application/json; charset=utf-8")
 		RespondAsJSON(c, records)
 	})
 
 	g.GET("/:recordId", func(c *gin.Context) {
 		id := c.Param("recordId")
 		record := app.Records.Find(id)
-		c.Header("Content-Type", "application/json; charset=utf-8")
 		RespondAsJSON(c, record)
 	})
 
@@ -50,7 +48,6 @@ func registerRecords(g *gin.RouterGroup) {
 			return
 		}
 		c.Status(201)
-		c.Header("Content-Type", "application/json; charset=utf-8")
 		RespondAsJSON(c, record)
 	})
 
@@ -70,7 +67,21 @@ func registerRecords(g *gin.RouterGroup) {
 			c.Error(err)
 		}
 		r := app.Records.Update(c.Param("recordId"), record)
-		c.Header("Content-Type", "application/json; charset=utf-8")
+		RespondAsJSON(c, r)
+	})
+
+	g.POST("/:recordId/append/:idtoappend", func(c *gin.Context) {
+		recordToAppend := app.Records.Find(c.Param("idtoappend"))
+		record := app.Records.Find(c.Param("recordId"))
+		pages := append(record.Pages, recordToAppend.Pages...)
+
+		err := app.Images.Copy(c.Param("idtoappend"), c.Param("recordId"))
+		if err != nil {
+			c.AbortWithError(400, err)
+			return
+		}
+
+		r := app.Records.Update(c.Param("recordId"), models.Record{Pages: pages})
 		RespondAsJSON(c, r)
 	})
 }

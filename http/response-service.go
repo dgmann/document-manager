@@ -8,6 +8,7 @@ import (
 )
 
 func RespondAsJSON(c *gin.Context, data interface{}) {
+	c.Header("Content-Type", "application/json; charset=utf-8")
 	url := location.Get(c)
 	switch data.(type) {
 	case *models.Record:

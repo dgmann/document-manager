@@ -1,15 +1,17 @@
 package repositories
 
 import (
+	"bytes"
 	"errors"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
 	"image"
+	"io"
 	"os"
 	"path"
 	"path/filepath"
-	"bytes"
 )
 
 const fileExtension = ".png"
@@ -49,6 +51,12 @@ func (f *FileSystemImageRepository) Get(id string) map[string]image.Image {
 		return nil
 	})
 	return images
+}
+
+func (f *FileSystemImageRepository) Copy(fromId string, toId string) error {
+	sourceFolder := path.Join(f.directory, fromId)
+	destinationFolder := path.Join(f.directory, toId)
+	return copyFolder(sourceFolder, destinationFolder)
 }
 
 func (f *FileSystemImageRepository) Set(id string, images []*bytes.Buffer) (results []string, err error) {
@@ -96,4 +104,69 @@ func save(filePath string, img []byte) {
 func (f *FileSystemImageRepository) Serve(context *gin.Context, recordId string, imageId string) {
 	p := path.Join(f.directory, recordId, imageId+fileExtension)
 	context.File(p)
+}
+
+func copyFolder(source string, dest string) (err error) {
+
+	sourceinfo, err := os.Stat(source)
+	if err != nil {
+		return err
+	}
+
+	err = os.MkdirAll(dest, sourceinfo.Mode())
+	if err != nil {
+		return err
+	}
+
+	directory, _ := os.Open(source)
+
+	objects, err := directory.Readdir(-1)
+
+	for _, obj := range objects {
+
+		sourcefilepointer := source + "/" + obj.Name()
+
+		destinationfilepointer := dest + "/" + obj.Name()
+
+		if obj.IsDir() {
+			err = copyFolder(sourcefilepointer, destinationfilepointer)
+			if err != nil {
+				fmt.Println(err)
+			}
+		} else {
+			err = copyFile(sourcefilepointer, destinationfilepointer)
+			if err != nil {
+				fmt.Println(err)
+			}
+		}
+
+	}
+	return
+}
+
+func copyFile(source string, dest string) (err error) {
+	sourcefile, err := os.Open(source)
+	if err != nil {
+		return err
+	}
+
+	defer sourcefile.Close()
+
+	destfile, err := os.Create(dest)
+	if err != nil {
+		return err
+	}
+
+	defer destfile.Close()
+
+	_, err = io.Copy(destfile, sourcefile)
+	if err == nil {
+		sourceinfo, err := os.Stat(source)
+		if err != nil {
+			err = os.Chmod(dest, sourceinfo.Mode())
+		}
+
+	}
+
+	return
 }

@@ -1,12 +1,12 @@
 package repositories
 
 import (
+	"bytes"
 	"github.com/dgmann/document-manager-api/models"
 	"github.com/dgmann/document-manager-api/services"
 	"github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
 	log "github.com/sirupsen/logrus"
-	"bytes"
 )
 
 type RecordRepository struct {
@@ -88,6 +88,7 @@ func (r *RecordRepository) Delete(id string) error {
 	if err != nil {
 		log.Error(err)
 	}
+	r.images.Delete(id)
 	r.events.Send(services.EventDeleted, id)
 	return err
 }

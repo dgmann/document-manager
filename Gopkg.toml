@@ -31,7 +31,3 @@
 [[constraint]]
   name = "github.com/sirupsen/logrus"
   version = "1.0.4"
-
-[[constraint]]
-  name = "github.com/unidoc/unidoc"
-  version = "2.0.1"

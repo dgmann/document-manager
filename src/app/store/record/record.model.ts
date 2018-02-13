@@ -6,6 +6,8 @@ export interface Record {
   pages: Page[];
   tags: string[];
   patientId: string;
+  escalated: boolean;
+  processed: boolean;
 }
 
 export class Page {

@@ -18,7 +18,7 @@ export enum RecordActionTypes {
 export class LoadRecords implements Action {
   readonly type = RecordActionTypes.LoadRecords;
 
-  constructor(public payload: {}) {
+  constructor(public payload: { query: { [param: string]: string } }) {
   }
 }
 
@@ -80,6 +80,9 @@ export class DeleteRecordFail implements Action {
 
 export class ClearRecords implements Action {
   readonly type = RecordActionTypes.ClearRecords;
+
+  constructor(public payload: {}) {
+  }
 }
 
 export type RecordActions =

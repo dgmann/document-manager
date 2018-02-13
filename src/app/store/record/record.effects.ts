@@ -6,6 +6,7 @@ import {
   DeleteRecord,
   DeleteRecordFail,
   DeleteRecordSuccess,
+  LoadRecords,
   LoadRecordsFail,
   LoadRecordsSuccess,
   RecordActionTypes,
@@ -25,8 +26,8 @@ export class RecordEffects {
 
   @Effect() load: Observable<Action> = this.actions$.pipe(
     ofType(RecordActionTypes.LoadRecords),
-    mergeMap(action =>
-      this.http.get<Record[]>(environment.api + '/records').pipe(
+    mergeMap((action: LoadRecords) =>
+      this.http.get<Record[]>(environment.api + '/records', {params: action.payload.query}).pipe(
         map(data => new LoadRecordsSuccess({records: data})),
         catchError(err => of(new LoadRecordsFail({error: err})))
       )

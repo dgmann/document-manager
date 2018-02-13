@@ -15,8 +15,8 @@ export class RecordService {
   constructor(private store: Store<State>, private http: HttpClient, private notificationService: NotificationService) {
   }
 
-  public load() {
-    this.store.dispatch(new LoadRecords(null))
+  public load(query: { [param: string]: string }) {
+    this.store.dispatch(new LoadRecords({query: query}))
   }
 
   public find(id: string) {

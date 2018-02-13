@@ -1,20 +1,12 @@
-import {Action} from '@ngrx/store';
+import { Action } from '@ngrx/store';
 
 export enum InboxActionTypes {
-  AddRecords = '[Inbox] Add Records',
-  RemoveRecords = '[Inbox] Remove Records',
+  LoadRecords = '[Inbox] Load Records',
   SelectRecords = '[Inbox] Select Records'
 }
 
-export class AddRecords implements Action {
-  readonly type = InboxActionTypes.AddRecords;
-
-  constructor(public payload: { ids: string[] }) {
-  }
-}
-
-export class RemoveRecords implements Action {
-  readonly type = InboxActionTypes.RemoveRecords;
+export class LoadRecords implements Action {
+  readonly type = InboxActionTypes.LoadRecords;
 
   constructor(public payload: { ids: string[] }) {
   }
@@ -28,6 +20,5 @@ export class SelectRecords implements Action {
 }
 
 export type InboxActions =
-  AddRecords
-  | RemoveRecords
+  LoadRecords
   | SelectRecords;

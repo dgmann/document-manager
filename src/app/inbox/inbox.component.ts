@@ -6,6 +6,7 @@ import { ReplaySubject } from "rxjs/ReplaySubject";
 import { DocumentEditDialogComponent } from "../document-edit-dialog/document-edit-dialog.component";
 import { Record, RecordService } from "../store";
 import { DropEvent } from "ng-drag-drop";
+import { InboxService } from "./inbox.service";
 
 @Component({
   selector: 'app-inbox',
@@ -18,10 +19,11 @@ export class InboxComponent {
   selectedRecord: Observable<Record>;
   selectedRecordId = new ReplaySubject<string>();
 
-  constructor(private recordService: RecordService, public dialog: MatDialog) {
-    this.data = recordService.all();
+  constructor(private inboxService: InboxService, private recordService: RecordService, public dialog: MatDialog) {
+    inboxService.load();
+    this.data = inboxService.all();
     const find = switchMap((id: string) => {
-      let s = this.recordService.find(id);
+      let s = this.inboxService.find(id);
       return s;
     });
     this.selectedRecord = this.selectedRecordId.pipe(distinctUntilChanged(), find);

@@ -1,25 +1,23 @@
-import {InboxActions, InboxActionTypes} from './inbox.actions';
+import { InboxActions, InboxActionTypes } from './inbox.actions';
 
 export interface State {
-  ids: string[];
   selectedIds: string[];
+  loading: boolean;
+  synced: boolean;
 }
 
 export const initialState: State = {
-  ids: [],
-  selectedIds: []
+  selectedIds: [],
+  loading: false,
+  synced: false,
 };
 
 export function reducer(state = initialState, action: InboxActions): State {
   switch (action.type) {
 
-    case InboxActionTypes.AddRecords:
+    case InboxActionTypes.LoadRecords:
       return Object.assign({}, state, {
-        ids: [...state.ids, ...action.payload.ids]
-      });
-    case InboxActionTypes.RemoveRecords:
-      return Object.assign({}, state, {
-        ids: state.ids.filter(i => action.payload.ids.indexOf(i) < 0)
+        loading: true
       });
 
     case InboxActionTypes.SelectRecords:

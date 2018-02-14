@@ -19,6 +19,10 @@ func NewRecordRepository(records *mgo.Collection, images ImageRepository) *Recor
 	return &RecordRepository{records: records, events: services.GetEventService(), images: images}
 }
 
+func (r *RecordRepository) All() []*models.Record {
+	return r.Query(bson.M{})
+}
+
 func (r *RecordRepository) Find(id string) *models.Record {
 	return r.FindByObjectId(bson.ObjectIdHex(id))
 }
@@ -33,7 +37,7 @@ func (r *RecordRepository) FindByObjectId(id bson.ObjectId) *models.Record {
 	return &record
 }
 
-func (r *RecordRepository) Query(query interface{}) []*models.Record {
+func (r *RecordRepository) Query(query map[string]interface{}) []*models.Record {
 	var records []*models.Record
 
 	if err := r.records.Find(query).All(&records); err != nil {

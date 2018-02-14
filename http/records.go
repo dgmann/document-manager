@@ -5,11 +5,25 @@ import (
 	"github.com/dgmann/document-manager-api/models"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
+	"strconv"
 )
 
 func registerRecords(g *gin.RouterGroup) {
 	g.GET("", func(c *gin.Context) {
-		records := app.Records.GetInbox()
+		var records []*models.Record
+		r := c.Request.URL.Query()
+		query := make(map[string]interface{})
+		for k, v := range r {
+			if k == "escalated" || k == "processed" {
+				b, _ := strconv.ParseBool(v[0])
+				query[k] = b
+			} else {
+				query[k] = v[0]
+			}
+
+		}
+		records = app.Records.Query(query)
+
 		RespondAsJSON(c, records)
 	})
 

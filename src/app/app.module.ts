@@ -1,8 +1,8 @@
-import {registerLocaleData} from '@angular/common';
+import { registerLocaleData } from '@angular/common';
 import localeDe from '@angular/common/locales/de';
-import {LOCALE_ID, NgModule} from '@angular/core';
-import {FlexLayoutModule} from '@angular/flex-layout';
-import {FormsModule} from "@angular/forms";
+import { LOCALE_ID, NgModule } from '@angular/core';
+import { FlexLayoutModule } from '@angular/flex-layout';
+import { FormsModule } from "@angular/forms";
 import {
   MatAutocompleteModule,
   MatChipsModule,
@@ -13,24 +13,25 @@ import {
   MatInputModule,
   MatSnackBarModule
 } from "@angular/material";
-import {MatMomentDateModule} from '@angular/material-moment-adapter';
-import {MatButtonModule} from '@angular/material/button';
-import {MatCardModule} from '@angular/material/card';
-import {MatSidenavModule} from '@angular/material/sidenav';
-import {MatToolbarModule} from '@angular/material/toolbar';
-import {BrowserModule} from '@angular/platform-browser';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {NgDragDropModule} from "ng-drag-drop";
+import { MatMomentDateModule } from '@angular/material-moment-adapter';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NgDragDropModule } from "ng-drag-drop";
 
 
-import {AppComponent} from './app.component';
-import {DocumentEditDialogComponent} from "./document-edit-dialog/document-edit-dialog.component";
-import {InboxModule} from "./inbox/index";
-import {PatientService} from "./shared";
-import {NotificationService} from "./shared/notification-service";
-import {TagService} from "./shared/tag-service";
-import {WebsocketService} from "./shared/websocket-service";
-import {StoreModule} from "./store";
+import { AppComponent } from './app.component';
+import { DocumentEditDialogComponent } from "./document-edit-dialog/document-edit-dialog.component";
+import { InboxModule } from "./inbox/index";
+import { PatientService } from "./shared";
+import { NotificationService } from "./shared/notification-service";
+import { TagService } from "./shared/tag-service";
+import { WebsocketService } from "./shared/websocket-service";
+import { StoreModule } from "./store";
+import { AppRoutesModule } from "./app.router";
 
 
 registerLocaleData(localeDe, 'de');
@@ -47,6 +48,7 @@ registerLocaleData(localeDe, 'de');
     BrowserModule,
     BrowserAnimationsModule,
     FormsModule,
+    AppRoutesModule,
     FlexLayoutModule,
     MatCardModule,
     MatSidenavModule,

@@ -1,20 +1,21 @@
-import {CommonModule} from '@angular/common';
-import {NgModule} from '@angular/core';
-import {FlexLayoutModule} from "@angular/flex-layout";
-import {MatAutocompleteModule, MatDialogModule, MatIconModule, MatTooltipModule,} from "@angular/material";
-import {MatButtonModule} from "@angular/material/button";
-import {MatCardModule} from "@angular/material/card";
-import {MatSortModule} from "@angular/material/sort";
-import {MatTableModule} from "@angular/material/table";
-import {EffectsModule} from "@ngrx/effects";
-import {StoreModule} from "@ngrx/store";
-import {NgDragDropModule} from "ng-drag-drop";
-import {DocumentListComponent} from "./document-list/document-list.component";
-import {InboxComponent} from './inbox.component';
-import {InboxService} from "./inbox.service";
-import {RecordViewerComponent} from "./record-viewer/record-viewer.component";
-import {metaReducers, reducers} from './reducers';
-import {InboxEffects} from "./store/inbox.effects";
+import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
+import { FlexLayoutModule } from "@angular/flex-layout";
+import { MatAutocompleteModule, MatDialogModule, MatIconModule, MatTooltipModule, } from "@angular/material";
+import { MatButtonModule } from "@angular/material/button";
+import { MatCardModule } from "@angular/material/card";
+import { MatSortModule } from "@angular/material/sort";
+import { MatTableModule } from "@angular/material/table";
+import { EffectsModule } from "@ngrx/effects";
+import { StoreModule } from "@ngrx/store";
+import { NgDragDropModule } from "ng-drag-drop";
+import { DocumentListComponent } from "./document-list/document-list.component";
+import { InboxComponent } from './inbox.component';
+import { InboxService } from "./inbox.service";
+import { RecordViewerComponent } from "./record-viewer/record-viewer.component";
+import { metaReducers, reducers } from './reducers';
+import { InboxEffects } from "./store/inbox.effects";
+import { InboxRouterModule } from "./inbox.routes";
 
 @NgModule({
   imports: [
@@ -30,7 +31,8 @@ import {InboxEffects} from "./store/inbox.effects";
     NgDragDropModule,
     MatAutocompleteModule,
     StoreModule.forFeature("inbox", reducers, {metaReducers}),
-    EffectsModule.forFeature([InboxEffects])
+    EffectsModule.forFeature([InboxEffects]),
+    InboxRouterModule
   ],
   declarations: [
     InboxComponent,

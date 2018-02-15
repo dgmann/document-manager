@@ -1,9 +1,9 @@
-import { Injectable } from "@angular/core";
-import { select, Store } from "@ngrx/store";
-import { selectSelectedIds, State } from "./reducers";
-import { SelectRecords } from "./store/inbox.actions";
-import { RecordService } from "../store";
-import { filter, map } from "rxjs/operators";
+import {Injectable} from "@angular/core";
+import {select, Store} from "@ngrx/store";
+import {filter, map} from "rxjs/operators";
+import {RecordService} from "../store";
+import {selectSelectedIds, State} from "./reducers";
+import {SelectRecords} from "./store/inbox.actions";
 
 @Injectable()
 export class InboxService {
@@ -15,7 +15,7 @@ export class InboxService {
   }
 
   public load() {
-    this.recordService.load({escalated: "true"})
+    this.recordService.load({escalated: "false", processed: "false"})
   }
 
   public all() {

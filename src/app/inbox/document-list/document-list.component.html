@@ -1,18 +1,18 @@
 <mat-table #table [dataSource]="dataSource" matSort>
 
   <ng-container matColumnDef="date">
-    <mat-header-cell *matHeaderCellDef mat-sort-header> Datum </mat-header-cell>
-    <mat-cell *matCellDef="let element"> {{element.date | date:'mediumDate'}}</mat-cell>
+    <mat-header-cell fxFlex="120px" *matHeaderCellDef mat-sort-header> Datum</mat-header-cell>
+    <mat-cell fxFlex="120px" *matCellDef="let element"> {{element.date | date:'short'}}</mat-cell>
   </ng-container>
 
   <ng-container matColumnDef="sender">
-    <mat-header-cell *matHeaderCellDef mat-sort-header> Sender </mat-header-cell>
-    <mat-cell *matCellDef="let element"> {{element.sender}} </mat-cell>
+    <mat-header-cell fxFlex="80px" *matHeaderCellDef mat-sort-header> Sender</mat-header-cell>
+    <mat-cell fxFlex="80px" *matCellDef="let element"> {{element.sender}}</mat-cell>
   </ng-container>
 
   <ng-container matColumnDef="numpages">
-    <mat-header-cell *matHeaderCellDef mat-sort-header> Seiten</mat-header-cell>
-    <mat-cell *matCellDef="let element"> {{element.pages.length}}</mat-cell>
+    <mat-header-cell fxFlex="50px" *matHeaderCellDef mat-sort-header> Seiten</mat-header-cell>
+    <mat-cell fxFlex="50px" fxLayoutAlign="center" *matCellDef="let element"> {{element.pages.length}}</mat-cell>
   </ng-container>
 
   <ng-container matColumnDef="comment">
@@ -23,8 +23,8 @@
   </ng-container>
 
   <ng-container matColumnDef="actions">
-    <mat-header-cell *matHeaderCellDef> </mat-header-cell>
-    <mat-cell class="action-group" *matCellDef="let element">
+    <mat-header-cell fxFlex="40px" *matHeaderCellDef></mat-header-cell>
+    <mat-cell fxFlex="40px" class="action-group" *matCellDef="let element">
       <button mat-icon-button color="accent" (click)="deleteRecord($event, element)">
         <mat-icon aria-label="done">delete</mat-icon>
       </button>

@@ -2,6 +2,7 @@
   <mat-toolbar color="primary">
     <button mat-icon-button (click)="sidenav.toggle()"><mat-icon>menu</mat-icon></button>
     <h1 class="example-app-name">Document Manager</h1>
+    <router-outlet name="navigation"></router-outlet>
   </mat-toolbar>
   <mat-sidenav-container fxFlex>
     <mat-sidenav #sidenav mode="side">

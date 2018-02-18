@@ -1,3 +1,9 @@
+@import "../theme";
+
 .main-container {
   height: 100vh;
+}
+
+.side-nav {
+  background-color: $primary-lighter;
 }

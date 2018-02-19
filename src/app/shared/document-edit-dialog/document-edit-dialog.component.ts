@@ -5,11 +5,11 @@ import {Observable} from "rxjs/Observable";
 import {map, startWith, switchMap, take} from "rxjs/operators";
 import {ReplaySubject} from "rxjs/ReplaySubject";
 import {Subject} from "rxjs/Subject";
-import {Patient, PatientService} from "../shared";
-import {TagService} from "../shared/tag-service";
 
 
-import {Record} from "../store";
+import {Record} from "../../store";
+import {Patient, PatientService} from "../patient-service";
+import {TagService} from "../tag-service";
 
 
 @Component({

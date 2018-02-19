@@ -1,12 +1,12 @@
-import { Component } from '@angular/core';
-import { MatDialog } from "@angular/material";
-import { Observable } from "rxjs/Observable";
-import { distinctUntilChanged, switchMap } from "rxjs/operators";
-import { ReplaySubject } from "rxjs/ReplaySubject";
-import { DocumentEditDialogComponent } from "../document-edit-dialog/document-edit-dialog.component";
-import { Record, RecordService } from "../store";
-import { DropEvent } from "ng-drag-drop";
-import { InboxService } from "./inbox.service";
+import {Component} from '@angular/core';
+import {MatDialog} from "@angular/material";
+import {DropEvent} from "ng-drag-drop";
+import {Observable} from "rxjs/Observable";
+import {distinctUntilChanged, switchMap} from "rxjs/operators";
+import {ReplaySubject} from "rxjs/ReplaySubject";
+import {DocumentEditDialogComponent} from "../shared/document-edit-dialog/document-edit-dialog.component";
+import {Record, RecordService} from "../store";
+import {InboxService} from "./inbox.service";
 
 @Component({
   selector: 'app-inbox',
@@ -22,10 +22,7 @@ export class InboxComponent {
   constructor(private inboxService: InboxService, private recordService: RecordService, public dialog: MatDialog) {
     inboxService.load();
     this.data = inboxService.all();
-    const find = switchMap((id: string) => {
-      let s = this.inboxService.find(id);
-      return s;
-    });
+    const find = switchMap((id: string) => this.inboxService.find(id));
     this.selectedRecord = this.selectedRecordId.pipe(distinctUntilChanged(), find);
   }
 

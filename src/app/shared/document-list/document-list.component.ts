@@ -1,10 +1,10 @@
-import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { MatSort, MatTableDataSource } from "@angular/material";
-import { Observable } from "rxjs/Observable";
+import {AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
+import {MatSort, MatTableDataSource} from "@angular/material";
+import {DropEvent} from "ng-drag-drop";
+import {Observable} from "rxjs/Observable";
 
 
-import { Record } from "../../store/index";
-import { DropEvent } from "ng-drag-drop";
+import {Record} from "../../store/index";
 
 @Component({
   selector: 'app-document-list',

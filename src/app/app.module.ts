@@ -2,20 +2,7 @@ import {registerLocaleData} from '@angular/common';
 import localeDe from '@angular/common/locales/de';
 import {LOCALE_ID, NgModule} from '@angular/core';
 import {FlexLayoutModule} from '@angular/flex-layout';
-import {FormsModule} from "@angular/forms";
-import {
-  MatAutocompleteModule,
-  MatChipsModule,
-  MatDatepickerModule,
-  MatDialogModule,
-  MatFormFieldModule,
-  MatIconModule,
-  MatInputModule,
-  MatSnackBarModule
-} from "@angular/material";
-import {MatMomentDateModule} from '@angular/material-moment-adapter';
-import {MatButtonModule} from '@angular/material/button';
-import {MatCardModule} from '@angular/material/card';
+import {MatButtonModule, MatIconModule, MatSnackBarModule} from "@angular/material";
 import {MatSidenavModule} from '@angular/material/sidenav';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {BrowserModule} from '@angular/platform-browser';
@@ -25,11 +12,7 @@ import {NgDragDropModule} from "ng-drag-drop";
 
 import {AppComponent} from './app.component';
 import {AppRoutesModule} from "./app.router";
-import {DocumentEditDialogComponent} from "./document-edit-dialog/document-edit-dialog.component";
-import {PatientService} from "./shared";
-import {NotificationService} from "./shared/notification-service";
-import {TagService} from "./shared/tag-service";
-import {WebsocketService} from "./shared/websocket-service";
+import {SharedModule} from "./shared";
 import {StoreModule} from "./store";
 
 
@@ -37,40 +20,24 @@ registerLocaleData(localeDe, 'de');
 
 @NgModule({
   declarations: [
-    AppComponent,
-    DocumentEditDialogComponent
-  ],
-  entryComponents: [
-    DocumentEditDialogComponent
+    AppComponent
   ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
-    FormsModule,
     AppRoutesModule,
     FlexLayoutModule,
-    MatCardModule,
-    MatSidenavModule,
-    MatToolbarModule,
     MatIconModule,
     MatButtonModule,
-    MatDialogModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatMomentDateModule,
-    MatDatepickerModule,
-    MatChipsModule,
+    MatSidenavModule,
+    MatToolbarModule,
     MatSnackBarModule,
-    MatAutocompleteModule,
     StoreModule,
-    NgDragDropModule.forRoot()
+    NgDragDropModule.forRoot(),
+    SharedModule.forRoot()
   ],
   providers: [
     {provide: LOCALE_ID, useValue: 'de-DE'},
-    PatientService,
-    WebsocketService,
-    NotificationService,
-    TagService
   ],
   bootstrap: [AppComponent]
 })

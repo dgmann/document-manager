@@ -4,7 +4,7 @@ import {DropEvent} from "ng-drag-drop";
 import {Observable} from "rxjs/Observable";
 
 
-import {Record} from "../../store/index";
+import {Record, RequiredAction} from "../../store/index";
 
 @Component({
   selector: 'app-document-list',
@@ -22,6 +22,7 @@ export class DocumentListComponent implements OnInit, AfterViewInit {
   @Output('recordClick') recordClick = new EventEmitter<Record>();
   @Output('recordDbClick') recordDbClick = new EventEmitter<Record>();
   @Output('recordDrop') recordDrop = new EventEmitter<{ source: Record, target: Record }>();
+  @Output('changeRequiredAction') changeRequiredAction = new EventEmitter<{ record: Record, action: RequiredAction }>();
 
   ngOnInit() {
     this.data.subscribe(data => this.dataSource.data = data);
@@ -54,5 +55,9 @@ export class DocumentListComponent implements OnInit, AfterViewInit {
       source: source,
       target: event.dragData
     });
+  }
+
+  setRequiredAction(record: Record, action: RequiredAction) {
+    this.changeRequiredAction.emit({record: record, action: action});
   }
 }

@@ -7,7 +7,9 @@
   <div fxFlex="50%" fxFlex.gt-md="35%" fxFlex.gt-lg="600px" class="scroll-column mat-elevation-z8">
     <app-document-list [records]="data" (recordClick)="selectRecord($event)"
                        (recordDbClick)="editRecord($event)"
-                       (recordDelete)="deleteRecord($event)" (recordDrop)="appendRecord($event)"></app-document-list>
+                       (recordDelete)="deleteRecord($event)"
+                       (recordDrop)="appendRecord($event)"
+                       (changeRequiredAction)="setRequiredAction($event)"></app-document-list>
   </div>
 
   <div fxFlex class="scroll-column">

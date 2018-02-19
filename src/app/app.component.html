@@ -12,11 +12,11 @@
   <mat-sidenav-container fxFlex>
     <mat-sidenav class="side-nav" #sidenav mode="side" color="primary">
       <div fxLayout="column">
-        <button mat-button routerLink="/inbox" routerLinkActive="active">
+        <button mat-button (click)="sidenav.close()" routerLink="/inbox" routerLinkActive="active">
           <mat-icon>mail_outline</mat-icon>
           <span>Inbox</span>
         </button>
-        <button mat-button routerLink="/physician" routerLinkActive="active">
+        <button mat-button (click)="sidenav.close()" routerLink="/physician" routerLinkActive="active">
           <mat-icon>supervisor_account</mat-icon>
           <span>Arzt</span>
         </button>

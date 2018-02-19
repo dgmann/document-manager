@@ -10,6 +10,7 @@ import {
   MatFormFieldModule,
   MatIconModule,
   MatInputModule,
+  MatMenuModule,
   MatTooltipModule
 } from "@angular/material";
 import {MatMomentDateModule} from "@angular/material-moment-adapter";
@@ -46,6 +47,7 @@ import {WebsocketService} from "./websocket-service";
     MatMomentDateModule,
     MatDatepickerModule,
     MatChipsModule,
+    MatMenuModule
   ],
   declarations: [
     RecordViewerComponent,

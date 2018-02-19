@@ -5,7 +5,7 @@ import {Observable} from "rxjs/Observable";
 import {distinctUntilChanged, switchMap} from "rxjs/operators";
 import {ReplaySubject} from "rxjs/ReplaySubject";
 import {DocumentEditDialogComponent} from "../shared/document-edit-dialog/document-edit-dialog.component";
-import {Record, RecordService} from "../store";
+import {Record, RecordService, RequiredAction} from "../store";
 import {InboxService} from "./inbox.service";
 
 @Component({
@@ -58,5 +58,9 @@ export class InboxComponent {
     for (let file of event.nativeEvent.dataTransfer.files) {
       this.recordService.upload(file)
     }
+  }
+
+  setRequiredAction(data: { record: Record, action: RequiredAction }) {
+    this.recordService.update(data.record.id, {requiredAction: data.action})
   }
 }

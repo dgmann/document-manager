@@ -9,17 +9,16 @@ import (
 
 func registerRecords(g *gin.RouterGroup) {
 	g.GET("", func(c *gin.Context) {
-		var records []*models.Record
 		r := c.Request.URL.Query()
 		if _, ok := r["inbox"]; ok {
-			records = app.Records.GetInbox()
+			records := app.Records.GetInbox()
 			RespondAsJSON(c, records)
 		} else {
 			query := make(map[string]interface{})
 			for k, v := range r {
 				query[k] = v[0]
 			}
-			records = app.Records.Query(query)
+			records := app.Records.Query(query)
 			RespondAsJSON(c, records)
 		}
 	})

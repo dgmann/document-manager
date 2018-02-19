@@ -5,32 +5,34 @@ import (
 	"github.com/dgmann/document-manager-api/models"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
-	"strconv"
 )
 
 func registerRecords(g *gin.RouterGroup) {
 	g.GET("", func(c *gin.Context) {
 		var records []*models.Record
 		r := c.Request.URL.Query()
-		query := make(map[string]interface{})
-		for k, v := range r {
-			if k == "escalated" || k == "processed" {
-				b, _ := strconv.ParseBool(v[0])
-				query[k] = b
-			} else {
+		if _, ok := r["inbox"]; ok {
+			records = app.Records.GetInbox()
+			RespondAsJSON(c, records)
+		} else {
+			query := make(map[string]interface{})
+			for k, v := range r {
 				query[k] = v[0]
 			}
-
+			records = app.Records.Query(query)
+			RespondAsJSON(c, records)
 		}
-		records = app.Records.Query(query)
-
-		RespondAsJSON(c, records)
 	})
 
 	g.GET("/:recordId", func(c *gin.Context) {
 		id := c.Param("recordId")
-		record := app.Records.Find(id)
-		RespondAsJSON(c, record)
+		if id == "inbox" {
+			records := app.Records.GetInbox()
+			RespondAsJSON(c, records)
+		} else {
+			record := app.Records.Find(id)
+			RespondAsJSON(c, record)
+		}
 	})
 
 	g.GET("/:recordId/images/:imageId", func(c *gin.Context) {

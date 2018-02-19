@@ -21,6 +21,11 @@ const PHYSICIAN_ROUTES: Routes = [
       {
         path: 'other',
         component: PageOtherComponent,
+      },
+      {
+        path: '',
+        redirectTo: 'review',
+        pathMatch: 'full'
       }
     ]
   },

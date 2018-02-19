@@ -16,6 +16,31 @@ type RecordRepository struct {
 }
 
 func NewRecordRepository(records *mgo.Collection, images ImageRepository) *RecordRepository {
+	processedIndex := mgo.Index{
+		Key:        []string{"patientId", "-date", "tags"},
+		Unique:     false,
+		DropDups:   false,
+		Background: true,
+		Sparse:     true,
+	}
+
+	err := records.EnsureIndex(processedIndex)
+	if err != nil {
+		log.Panicf("Error setting indices %s", err)
+	}
+
+	actionIndex := mgo.Index{
+		Key:        []string{"requiredAction"},
+		Unique:     false,
+		DropDups:   false,
+		Background: true,
+		Sparse:     true,
+	}
+
+	err = records.EnsureIndex(actionIndex)
+	if err != nil {
+		log.Panicf("Error setting indices %s", err)
+	}
 	return &RecordRepository{records: records, events: services.GetEventService(), images: images}
 }
 
@@ -52,7 +77,7 @@ func (r *RecordRepository) Query(query map[string]interface{}) []*models.Record 
 }
 
 func (r *RecordRepository) GetInbox() []*models.Record {
-	return r.Query(bson.M{"processed": false})
+	return r.Query(bson.M{ "$or": []bson.M{ {"date":nil}, {"patientId": ""}, {"tags": nil} } })
 }
 
 func (r *RecordRepository) GetEscalated() []*models.Record {

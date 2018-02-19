@@ -5,10 +5,10 @@
      fxLayoutGap.lt-sm="0">
 
   <div fxFlex="50%" fxFlex.gt-md="35%" fxFlex.gt-lg="600px" class="scroll-column mat-elevation-z8">
-
+    <router-outlet name="left-column"></router-outlet>
   </div>
 
   <div fxFlex class="scroll-column">
-
+    <app-record-viewer [record]="selectedRecord" (updatePages)="updatePages($event)"></app-record-viewer>
   </div>
 </div>

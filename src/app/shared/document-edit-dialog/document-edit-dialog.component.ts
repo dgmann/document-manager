@@ -37,6 +37,9 @@ export class DocumentEditDialogComponent implements AfterViewInit, OnInit {
               public patient: PatientService,
               public tagsService: TagService) {
     this.record = Object.assign({}, record);
+    if (!this.record.date) {
+      this.record.date = new Date();
+    }
     this.record.tags = record.tags.slice();
     if (!this.record.patientId) {
       this.patient.getCurrent().pipe(take(1)).subscribe((patient: Patient) => this.record.patientId = this.record.patientId || patient.id);

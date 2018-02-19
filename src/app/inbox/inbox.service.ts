@@ -1,7 +1,7 @@
 import {Injectable} from "@angular/core";
 import {select, Store} from "@ngrx/store";
 import {filter, map} from "rxjs/operators";
-import {RecordService} from "../store";
+import {Record, RecordService} from "../store";
 import {selectSelectedIds, State} from "./reducers";
 import {SelectRecords} from "./store/inbox.actions";
 
@@ -11,11 +11,11 @@ export class InboxService {
   inboxFilter: any;
 
   constructor(private store: Store<State>, private recordService: RecordService) {
-    this.inboxFilter = record => !record.escalated && !record.processed
+    this.inboxFilter = (record: Record) => (!record.date || !record.patientId || !record.tags) && !record.requiredAction
   }
 
   public load() {
-    this.recordService.load({escalated: "false", processed: "false"})
+    this.recordService.load({inbox: "true"})
   }
 
   public all() {

@@ -1,4 +1,8 @@
 import {Component, OnInit} from '@angular/core';
+import {Observable} from "rxjs/Observable";
+import {filter, map} from "rxjs/operators";
+import {Record, RecordService} from "../store";
+import {PhysicianService} from "./physician.service";
 
 @Component({
   selector: 'app-physician',
@@ -7,7 +11,14 @@ import {Component, OnInit} from '@angular/core';
 })
 export class PhysicianComponent implements OnInit {
 
-  constructor() {
+  private selectedRecord: Observable<Record>;
+
+  constructor(private physicianService: PhysicianService,
+              private recordService: RecordService) {
+    this.selectedRecord = physicianService.getSelectedRecords().pipe(
+      filter(records => records.length > 0),
+      map(records => records[0])
+    );
   }
 
   ngOnInit() {

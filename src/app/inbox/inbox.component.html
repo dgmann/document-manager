@@ -5,12 +5,12 @@
      fxLayoutGap.lt-sm="0" droppable (onDrop)="upload($event)" (dragover)="$event.preventDefault();">
 
   <div fxFlex="50%" fxFlex.gt-md="35%" fxFlex.gt-lg="600px" class="scroll-column mat-elevation-z8">
-    <app-document-list [data]="data" (recordClick)="selectRecord($event)"
+    <app-document-list [records]="data" (recordClick)="selectRecord($event)"
                        (recordDbClick)="editRecord($event)"
                        (recordDelete)="deleteRecord($event)" (recordDrop)="appendRecord($event)"></app-document-list>
   </div>
 
   <div fxFlex class="scroll-column">
-    <app-record-viewer [record]="selectedRecord" (changePages)="updatePages($event)"></app-record-viewer>
+    <app-record-viewer [record]="selectedRecord" (updatePages)="updatePages($event)"></app-record-viewer>
   </div>
 </div>

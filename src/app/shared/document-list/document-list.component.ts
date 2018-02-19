@@ -17,7 +17,7 @@ export class DocumentListComponent implements OnInit, AfterViewInit {
   selectedRecordId = "";
 
   @ViewChild(MatSort) sort: MatSort;
-  @Input('data') data: Observable<Record[]>;
+  @Input('records') data: Observable<Record[]>;
   @Output('recordDelete') recordDelete = new EventEmitter<Record>();
   @Output('recordClick') recordClick = new EventEmitter<Record>();
   @Output('recordDbClick') recordDbClick = new EventEmitter<Record>();

@@ -11,7 +11,7 @@ import {Page, Record} from "../../store";
 })
 export class RecordViewerComponent {
   @Input('record') record: Observable<Record>;
-  @Output('changePages') changePages = new EventEmitter<{ id: number, pages: Page[] }>();
+  @Output('updatePages') updatePages = new EventEmitter<{ id: number, pages: Page[] }>();
 
   constructor() {
   }
@@ -25,6 +25,6 @@ export class RecordViewerComponent {
     const page = pages[index - 1];
     pages[index - 1] = pages[index];
     pages[index] = page;
-    this.changePages.emit({id: recordId, pages: pages});
+    this.updatePages.emit({id: recordId, pages: pages});
   }
 }

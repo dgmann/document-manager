@@ -1,3 +1,12 @@
-<button mat-button routerLink="review" routerLinkActive="active">Review</button>
-<button mat-button routerLink="escalated" routerLinkActive="active">Eskaliert</button>
-<button mat-button routerLink="misc" routerLinkActive="active">Sonstiges</button>
+<button mat-button routerLink="./review" routerLinkActive="active">
+  Review
+  <span class="badge">{{ reviewCount | async }}</span>
+</button>
+<button mat-button routerLink="./escalated" routerLinkActive="active">
+  Eskaliert
+  <span class="badge">{{ escalatedCount | async }}</span>
+</button>
+<button mat-button routerLink="./other" routerLinkActive="active">
+  Sonstiges
+  <span class="badge">{{ otherCount | async }}</span>
+</button>

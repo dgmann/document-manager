@@ -11,6 +11,10 @@ export class PhysicianService {
   constructor(private store: Store<State>, private recordService: RecordService) {
   }
 
+  public load(action: RequiredAction) {
+    this.recordService.load({requiredAction: action})
+  }
+
   public getSelectedIds() {
     return this.store.pipe(select(selectSelectedIds))
   }
@@ -24,15 +28,15 @@ export class PhysicianService {
   }
 
   public getEscalated() {
-    return this.get(record => record.statusType === RequiredAction.ESCALATED)
+    return this.get(record => record.requiredAction === RequiredAction.ESCALATED)
   }
 
   public getToReview() {
-    return this.get(record => record.statusType === RequiredAction.REVIEW)
+    return this.get(record => record.requiredAction === RequiredAction.REVIEW)
   }
 
   public getOther() {
-    return this.get(record => record.statusType === RequiredAction.OTHER)
+    return this.get(record => record.requiredAction === RequiredAction.OTHER)
   }
 
   private get(filter) {

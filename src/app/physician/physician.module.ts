@@ -4,6 +4,8 @@ import {MatButtonModule} from "@angular/material";
 import {StoreModule} from "@ngrx/store";
 import {SharedModule} from "../shared";
 import {NavigationComponent} from './navigation/navigation.component';
+import {PageEscalatedComponent} from './page-escalated/page-escalated.component';
+import {PageOtherComponent} from './page-other/page-other.component';
 import {PageReviewComponent} from './page-review/page-review.component';
 import {PhysicianComponent} from './physician.component';
 import {PhysicianRouterModule} from "./physician.routes";
@@ -21,7 +23,9 @@ import {metaReducers, reducers} from "./reducers";
   declarations: [
     PhysicianComponent,
     NavigationComponent,
-    PageReviewComponent
+    PageReviewComponent,
+    PageEscalatedComponent,
+    PageOtherComponent
   ],
   providers: [
     PhysicianService

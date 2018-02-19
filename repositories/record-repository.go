@@ -63,7 +63,7 @@ func (r *RecordRepository) FindByObjectId(id bson.ObjectId) *models.Record {
 }
 
 func (r *RecordRepository) Query(query map[string]interface{}) []*models.Record {
-	var records []*models.Record
+	records := make([]*models.Record, 0)
 
 	if err := r.records.Find(query).All(&records); err != nil {
 		log.Panic(err)

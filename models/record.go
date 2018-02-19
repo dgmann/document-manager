@@ -19,12 +19,12 @@ type Record struct {
 	Primary    bson.ObjectId `bson:"_id,omitempty" json:"-"` //Primary key for mongodb. Not serialized
 	Date       *time.Time    `bson:"date,omitempty" json:"date"`
 	ReceivedAt time.Time     `bson:"receivedAt,omitempty" json:"receivetAt"`
-	PatientId  string        `bson:"patientId,omitempty" json:"patientId"`
-	Comment    string        `bson:"comment,omitempty" json:"comment"`
+	PatientId  *string        `bson:"patientId,omitempty" json:"patientId"`
+	Comment    *string        `bson:"comment,omitempty" json:"comment"`
 	Sender     string        `bson:"sender,omitempty" json:"sender" form:"user" binding:"required"`
 	Tags       []string      `bson:"tags,omitempty" json:"tags"`
 	Pages      []Page        `bson:"pages,omitempty" json:"pages"`
-	RequiredAction string	 `bson:"requiredAction,omitempty" json:"requiredAction"`
+	RequiredAction *string	 `bson:"requiredAction,omitempty" json:"requiredAction"`
 }
 
 func (r *Record) SetURL(url *url.URL) {
@@ -45,26 +45,33 @@ func (r *Record) MarshalJSON() ([]byte, error) {
 		"id":         		r.Id,
 		"date":       		r.Date,
 		"receivedAt": 		r.ReceivedAt,
-		"patientId":  		r.PatientId,
-		"comment":    		r.Comment,
+		"patientId":  		toString(r.PatientId),
+		"comment":    		toString(r.Comment),
 		"sender":     		r.Sender,
 		"tags":       		r.Tags,
 		"pages":      		r.Pages,
-		"requiredAction": 	r.RequiredAction,
+		"requiredAction": 	toString(r.RequiredAction),
 	}
 	return json.Marshal(m)
+}
+
+func toString(val *string) string {
+	if val == nil {
+		return ""
+	}
+	return *val
 }
 
 func NewRecord(id bson.ObjectId, sender string) *Record {
 	return &Record{Primary: id,
 		Date:			nil,
 		ReceivedAt: 	time.Now(),
-		Comment:    	"",
-		PatientId:  	"",
+		Comment:    	nil,
+		PatientId:  	nil,
 		Sender:     	sender,
 		Tags:       	[]string{},
 		Pages:      	[]Page{},
-		RequiredAction: "",
+		RequiredAction: nil,
 	}
 }
 

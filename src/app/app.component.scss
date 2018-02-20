@@ -7,3 +7,7 @@
 .side-nav {
   background-color: $primary-lighter;
 }
+
+.myCustomClass md-input-container .md-errors-spacer {
+  min-height: 0px !important;
+}

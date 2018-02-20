@@ -10,6 +10,10 @@ export const ROUTE_CONFIG: Routes = [
     loadChildren: 'app/physician/physician.module#PhysicianModule'
   },
   {
+    path: 'patient',
+    loadChildren: 'app/patient/patient.module#PatientModule'
+  },
+  {
     path: '',
     redirectTo: 'inbox',
     pathMatch: 'full'

@@ -22,6 +22,7 @@ import {NgDragDropModule} from "ng-drag-drop";
 import {DocumentEditDialogComponent} from "./document-edit-dialog/document-edit-dialog.component";
 import {DocumentListComponent} from "./document-list/document-list.component";
 import {NotificationService} from "./notification-service";
+import {PatientSearchComponent} from './patient-search/patient-search.component';
 import {PatientService} from "./patient-service";
 import {RecordViewerComponent} from "./record-viewer/record-viewer.component";
 import {TagService} from "./tag-service";
@@ -52,7 +53,8 @@ import {WebsocketService} from "./websocket-service";
   declarations: [
     RecordViewerComponent,
     DocumentEditDialogComponent,
-    DocumentListComponent
+    DocumentListComponent,
+    PatientSearchComponent
   ],
   entryComponents: [
     DocumentEditDialogComponent
@@ -62,7 +64,8 @@ import {WebsocketService} from "./websocket-service";
     FlexLayoutModule,
     DocumentEditDialogComponent,
     RecordViewerComponent,
-    DocumentListComponent
+    DocumentListComponent,
+    PatientSearchComponent
   ],
   providers: []
 })

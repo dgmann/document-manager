@@ -1,5 +1,6 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {FormControl} from "@angular/forms";
+import {MatAutocompleteSelectedEvent} from "@angular/material";
 import {Observable} from "rxjs/Observable";
 import {debounceTime, filter, switchMap} from "rxjs/operators";
 import {Patient, PatientService} from "../patient-service";
@@ -10,6 +11,7 @@ import {Patient, PatientService} from "../patient-service";
   styleUrls: ['./patient-search.component.scss']
 })
 export class PatientSearchComponent implements OnInit {
+  @Output('selectPatient') selectPatient = new EventEmitter<Patient>();
   public searchResults: Observable<Patient[]>;
   public searchInput = new FormControl();
 
@@ -27,6 +29,10 @@ export class PatientSearchComponent implements OnInit {
 
   displayFn(patient: Patient): string | undefined {
     return patient ? patient.name : undefined;
+  }
+
+  onSelectPatient(event: MatAutocompleteSelectedEvent) {
+    this.selectPatient.emit(event.option.value);
   }
 
 }

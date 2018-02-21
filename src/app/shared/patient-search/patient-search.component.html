@@ -2,7 +2,8 @@
   <input type="text" matInput placeholder="Patient" [formControl]="searchInput" [matAutocomplete]="auto">
 </mat-form-field>
 
-<mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+<mat-autocomplete autoActiveFirstOption #auto="matAutocomplete" (optionSelected)="onSelectPatient($event)"
+                  [displayWith]="displayFn">
   <mat-option *ngFor="let result of searchResults | async" [value]="result">
     {{ result.name }}
   </mat-option>

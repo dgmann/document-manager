@@ -3,6 +3,7 @@ import {Title} from "@angular/platform-browser";
 import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
 import {Observable} from "rxjs/Observable";
 import {filter, map, mergeMap} from "rxjs/operators";
+import {Patient} from "./shared";
 import {NotificationService} from "./shared/notification-service";
 import {AutorefreshService} from "./store/record/autorefresh-service";
 
@@ -36,5 +37,9 @@ export class AppComponent {
       map(data => data["title"])
     );
     this.title.subscribe(title => this.titleService.setTitle(`${title} - Document Manager`));
+  }
+
+  onSelectPatient(event: Patient) {
+    console.log(event);
   }
 }

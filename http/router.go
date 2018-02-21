@@ -20,6 +20,7 @@ func Run(a *shared.App) {
 
 	registerWebsocket(router)
 	registerRecords(router.Group("/records"))
+	registerPatients(router.Group("/patients"))
 
 	router.GET("tags", func(context *gin.Context) {
 		tags, err := app.Tags.All()

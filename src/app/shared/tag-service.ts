@@ -10,4 +10,8 @@ export class TagService {
   public get() {
     return this.http.get<string[]>(environment.api + "/tags");
   }
+
+  public getByPatientId(id: string) {
+    return this.http.get<string[]>(`${environment.api}/patients/${id}/tags`);
+  }
 }

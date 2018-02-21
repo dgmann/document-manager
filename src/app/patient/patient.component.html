@@ -1,8 +1,8 @@
 <app-split-panel>
   <div class="left-panel">
-    <app-tag-list></app-tag-list>
+    <app-tag-list [patientId]="patientId"></app-tag-list>
   </div>
   <div class="right-panel">
-    Placeholder
+    <app-multi-record-list [records]="records"></app-multi-record-list>
   </div>
 </app-split-panel>

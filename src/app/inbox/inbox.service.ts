@@ -2,7 +2,7 @@ import {Injectable} from "@angular/core";
 import {select, Store} from "@ngrx/store";
 import {filter, map} from "rxjs/operators";
 import {Record, RecordService} from "../store";
-import {selectSelectedIds, State} from "./reducers";
+import {selectSelectedIds, selectSelectedRecords, selectUnreadRecords, State} from "./reducers";
 import {SelectRecords} from "./store/inbox.actions";
 
 @Injectable()
@@ -30,7 +30,15 @@ export class InboxService {
     return this.store.pipe(select(selectSelectedIds))
   }
 
+  public getSelectedRecords() {
+    return this.store.pipe(select(selectSelectedRecords));
+  }
+
   public selectIds(ids: string[]) {
     this.store.dispatch(new SelectRecords({ids: ids}))
+  }
+
+  public getUnreadRecords() {
+    this.store.pipe(select(selectUnreadRecords));
   }
 }

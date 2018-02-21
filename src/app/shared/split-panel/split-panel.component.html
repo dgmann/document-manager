@@ -1,0 +1,14 @@
+<div class="container" fxLayout="row"
+     fxLayout.lt-sm="column"
+     fxLayoutAlign="center"
+     fxLayoutGap="10px"
+     fxLayoutGap.lt-sm="0" droppable (onDrop)="upload($event)" (dragover)="$event.preventDefault();">
+
+  <div fxFlex="50%" fxFlex.gt-md="35%" fxFlex.gt-lg="600px" class="scroll-column mat-elevation-z8">
+    <ng-content select=".left-panel"></ng-content>
+  </div>
+
+  <div fxFlex class="scroll-column">
+    <ng-content select=".right-panel"></ng-content>
+  </div>
+</div>

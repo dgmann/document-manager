@@ -5,6 +5,7 @@ import {SharedModule} from "../shared";
 import {NavigationComponent} from './navigation/navigation.component';
 import {PatientComponent} from './patient.component';
 import {PatientRouterModule} from "./patient.routes";
+import {TagListComponent} from './tag-list/tag-list.component';
 
 @NgModule({
   imports: [
@@ -16,7 +17,7 @@ import {PatientRouterModule} from "./patient.routes";
     MatFormFieldModule,
     MatInputModule
   ],
-  declarations: [PatientComponent, NavigationComponent]
+  declarations: [PatientComponent, NavigationComponent, TagListComponent]
 })
 export class PatientModule {
 }

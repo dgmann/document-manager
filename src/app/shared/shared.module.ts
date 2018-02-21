@@ -25,6 +25,7 @@ import {NotificationService} from "./notification-service";
 import {PatientSearchComponent} from './patient-search/patient-search.component';
 import {PatientService} from "./patient-service";
 import {RecordViewerComponent} from "./record-viewer/record-viewer.component";
+import {SplitPanelComponent} from './split-panel/split-panel.component';
 import {TagService} from "./tag-service";
 import {WebsocketService} from "./websocket-service";
 
@@ -54,7 +55,8 @@ import {WebsocketService} from "./websocket-service";
     RecordViewerComponent,
     DocumentEditDialogComponent,
     DocumentListComponent,
-    PatientSearchComponent
+    PatientSearchComponent,
+    SplitPanelComponent
   ],
   entryComponents: [
     DocumentEditDialogComponent
@@ -65,7 +67,8 @@ import {WebsocketService} from "./websocket-service";
     DocumentEditDialogComponent,
     RecordViewerComponent,
     DocumentListComponent,
-    PatientSearchComponent
+    PatientSearchComponent,
+    SplitPanelComponent
   ],
   providers: []
 })

@@ -18,7 +18,7 @@ import {InboxEffects} from "./store/inbox.effects";
     SharedModule
   ],
   declarations: [
-    InboxComponent,
+    InboxComponent
   ],
   exports: [
     InboxComponent

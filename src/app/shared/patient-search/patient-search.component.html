@@ -1,9 +1,9 @@
 <mat-form-field class="nav-input" floatLabel="never">
-  <input type="text" matInput placeholder="Patient" [matAutocomplete]="auto">
+  <input type="text" matInput placeholder="Patient" [formControl]="searchInput" [matAutocomplete]="auto">
 </mat-form-field>
 
 <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
-  <mat-option *ngFor="let result of searchResults" [value]="result">
+  <mat-option *ngFor="let result of searchResults | async" [value]="result">
     {{ result.name }}
   </mat-option>
 </mat-autocomplete>

@@ -6,7 +6,8 @@ const PHYSICIAN_ROUTES: Routes = [
   {
     path: '',
     component: PatientComponent,
-    children: []
+    children: [],
+    data: {title: 'Patient'}
   },
   {
     path: '',

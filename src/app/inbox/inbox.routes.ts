@@ -1,10 +1,11 @@
-import { RouterModule, Routes } from "@angular/router";
-import { InboxComponent } from "./inbox.component";
+import {RouterModule, Routes} from "@angular/router";
+import {InboxComponent} from "./inbox.component";
 
 const INBOX_ROUTES: Routes = [
   {
     path: '',
-    component: InboxComponent
+    component: InboxComponent,
+    data: {title: 'Inbox'}
   },
 ];
 

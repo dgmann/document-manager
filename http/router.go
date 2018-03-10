@@ -32,5 +32,15 @@ func Run(a *shared.App) {
 		context.JSON(200, tags)
 	})
 
+	router.GET("categories", func(context *gin.Context) {
+		categories, err := app.Categories.All()
+		if err != nil {
+			context.AbortWithError(500, err)
+			return
+		}
+
+		context.JSON(200, categories)
+	})
+
 	router.Run()
 }

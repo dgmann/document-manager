@@ -2,12 +2,12 @@ package main
 
 import (
 	"github.com/dgmann/document-manager-api/http"
+	"github.com/dgmann/document-manager-api/pdf"
 	"github.com/dgmann/document-manager-api/repositories"
 	"github.com/dgmann/document-manager-api/shared"
 	"github.com/globalsign/mgo"
 	log "github.com/sirupsen/logrus"
 	"os"
-	"github.com/dgmann/document-manager-api/pdf"
 )
 
 func init() {
@@ -29,9 +29,10 @@ func main() {
 	c := session.DB(dbname).C("records")
 	images := repositories.NewFileSystemImageRepository(recordDir)
 	app := shared.App{
-		Records: repositories.NewRecordRepository(c, images),
-		Images: images,
-		Tags: repositories.NewTagRepository(c),
+		Records:      repositories.NewRecordRepository(c, images),
+		Images:       images,
+		Tags:         repositories.NewTagRepository(c),
+		Categories:   repositories.NewCategoryRepository(),
 		PDFProcessor: pdf.NewPDFProcessor("http://localhost:8181"),
 	}
 	http.Run(&app)

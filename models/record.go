@@ -10,21 +10,22 @@ import (
 
 const (
 	ActionEscalated = "escalated"
-	ActionReview = "review"
-	ActionOther = "other"
+	ActionReview    = "review"
+	ActionOther     = "other"
 )
 
 type Record struct {
-	Id         string        `json:"id"`
-	Primary    bson.ObjectId `bson:"_id,omitempty" json:"-"` //Primary key for mongodb. Not serialized
-	Date       *time.Time    `bson:"date,omitempty" json:"date"`
-	ReceivedAt time.Time     `bson:"receivedAt,omitempty" json:"receivetAt"`
-	PatientId  *string        `bson:"patientId,omitempty" json:"patientId"`
-	Comment    *string        `bson:"comment,omitempty" json:"comment"`
-	Sender     string        `bson:"sender,omitempty" json:"sender" form:"user" binding:"required"`
-	Tags       []string      `bson:"tags,omitempty" json:"tags"`
-	Pages      []Page        `bson:"pages,omitempty" json:"pages"`
-	RequiredAction *string	 `bson:"requiredAction,omitempty" json:"requiredAction"`
+	Id             string        `json:"id"`
+	Primary        bson.ObjectId `bson:"_id,omitempty" json:"-"` //Primary key for mongodb. Not serialized
+	Date           *time.Time    `bson:"date,omitempty" json:"date"`
+	ReceivedAt     time.Time     `bson:"receivedAt,omitempty" json:"receivetAt"`
+	PatientId      *string       `bson:"patientId,omitempty" json:"patientId"`
+	Comment        *string       `bson:"comment,omitempty" json:"comment"`
+	Sender         string        `bson:"sender,omitempty" json:"sender" form:"user" binding:"required"`
+	Category       *string       `bson:"category,omitempty" json:"category"`
+	Tags           []string      `bson:"tags,omitempty" json:"tags"`
+	Pages          []Page        `bson:"pages,omitempty" json:"pages"`
+	RequiredAction *string       `bson:"requiredAction,omitempty" json:"requiredAction"`
 }
 
 func (r *Record) SetURL(url *url.URL) {
@@ -42,15 +43,16 @@ func (r *Record) SetURL(url *url.URL) {
 
 func (r *Record) MarshalJSON() ([]byte, error) {
 	m := map[string]interface{}{
-		"id":         		r.Id,
-		"date":       		r.Date,
-		"receivedAt": 		r.ReceivedAt,
-		"patientId":  		toString(r.PatientId),
-		"comment":    		toString(r.Comment),
-		"sender":     		r.Sender,
-		"tags":       		r.Tags,
-		"pages":      		r.Pages,
-		"requiredAction": 	toString(r.RequiredAction),
+		"id":             r.Id,
+		"date":           r.Date,
+		"receivedAt":     r.ReceivedAt,
+		"patientId":      toString(r.PatientId),
+		"comment":        toString(r.Comment),
+		"sender":         r.Sender,
+		"category":       r.Category,
+		"tags":           r.Tags,
+		"pages":          r.Pages,
+		"requiredAction": toString(r.RequiredAction),
 	}
 	return json.Marshal(m)
 }
@@ -64,13 +66,13 @@ func toString(val *string) string {
 
 func NewRecord(id bson.ObjectId, sender string) *Record {
 	return &Record{Primary: id,
-		Date:			nil,
-		ReceivedAt: 	time.Now(),
-		Comment:    	nil,
-		PatientId:  	nil,
-		Sender:     	sender,
-		Tags:       	[]string{},
-		Pages:      	[]Page{},
+		Date:           nil,
+		ReceivedAt:     time.Now(),
+		Comment:        nil,
+		PatientId:      nil,
+		Sender:         sender,
+		Tags:           []string{},
+		Pages:          []Page{},
 		RequiredAction: nil,
 	}
 }

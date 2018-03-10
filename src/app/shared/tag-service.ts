@@ -11,6 +11,10 @@ export class TagService {
     return this.http.get<string[]>(environment.api + "/tags");
   }
 
+  public getPrimaryTags() {
+    return this.http.get<string[]>(environment.api + "/categories");
+  }
+
   public getByPatientId(id: string) {
     return this.http.get<string[]>(`${environment.api}/patients/${id}/tags`);
   }

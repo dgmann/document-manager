@@ -11,6 +11,7 @@ import {
   MatIconModule,
   MatInputModule,
   MatMenuModule,
+  MatSelectModule,
   MatTooltipModule
 } from "@angular/material";
 import {MatMomentDateModule} from "@angular/material-moment-adapter";
@@ -35,6 +36,7 @@ import {WebsocketService} from "./websocket-service";
     CommonModule,
     FormsModule,
     FlexLayoutModule,
+    MatSelectModule,
     MatCardModule,
     MatIconModule,
     MatButtonModule,

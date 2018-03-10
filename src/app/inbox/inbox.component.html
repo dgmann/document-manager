@@ -1,5 +1,5 @@
 <app-split-panel>
-  <div class="left-panel">
+  <div class="left-panel" droppable (onDrop)="upload($event)" (dragover)="$event.preventDefault();">
     <app-document-list [records]="data" (recordClick)="selectRecord($event)"
                        (recordDbClick)="editRecord($event)"
                        (recordDelete)="deleteRecord($event)"

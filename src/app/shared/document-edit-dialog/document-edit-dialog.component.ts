@@ -1,6 +1,7 @@
 import {COMMA, ENTER} from "@angular/cdk/keycodes";
 import {AfterViewInit, Component, ElementRef, Inject, OnInit, ViewChild} from '@angular/core';
 import {MAT_DIALOG_DATA, MatAutocompleteSelectedEvent, MatChipInputEvent, MatDialogRef} from "@angular/material";
+import {filter} from 'lodash-es';
 import {Observable} from "rxjs/Observable";
 import {map, startWith, switchMap, take} from "rxjs/operators";
 import {ReplaySubject} from "rxjs/ReplaySubject";
@@ -20,9 +21,12 @@ import {TagService} from "../tag-service";
 export class DocumentEditDialogComponent implements AfterViewInit, OnInit {
   @ViewChild('datepickertoogle', {read: ElementRef}) datepickerToggle;
   tagInput = new Subject<string>();
+  categoryInput = new Subject<string>();
 
   availableTags: Observable<string[]>;
   filteredOptions: Observable<string[]>;
+  filteredCategories: Observable<string[]>;
+  categories: string[];
 
   selectable: boolean = true;
   removable: boolean = true;
@@ -51,6 +55,7 @@ export class DocumentEditDialogComponent implements AfterViewInit, OnInit {
       this.tabIndex.next(0);
     }
     this.availableTags = tagsService.get();
+    tagsService.getPrimaryTags().subscribe(cat => this.categories = cat);
   }
 
   ngOnInit() {
@@ -58,6 +63,10 @@ export class DocumentEditDialogComponent implements AfterViewInit, OnInit {
       .pipe(
         startWith(''),
         switchMap((val: string) => this.filter(val))
+      );
+    this.filteredCategories = this.categoryInput
+      .pipe(
+        map(val => filter(this.categories, cat => cat.startsWith(val)))
       );
   }
 
@@ -103,6 +112,13 @@ export class DocumentEditDialogComponent implements AfterViewInit, OnInit {
     let data = event.currentTarget.value;
     if (data) {
       this.tagInput.next(data);
+    }
+  }
+
+  categoryChanged(event) {
+    let data = event.currentTarget.value;
+    if (data) {
+      this.categoryInput.next(data);
     }
   }
 

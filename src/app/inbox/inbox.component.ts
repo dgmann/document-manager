@@ -2,7 +2,7 @@ import {Component} from '@angular/core';
 import {MatDialog} from "@angular/material";
 import {DropEvent} from "ng-drag-drop";
 import {Observable} from "rxjs/Observable";
-import {map, switchMap} from "rxjs/operators";
+import {map} from "rxjs/operators";
 import {DocumentEditDialogComponent} from "../shared/document-edit-dialog/document-edit-dialog.component";
 import {Record, RecordService, RequiredAction} from "../store";
 import {InboxService} from "./inbox.service";
@@ -20,7 +20,6 @@ export class InboxComponent {
   constructor(private inboxService: InboxService, private recordService: RecordService, public dialog: MatDialog) {
     inboxService.load();
     this.data = inboxService.all();
-    const find = switchMap((id: string) => this.inboxService.find(id));
     this.selectedRecord = this.inboxService.getSelectedRecords()
       .pipe(map(records => records && records[0] || undefined))
   }

@@ -1,0 +1,13 @@
+@import "../../../theme-variables";
+
+mat-header-row {
+  display: none;
+}
+
+mat-row {
+  cursor: pointer;
+
+  &:hover {
+    background-color: $accent-lighter;;
+  }
+}

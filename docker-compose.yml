@@ -3,8 +3,25 @@ services:
 
   db:
     image: mongo:latest
+    networks:
+      - backend
+  processor:
+    build: ./pdf-processor
+    networks:
+      - backend
+  api:
+    build: ./api
+    environment:
+      - DB_HOST=db
+      - DB_NAME=manager
+      - PDFPROCESSOR_URL=http://processor:8181
+    networks:
+      - backend
     ports:
-      - 27017:27017
-    network_mode: "host"
-  pdf_processor:
-    build: ./src/pdf-processor
+      - "80:80"
+    depends_on:
+      - db
+      - processor
+
+networks:
+  backend:

@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Project Dependencies" type="docker-deploy" factoryName="docker-compose.yml" singleton="true" server-name="Docker">
+  <configuration default="false" name="Document Manager" type="docker-deploy" factoryName="docker-compose.yml" singleton="true" server-name="Docker">
     <deployment type="docker-compose.yml">
       <settings>
         <option name="sourceFilePath" value="docker-compose.yml" />

@@ -2,7 +2,7 @@ package http
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/dgmann/document-manager-api/models"
+	"github.com/dgmann/document-manager/api/models"
 )
 
 func registerPatients(g *gin.RouterGroup) {

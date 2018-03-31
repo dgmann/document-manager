@@ -17,12 +17,10 @@
   branch = "master"
   name = "github.com/dgmann/document-manager-api"
   packages = [
-    "http",
     "models",
     "pdf",
     "repositories",
-    "services",
-    "shared"
+    "services"
   ]
   revision = "2956b9b9510916996d198b7223fe5dc9dde00a14"
 
@@ -202,6 +200,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "dfd493a2a24fab4676982e7d001c9e93d60ef8e988fae0711342276eda3b881b"
+  inputs-digest = "a7918e6c137483f63dcfffb1aeffb46cfd57d0a412a03df86c8554232460a2fd"
   solver-name = "gps-cdcl"
   solver-version = 1

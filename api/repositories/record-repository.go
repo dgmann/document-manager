@@ -2,8 +2,8 @@ package repositories
 
 import (
 	"bytes"
-	"github.com/dgmann/document-manager-api/models"
-	"github.com/dgmann/document-manager-api/services"
+	"github.com/dgmann/document-manager/api/models"
+	"github.com/dgmann/document-manager/api/services"
 	"github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
 	log "github.com/sirupsen/logrus"

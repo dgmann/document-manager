@@ -1,7 +1,7 @@
 package http
 
 import (
-	"github.com/dgmann/document-manager-api/shared"
+	"github.com/dgmann/document-manager/api/shared"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/location"
 	"github.com/gin-gonic/gin"

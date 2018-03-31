@@ -2,7 +2,7 @@ package http
 
 import (
 	"encoding/json"
-	"github.com/dgmann/document-manager-api/services"
+	"github.com/dgmann/document-manager/api/services"
 	"github.com/gin-gonic/gin"
 	"gopkg.in/olahol/melody.v1"
 )

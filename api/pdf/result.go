@@ -1,7 +1,7 @@
 package pdf
 
 import (
-	"github.com/dgmann/pdf-processor/pdfprocessor"
+	"github.com/dgmann/document-manager/pdf-processor/pdfprocessor"
 	"bytes"
 	_ "image/jpeg"
 	_ "image/gif"

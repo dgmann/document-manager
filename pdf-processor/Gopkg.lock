@@ -2,6 +2,12 @@
 
 
 [[projects]]
+  branch = "master"
+  name = "github.com/dgmann/pdf-processor"
+  packages = ["pdfprocessor"]
+  revision = "2164fb565e8f59025ae6bd2db0e7ba5bee1ef697"
+
+[[projects]]
   name = "github.com/gin-contrib/cors"
   packages = ["."]
   revision = "cf4846e6a636a76237a28d9286f163c132e841bc"
@@ -15,7 +21,11 @@
 
 [[projects]]
   name = "github.com/gin-gonic/gin"
-  packages = [".","binding","render"]
+  packages = [
+    ".",
+    "binding",
+    "render"
+  ]
   revision = "d459835d2b077e44f7c9b453505ee29881d5d12d"
   version = "v1.2"
 
@@ -52,7 +62,10 @@
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
-  packages = ["unix","windows"]
+  packages = [
+    "unix",
+    "windows"
+  ]
   revision = "2c42eef0765b9837fbdab12011af7830f55f88f0"
 
 [[projects]]
@@ -63,7 +76,10 @@
 
 [[projects]]
   name = "gopkg.in/gographics/imagick.v3"
-  packages = ["imagick","imagick/types"]
+  packages = [
+    "imagick",
+    "imagick/types"
+  ]
   revision = "e5c95c340c8d9bf140ca670563906805b655d9d9"
   version = "v3.2.0"
 
@@ -76,6 +92,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "4502904691ec050fe53de86b73d1e371f86f82e162e1d2827ef52ecea043c9c7"
+  inputs-digest = "adf41a3d82d7365c91ed217110347decccdd17ee62cc6968e60e547ec1349b7a"
   solver-name = "gps-cdcl"
   solver-version = 1

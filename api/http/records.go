@@ -2,7 +2,7 @@ package http
 
 import (
 	"encoding/json"
-	"github.com/dgmann/document-manager-api/models"
+	"github.com/dgmann/document-manager/api/models"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 )

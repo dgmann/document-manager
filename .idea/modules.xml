@@ -4,7 +4,6 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/src/api/api.iml" filepath="$PROJECT_DIR$/src/api/api.iml" />
       <module fileurl="file://$PROJECT_DIR$/src/app/app.iml" filepath="$PROJECT_DIR$/src/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../document manager/src/app/app.iml" filepath="$PROJECT_DIR$/../document manager/src/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/src/pdf-processor/pdf-processor.iml" filepath="$PROJECT_DIR$/src/pdf-processor/pdf-processor.iml" />
     </modules>
   </component>

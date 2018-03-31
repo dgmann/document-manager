@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/src/api/api.iml" filepath="$PROJECT_DIR$/src/api/api.iml" />
-      <module fileurl="file://$PROJECT_DIR$/src/app/app.iml" filepath="$PROJECT_DIR$/src/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/src/pdf-processor/pdf-processor.iml" filepath="$PROJECT_DIR$/src/pdf-processor/pdf-processor.iml" />
+      <module fileurl="file://$PROJECT_DIR$/api/api.iml" filepath="$PROJECT_DIR$/api/api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/pdf-processor/pdf-processor.iml" filepath="$PROJECT_DIR$/pdf-processor/pdf-processor.iml" />
     </modules>
   </component>
 </project>

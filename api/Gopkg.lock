@@ -15,6 +15,19 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/dgmann/document-manager-api"
+  packages = [
+    "http",
+    "models",
+    "pdf",
+    "repositories",
+    "services",
+    "shared"
+  ]
+  revision = "2956b9b9510916996d198b7223fe5dc9dde00a14"
+
+[[projects]]
+  branch = "master"
   name = "github.com/dgmann/pdf-processor"
   packages = ["pdfprocessor"]
   revision = "abb51998466da82138f88af8cdd503a7ca5d9e11"
@@ -39,20 +52,33 @@
 
 [[projects]]
   name = "github.com/gin-gonic/gin"
-  packages = [".","binding","render"]
+  packages = [
+    ".",
+    "binding",
+    "render"
+  ]
   revision = "d459835d2b077e44f7c9b453505ee29881d5d12d"
   version = "v1.2"
 
 [[projects]]
   branch = "master"
   name = "github.com/globalsign/mgo"
-  packages = [".","bson","internal/json","internal/sasl","internal/scram"]
+  packages = [
+    ".",
+    "bson",
+    "internal/json",
+    "internal/sasl",
+    "internal/scram"
+  ]
   revision = "896bbb89d21253a28cd5a7f8b81fe091410cb94d"
 
 [[projects]]
   branch = "master"
   name = "github.com/gocraft/dbr"
-  packages = [".","dialect"]
+  packages = [
+    ".",
+    "dialect"
+  ]
   revision = "a61db664e3bd3e7507d596f8e013439d72d7b80a"
 
 [[projects]]
@@ -99,7 +125,10 @@
 
 [[projects]]
   name = "github.com/stretchr/testify"
-  packages = ["assert","mock"]
+  packages = [
+    "assert",
+    "mock"
+  ]
   revision = "12b6f73e6084dad08a7c6e575284b177ecafbc71"
   version = "v1.2.1"
 
@@ -111,7 +140,17 @@
 
 [[projects]]
   name = "github.com/unidoc/unidoc"
-  packages = ["common","common/license","pdf/contentstream","pdf/core","pdf/model","pdf/model/fonts","pdf/model/sampling","pdf/model/textencoding","pdf/ps"]
+  packages = [
+    "common",
+    "common/license",
+    "pdf/contentstream",
+    "pdf/core",
+    "pdf/model",
+    "pdf/model/fonts",
+    "pdf/model/sampling",
+    "pdf/model/textencoding",
+    "pdf/ps"
+  ]
   revision = "144fa3f75be7cab29ecd8d3bfb9673fcc649f372"
   version = "v2.0.1"
 
@@ -130,7 +169,10 @@
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
-  packages = ["unix","windows"]
+  packages = [
+    "unix",
+    "windows"
+  ]
   revision = "2c42eef0765b9837fbdab12011af7830f55f88f0"
 
 [[projects]]
@@ -160,6 +202,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "c066da7bfd88d066f74b7c693ef02b85e7c46b1a4025796027942d1fe5e5f62c"
+  inputs-digest = "dfd493a2a24fab4676982e7d001c9e93d60ef8e988fae0711342276eda3b881b"
   solver-name = "gps-cdcl"
   solver-version = 1

@@ -1,0 +1,10 @@
+version: "3"
+services:
+
+  db:
+    image: mongo:latest
+    ports:
+      - 27017:27017
+    network_mode: "host"
+  pdf_processor:
+    build: ./src/pdf-processor

@@ -15,20 +15,9 @@
 
 [[projects]]
   branch = "master"
-  name = "github.com/dgmann/document-manager-api"
-  packages = [
-    "models",
-    "pdf",
-    "repositories",
-    "services"
-  ]
-  revision = "2956b9b9510916996d198b7223fe5dc9dde00a14"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/dgmann/pdf-processor"
-  packages = ["pdfprocessor"]
-  revision = "abb51998466da82138f88af8cdd503a7ca5d9e11"
+  name = "github.com/dgmann/document-manager"
+  packages = ["pdf-processor/pdfprocessor"]
+  revision = "5141946f53f8d38460d5123e0b8c103491e871f5"
 
 [[projects]]
   name = "github.com/gin-contrib/cors"
@@ -137,32 +126,10 @@
   revision = "9831f2c3ac1068a78f50999a30db84270f647af6"
 
 [[projects]]
-  name = "github.com/unidoc/unidoc"
-  packages = [
-    "common",
-    "common/license",
-    "pdf/contentstream",
-    "pdf/core",
-    "pdf/model",
-    "pdf/model/fonts",
-    "pdf/model/sampling",
-    "pdf/model/textencoding",
-    "pdf/ps"
-  ]
-  revision = "144fa3f75be7cab29ecd8d3bfb9673fcc649f372"
-  version = "v2.0.1"
-
-[[projects]]
   branch = "master"
   name = "golang.org/x/crypto"
   packages = ["ssh/terminal"]
   revision = "13931e22f9e72ea58bb73048bc752b48c6d4d4ac"
-
-[[projects]]
-  branch = "master"
-  name = "golang.org/x/image"
-  packages = ["tiff/lzw"]
-  revision = "12117c17ca67ffa1ce22e9409f3b0b0a93ac08c7"
 
 [[projects]]
   branch = "master"
@@ -178,6 +145,15 @@
   packages = ["."]
   revision = "5f1438d3fca68893a817e4a66806cea46a9e4ebf"
   version = "v8.18.2"
+
+[[projects]]
+  name = "gopkg.in/gographics/imagick.v3"
+  packages = [
+    "imagick",
+    "imagick/types"
+  ]
+  revision = "e5c95c340c8d9bf140ca670563906805b655d9d9"
+  version = "v3.2.0"
 
 [[projects]]
   branch = "v1"
@@ -200,6 +176,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "a7918e6c137483f63dcfffb1aeffb46cfd57d0a412a03df86c8554232460a2fd"
+  inputs-digest = "58a7a381cb0670137219d49cb06d2cb6f66b6fbef39efc0fa7024e6aa13a1cc9"
   solver-name = "gps-cdcl"
   solver-version = 1

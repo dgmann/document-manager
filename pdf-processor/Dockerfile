@@ -1,12 +1,15 @@
 FROM golang:alpine as builder
 
-WORKDIR /go/src/github.com/dgmann/pdf-processor
+RUN apk --no-cache --virtual add openssl imagemagick-dev poppler-utils git build-base && \
+    wget -O /usr/local/bin/dep https://github.com/golang/dep/releases/download/v0.4.1/dep-linux-amd64 && chmod +x /usr/local/bin/dep
+
+WORKDIR /go/src/github.com/dgmann/document-manager/pdf-processor
+COPY Gopkg.toml Gopkg.lock ./
+
+RUN dep ensure -vendor-only
 COPY . .
+RUN go build -o /processor .
 
-RUN apk --no-cache --virtual add openssl imagemagick-dev poppler-utils git build-base
-RUN wget -O /bin/dep https://github.com/golang/dep/releases/download/v0.4.1/dep-linux-amd64 && chmod +x /bin/dep && \
-    dep ensure && go build -o /processor .
-
-EXPOSE 80
+EXPOSE 8181
 
 CMD ["/processor"]

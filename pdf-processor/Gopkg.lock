@@ -2,12 +2,6 @@
 
 
 [[projects]]
-  branch = "master"
-  name = "github.com/dgmann/pdf-processor"
-  packages = ["pdfprocessor"]
-  revision = "2164fb565e8f59025ae6bd2db0e7ba5bee1ef697"
-
-[[projects]]
   name = "github.com/gin-contrib/cors"
   packages = ["."]
   revision = "cf4846e6a636a76237a28d9286f163c132e841bc"
@@ -92,6 +86,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "adf41a3d82d7365c91ed217110347decccdd17ee62cc6968e60e547ec1349b7a"
+  inputs-digest = "4502904691ec050fe53de86b73d1e371f86f82e162e1d2827ef52ecea043c9c7"
   solver-name = "gps-cdcl"
   solver-version = 1

@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-contrib/cors"
 	log "github.com/sirupsen/logrus"
-	"github.com/dgmann/pdf-processor/pdfprocessor"
+	"github.com/dgmann/document-manager/pdf-processor/pdfprocessor"
 	"net/http"
 )
 

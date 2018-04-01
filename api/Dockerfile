@@ -4,7 +4,7 @@ RUN curl -fsSL -o /usr/local/bin/dep https://github.com/golang/dep/releases/down
 WORKDIR /go/src/github.com/dgmann/document-manager/api
 COPY Gopkg.toml Gopkg.lock ./
 
-RUN dep ensure -vendor-only
+RUN dep ensure -vendor-only && rm -r vendor/github.com/dgmann/document-manager/api
 COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o /api .
 

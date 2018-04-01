@@ -5,6 +5,7 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/location"
 	"github.com/gin-gonic/gin"
+	"github.com/dgmann/document-manager/api/services"
 )
 
 var app *shared.App
@@ -21,6 +22,19 @@ func Run(a *shared.App) {
 	registerWebsocket(router)
 	registerRecords(router.Group("/records"))
 	registerPatients(router.Group("/patients"))
+
+	router.GET("", func(context *gin.Context) {
+		context.String(200, "Document Manager API")
+	})
+
+	router.GET("status", func(context *gin.Context) {
+		hs := services.GetHealthService()
+		if err := hs.Check(); err != nil {
+			context.String(500, "Status: Error, Message: %s", err)
+		} else {
+			context.String(200, "Status: Ok")
+		}
+	})
 
 	router.GET("tags", func(context *gin.Context) {
 		tags, err := app.Tags.All()

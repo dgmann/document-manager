@@ -2,6 +2,12 @@
 
 
 [[projects]]
+  branch = "master"
+  name = "github.com/dgmann/document-manager"
+  packages = ["shared"]
+  revision = "c7a26806c871c75d3c4689987c6be569b9a476cd"
+
+[[projects]]
   name = "github.com/gin-contrib/cors"
   packages = ["."]
   revision = "cf4846e6a636a76237a28d9286f163c132e841bc"
@@ -86,6 +92,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "4502904691ec050fe53de86b73d1e371f86f82e162e1d2827ef52ecea043c9c7"
+  inputs-digest = "4a3c61ec1ef71c2f1a53ef01ab691c556cff2b525c6dc7a15931c990478cf2cd"
   solver-name = "gps-cdcl"
   solver-version = 1

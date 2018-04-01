@@ -16,8 +16,8 @@
 [[projects]]
   branch = "master"
   name = "github.com/dgmann/document-manager"
-  packages = ["pdf-processor/pdfprocessor"]
-  revision = "5141946f53f8d38460d5123e0b8c103491e871f5"
+  packages = ["shared"]
+  revision = "c7a26806c871c75d3c4689987c6be569b9a476cd"
 
 [[projects]]
   name = "github.com/gin-contrib/cors"
@@ -147,15 +147,6 @@
   version = "v8.18.2"
 
 [[projects]]
-  name = "gopkg.in/gographics/imagick.v3"
-  packages = [
-    "imagick",
-    "imagick/types"
-  ]
-  revision = "e5c95c340c8d9bf140ca670563906805b655d9d9"
-  version = "v3.2.0"
-
-[[projects]]
   branch = "v1"
   name = "gopkg.in/jarcoal/httpmock.v1"
   packages = ["."]
@@ -176,6 +167,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "58a7a381cb0670137219d49cb06d2cb6f66b6fbef39efc0fa7024e6aa13a1cc9"
+  inputs-digest = "537635c7a02386bacaeffe81ecd4f192cb4374b186cdff711051b904c508b5a6"
   solver-name = "gps-cdcl"
   solver-version = 1

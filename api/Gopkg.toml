@@ -18,7 +18,8 @@
 # [[override]]
 #  name = "github.com/x/y"
 #  version = "2.4.0"
+ignored = ["github.com/dgmann/document-manager/pdf-processor*"]
+
 [[constraint]]
   name = "github.com/gocraft/dbr"
   branch = "master"
-

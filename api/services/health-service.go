@@ -5,18 +5,21 @@ import (
 	"net/http"
 	"time"
 	"errors"
+	"bytes"
+	"github.com/globalsign/mgo"
 )
 
 type healthService struct {
+	dbHost string
 	pdfProcessorUrl string
 }
 
 var hsinstance *healthService
 var hsonce sync.Once
 
-func InitHealthService(pdfProcessorUrl string) {
+func InitHealthService(dbHost, pdfProcessorUrl string) {
 	hsonce.Do(func() {
-		hsinstance = &healthService{pdfProcessorUrl:pdfProcessorUrl}
+		hsinstance = &healthService{dbHost:dbHost, pdfProcessorUrl:pdfProcessorUrl}
 	})
 }
 
@@ -28,10 +31,27 @@ func GetHealthService() *healthService {
 }
 
 func(hs *healthService) Check() error {
-	if hs.CheckPdfProcessor() {
-		return nil
+	var errorString bytes.Buffer
+	if !hs.CheckPdfProcessor() {
+		errorString.WriteString("PdfProcessor not reachable\r\n")
 	}
-	return errors.New("PdfProcessor not reachable")
+	if !hs.CheckDb() {
+		errorString.WriteString("Database not reachable\r\n")
+	}
+
+	if errorString.Len() > 0 {
+		return errors.New(errorString.String())
+	}
+	return nil
+}
+
+func(hs *healthService) CheckDb() bool {
+	session, err := mgo.DialWithTimeout(hs.dbHost, 2 * time.Second)
+	if err != nil {
+		return false
+	}
+	defer session.Close()
+	return true
 }
 
 func(hs *healthService) CheckPdfProcessor() bool {

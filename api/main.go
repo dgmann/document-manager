@@ -8,6 +8,7 @@ import (
 	"github.com/globalsign/mgo"
 	log "github.com/sirupsen/logrus"
 	"os"
+	"github.com/dgmann/document-manager/api/services"
 )
 
 func init() {
@@ -36,6 +37,7 @@ func main() {
 		Categories:   repositories.NewCategoryRepository(),
 		PDFProcessor: pdf.NewPDFProcessor(pdfprocessorUrl),
 	}
+	services.InitHealthService(pdfprocessorUrl)
 	http.Run(&app)
 }
 

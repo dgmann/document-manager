@@ -19,13 +19,13 @@ func init() {
 
 func main() {
 	recordDir := envOrDefault("RECORD_DIR", "C:\\Users\\David\\Desktop\\Images")
-	host := envOrDefault("DB_HOST", "localhost")
+	dbHost := envOrDefault("DB_HOST", "localhost")
 	dbname := envOrDefault("DB_NAME", "manager")
 	pdfprocessorUrl := envOrDefault("PDFPROCESSOR_URL", "http://localhost:8181")
 
-	session, err := mgo.Dial(host)
+	session, err := mgo.Dial(dbHost)
 	if err != nil {
-		panic(err)
+		log.Errorf("Error connecting to database: %s", err)
 	}
 	defer session.Close()
 	c := session.DB(dbname).C("records")
@@ -37,7 +37,7 @@ func main() {
 		Categories:   repositories.NewCategoryRepository(),
 		PDFProcessor: pdf.NewPDFProcessor(pdfprocessorUrl),
 	}
-	services.InitHealthService(pdfprocessorUrl)
+	services.InitHealthService(dbHost, pdfprocessorUrl)
 	http.Run(&app)
 }
 

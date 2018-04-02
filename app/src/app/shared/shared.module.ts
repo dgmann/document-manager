@@ -20,6 +20,8 @@ import {MatCardModule} from "@angular/material/card";
 import {MatSortModule} from "@angular/material/sort";
 import {MatTableModule} from "@angular/material/table";
 import {NgDragDropModule} from "ng-drag-drop";
+import {AutocompleteChipsComponent} from "./autocomplete-chips/autocomplete-chips.component";
+import {AutocompleteInputComponent} from "./autocomplete-input/autocomplete-input.component";
 import {DocumentEditDialogComponent} from "./document-edit-dialog/document-edit-dialog.component";
 import {DocumentListComponent} from "./document-list/document-list.component";
 import {NotificationService} from "./notification-service";
@@ -35,6 +37,7 @@ import {WebsocketService} from "./websocket-service";
   imports: [
     CommonModule,
     FormsModule,
+    ReactiveFormsModule,
     FlexLayoutModule,
     MatSelectModule,
     MatCardModule,
@@ -51,15 +54,16 @@ import {WebsocketService} from "./websocket-service";
     MatMomentDateModule,
     MatDatepickerModule,
     MatChipsModule,
-    MatMenuModule,
-    ReactiveFormsModule
+    MatMenuModule
   ],
   declarations: [
     RecordViewerComponent,
     DocumentEditDialogComponent,
     DocumentListComponent,
     PatientSearchComponent,
-    SplitPanelComponent
+    SplitPanelComponent,
+    AutocompleteInputComponent,
+    AutocompleteChipsComponent
   ],
   entryComponents: [
     DocumentEditDialogComponent

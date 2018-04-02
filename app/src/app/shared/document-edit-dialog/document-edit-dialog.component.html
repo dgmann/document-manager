@@ -11,19 +11,17 @@
       <mat-datepicker #picker></mat-datepicker>
     </mat-form-field>
 
-    <mat-form-field fxFlex="120px">
-      <input matInput (input)="categoryChanged($event)" [(ngModel)]="record.category" [matAutocomplete]="autoCategory"
-             required>
-    </mat-form-field>
-    <mat-autocomplete #autoCategory="matAutocomplete">
-      <mat-option autoActiveFirstOption *ngFor="let category of filteredCategories | async" [value]="category">
-        {{ category }}
-      </mat-option>
-    </mat-autocomplete>
+    <div fxFlex="120px">
+      <app-autocomplete-dropdown [control]="categoryFormControl" [options]="tagsService.getPrimaryTags()"></app-autocomplete-dropdown>
+    </div>
   </div>
 
   <div fxLayout="row">
-    <mat-form-field fxFlexFill>
+    <div fxFlexFill>
+      <app-autocomplete-chips [value]="record.tags" [options]="tagsService.get()" [control]="tagsFormControl"></app-autocomplete-chips>
+    </div>
+
+    <mat-form-field *ngIf="false" fxFlexFill>
       <mat-chip-list #tagList required>
         <mat-chip *ngFor="let tag of record.tags" [selectable]="selectable"
                   [removable]="removable" (remove)="remove(tag)">

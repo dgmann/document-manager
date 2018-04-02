@@ -1,5 +1,6 @@
 import {COMMA, ENTER} from "@angular/cdk/keycodes";
 import {AfterViewInit, Component, ElementRef, Inject, OnInit, ViewChild} from '@angular/core';
+import {FormControl} from "@angular/forms";
 import {MAT_DIALOG_DATA, MatAutocompleteSelectedEvent, MatChipInputEvent, MatDialogRef} from "@angular/material";
 import {filter} from 'lodash-es';
 import {Observable} from "rxjs/Observable";
@@ -19,6 +20,9 @@ import {TagService} from "../tag-service";
   styleUrls: ['./document-edit-dialog.component.scss']
 })
 export class DocumentEditDialogComponent implements AfterViewInit, OnInit {
+  tagsFormControl = new FormControl();
+  categoryFormControl = new FormControl();
+
   @ViewChild('datepickertoogle', {read: ElementRef}) datepickerToggle;
   tagInput = new Subject<string>();
   categoryInput = new Subject<string>();

@@ -1,0 +1,23 @@
+<mat-form-field>
+  <mat-chip-list #tagList required>
+    <mat-chip *ngFor="let tag of value" [selectable]="true"
+              [removable]="true" (remove)="remove(tag)">
+      {{tag}}
+      <mat-icon matChipRemove>cancel</mat-icon>
+    </mat-chip>
+    <input placeholder="Tag hinzufügen"
+           #tagInput
+           matInput
+           [formControl]="formControl"
+           [matAutocomplete]="auto"
+           [matChipInputFor]="tagList"
+           [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+           [matChipInputAddOnBlur]="false"
+           (matChipInputTokenEnd)="add($event)">
+  </mat-chip-list>
+  <mat-autocomplete #auto="matAutocomplete">
+    <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+      {{ option }}
+    </mat-option>
+  </mat-autocomplete>
+</mat-form-field>

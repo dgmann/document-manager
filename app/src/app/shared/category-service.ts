@@ -8,10 +8,15 @@ export class CategoryService {
   }
 
   public get() {
-    return this.http.get<string[]>(environment.api + "/categories");
+    return this.http.get<Category[]>(environment.api + "/categories");
   }
 
   public getByPatientId(id: string) {
-    return this.http.get<string[]>(`${environment.api}/patients/${id}/categories`);
+    return this.http.get<Category[]>(`${environment.api}/patients/${id}/categories`);
   }
+}
+
+export interface Category {
+  id: string;
+  name: string;
 }

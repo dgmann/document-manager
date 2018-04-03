@@ -6,6 +6,7 @@ import (
 	"github.com/globalsign/mgo/bson"
 	"net/url"
 	"time"
+	"github.com/globalsign/mgo"
 )
 
 const (
@@ -15,14 +16,14 @@ const (
 )
 
 type Record struct {
-	Id             string        `json:"id"`
-	Primary        bson.ObjectId `bson:"_id,omitempty" json:"-"` //Primary key for mongodb. Not serialized
+	Id             bson.ObjectId `bson:"_id,omitempty" json:"id"`
 	Date           *time.Time    `bson:"date,omitempty" json:"date"`
 	ReceivedAt     time.Time     `bson:"receivedAt,omitempty" json:"receivetAt"`
 	PatientId      *string       `bson:"patientId,omitempty" json:"patientId"`
 	Comment        *string       `bson:"comment,omitempty" json:"comment"`
 	Sender         string        `bson:"sender,omitempty" json:"sender" form:"user" binding:"required"`
-	Category       *string       `bson:"category,omitempty" json:"category"`
+	Category       mgo.DBRef     `bson:"category,omitempty" json:"-"`
+	CategoryId     *string       `json:"categoryId"`
 	Tags           []string      `bson:"tags,omitempty" json:"tags"`
 	Pages          []Page        `bson:"pages,omitempty" json:"pages"`
 	RequiredAction *string       `bson:"requiredAction,omitempty" json:"requiredAction"`
@@ -37,7 +38,7 @@ func (r *Record) SetURL(url *url.URL) {
 	}
 
 	for i := range r.Pages {
-		r.Pages[i].Url = fmt.Sprintf("%s/records/%s/images/%s", url.String(), r.Id, r.Pages[i].Id)
+		r.Pages[i].Url = fmt.Sprintf("%s/records/%s/images/%s", url.String(), r.Id.Hex(), r.Pages[i].Id)
 	}
 }
 
@@ -49,7 +50,7 @@ func (r *Record) MarshalJSON() ([]byte, error) {
 		"patientId":      toString(r.PatientId),
 		"comment":        toString(r.Comment),
 		"sender":         r.Sender,
-		"category":       r.Category,
+		"categoryId":     r.Category.Id,
 		"tags":           r.Tags,
 		"pages":          r.Pages,
 		"requiredAction": toString(r.RequiredAction),
@@ -64,8 +65,9 @@ func toString(val *string) string {
 	return *val
 }
 
-func NewRecord(id bson.ObjectId, sender string) *Record {
-	return &Record{Primary: id,
+func NewRecord(sender string) *Record {
+	return &Record{
+		Id:             bson.NewObjectId(),
 		Date:           nil,
 		ReceivedAt:     time.Now(),
 		Comment:        nil,

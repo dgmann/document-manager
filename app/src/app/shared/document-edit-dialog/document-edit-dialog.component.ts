@@ -41,8 +41,8 @@ export class DocumentEditDialogComponent implements AfterViewInit, OnInit {
     else {
       this.tabIndex.next(0);
     }
-    this.categoryFormControl = new FormControl(this.record.category);
-    this.categoryFormControl.valueChanges.subscribe(val => this.record.category = val);
+    this.categoryFormControl = new FormControl(this.record.categoryId);
+    this.categoryFormControl.valueChanges.subscribe(val => this.record.categoryId = val.id);
   }
 
   ngOnInit() {
@@ -60,6 +60,6 @@ export class DocumentEditDialogComponent implements AfterViewInit, OnInit {
   }
 
   valid() {
-    return this.record.date && this.record.patientId && this.record.category;
+    return this.record.date && this.record.patientId && this.record.categoryId;
   }
 }

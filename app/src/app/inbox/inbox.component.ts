@@ -40,7 +40,12 @@ export class InboxComponent {
       if (!result) {
         return;
       }
-      this.recordService.update(result.id, {patientId: result.patientId, date: result.date, tags: result.tags});
+      this.recordService.update(result.id, {
+        patientId: result.patientId,
+        date: result.date,
+        tags: result.tags,
+        categoryId: result.categoryId
+      });
     });
   }
 

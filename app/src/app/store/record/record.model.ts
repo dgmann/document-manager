@@ -5,7 +5,7 @@ export interface Record {
   comment: string;
   sender: string;
   pages: Page[];
-  category: string;
+  categoryId: string;
   tags: string[];
   patientId: string;
   escalated: boolean;

@@ -11,7 +11,7 @@ export class InboxService {
   inboxFilter: any;
 
   constructor(private store: Store<State>, private recordService: RecordService) {
-    this.inboxFilter = (record: Record) => (!record.date || !record.patientId || !record.tags) && !record.requiredAction
+    this.inboxFilter = (record: Record) => (!record.date || !record.patientId || !record.categoryId) && !record.requiredAction
   }
 
   public load() {

@@ -20,6 +20,7 @@ import {MatCardModule} from "@angular/material/card";
 import {MatSortModule} from "@angular/material/sort";
 import {MatTableModule} from "@angular/material/table";
 import {NgDragDropModule} from "ng-drag-drop";
+import {NgxMatSelectSearchModule} from "ngx-mat-select-search";
 import {AutocompleteChipsComponent} from "./autocomplete-chips/autocomplete-chips.component";
 import {AutocompleteInputComponent} from "./autocomplete-input/autocomplete-input.component";
 import {CategoryService} from "./category-service";
@@ -55,7 +56,8 @@ import {WebsocketService} from "./websocket-service";
     MatMomentDateModule,
     MatDatepickerModule,
     MatChipsModule,
-    MatMenuModule
+    MatMenuModule,
+    NgxMatSelectSearchModule
   ],
   declarations: [
     RecordViewerComponent,

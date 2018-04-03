@@ -58,7 +58,6 @@ func (r *RecordRepository) FindByObjectId(id bson.ObjectId) *models.Record {
 	if err := r.records.FindId(id).One(&record); err != nil {
 		log.WithField("error", err).Panic("Cannot find record")
 	}
-	record.Id = record.Primary.Hex()
 	return &record
 }
 
@@ -69,15 +68,11 @@ func (r *RecordRepository) Query(query map[string]interface{}) []*models.Record 
 		log.Panic(err)
 	}
 
-	for _, record := range records {
-		record.Id = record.Primary.Hex()
-	}
-
 	return records
 }
 
 func (r *RecordRepository) GetInbox() []*models.Record {
-	return r.Query(bson.M{ "$or": []bson.M{ {"date":nil}, {"patientId": ""}, {"tags": nil} } })
+	return r.Query(bson.M{"$or": []bson.M{{"date": nil}, {"patientId": ""}, {"category": nil}}})
 }
 
 func (r *RecordRepository) GetEscalated() []*models.Record {
@@ -90,10 +85,8 @@ func (r *RecordRepository) GetEscalated() []*models.Record {
 }
 
 func (r *RecordRepository) Create(sender string, images []*bytes.Buffer) (*models.Record, error) {
-	id := bson.NewObjectId()
-
-	record := models.NewRecord(id, sender)
-	imageIds, err := r.images.Set(id.Hex(), images)
+	record := models.NewRecord(sender)
+	imageIds, err := r.images.Set(record.Id.Hex(), images)
 	if err != nil {
 		log.Error(err)
 		return nil, err
@@ -102,10 +95,10 @@ func (r *RecordRepository) Create(sender string, images []*bytes.Buffer) (*model
 
 	if err := r.records.Insert(&record); err != nil {
 		log.Error(err)
-		r.images.Delete(id.Hex())
+		r.images.Delete(record.Id.Hex())
 		return nil, err
 	}
-	created := r.FindByObjectId(id)
+	created := r.FindByObjectId(record.Id)
 
 	r.events.Send(services.EventCreated, created)
 	return created, nil
@@ -124,6 +117,9 @@ func (r *RecordRepository) Delete(id string) error {
 
 func (r *RecordRepository) Update(id string, record models.Record) *models.Record {
 	key := bson.ObjectIdHex(id)
+	if record.CategoryId != nil {
+		record.Category = mgo.DBRef{Collection: r.records.Name, Database: r.records.Database.Name, Id: record.CategoryId}
+	}
 	if err := r.records.UpdateId(key, bson.M{"$set": record}); err != nil {
 		log.Panic(err)
 	}

@@ -1,9 +1,8 @@
-<mat-form-field fxFlexFill>
-  <input matInput [formControl]="formControl" [matAutocomplete]="auto"
-         required>
+<mat-form-field>
+  <mat-select [formControl]="formControl" placeholder="Kategorie" #singleSelect>
+    <ngx-mat-select-search [formControl]="filterFormControl"></ngx-mat-select-search>
+    <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+      {{option.name}}
+    </mat-option>
+  </mat-select>
 </mat-form-field>
-<mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
-  <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
-    {{ option }}
-  </mat-option>
-</mat-autocomplete>

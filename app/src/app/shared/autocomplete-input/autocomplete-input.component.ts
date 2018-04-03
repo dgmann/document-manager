@@ -2,6 +2,7 @@ import {Component, Input, OnInit} from '@angular/core';
 import {FormControl} from "@angular/forms";
 import {Observable} from "rxjs/Observable";
 import {concat, map, startWith, withLatestFrom} from "rxjs/operators";
+import {Category} from "../category-service";
 
 @Component({
   selector: 'app-autocomplete-dropdown',
@@ -9,13 +10,14 @@ import {concat, map, startWith, withLatestFrom} from "rxjs/operators";
   styleUrls: ['./autocomplete-input.component.scss']
 })
 export class AutocompleteInputComponent implements OnInit {
-  @Input('options') options: Observable<string[]>;
+  @Input('options') options: Observable<Category[]>;
   @Input('control') formControl: FormControl;
 
-  filteredOptions: Observable<string[]>;
+  filterFormControl = new FormControl();
+  filteredOptions: Observable<Category[]>;
 
   ngOnInit() {
-    const filtered = this.formControl.valueChanges
+    const filtered = this.filterFormControl.valueChanges
       .pipe(
         startWith(''),
         withLatestFrom(this.options),
@@ -26,8 +28,12 @@ export class AutocompleteInputComponent implements OnInit {
     );
   }
 
-  filter(val: string, options: string[]): string[] {
+  filter(val: string, options: Category[]): Category[] {
     return options.filter(option =>
-      option.toLowerCase().indexOf(val.toLowerCase()) === 0);
+      option.name.toLowerCase().indexOf(val.toLowerCase()) === 0);
+  }
+
+  displayFn(category?: Category): string | undefined {
+    return category ? category.name : undefined;
   }
 }

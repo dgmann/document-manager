@@ -18,38 +18,15 @@
 
   <div fxLayout="row">
     <div fxFlexFill>
-      <app-autocomplete-chips [value]="record.tags" [options]="tagsService.get()" [control]="tagsFormControl"></app-autocomplete-chips>
+      <app-autocomplete-chips [(values)]="record.tags" [options]="tagsService.get()"
+                              (submit)="submit()"></app-autocomplete-chips>
     </div>
-
-    <mat-form-field *ngIf="false" fxFlexFill>
-      <mat-chip-list #tagList required>
-        <mat-chip *ngFor="let tag of record.tags" [selectable]="selectable"
-                  [removable]="removable" (remove)="remove(tag)">
-          {{tag}}
-          <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
-        </mat-chip>
-        <input placeholder="Tag hinzufügen"
-               #tagInput
-               matInput
-               (input)="inputChanged($event)"
-               [matAutocomplete]="auto"
-               [matChipInputFor]="tagList"
-               [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-               [matChipInputAddOnBlur]="addOnBlur"
-               (matChipInputTokenEnd)="add($event, auto)" (focus)="tabIndex.next(0)">
-      </mat-chip-list>
-      <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete" (optionSelected)="addOption($event, tagInput)">
-        <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
-          {{ option }}
-        </mat-option>
-      </mat-autocomplete>
-    </mat-form-field>
   </div>
 </mat-dialog-content>
 <mat-dialog-actions>
   <button mat-button mat-dialog-close>Abbrechen</button>
   <!-- The mat-dialog-close directive optionally accepts a value as a result for the dialog. -->
   <button mat-button [mat-dialog-close]="record"
-          [disabled]="!(record.tags && record.tags.length > 0 && record.date && record.patientId)">Speichern
+          [disabled]="!valid()">Speichern
   </button>
 </mat-dialog-actions>

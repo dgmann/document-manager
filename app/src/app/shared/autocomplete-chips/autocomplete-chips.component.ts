@@ -1,7 +1,8 @@
 import {COMMA, ENTER} from "@angular/cdk/keycodes";
-import {Component, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {FormControl} from "@angular/forms";
-import {MatAutocompleteSelectedEvent, MatAutocompleteTrigger, MatChipInputEvent} from "@angular/material";
+import {MatAutocomplete, MatChipInputEvent, MatInput} from "@angular/material";
+import {difference} from 'lodash-es';
 import {Observable} from "rxjs/Observable";
 import {concat, map, startWith, withLatestFrom} from "rxjs/operators";
 
@@ -11,10 +12,13 @@ import {concat, map, startWith, withLatestFrom} from "rxjs/operators";
   styleUrls: ['./autocomplete-chips.component.scss']
 })
 export class AutocompleteChipsComponent implements OnInit {
-  @Input('value') value: string[];
+  @Input('values') values: string[];
   @Input('options') options: Observable<string[]>;
-  @Input('control') formControl: FormControl;
-  @ViewChild(MatAutocompleteTrigger) trigger: MatAutocompleteTrigger;
+  @Output('valuesChange') valuesChange = new EventEmitter<string[]>();
+  @Output() submit = new EventEmitter();
+  @ViewChild('chipInput') chipInput: MatInput;
+  @ViewChild('auto') autoComplete: MatAutocomplete;
+  formControl = new FormControl();
 
   filteredOptions: Observable<string[]>;
   separatorKeysCodes = [ENTER, COMMA];
@@ -24,7 +28,7 @@ export class AutocompleteChipsComponent implements OnInit {
       .pipe(
         startWith(''),
         withLatestFrom(this.options),
-        map(([val, options]) => this.filter(val, options))
+        map(([val, options]) => difference(this.filter(val, options), this.values))
       );
     this.filteredOptions = this.options.pipe(
       concat(filtered),
@@ -39,21 +43,38 @@ export class AutocompleteChipsComponent implements OnInit {
       option.toLowerCase().indexOf(val.toLowerCase()) === 0);
   }
 
-  add(event: MatChipInputEvent): void {
-    let value = this.formControl.value;
-
+  addValue(value: string) {
     if ((value || '').trim()) {
-      this.value.push(value.trim());
+      this.values.push(value.trim());
+      this.valuesChange.emit(this.values);
     }
 
-    this.formControl.reset();
+    this.reset();
+  }
+
+  addChip(event: MatChipInputEvent): void {
+    let value = this.formControl.value;
+    this.addValue(value);
   }
 
   remove(chip: any): void {
-    let index = this.value.indexOf(chip);
+    let index = this.values.indexOf(chip);
 
     if (index >= 0) {
-      this.value.splice(index, 1);
+      this.values.splice(index, 1);
+      this.valuesChange.emit(this.values);
+    }
+  }
+
+  reset() {
+    this.chipInput['nativeElement'].value = '';
+    this.formControl.reset();
+  }
+
+  onSubmit(event) {
+    if (this.chipInput['nativeElement'].value == '' && !this.autoComplete.isOpen) {
+      event.preventDefault();
+      this.submit.emit(null);
     }
   }
 }

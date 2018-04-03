@@ -10,6 +10,7 @@ import {
 } from "@angular/material";
 import {MatDividerModule} from '@angular/material/divider';
 import {SharedModule} from "../shared";
+import {CategoryListComponent} from './category-list/category-list.component';
 import {MultiRecordListComponent} from './multi-record-list/multi-record-list.component';
 import {NavigationComponent} from './navigation/navigation.component';
 import {PatientComponent} from './patient.component';
@@ -29,7 +30,7 @@ import {TagListComponent} from './tag-list/tag-list.component';
     MatCardModule,
     MatDividerModule
   ],
-  declarations: [PatientComponent, NavigationComponent, TagListComponent, MultiRecordListComponent]
+  declarations: [PatientComponent, NavigationComponent, TagListComponent, MultiRecordListComponent, CategoryListComponent]
 })
 export class PatientModule {
 }

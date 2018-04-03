@@ -6,6 +6,7 @@ import {ReplaySubject} from "rxjs/ReplaySubject";
 
 
 import {Record} from "../../store";
+import {CategoryService} from "../category-service";
 import {Patient, PatientService} from "../patient-service";
 import {TagService} from "../tag-service";
 
@@ -24,7 +25,8 @@ export class DocumentEditDialogComponent implements AfterViewInit, OnInit {
   constructor(public dialogRef: MatDialogRef<DocumentEditDialogComponent>,
               @Inject(MAT_DIALOG_DATA) record: Record,
               public patient: PatientService,
-              public tagsService: TagService) {
+              public tagsService: TagService,
+              public categoryService: CategoryService) {
     this.record = Object.assign({}, record);
     if (!this.record.date) {
       this.record.date = new Date();

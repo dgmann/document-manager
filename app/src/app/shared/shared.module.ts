@@ -22,6 +22,7 @@ import {MatTableModule} from "@angular/material/table";
 import {NgDragDropModule} from "ng-drag-drop";
 import {AutocompleteChipsComponent} from "./autocomplete-chips/autocomplete-chips.component";
 import {AutocompleteInputComponent} from "./autocomplete-input/autocomplete-input.component";
+import {CategoryService} from "./category-service";
 import {DocumentEditDialogComponent} from "./document-edit-dialog/document-edit-dialog.component";
 import {DocumentListComponent} from "./document-list/document-list.component";
 import {NotificationService} from "./notification-service";
@@ -87,7 +88,8 @@ export class SharedModule {
         PatientService,
         WebsocketService,
         NotificationService,
-        TagService
+        TagService,
+        CategoryService
       ]
     }
   }

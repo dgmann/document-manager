@@ -22,6 +22,7 @@ func Run(a *shared.App) {
 	registerWebsocket(router)
 	registerRecords(router.Group("/records"))
 	registerPatients(router.Group("/patients"))
+	registerCategories(router.Group("/categories"))
 
 	router.GET("", func(context *gin.Context) {
 		context.String(200, "Document Manager API")
@@ -44,16 +45,6 @@ func Run(a *shared.App) {
 		}
 
 		context.JSON(200, tags)
-	})
-
-	router.GET("categories", func(context *gin.Context) {
-		categories, err := app.Categories.All()
-		if err != nil {
-			context.AbortWithError(500, err)
-			return
-		}
-
-		context.JSON(200, categories)
 	})
 
 	router.Run()

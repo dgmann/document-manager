@@ -12,7 +12,8 @@
     </mat-form-field>
 
     <div fxFlex="120px">
-      <app-autocomplete-dropdown [control]="categoryFormControl" [options]="tagsService.getPrimaryTags()"></app-autocomplete-dropdown>
+      <app-autocomplete-dropdown [control]="categoryFormControl"
+                                 [options]="categoryService.get()"></app-autocomplete-dropdown>
     </div>
   </div>
 

@@ -28,13 +28,14 @@ func main() {
 		log.Errorf("Error connecting to database: %s", err)
 	}
 	defer session.Close()
-	c := session.DB(dbname).C("records")
+	records := session.DB(dbname).C("records")
+	categories := session.DB(dbname).C("categories")
 	images := repositories.NewFileSystemImageRepository(recordDir)
 	app := shared.App{
-		Records:      repositories.NewRecordRepository(c, images),
+		Records:      repositories.NewRecordRepository(records, images),
 		Images:       images,
-		Tags:         repositories.NewTagRepository(c),
-		Categories:   repositories.NewCategoryRepository(),
+		Tags:         repositories.NewTagRepository(records),
+		Categories:   repositories.NewCategoryRepository(categories),
 		PDFProcessor: pdf.NewPDFProcessor(pdfprocessorUrl),
 	}
 	services.InitHealthService(dbHost, pdfprocessorUrl)

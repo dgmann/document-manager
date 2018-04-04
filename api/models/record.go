@@ -6,7 +6,6 @@ import (
 	"github.com/globalsign/mgo/bson"
 	"net/url"
 	"time"
-	"github.com/globalsign/mgo"
 )
 
 const (
@@ -22,8 +21,7 @@ type Record struct {
 	PatientId      *string       `bson:"patientId,omitempty" json:"patientId"`
 	Comment        *string       `bson:"comment,omitempty" json:"comment"`
 	Sender         string        `bson:"sender,omitempty" json:"sender" form:"user" binding:"required"`
-	Category       mgo.DBRef     `bson:"category,omitempty" json:"-"`
-	CategoryId     *string       `json:"categoryId"`
+	CategoryId     bson.ObjectId `bson:"categoryId,omitempty" json:"categoryId"`
 	Tags           []string      `bson:"tags,omitempty" json:"tags"`
 	Pages          []Page        `bson:"pages,omitempty" json:"pages"`
 	RequiredAction *string       `bson:"requiredAction,omitempty" json:"requiredAction"`
@@ -50,7 +48,7 @@ func (r *Record) MarshalJSON() ([]byte, error) {
 		"patientId":      toString(r.PatientId),
 		"comment":        toString(r.Comment),
 		"sender":         r.Sender,
-		"categoryId":     r.Category.Id,
+		"categoryId":     r.CategoryId,
 		"tags":           r.Tags,
 		"pages":          r.Pages,
 		"requiredAction": toString(r.RequiredAction),

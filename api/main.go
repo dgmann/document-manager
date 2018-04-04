@@ -30,12 +30,14 @@ func main() {
 	defer session.Close()
 	records := session.DB(dbname).C("records")
 	categories := session.DB(dbname).C("categories")
+	patients := session.DB(dbname).C("patients")
 	images := repositories.NewFileSystemImageRepository(recordDir)
 	app := shared.App{
 		Records:      repositories.NewRecordRepository(records, images),
 		Images:       images,
 		Tags:         repositories.NewTagRepository(records),
-		Categories:   repositories.NewCategoryRepository(categories),
+		Patients:     repositories.NewPatientRepository(patients),
+		Categories:   repositories.NewCategoryRepository(categories, records),
 		PDFProcessor: pdf.NewPDFProcessor(pdfprocessorUrl),
 	}
 	services.InitHealthService(dbHost, pdfprocessorUrl)

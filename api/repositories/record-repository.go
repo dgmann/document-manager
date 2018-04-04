@@ -44,7 +44,7 @@ func NewRecordRepository(records *mgo.Collection, images ImageRepository) *Recor
 	return &RecordRepository{records: records, events: services.GetEventService(), images: images}
 }
 
-func (r *RecordRepository) All() []*models.Record {
+func (r *RecordRepository) All() ([]*models.Record, error) {
 	return r.Query(bson.M{})
 }
 
@@ -61,18 +61,28 @@ func (r *RecordRepository) FindByObjectId(id bson.ObjectId) *models.Record {
 	return &record
 }
 
-func (r *RecordRepository) Query(query map[string]interface{}) []*models.Record {
+func (r *RecordRepository) FindByPatientId(id string) ([]*models.Record, error) {
+	records, err := r.Query(bson.M{"patientId": id})
+	if err != nil {
+		log.WithField("error", err).Panic("Cannot find records by patient id")
+		return nil, err
+	}
+	return records, nil
+}
+
+func (r *RecordRepository) Query(query map[string]interface{}) ([]*models.Record, error) {
 	records := make([]*models.Record, 0)
 
 	if err := r.records.Find(query).All(&records); err != nil {
-		log.Panic(err)
+		log.Error(err)
+		return nil, err
 	}
 
-	return records
+	return records, nil
 }
 
-func (r *RecordRepository) GetInbox() []*models.Record {
-	return r.Query(bson.M{"$or": []bson.M{{"date": nil}, {"patientId": ""}, {"category": nil}}})
+func (r *RecordRepository) GetInbox() ([]*models.Record, error) {
+	return r.Query(bson.M{"$or": []bson.M{{"date": nil}, {"patientId": ""}, {"categoryId": nil}}})
 }
 
 func (r *RecordRepository) GetEscalated() []*models.Record {
@@ -117,9 +127,6 @@ func (r *RecordRepository) Delete(id string) error {
 
 func (r *RecordRepository) Update(id string, record models.Record) *models.Record {
 	key := bson.ObjectIdHex(id)
-	if record.CategoryId != nil {
-		record.Category = mgo.DBRef{Collection: r.records.Name, Database: r.records.Database.Name, Id: record.CategoryId}
-	}
 	if err := r.records.UpdateId(key, bson.M{"$set": record}); err != nil {
 		log.Panic(err)
 	}

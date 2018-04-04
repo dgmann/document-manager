@@ -10,23 +10,28 @@ import (
 func registerRecords(g *gin.RouterGroup) {
 	g.GET("", func(c *gin.Context) {
 		r := c.Request.URL.Query()
+		var records []*models.Record
+		var err error
 		if _, ok := r["inbox"]; ok {
-			records := app.Records.GetInbox()
-			RespondAsJSON(c, records)
+			records, err = app.Records.GetInbox()
 		} else {
 			query := make(map[string]interface{})
 			for k, v := range r {
 				query[k] = v[0]
 			}
-			records := app.Records.Query(query)
-			RespondAsJSON(c, records)
+			records, err = app.Records.Query(query)
 		}
+		if err != nil {
+			c.AbortWithError(400, err)
+			return
+		}
+		RespondAsJSON(c, records)
 	})
 
 	g.GET("/:recordId", func(c *gin.Context) {
 		id := c.Param("recordId")
 		if id == "inbox" {
-			records := app.Records.GetInbox()
+			records, _ := app.Records.GetInbox()
 			RespondAsJSON(c, records)
 		} else {
 			record := app.Records.Find(id)
@@ -71,6 +76,7 @@ func registerRecords(g *gin.RouterGroup) {
 		c.Header("Content-Type", "application/json; charset=utf-8")
 		if err != nil {
 			c.AbortWithError(400, err)
+			return
 		}
 		c.Status(204)
 	})

@@ -9,6 +9,7 @@ type App struct {
 	Records      *repositories.RecordRepository
 	Images       *repositories.FileSystemImageRepository
 	Tags         *repositories.TagRepository
+	Patients     *repositories.PatientRepository
 	Categories   *repositories.CategoryRepository
 	PDFProcessor *pdf.PDFProcessor
 }

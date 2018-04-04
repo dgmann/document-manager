@@ -2,11 +2,12 @@
 
   <ng-container matColumnDef="main">
     <mat-header-cell *matHeaderCellDef> Name</mat-header-cell>
-    <mat-cell *matCellDef="let element">{{element}}</mat-cell>
+    <mat-cell *matCellDef="let element">{{element.name}}</mat-cell>
   </ng-container>
 
   <mat-header-row class="tag-header" style="display: none;" *matHeaderRowDef="displayedColumns"></mat-header-row>
-  <mat-row class="tag-row" *matRowDef="let row; columns: displayedColumns;" [class.selected]="row === selectedTag"
+  <mat-row class="selectable-row" *matRowDef="let row; columns: displayedColumns;"
+           [class.selected]="row === selectedCategory"
            (click)="select(row)"></mat-row>
 </mat-table>
 

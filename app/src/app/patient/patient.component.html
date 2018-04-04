@@ -1,6 +1,8 @@
 <app-split-panel>
-  <div class="left-panel">
-    <app-tag-list [patientId]="patientId"></app-tag-list>
+  <div class="left-panel" fxLayout="column" fxLayoutGap="1em">
+    <app-category-list [categories]="categories"></app-category-list>
+    <mat-divider></mat-divider>
+    <app-tag-list [tags]="tags"></app-tag-list>
   </div>
   <div class="right-panel">
     <app-multi-record-list [records]="records"></app-multi-record-list>

@@ -6,7 +6,7 @@
   </ng-container>
 
   <mat-header-row class="tag-header" style="display: none;" *matHeaderRowDef="displayedColumns"></mat-header-row>
-  <mat-row class="tag-row" *matRowDef="let row; columns: displayedColumns;"
+  <mat-row class="selectable-row" *matRowDef="let row; columns: displayedColumns;"
            [class.selected]="selectedTags.indexOf(row) >= 0" (click)="select(row)"></mat-row>
 </mat-table>
 

@@ -3,8 +3,7 @@ import {MatTableDataSource} from "@angular/material";
 import {uniq} from 'lodash-es';
 import sortBy from "lodash-es/sortBy";
 import {Observable} from "rxjs/Observable";
-import {map, switchMap} from "rxjs/operators";
-import {TagService} from "../../shared/tag-service";
+import {map} from "rxjs/operators";
 
 @Component({
   selector: 'app-tag-list',
@@ -12,18 +11,17 @@ import {TagService} from "../../shared/tag-service";
   styleUrls: ['./tag-list.component.scss']
 })
 export class TagListComponent implements OnInit {
-  @Input('patientId') patientId: Observable<string>;
+  @Input() tags: Observable<string[]>;
   @Output() selected = new EventEmitter<string[]>();
   displayedColumns = ['main'];
   dataSource = new MatTableDataSource<string>();
   selectedTags: string[] = [];
 
-  constructor(private tagService: TagService) {
+  constructor() {
   }
 
   ngOnInit() {
-    this.patientId.pipe(
-      switchMap(id => this.tagService.getByPatientId(id)),
+    this.tags.pipe(
       map(tags => sortBy(tags))
     ).subscribe(data => this.dataSource.data = data);
   }

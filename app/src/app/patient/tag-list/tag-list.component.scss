@@ -4,7 +4,7 @@ mat-header-row {
   display: none;
 }
 
-mat-row {
+.selectable-row {
   cursor: pointer;
 
   &:hover {

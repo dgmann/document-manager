@@ -1,10 +1,10 @@
 import {Component, OnInit} from '@angular/core';
 import {Observable} from "rxjs/Observable";
-import {of} from "rxjs/observable/of";
-import {map, switchMap} from "rxjs/operators";
-import {Patient, PatientService} from "../shared";
+import {map} from "rxjs/operators";
+import {Patient} from "../shared";
 import {Category} from "../shared/category-service";
 import {Record, RecordService} from "../store";
+import {PatientService} from "./patient.service";
 
 @Component({
   selector: 'app-patient',
@@ -19,16 +19,17 @@ export class PatientComponent implements OnInit {
   public categories: Observable<Category[]>;
 
   constructor(private recordService: RecordService, private patientService: PatientService) {
-    this.patientId = of("3");
-    this.records = recordService.all();
-    this.patient = this.patientId.pipe(
-      switchMap(id => patientService.findById(id))
+    patientService.selectPatient('3');
+    this.records = patientService.getPatientRecords();
+    this.patient = patientService.getSelectedPatient();
+    this.patientId = this.patient.pipe(
+      map(patient => patient && patient.id || null)
     );
     this.tags = this.patient.pipe(
-      map(patient => patient.tags)
+      map(patient => patient && patient.tags || [])
     );
     this.categories = this.patient.pipe(
-      map(patient => patient.categories)
+      map(patient => patient && patient.categories || [])
     );
   }
 

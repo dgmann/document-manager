@@ -1,2 +1,2 @@
-export * from "./patient-service";
+export * from "./external-api.service";
 export * from "./shared.module";

@@ -3,7 +3,7 @@ import {Title} from "@angular/platform-browser";
 import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
 import {Observable} from "rxjs/Observable";
 import {filter, map, mergeMap} from "rxjs/operators";
-import {Patient} from "./shared";
+import {Patient} from "./patient";
 import {NotificationService} from "./shared/notification-service";
 import {AutorefreshService} from "./store/record/autorefresh-service";
 

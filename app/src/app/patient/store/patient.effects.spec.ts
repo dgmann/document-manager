@@ -4,7 +4,7 @@ import {Observable} from 'rxjs/Observable';
 
 import {PatientEffects} from './patient.effects';
 
-describe('PatientService', () => {
+describe('ExternalApiService', () => {
   let actions$: Observable<any>;
   let effects: PatientEffects;
 

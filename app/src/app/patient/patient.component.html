@@ -1,8 +1,21 @@
 <app-split-panel>
-  <div class="left-panel" fxLayout="column" fxLayoutGap="1em">
-    <app-category-list [categories]="categories"></app-category-list>
-    <mat-divider></mat-divider>
-    <app-tag-list [tags]="tags"></app-tag-list>
+  <div class="left-panel" fxLayout="column" fxLayoutGap="0em">
+    <mat-card>
+      <mat-card-title>
+        Fachrichtungen
+      </mat-card-title>
+      <mat-card-content>
+        <app-category-list [categories]="categories"></app-category-list>
+      </mat-card-content>
+    </mat-card>
+    <mat-card>
+      <mat-card-title>
+        Tags
+      </mat-card-title>
+      <mat-card-content>
+        <app-tag-list [tags]="tags"></app-tag-list>
+      </mat-card-content>
+    </mat-card>
   </div>
   <div class="right-panel">
     <app-multi-record-list [records]="records"></app-multi-record-list>

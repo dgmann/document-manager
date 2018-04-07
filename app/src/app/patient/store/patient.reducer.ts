@@ -4,11 +4,13 @@ import {PatientActions, PatientActionTypes} from './patient.actions';
 export interface State {
   selectedPatient: Patient;
   patientRecordMap: { [id: string]: string[] };
+  filter: { categoryIds: string[], tags: string[] }
 }
 
 export const initialState: State = {
   selectedPatient: null,
-  patientRecordMap: {}
+  patientRecordMap: {},
+  filter: {categoryIds: [], tags: []}
 };
 
 export function reducer(state = initialState, action: PatientActions): State {
@@ -24,7 +26,10 @@ export function reducer(state = initialState, action: PatientActions): State {
       return Object.assign({}, state, {
         patientRecordMap: map
       });
-
+    case PatientActionTypes.SetFilter:
+      return Object.assign({}, state, {
+        filter: {categoryIds: action.payload.categoryIds, tags: action.payload.tags}
+      });
 
     default:
       return state;

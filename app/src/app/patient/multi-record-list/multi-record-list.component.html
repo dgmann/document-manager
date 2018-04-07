@@ -1,9 +1,7 @@
 <mat-card *ngFor="let record of records | async">
   <mat-card-header>
-    <mat-card-title><h2>{{ record.date | date: 'short' }}</h2></mat-card-title>
+    <mat-card-title>{{ categories[record.categoryId]?.name }} {{ record.tags }}</mat-card-title>
+    <mat-card-subtitle>{{ record.date | date: 'short' }}</mat-card-subtitle>
   </mat-card-header>
-  <div *ngFor="let page of record.pages; let last = last;">
-    <img mat-card-image [src]="page.url" [alt]="page.index">
-    <mat-divider *ngIf="!last"></mat-divider>
-  </div>
+  <img mat-card-image [src]="record.pages[0].url">
 </mat-card>

@@ -1,4 +1,5 @@
 import {Component, OnInit} from '@angular/core';
+import {ActivatedRoute} from "@angular/router";
 import {Observable} from "rxjs/Observable";
 import {map} from "rxjs/operators";
 import {Patient} from "../shared";
@@ -18,10 +19,15 @@ export class PatientComponent implements OnInit {
   public tags: Observable<string[]>;
   public categories: Observable<Category[]>;
 
-  constructor(private recordService: RecordService, private patientService: PatientService) {
-    patientService.selectPatient('3');
-    this.records = patientService.getPatientRecords();
-    this.patient = patientService.getSelectedPatient();
+  constructor(private recordService: RecordService,
+              private patientService: PatientService,
+              private route: ActivatedRoute) {
+  }
+
+  ngOnInit() {
+    this.route.params.subscribe(params => this.patientService.selectPatient(params['id']));
+    this.records = this.patientService.getFilteredPatientRecords();
+    this.patient = this.patientService.getSelectedPatient();
     this.patientId = this.patient.pipe(
       map(patient => patient && patient.id || null)
     );
@@ -31,9 +37,6 @@ export class PatientComponent implements OnInit {
     this.categories = this.patient.pipe(
       map(patient => patient && patient.categories || [])
     );
-  }
-
-  ngOnInit() {
   }
 
 }

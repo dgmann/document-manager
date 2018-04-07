@@ -1,6 +1,8 @@
 import {createFeatureSelector, createSelector, MetaReducer} from '@ngrx/store';
+import {difference, includes} from 'lodash-es';
 import {environment} from '../../environments/environment';
 import {Patient} from "../shared";
+import {Record} from "../store";
 import {selectRecordEntities} from "../store/record/record.selectors";
 import * as fromPatient from './store/patient.reducer';
 
@@ -18,3 +20,7 @@ export const selectPatientRecordIds = createSelector(selectFeature, selectSelect
   return state.patientRecordMap[patient.id] || [];
 });
 export const selectPatientRecords = createSelector(selectPatientRecordIds, selectRecordEntities, (ids: string[], records) => ids.map(id => records[id]));
+export const selectFilter = createSelector(selectFeature, (state: fromPatient.State) => state.filter);
+export const selectFilteredPatientRecords = createSelector(selectPatientRecords, selectFilter, (records: Record[], filter) =>
+  records.filter(record => (filter.categoryIds.length == 0 ? true : includes(filter.categoryIds, record.categoryId)) //Displays all records if no category is selected
+    && difference(filter.tags, record.tags).length === 0));

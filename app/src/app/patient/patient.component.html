@@ -5,7 +5,7 @@
         Fachrichtungen
       </mat-card-title>
       <mat-card-content>
-        <app-category-list [categories]="categories"></app-category-list>
+        <app-category-list [categories]="categories" (select)="onSelectCategories($event)"></app-category-list>
       </mat-card-content>
     </mat-card>
     <mat-card>
@@ -13,7 +13,7 @@
         Tags
       </mat-card-title>
       <mat-card-content>
-        <app-tag-list [tags]="tags"></app-tag-list>
+        <app-tag-list [tags]="tags" (select)="onSelectTags($event)"></app-tag-list>
       </mat-card-content>
     </mat-card>
   </div>

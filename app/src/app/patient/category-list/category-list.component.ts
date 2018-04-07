@@ -1,5 +1,6 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {MatTableDataSource} from "@angular/material";
+import {uniq} from "lodash-es";
 import sortBy from "lodash-es/sortBy";
 import {Observable} from "rxjs/Observable";
 import {map} from "rxjs/operators";
@@ -12,9 +13,10 @@ import {Category} from "../../shared/category-service";
 })
 export class CategoryListComponent implements OnInit {
   @Input() categories: Observable<Category[]>;
+  @Output() select = new EventEmitter<Category[]>();
   displayedColumns = ['main'];
   dataSource = new MatTableDataSource<Category>();
-  selectedCategory = null;
+  selectedCategories: Category[] = [];
 
   constructor() {
   }
@@ -25,12 +27,15 @@ export class CategoryListComponent implements OnInit {
     ).subscribe(data => this.dataSource.data = data);
   }
 
-  select(category: string) {
-    if (this.selectedCategory === category) {
-      this.selectedCategory = null;
+  onSelect(category: Category) {
+    let index = this.selectedCategories.indexOf(category);
+
+    if (index >= 0) {
+      this.selectedCategories.splice(index, 1);
     } else {
-      this.selectedCategory = category;
+      this.selectedCategories = uniq([...this.selectedCategories, category]);
     }
+    this.select.emit(this.selectedCategories);
   }
 
 }

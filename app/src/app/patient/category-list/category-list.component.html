@@ -7,7 +7,7 @@
 
   <mat-header-row class="tag-header" style="display: none;" *matHeaderRowDef="displayedColumns"></mat-header-row>
   <mat-row class="selectable-row" *matRowDef="let row; columns: displayedColumns;"
-           [class.selected]="row === selectedCategory"
-           (click)="select(row)"></mat-row>
+           [class.selected]="selectedCategories.indexOf(row) >= 0"
+           (click)="onSelect(row)"></mat-row>
 </mat-table>
 

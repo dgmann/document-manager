@@ -40,6 +40,6 @@ export class AppComponent {
   }
 
   onSelectPatient(event: Patient) {
-    console.log(event);
+    this.router.navigate(['/patient', event.id]);
   }
 }

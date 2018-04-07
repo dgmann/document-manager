@@ -28,7 +28,7 @@ export class PatientSearchComponent implements OnInit {
   }
 
   displayFn(patient: Patient): string | undefined {
-    return patient ? patient.name : undefined;
+    return patient ? patient.lastName + ', ' + patient.firstName : undefined;
   }
 
   onSelectPatient(event: MatAutocompleteSelectedEvent) {

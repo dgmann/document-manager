@@ -30,7 +30,10 @@ func registerPatients(g *gin.RouterGroup) {
 		name := c.DefaultQuery("name", "")
 		if len(name) > 0 {
 			names := strings.Split(name, ",")
-			firstName, lastName := names[1], names[0]
+			lastName, firstName := names[0], ""
+			if len(names) > 1 {
+				firstName = names[1]
+			}
 			patients, err = app.Patients.FindByName(firstName+".*", lastName+".*")
 		} else {
 			patients, err = app.Patients.All()

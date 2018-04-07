@@ -4,7 +4,8 @@ import {Patient} from "../../shared";
 export enum PatientActionTypes {
   SelectPatientId = '[Patient] Select Patient ID',
   SetPatient = '[Patient] Set Patient',
-  SetPatientRecords = '[Patient] Set Patient Record ids'
+  SetPatientRecords = '[Patient] Set Patient Record ids',
+  SetFilter = '[Patient] Set Filter'
 }
 
 export class SelectPatient implements Action {
@@ -28,4 +29,14 @@ export class SetPatientRecords implements Action {
   }
 }
 
-export type PatientActions = SelectPatient | SetPatientRecords | SetPatient;
+export class SetFilter implements Action {
+  readonly type = PatientActionTypes.SetFilter;
+
+  constructor(public payload: { categoryIds: string[], tags: string[] }) {
+  }
+}
+
+export type PatientActions = SelectPatient
+  | SetPatientRecords
+  | SetPatient
+  | SetFilter;

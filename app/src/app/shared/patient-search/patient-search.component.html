@@ -5,6 +5,6 @@
 <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete" (optionSelected)="onSelectPatient($event)"
                   [displayWith]="displayFn">
   <mat-option *ngFor="let result of searchResults | async" [value]="result">
-    {{ result.name }}
+    {{ result.lastName + ', ' + result.firstName }}
   </mat-option>
 </mat-autocomplete>

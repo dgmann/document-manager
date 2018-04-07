@@ -1,7 +1,7 @@
 import {Injectable} from "@angular/core";
 import {select, Store} from "@ngrx/store";
-import {selectPatientRecords, selectSelectedPatient, State} from "./reducers";
-import {SelectPatient} from "./store/patient.actions";
+import {selectFilteredPatientRecords, selectPatientRecords, selectSelectedPatient, State} from "./reducers";
+import {SelectPatient, SetFilter} from "./store/patient.actions";
 
 @Injectable()
 export class PatientService {
@@ -12,11 +12,19 @@ export class PatientService {
     this.store.dispatch(new SelectPatient({id: id}));
   }
 
+  public setFilter(categoryIds: string[], tags: string[]) {
+    this.store.dispatch(new SetFilter({categoryIds: categoryIds, tags: tags}));
+  }
+
   public getSelectedPatient() {
     return this.store.pipe(select(selectSelectedPatient));
   }
 
   public getPatientRecords() {
     return this.store.pipe(select(selectPatientRecords));
+  }
+
+  public getFilteredPatientRecords() {
+    return this.store.pipe(select(selectFilteredPatientRecords));
   }
 }

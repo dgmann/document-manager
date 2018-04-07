@@ -10,7 +10,7 @@ export class PatientService {
 
   constructor(private http: HttpClient) {
     this.current = new ReplaySubject<Patient>();
-    this.current.next({id: "3", name: "John Doe", birthDate: new Date()});
+    this.current.next({id: "3", firstName: "John", lastName: "Doe", birthDate: new Date()});
   }
 
   getCurrent() {
@@ -20,15 +20,12 @@ export class PatientService {
   find(query: string) {
     return this.http.get<Patient[]>(`${environment.api}/patients?name=${query}`);
   }
-
-  findById(id: string) {
-    return this.http.get<Patient>(`${environment.api}/patients/${id}`);
-  }
 }
 
 export interface Patient {
   id: string;
-  name: string;
+  firstName: string;
+  lastName: string;
   birthDate: Date;
   tags?: string[];
   categories?: Category[];

@@ -4,7 +4,7 @@ import {PatientComponent} from "./patient.component";
 
 const PHYSICIAN_ROUTES: Routes = [
   {
-    path: '',
+    path: ':id',
     component: PatientComponent,
     children: [],
     data: {title: 'Patient'}

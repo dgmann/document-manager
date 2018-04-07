@@ -1,6 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
+import {BehaviorSubject} from "rxjs/BehaviorSubject";
 import {Observable} from "rxjs/Observable";
+import {combineLatest} from "rxjs/observable/combineLatest";
 import {map} from "rxjs/operators";
 import {Patient} from "../shared";
 import {Category} from "../shared/category-service";
@@ -18,6 +20,9 @@ export class PatientComponent implements OnInit {
   public patient: Observable<Patient>;
   public tags: Observable<string[]>;
   public categories: Observable<Category[]>;
+
+  private selectedTags = new BehaviorSubject<string[]>([]);
+  private selectedCategories = new BehaviorSubject<Category[]>([]);
 
   constructor(private recordService: RecordService,
               private patientService: PatientService,
@@ -37,6 +42,16 @@ export class PatientComponent implements OnInit {
     this.categories = this.patient.pipe(
       map(patient => patient && patient.categories || [])
     );
+
+    combineLatest(this.selectedTags, this.selectedCategories).subscribe(([tags, categories]) =>
+      this.patientService.setFilter(categories.map(c => c.id), tags));
   }
 
+  onSelectTags(tags: string[]) {
+    this.selectedTags.next(tags);
+  }
+
+  onSelectCategories(categories: Category[]) {
+    this.selectedCategories.next(categories);
+  }
 }

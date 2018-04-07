@@ -12,7 +12,7 @@ import {map} from "rxjs/operators";
 })
 export class TagListComponent implements OnInit {
   @Input() tags: Observable<string[]>;
-  @Output() selected = new EventEmitter<string[]>();
+  @Output() select = new EventEmitter<string[]>();
   displayedColumns = ['main'];
   dataSource = new MatTableDataSource<string>();
   selectedTags: string[] = [];
@@ -26,7 +26,7 @@ export class TagListComponent implements OnInit {
     ).subscribe(data => this.dataSource.data = data);
   }
 
-  select(tag: string) {
+  onSelect(tag: string) {
     let index = this.selectedTags.indexOf(tag);
 
     if (index >= 0) {
@@ -34,7 +34,7 @@ export class TagListComponent implements OnInit {
     } else {
       this.selectedTags = uniq([...this.selectedTags, tag]);
     }
-    this.selected.emit(this.selectedTags);
+    this.select.emit(this.selectedTags);
   }
 
 }

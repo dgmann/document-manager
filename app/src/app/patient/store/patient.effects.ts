@@ -5,10 +5,10 @@ import {Action} from "@ngrx/store";
 import {of} from "rxjs/observable/of";
 import {catchError, map, switchMap} from "rxjs/operators";
 import {environment} from "../../../environments/environment";
-import {Patient} from "../../shared";
 import {Record} from "../../store";
 import {LoadRecordsFail, LoadRecordsSuccess} from "../../store/record/record.actions";
 import {PatientActionTypes, SelectPatient, SetPatient, SetPatientRecords} from './patient.actions';
+import {Patient} from "./patient.model";
 
 @Injectable()
 export class PatientEffects {

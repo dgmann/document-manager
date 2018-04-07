@@ -1,9 +1,9 @@
 import {createFeatureSelector, createSelector, MetaReducer} from '@ngrx/store';
 import {difference, includes} from 'lodash-es';
 import {environment} from '../../environments/environment';
-import {Patient} from "../shared";
 import {Record} from "../store";
 import {selectRecordEntities} from "../store/record/record.selectors";
+import {Patient} from "./store/patient.model";
 import * as fromPatient from './store/patient.reducer';
 
 export const reducers = fromPatient.reducer;

@@ -1,9 +1,11 @@
+import {HttpClient} from "@angular/common/http";
 import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {FormControl} from "@angular/forms";
 import {MatAutocompleteSelectedEvent} from "@angular/material";
 import {Observable} from "rxjs/Observable";
 import {debounceTime, filter, switchMap} from "rxjs/operators";
-import {Patient, PatientService} from "../patient-service";
+import {environment} from "../../../environments/environment";
+import {Patient} from "../../patient";
 
 @Component({
   selector: 'app-patient-search',
@@ -15,7 +17,7 @@ export class PatientSearchComponent implements OnInit {
   public searchResults: Observable<Patient[]>;
   public searchInput = new FormControl();
 
-  constructor(private patientService: PatientService) {
+  constructor(private http: HttpClient) {
   }
 
   ngOnInit() {
@@ -23,7 +25,7 @@ export class PatientSearchComponent implements OnInit {
       .pipe(
         debounceTime(500),
         filter(query => !!query && query.length > 0),
-        switchMap(query => this.patientService.find(query))
+        switchMap(query => this.http.get<Patient[]>(`${environment.api}/patients?name=${query}`))
       );
   }
 

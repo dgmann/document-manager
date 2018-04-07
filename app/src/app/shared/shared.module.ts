@@ -26,9 +26,9 @@ import {AutocompleteInputComponent} from "./autocomplete-input/autocomplete-inpu
 import {CategoryService} from "./category-service";
 import {DocumentEditDialogComponent} from "./document-edit-dialog/document-edit-dialog.component";
 import {DocumentListComponent} from "./document-list/document-list.component";
+import {ExternalApiService} from "./external-api.service";
 import {NotificationService} from "./notification-service";
 import {PatientSearchComponent} from './patient-search/patient-search.component';
-import {PatientService} from "./patient-service";
 import {RecordViewerComponent} from "./record-viewer/record-viewer.component";
 import {SplitPanelComponent} from './split-panel/split-panel.component';
 import {TagService} from "./tag-service";
@@ -87,7 +87,7 @@ export class SharedModule {
     return {
       ngModule: SharedModule,
       providers: [
-        PatientService,
+        ExternalApiService,
         WebsocketService,
         NotificationService,
         TagService,

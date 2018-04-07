@@ -1,5 +1,5 @@
-import {Patient} from "../../shared";
 import {PatientActions, PatientActionTypes} from './patient.actions';
+import {Patient} from "./patient.model";
 
 export interface State {
   selectedPatient: Patient;

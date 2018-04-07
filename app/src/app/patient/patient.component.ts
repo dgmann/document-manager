@@ -4,10 +4,10 @@ import {BehaviorSubject} from "rxjs/BehaviorSubject";
 import {Observable} from "rxjs/Observable";
 import {combineLatest} from "rxjs/observable/combineLatest";
 import {map} from "rxjs/operators";
-import {Patient} from "../shared";
 import {Category} from "../shared/category-service";
 import {Record, RecordService} from "../store";
 import {PatientService} from "./patient.service";
+import {Patient} from "./store/patient.model";
 
 @Component({
   selector: 'app-patient',

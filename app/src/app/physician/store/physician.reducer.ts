@@ -1,4 +1,5 @@
 import {uniq, without} from 'lodash-es';
+import {RequiredAction} from "../../store";
 import {PhysicianActions, PhysicianActionTypes} from './physician.actions';
 
 export interface State {
@@ -32,16 +33,16 @@ export function reducer(state = initialState, action: PhysicianActions): State {
         selectedIds: action.payload.ids
       });
 
-    case PhysicianActionTypes.AddRecord:
-      const change = {};
-      change[action.payload.requiredAction + 'Ids'] = uniq([...state[action.payload.requiredAction + 'Ids'], action.payload.id]);
-      return Object.assign({}, state, change);
-    case PhysicianActionTypes.RemoveRecord:
-      return Object.assign({}, state, {
+    case PhysicianActionTypes.SetRecord:
+      const change = {
         escalatedIds: without(state.escalatedIds, action.payload.id),
         reviewIds: without(state.reviewIds, action.payload.id),
         otherIds: without(state.otherIds, action.payload.id),
-      });
+      };
+      if (action.payload.requiredAction !== RequiredAction.NONE) {
+        change[action.payload.requiredAction + 'Ids'] = uniq([...state[action.payload.requiredAction + 'Ids'], action.payload.id]);
+      }
+      return Object.assign({}, state, change);
 
     default:
       return state;

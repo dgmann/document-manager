@@ -3,8 +3,7 @@ import {Action} from '@ngrx/store';
 export enum PhysicianActionTypes {
   LoadRecords = '[Physician] Load Records',
   SelectRecords = '[Physician] Select Records',
-  AddRecord = '[Physician] Add Record',
-  RemoveRecord = '[Physician] Remove Record',
+  SetRecord = '[Physician] Set Record',
 }
 
 export class LoadRecords implements Action {
@@ -21,22 +20,14 @@ export class SelectRecords implements Action {
   }
 }
 
-export class AddRecord implements Action {
-  readonly type = PhysicianActionTypes.AddRecord;
+export class SetRecord implements Action {
+  readonly type = PhysicianActionTypes.SetRecord;
 
   constructor(public payload: { id: string, requiredAction: string }) {
-  }
-}
-
-export class RemoveRecord implements Action {
-  readonly type = PhysicianActionTypes.RemoveRecord;
-
-  constructor(public payload: { id: string }) {
   }
 }
 
 export type PhysicianActions =
   LoadRecords
   | SelectRecords
-  | AddRecord
-  | RemoveRecord;
+  | SetRecord

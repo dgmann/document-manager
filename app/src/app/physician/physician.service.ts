@@ -1,8 +1,13 @@
 import {Injectable} from "@angular/core";
 import {select, Store} from "@ngrx/store";
-import {map} from "rxjs/operators";
 import {RecordService, RequiredAction} from "../store";
-import {selectSelectedIds, selectSelectedRecords, State} from "./reducers";
+import {
+  selectEscalatedRecords,
+  selectOtherRecords,
+  selectReviewRecords,
+  selectSelectedRecords,
+  State
+} from "./reducers";
 import {SelectRecords} from "./store/physician.actions";
 
 @Injectable()
@@ -15,10 +20,6 @@ export class PhysicianService {
     this.recordService.load({requiredAction: action})
   }
 
-  public getSelectedIds() {
-    return this.store.pipe(select(selectSelectedIds))
-  }
-
   public getSelectedRecords() {
     return this.store.pipe(select(selectSelectedRecords));
   }
@@ -28,18 +29,14 @@ export class PhysicianService {
   }
 
   public getEscalated() {
-    return this.get(record => record.requiredAction === RequiredAction.ESCALATED)
+    return this.store.pipe(select(selectEscalatedRecords));
   }
 
   public getToReview() {
-    return this.get(record => record.requiredAction === RequiredAction.REVIEW)
+    return this.store.pipe(select(selectReviewRecords));
   }
 
   public getOther() {
-    return this.get(record => record.requiredAction === RequiredAction.OTHER)
-  }
-
-  private get(filter) {
-    return this.recordService.all().pipe(map(records => records.filter(filter)))
+    return this.store.pipe(select(selectOtherRecords));
   }
 }

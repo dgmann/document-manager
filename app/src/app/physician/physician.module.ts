@@ -1,6 +1,7 @@
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {MatButtonModule} from "@angular/material";
+import {EffectsModule} from "@ngrx/effects";
 import {StoreModule} from "@ngrx/store";
 import {SharedModule} from "../shared";
 import {NavigationComponent} from './navigation/navigation.component';
@@ -11,12 +12,14 @@ import {PhysicianComponent} from './physician.component';
 import {PhysicianRouterModule} from "./physician.routes";
 import {PhysicianService} from "./physician.service";
 import {metaReducers, reducers} from "./reducers";
+import {PhysicianEffects} from "./store/physician.effects";
 
 @NgModule({
   imports: [
     CommonModule,
     PhysicianRouterModule,
     StoreModule.forFeature("physician", reducers, {metaReducers}),
+    EffectsModule.forFeature([PhysicianEffects]),
     MatButtonModule,
     SharedModule
   ],

@@ -1,3 +1,4 @@
 <app-document-list [records]="records"
                    (recordClick)="selectRecord($event)"
+                   (recordDelete)="deleteRecord($event)"
                    (changeRequiredAction)="setRequiredAction($event)"></app-document-list>

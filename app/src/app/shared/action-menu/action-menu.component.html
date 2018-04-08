@@ -1,0 +1,57 @@
+<div *ngIf="record.requiredAction == ''">
+  <button mat-icon-button [matMenuTriggerFor]="menu">
+    <mat-icon>more_vert</mat-icon>
+  </button>
+  <mat-menu #menu="matMenu">
+    <button mat-menu-item (click)="onDeleteRecord($event, record)">
+      <mat-icon color="warn" aria-label="delete">delete</mat-icon>
+      <span>Löschen</span>
+    </button>
+    <button mat-menu-item (click)="setRequiredAction(record, 'escalated')">
+      <mat-icon aria-label="escalate">arrow_upward</mat-icon>
+      <span>Eskalieren</span>
+    </button>
+    <button mat-menu-item (click)="setRequiredAction(record, 'other')">
+      <mat-icon aria-label="other">shopping_basket</mat-icon>
+      <span>Werbung</span>
+    </button>
+  </mat-menu>
+</div>
+
+<div *ngIf="record.requiredAction == 'escalated'">
+  <button mat-icon-button [matMenuTriggerFor]="menu">
+    <mat-icon>more_vert</mat-icon>
+  </button>
+  <mat-menu #menu="matMenu">
+    <button mat-menu-item (click)="onDeleteRecord($event, record)">
+      <mat-icon color="warn" aria-label="delete">delete</mat-icon>
+      <span>Löschen</span>
+    </button>
+    <button mat-menu-item (click)="setRequiredAction(record, '')">
+      <mat-icon aria-label="deescalate">arrow_downward</mat-icon>
+      <span>Deeskalieren</span>
+    </button>
+  </mat-menu>
+</div>
+
+<div *ngIf="record.requiredAction == 'review'">
+  <button mat-icon-button (click)="$event.stopPropagation()">
+    <mat-icon aria-label="done" color="green">done</mat-icon>
+  </button>
+</div>
+
+<div *ngIf="record.requiredAction == 'other'">
+  <button mat-icon-button [matMenuTriggerFor]="menu">
+    <mat-icon>more_vert</mat-icon>
+  </button>
+  <mat-menu #menu="matMenu">
+    <button mat-menu-item (click)="onDeleteRecord($event, record)">
+      <mat-icon color="warn" aria-label="delete">delete</mat-icon>
+      <span>Löschen</span>
+    </button>
+    <button mat-menu-item (click)="setRequiredAction(record, '')">
+      <mat-icon aria-label="deescalate">arrow_downward</mat-icon>
+      <span>Inbox</span>
+    </button>
+  </mat-menu>
+</div>

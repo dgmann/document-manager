@@ -1,10 +1,7 @@
 <app-split-panel>
   <div class="left-panel" droppable (onDrop)="upload($event)" (dragover)="$event.preventDefault();">
-    <app-document-list [records]="data" (recordClick)="selectRecord($event)"
-                       (recordDbClick)="editRecord($event)"
-                       (recordDelete)="deleteRecord($event)"
-                       (recordDrop)="appendRecord($event)"
-                       (changeRequiredAction)="setRequiredAction($event)"></app-document-list>
+    <app-document-list [records]="data" [selectedIds]="selectedIds"
+                       (selectRecord)="selectRecord($event)"></app-document-list>
   </div>
   <div class="right-panel">
     <app-record-viewer [record]="selectedRecord" (updatePages)="updatePages($event)"></app-record-viewer>

@@ -1,7 +1,8 @@
 import {Component, OnInit} from '@angular/core';
+import {ActivatedRoute, Router} from "@angular/router";
 import {Observable} from "rxjs/Observable";
 import {filter, map} from "rxjs/operators";
-import {Record, RequiredAction} from "../store";
+import {Record, RecordService, RequiredAction} from "../store";
 import {PhysicianService} from "./physician.service";
 
 @Component({
@@ -10,11 +11,16 @@ import {PhysicianService} from "./physician.service";
   styleUrls: ['./physician.component.scss']
 })
 export class PhysicianComponent implements OnInit {
+  selectedRecord: Observable<Record>;
 
-  private selectedRecord: Observable<Record>;
+  constructor(private physicianService: PhysicianService,
+              private recordService: RecordService,
+              private route: ActivatedRoute,
+              private router: Router) {
+  }
 
-  constructor(private physicianService: PhysicianService) {
-    this.selectedRecord = physicianService.getSelectedRecords().pipe(
+  ngOnInit() {
+    this.selectedRecord = this.physicianService.getSelectedRecords().pipe(
       filter(records => records.length > 0),
       map(records => records[0])
     );
@@ -22,9 +28,24 @@ export class PhysicianComponent implements OnInit {
     this.physicianService.load(RequiredAction.ESCALATED);
     this.physicianService.load(RequiredAction.OTHER);
 
+    this.route
+      .queryParams
+      .subscribe(params => {
+        const id = params['selected'] || null;
+        this.physicianService.selectIds([id]);
+      });
+
+    this.physicianService.getSelectedIds().subscribe(ids => this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: {
+        ...this.route.snapshot.queryParams,
+        selected: ids.length > 0 ? ids[0] : null,
+      }
+    }))
   }
 
-  ngOnInit() {
+  updatePages(event) {
+    this.recordService.update(event.id, {pages: event.pages})
   }
 
 }

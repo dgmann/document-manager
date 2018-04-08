@@ -22,4 +22,5 @@ export enum RequiredAction {
   REVIEW = "review",
   ESCALATED = "escalated",
   OTHER = "other",
+  NONE = ""
 }

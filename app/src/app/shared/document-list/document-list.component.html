@@ -25,47 +25,8 @@
   <ng-container matColumnDef="actions">
     <mat-header-cell fxFlex="40px" *matHeaderCellDef></mat-header-cell>
     <mat-cell fxFlex="40px" class="action-group" *matCellDef="let element">
-      <div *ngIf="element.requiredAction == ''">
-        <button mat-icon-button [matMenuTriggerFor]="menu">
-          <mat-icon>more_vert</mat-icon>
-        </button>
-        <mat-menu #menu="matMenu">
-          <button mat-menu-item (click)="deleteRecord($event, element)">
-            <mat-icon color="warn" aria-label="delete">delete</mat-icon>
-            <span>Löschen</span>
-          </button>
-          <button mat-menu-item (click)="setRequiredAction(element, 'escalated')">
-            <mat-icon aria-label="escalate">arrow_upward</mat-icon>
-            <span>Eskalieren</span>
-          </button>
-          <button mat-menu-item (click)="setRequiredAction(element, 'other')">
-            <mat-icon aria-label="other">shopping_basket</mat-icon>
-            <span>Werbung</span>
-          </button>
-        </mat-menu>
-      </div>
-
-      <div *ngIf="element.requiredAction == 'escalated'">
-        <button mat-icon-button [matMenuTriggerFor]="menu">
-          <mat-icon>more_vert</mat-icon>
-        </button>
-        <mat-menu #menu="matMenu">
-          <button mat-menu-item (click)="deleteRecord($event, element)">
-            <mat-icon color="warn" aria-label="delete">delete</mat-icon>
-            <span>Löschen</span>
-          </button>
-          <button mat-menu-item (click)="setRequiredAction(element, '')">
-            <mat-icon aria-label="deescalate">arrow_downward</mat-icon>
-            <span>Deeskalieren</span>
-          </button>
-        </mat-menu>
-      </div>
-
-      <div *ngIf="element.requiredAction == 'review'">
-        <button mat-icon-button (click)="$event.stopPropagation()">
-          <mat-icon aria-label="done" color="green">done</mat-icon>
-        </button>
-      </div>
+      <app-action-menu [record]="element" (deleteRecord)="deleteRecord($event)"
+                       (changeRequiredAction)="setRequiredAction($event)"></app-action-menu>
     </mat-cell>
   </ng-container>
 

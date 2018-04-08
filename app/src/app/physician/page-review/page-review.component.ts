@@ -27,4 +27,8 @@ export class PageReviewComponent implements OnInit {
   setRequiredAction(data: { record: Record, action: RequiredAction }) {
     this.recordService.update(data.record.id, {requiredAction: data.action})
   }
+
+  deleteRecord(record: Record) {
+    this.recordService.delete(record.id)
+  }
 }

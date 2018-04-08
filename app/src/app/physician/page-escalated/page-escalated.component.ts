@@ -28,4 +28,8 @@ export class PageEscalatedComponent implements OnInit {
     this.recordService.update(data.record.id, {requiredAction: data.action})
   }
 
+  deleteRecord(record: Record) {
+    this.recordService.delete(record.id)
+  }
+
 }

@@ -21,6 +21,7 @@ import {MatSortModule} from "@angular/material/sort";
 import {MatTableModule} from "@angular/material/table";
 import {NgDragDropModule} from "ng-drag-drop";
 import {NgxMatSelectSearchModule} from "ngx-mat-select-search";
+import {ActionMenuComponent} from './action-menu/action-menu.component';
 import {AutocompleteChipsComponent} from "./autocomplete-chips/autocomplete-chips.component";
 import {AutocompleteInputComponent} from "./autocomplete-input/autocomplete-input.component";
 import {CategoryService} from "./category-service";
@@ -66,7 +67,8 @@ import {WebsocketService} from "./websocket-service";
     PatientSearchComponent,
     SplitPanelComponent,
     AutocompleteInputComponent,
-    AutocompleteChipsComponent
+    AutocompleteChipsComponent,
+    ActionMenuComponent
   ],
   entryComponents: [
     DocumentEditDialogComponent

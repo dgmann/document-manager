@@ -13,7 +13,7 @@ import {
   RecordActionTypes,
   UpdateRecordSuccess
 } from "../../store/record/record.actions";
-import {AddRecord, RemoveRecord} from "./physician.actions";
+import {SetRecord} from "./physician.actions";
 
 @Injectable()
 export class PhysicianEffects {
@@ -22,7 +22,7 @@ export class PhysicianEffects {
   addEffect$ = this.actions$.pipe(
     ofType(RecordActionTypes.LoadRecordsSuccess),
     map((action: LoadRecordsSuccess) => action.payload.records),
-    switchMap(records => of(...records.filter(record => record.requiredAction !== RequiredAction.NONE).map(record => new AddRecord({
+    switchMap(records => from<Action>(records.map(record => new SetRecord({
       id: record.id,
       requiredAction: record.requiredAction
     }))))
@@ -32,7 +32,7 @@ export class PhysicianEffects {
   removeEffect$ = this.actions$.pipe(
     ofType(RecordActionTypes.DeleteRecordSuccess),
     map((action: DeleteRecordSuccess) => action.payload.id),
-    switchMap(id => of(new RemoveRecord({id: id})))
+    switchMap(id => of(new SetRecord({id: id, requiredAction: RequiredAction.NONE})))
   );
 
   @Effect()
@@ -41,11 +41,7 @@ export class PhysicianEffects {
     map((action: UpdateRecordSuccess) => action.payload.record),
     switchMap(record => {
       if (has(record.changes, 'requiredAction')) {
-        let actions: Action[] = [new RemoveRecord({id: record.id + ''})];
-        if (record.changes.requiredAction !== RequiredAction.NONE) {
-          actions.push(new AddRecord({id: record.id + '', requiredAction: record.changes.requiredAction}))
-        }
-        return from<Action>(actions);
+        return of(new SetRecord({id: record.id + '', requiredAction: record.changes.requiredAction}));
       } else {
         return empty();
       }

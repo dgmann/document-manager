@@ -5,6 +5,7 @@ import {
   selectEscalatedRecords,
   selectOtherRecords,
   selectReviewRecords,
+  selectSelectedIds,
   selectSelectedRecords,
   State
 } from "./reducers";
@@ -22,6 +23,10 @@ export class PhysicianService {
 
   public getSelectedRecords() {
     return this.store.pipe(select(selectSelectedRecords));
+  }
+
+  public getSelectedIds() {
+    return this.store.pipe(select(selectSelectedIds));
   }
 
   public selectIds(ids: string[]) {

@@ -18,7 +18,7 @@ func init() {
 }
 
 func main() {
-	recordDir := envOrDefault("RECORD_DIR", "C:\\Users\\David\\Desktop\\Images")
+	recordDir := envOrDefault("RECORD_DIR", "/records")
 	dbHost := envOrDefault("DB_HOST", "localhost")
 	dbname := envOrDefault("DB_NAME", "manager")
 	pdfprocessorUrl := envOrDefault("PDFPROCESSOR_URL", "http://localhost:8181")

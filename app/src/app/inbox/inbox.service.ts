@@ -2,8 +2,8 @@ import {Injectable} from "@angular/core";
 import {select, Store} from "@ngrx/store";
 import {filter, map} from "rxjs/operators";
 import {Record, RecordService} from "../store";
-import {selectSelectedIds, selectSelectedRecords, selectUnreadRecords, State} from "./reducers";
-import {SelectRecords} from "./store/inbox.actions";
+import {selectMultiselect, selectSelectedIds, selectSelectedRecords, selectUnreadRecords, State} from "./reducers";
+import {SelectRecords, SetMultiSelect} from "./store/inbox.actions";
 
 @Injectable()
 export class InboxService {
@@ -39,6 +39,14 @@ export class InboxService {
   }
 
   public getUnreadRecords() {
-    this.store.pipe(select(selectUnreadRecords));
+    return this.store.pipe(select(selectUnreadRecords));
+  }
+
+  public setMultiselect(value: boolean) {
+    this.store.dispatch(new SetMultiSelect({multiselect: value}));
+  }
+
+  public getMultiselect() {
+    return this.store.pipe(select(selectMultiselect))
   }
 }

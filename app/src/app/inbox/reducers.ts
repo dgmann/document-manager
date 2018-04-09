@@ -13,3 +13,4 @@ export const selectSelectedIds = createSelector(selectFeature, (state: fromInbox
 export const selectSelectedRecords = createSelector(selectSelectedIds, selectRecordEntities, (ids, records) => ids.map(id => records[id]));
 export const selectUnreadIds = createSelector(selectFeature, (state: fromInbox.State) => state.unreadIds);
 export const selectUnreadRecords = createSelector(selectUnreadIds, selectRecordEntities);
+export const selectMultiselect = createSelector(selectFeature, (state: fromInbox.State) => state.multiselect);

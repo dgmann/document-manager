@@ -1,5 +1,6 @@
 import {AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {MatDialog, MatSort, MatTableDataSource} from "@angular/material";
+import {includes} from 'lodash-es';
 import {DropEvent} from "ng-drag-drop";
 import {Observable} from "rxjs/Observable";
 
@@ -21,7 +22,7 @@ export class DocumentListComponent implements OnInit, AfterViewInit {
 
   displayedColumns = ['date', 'sender', 'numpages', 'comment', 'actions'];
   dataSource = new MatTableDataSource<Record>();
-  selectedRecordId = "";
+  selectedRecordIds = [];
 
   constructor(private recordService: RecordService,
               private dialog: MatDialog) {
@@ -29,7 +30,7 @@ export class DocumentListComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.records.subscribe(data => this.dataSource.data = data);
-    this.selectedIds.subscribe(ids => this.selectedRecordId = ids.length > 0 ? ids[0] : "");
+    this.selectedIds.subscribe(ids => this.selectedRecordIds = ids);
   }
 
   /**
@@ -78,5 +79,9 @@ export class DocumentListComponent implements OnInit, AfterViewInit {
         categoryId: result.categoryId
       });
     });
+  }
+
+  isSelected(id: string) {
+    return includes(this.selectedRecordIds, id);
   }
 }

@@ -1,7 +1,8 @@
 import {Component} from '@angular/core';
+import {includes, without} from 'lodash-es';
 import {DropEvent} from "ng-drag-drop";
 import {Observable} from "rxjs/Observable";
-import {map} from "rxjs/operators";
+import {map, take, withLatestFrom} from "rxjs/operators";
 import {Record, RecordService} from "../store";
 import {InboxService} from "./inbox.service";
 
@@ -25,7 +26,22 @@ export class InboxComponent {
   }
 
   selectRecord(record: Record) {
-    this.inboxService.selectIds([record.id]);
+    this.inboxService.getSelectedIds()
+      .pipe(
+        take(1),
+        withLatestFrom(this.inboxService.getMultiselect())
+      )
+      .subscribe(([ids, multiselect]) => {
+        if (multiselect) {
+          if (includes(ids, record.id)) {
+            this.inboxService.selectIds(without(ids, record.id));
+          } else {
+            this.inboxService.selectIds([...ids, record.id]);
+          }
+        } else {
+          this.inboxService.selectIds([record.id]);
+        }
+      });
   }
 
   updatePages(event) {

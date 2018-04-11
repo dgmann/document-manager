@@ -1,12 +1,13 @@
-import {AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
-import {MatDialog, MatSort, MatTableDataSource} from "@angular/material";
-import {includes} from 'lodash-es';
-import {DropEvent} from "ng-drag-drop";
-import {Observable} from "rxjs/Observable";
+import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { MatDialog, MatSort, MatTableDataSource } from "@angular/material";
+import { includes } from 'lodash-es';
+import { DropEvent } from "ng-drag-drop";
+import { Observable } from "rxjs/Observable";
 
 
-import {Record, RecordService} from "../../store";
-import {DocumentEditDialogComponent} from "../document-edit-dialog/document-edit-dialog.component";
+import { Record, RecordService } from "../../store";
+import { DocumentEditDialogComponent } from "../document-edit-dialog/document-edit-dialog.component";
+import { Router } from "@angular/router";
 
 @Component({
   selector: 'app-document-list',
@@ -25,6 +26,7 @@ export class DocumentListComponent implements OnInit, AfterViewInit {
   selectedRecordIds = [];
 
   constructor(private recordService: RecordService,
+              private router: Router,
               private dialog: MatDialog) {
   }
 
@@ -83,5 +85,9 @@ export class DocumentListComponent implements OnInit, AfterViewInit {
 
   isSelected(id: string) {
     return includes(this.selectedRecordIds, id);
+  }
+
+  openEditor(record: Record) {
+    this.router.navigate(['/editor', record.id]);
   }
 }

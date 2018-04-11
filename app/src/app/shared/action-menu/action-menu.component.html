@@ -7,6 +7,10 @@
       <mat-icon color="warn" aria-label="delete">delete</mat-icon>
       <span>Löschen</span>
     </button>
+    <button mat-menu-item (click)="onEditRecord(record)">
+      <mat-icon aria-label="other">edit</mat-icon>
+      <span>Editor</span>
+    </button>
     <button mat-menu-item (click)="setRequiredAction(record, 'escalated')">
       <mat-icon aria-label="escalate">arrow_upward</mat-icon>
       <span>Eskalieren</span>
@@ -26,6 +30,10 @@
     <button mat-menu-item (click)="onDeleteRecord($event, record)">
       <mat-icon color="warn" aria-label="delete">delete</mat-icon>
       <span>Löschen</span>
+    </button>
+    <button mat-menu-item (click)="onEditRecord(record)">
+      <mat-icon aria-label="other">edit</mat-icon>
+      <span>Editor</span>
     </button>
     <button mat-menu-item (click)="setRequiredAction(record, '')">
       <mat-icon aria-label="deescalate">arrow_downward</mat-icon>
@@ -48,6 +56,10 @@
     <button mat-menu-item (click)="onDeleteRecord($event, record)">
       <mat-icon color="warn" aria-label="delete">delete</mat-icon>
       <span>Löschen</span>
+    </button>
+    <button mat-menu-item (click)="onEditRecord(record)">
+      <mat-icon aria-label="other">edit</mat-icon>
+      <span>Editor</span>
     </button>
     <button mat-menu-item (click)="setRequiredAction(record, '')">
       <mat-icon aria-label="deescalate">arrow_downward</mat-icon>

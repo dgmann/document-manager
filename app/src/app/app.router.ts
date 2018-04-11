@@ -1,4 +1,4 @@
-import {RouterModule, Routes} from "@angular/router";
+import { RouterModule, Routes } from "@angular/router";
 
 export const ROUTE_CONFIG: Routes = [
   {
@@ -12,6 +12,10 @@ export const ROUTE_CONFIG: Routes = [
   {
     path: 'patient',
     loadChildren: 'app/patient/patient.module#PatientModule'
+  },
+  {
+    path: 'editor',
+    loadChildren: 'app/editor/editor.module#EditorModule'
   },
   {
     path: '',

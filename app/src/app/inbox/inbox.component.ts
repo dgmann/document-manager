@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import {includes, without} from 'lodash-es';
-import {DropEvent} from "ng-drag-drop";
-import {Observable} from "rxjs/Observable";
-import {map, take, withLatestFrom} from "rxjs/operators";
-import {Record, RecordService} from "../store";
-import {InboxService} from "./inbox.service";
+import { includes, without } from 'lodash-es';
+import { DropEvent } from "ng-drag-drop";
+import { Observable } from "rxjs/Observable";
+import { map, take, withLatestFrom } from "rxjs/operators";
+import { Record, RecordService } from "../store";
+import { InboxService } from "./inbox.service";
 
 @Component({
   selector: 'app-inbox',
@@ -17,7 +17,9 @@ export class InboxComponent implements OnInit{
   selectedIds: Observable<string[]>;
   isMultiselect: Observable<boolean>;
 
-  constructor(private inboxService: InboxService, private recordService: RecordService) {}
+  constructor(private inboxService: InboxService,
+              private recordService: RecordService) {
+  }
 
   ngOnInit() {
     this.inboxService.load();

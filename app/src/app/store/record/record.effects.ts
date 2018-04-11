@@ -26,12 +26,19 @@ export class RecordEffects {
 
   @Effect() load: Observable<Action> = this.actions$.pipe(
     ofType(RecordActionTypes.LoadRecords),
-    mergeMap((action: LoadRecords) =>
-      this.http.get<Record[]>(environment.api + '/records', {params: action.payload.query}).pipe(
-        map(data => new LoadRecordsSuccess({records: data})),
-        catchError(err => of(new LoadRecordsFail({error: err})))
-      )
-    )
+    mergeMap((action: LoadRecords) => {
+      if (action.payload.query.id) {
+        return this.http.get<Record>(environment.api + '/records/' + action.payload.query.id).pipe(
+          map(data => new LoadRecordsSuccess({records: [data]})),
+          catchError(err => of(new LoadRecordsFail({error: err})))
+        )
+      } else {
+        return this.http.get<Record[]>(environment.api + '/records', {params: action.payload.query}).pipe(
+          map(data => new LoadRecordsSuccess({records: data})),
+          catchError(err => of(new LoadRecordsFail({error: err})))
+        )
+      }
+    })
   );
 
   @Effect() update: Observable<Action> = this.actions$.pipe(

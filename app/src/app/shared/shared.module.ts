@@ -34,6 +34,7 @@ import {RecordViewerComponent} from "./record-viewer/record-viewer.component";
 import {SplitPanelComponent} from './split-panel/split-panel.component';
 import {TagService} from "./tag-service";
 import {WebsocketService} from "./websocket-service";
+import { ActionBarComponent } from './action-bar/action-bar.component';
 
 
 @NgModule({
@@ -68,7 +69,8 @@ import {WebsocketService} from "./websocket-service";
     SplitPanelComponent,
     AutocompleteInputComponent,
     AutocompleteChipsComponent,
-    ActionMenuComponent
+    ActionMenuComponent,
+    ActionBarComponent
   ],
   entryComponents: [
     DocumentEditDialogComponent
@@ -80,7 +82,8 @@ import {WebsocketService} from "./websocket-service";
     RecordViewerComponent,
     DocumentListComponent,
     PatientSearchComponent,
-    SplitPanelComponent
+    SplitPanelComponent,
+    ActionBarComponent
   ],
   providers: []
 })

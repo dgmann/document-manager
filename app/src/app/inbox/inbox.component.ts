@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {includes, without} from 'lodash-es';
 import {DropEvent} from "ng-drag-drop";
 import {Observable} from "rxjs/Observable";
@@ -11,18 +11,21 @@ import {InboxService} from "./inbox.service";
   templateUrl: './inbox.component.html',
   styleUrls: ['./inbox.component.scss']
 })
-export class InboxComponent {
-
+export class InboxComponent implements OnInit{
   data: Observable<Record[]>;
   selectedRecord: Observable<Record>;
   selectedIds: Observable<string[]>;
+  isMultiselect: Observable<boolean>;
 
-  constructor(private inboxService: InboxService, private recordService: RecordService) {
-    inboxService.load();
-    this.data = inboxService.all();
+  constructor(private inboxService: InboxService, private recordService: RecordService) {}
+
+  ngOnInit() {
+    this.inboxService.load();
+    this.data = this.inboxService.all();
     this.selectedRecord = this.inboxService.getSelectedRecords()
       .pipe(map(records => records && records[0] || undefined));
     this.selectedIds = this.inboxService.getSelectedIds();
+    this.isMultiselect = this.inboxService.getMultiselect();
   }
 
   selectRecord(record: Record) {
@@ -51,6 +54,15 @@ export class InboxComponent {
   upload(event: DropEvent) {
     for (let file of event.nativeEvent.dataTransfer.files) {
       this.recordService.upload(file)
+    }
+  }
+
+  selectAllRecords(all: boolean) {
+    if (all) {
+      this.data.pipe(take(1)).subscribe((records: Record[]) => this.inboxService.selectIds(records.map(r => r.id)));
+    }
+    else {
+      this.inboxService.selectIds([]);
     }
   }
 }

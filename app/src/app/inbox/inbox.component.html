@@ -1,5 +1,6 @@
 <app-split-panel>
   <div class="left-panel" droppable (onDrop)="upload($event)" (dragover)="$event.preventDefault();">
+    <app-action-bar [hidden]="!(isMultiselect | async)" [recordIds]="selectedIds | async" (selectAll)="selectAllRecords($event)"></app-action-bar>
     <app-document-list [records]="data" [selectedIds]="selectedIds"
                        (selectRecord)="selectRecord($event)"></app-document-list>
   </div>

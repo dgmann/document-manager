@@ -39,34 +39,15 @@
 
 [[projects]]
   name = "github.com/gin-gonic/gin"
-  packages = [
-    ".",
-    "binding",
-    "render"
-  ]
+  packages = [".","binding","render"]
   revision = "d459835d2b077e44f7c9b453505ee29881d5d12d"
   version = "v1.2"
 
 [[projects]]
   branch = "master"
   name = "github.com/globalsign/mgo"
-  packages = [
-    ".",
-    "bson",
-    "internal/json",
-    "internal/sasl",
-    "internal/scram"
-  ]
+  packages = [".","bson","internal/json","internal/sasl","internal/scram"]
   revision = "896bbb89d21253a28cd5a7f8b81fe091410cb94d"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/gocraft/dbr"
-  packages = [
-    ".",
-    "dialect"
-  ]
-  revision = "a61db664e3bd3e7507d596f8e013439d72d7b80a"
 
 [[projects]]
   branch = "master"
@@ -112,10 +93,7 @@
 
 [[projects]]
   name = "github.com/stretchr/testify"
-  packages = [
-    "assert",
-    "mock"
-  ]
+  packages = ["assert","mock"]
   revision = "12b6f73e6084dad08a7c6e575284b177ecafbc71"
   version = "v1.2.1"
 
@@ -134,10 +112,7 @@
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
-  packages = [
-    "unix",
-    "windows"
-  ]
+  packages = ["unix","windows"]
   revision = "2c42eef0765b9837fbdab12011af7830f55f88f0"
 
 [[projects]]
@@ -167,6 +142,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "f9c12e77c268473c48acbadc7c4f8564a366803b2bca7d49a57bc7975c31a0f4"
+  inputs-digest = "a5a58dbd78c3152cbc69dc7004dae8413fc5c1fd8000715d85bf80692b4e7903"
   solver-name = "gps-cdcl"
   solver-version = 1

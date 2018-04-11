@@ -59,7 +59,7 @@ func registerPatients(g *gin.RouterGroup) {
 		}
 		patient, err := app.Patients.Find(c.Param("patientId"))
 		if err != nil {
-			c.AbortWithError(400, err)
+			c.AbortWithError(404, err)
 			return
 		}
 		patient.Tags = tags

@@ -1,5 +1,5 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {Record, RequiredAction} from "../../store";
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Record, RequiredAction } from "../../store";
 
 @Component({
   selector: 'app-action-menu',
@@ -10,6 +10,7 @@ export class ActionMenuComponent implements OnInit {
   @Input() record: Record;
   @Output() deleteRecord = new EventEmitter<Record>();
   @Output() changeRequiredAction = new EventEmitter<{ record: Record, action: RequiredAction }>();
+  @Output() editRecord = new EventEmitter<Record>();
 
   constructor() {
   }
@@ -26,4 +27,7 @@ export class ActionMenuComponent implements OnInit {
     this.changeRequiredAction.emit({record: record, action: action});
   }
 
+  onEditRecord(record: Record) {
+    this.editRecord.emit(record);
+  }
 }

@@ -5,6 +5,9 @@ import (
 	"github.com/dgmann/document-manager/api/models"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
+	"strconv"
+	"errors"
+	"bytes"
 )
 
 func registerRecords(g *gin.RouterGroup) {
@@ -37,10 +40,6 @@ func registerRecords(g *gin.RouterGroup) {
 			record := app.Records.Find(id)
 			RespondAsJSON(c, record)
 		}
-	})
-
-	g.GET("/:recordId/images/:imageId", func(c *gin.Context) {
-		app.Images.Serve(c, c.Param("recordId"), c.Param("imageId"))
 	})
 
 	g.POST("", func(c *gin.Context) {
@@ -104,5 +103,30 @@ func registerRecords(g *gin.RouterGroup) {
 
 		r := app.Records.Update(c.Param("recordId"), models.Record{Pages: pages})
 		RespondAsJSON(c, r)
+	})
+
+	g.GET("/:recordId/pages/:imageId", func(c *gin.Context) {
+		app.Images.Serve(c, c.Param("recordId"), c.Param("imageId"))
+	})
+
+	g.POST("/:recordId/pages/:imageId/rotate/:degrees", func(c *gin.Context) {
+		images := app.Images.Get(c.Param("recordId"))
+		degrees, err := strconv.Atoi(c.Param("degrees"))
+		if err != nil {
+			c.AbortWithError(400, err)
+			return
+		}
+		if img, ok := images[c.Param("imageId")]; ok {
+			img, err := app.PDFProcessor.Rotate(img, degrees)
+			if err != nil {
+				c.AbortWithError(400, err)
+				return
+			}
+			app.Images.SetImage(c.Param("recordId"), c.Param("imageId"), bytes.NewBuffer(img))
+			c.Data(200, "image/jpeg", img)
+		} else {
+			c.AbortWithError(400, errors.New("cannot read image"))
+			return
+		}
 	})
 }

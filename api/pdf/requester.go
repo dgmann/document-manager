@@ -18,6 +18,10 @@ type HttpRequester struct {
 	client *http.Client
 }
 
+func NewHttpRequester(url string) *HttpRequester {
+	return &HttpRequester{url: url, client: &http.Client{}}
+}
+
 func(h *HttpRequester) Do(file io.Reader) (io.ReadCloser, error) {
 	req, err := http.NewRequest("POST", h.url, file)
 	if err != nil {

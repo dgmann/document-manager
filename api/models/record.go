@@ -36,7 +36,7 @@ func (r *Record) SetURL(url *url.URL) {
 	}
 
 	for i := range r.Pages {
-		r.Pages[i].Url = fmt.Sprintf("%s/records/%s/images/%s", url.String(), r.Id.Hex(), r.Pages[i].Id)
+		r.Pages[i].Url = fmt.Sprintf("%s/records/%s/pages/%s", url.String(), r.Id.Hex(), r.Pages[i].Id)
 	}
 }
 

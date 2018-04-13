@@ -7,18 +7,19 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
-	"image"
 	"io"
 	"os"
 	"path"
 	"path/filepath"
+	"strings"
 )
 
 const fileExtension = ".png"
 
 type ImageRepository interface {
-	Get(id string) map[string]image.Image
+	Get(id string) map[string]io.Reader
 	Set(id string, images []*bytes.Buffer) ([]string, error)
+	SetImage(id string, fileName string, image *bytes.Buffer) error
 	Delete(id string) error
 	Serve(context *gin.Context, recordId string, imageId string)
 }
@@ -31,22 +32,25 @@ func NewFileSystemImageRepository(directory string) *FileSystemImageRepository {
 	return &FileSystemImageRepository{directory: directory}
 }
 
-func (f *FileSystemImageRepository) Get(id string) map[string]image.Image {
-	images := make(map[string]image.Image, 0)
+func (f *FileSystemImageRepository) Get(id string) map[string]io.Reader {
+	images := make(map[string]io.Reader, 0)
 	p := path.Join(f.directory, id)
 	filepath.Walk(p, func(d string, info os.FileInfo, err error) error {
+		if err != nil {
+			log.Error(err)
+			return err
+		}
 		if !info.IsDir() {
-			dir := path.Join(d, info.Name())
-			f, err := os.Open(dir)
+			f, err := os.Open(d)
 			if err != nil {
 				log.WithFields(log.Fields{
 					"name":      f.Name(),
-					"directory": dir,
+					"directory": d,
 					"error":     err,
 				}).Error("Error reading image")
 			}
-			img, _, err := image.Decode(f)
-			images[info.Name()] = img
+			fileName := strings.TrimSuffix(info.Name(), filepath.Ext(info.Name()))
+			images[fileName] = f
 		}
 		return nil
 	})
@@ -82,13 +86,25 @@ func (f *FileSystemImageRepository) Set(id string, images []*bytes.Buffer) (resu
 	return results, nil
 }
 
+func (f *FileSystemImageRepository) SetImage(id string, fileName string, image *bytes.Buffer) error {
+	p := f.getPath(id, fileName)
+	err := save(p, image.Bytes())
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (f *FileSystemImageRepository) Delete(id string) error {
 	p := path.Join(f.directory, id)
 	return os.RemoveAll(p)
 }
 
-func save(filePath string, img []byte) {
-	imageFile, err := os.Create(filePath + fileExtension)
+func save(filePath string, img []byte) error {
+	if len(filepath.Ext(filePath)) == 0 {
+		filePath = filePath + fileExtension
+	}
+	imageFile, err := os.Create(filePath)
 	defer imageFile.Close()
 	if err != nil {
 		log.WithFields(log.Fields{
@@ -96,14 +112,19 @@ func save(filePath string, img []byte) {
 			"directory": filePath,
 			"error":     err,
 		}).Error("Error creating image file")
-		panic(err)
+		return err
 	}
-	imageFile.Write(img)
+	_, err = imageFile.Write(img)
+	return err
 }
 
 func (f *FileSystemImageRepository) Serve(context *gin.Context, recordId string, imageId string) {
-	p := path.Join(f.directory, recordId, imageId+fileExtension)
+	p := f.getPath(recordId, imageId)
 	context.File(p)
+}
+
+func (f *FileSystemImageRepository) getPath(recordId string, imageId string) string {
+	return path.Join(f.directory, recordId, imageId+fileExtension)
 }
 
 func copyFolder(source string, dest string) (err error) {

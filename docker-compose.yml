@@ -5,8 +5,12 @@ services:
     image: mongo:latest
     networks:
       - backend
+    ports:
+      - "27017:27017"
   processor:
     build: ./pdf-processor
+    ports:
+      - "8181:8181"
     networks:
       - backend
   api:
@@ -22,6 +26,8 @@ services:
     depends_on:
       - db
       - processor
+    volumes:
+      - "./records:/records"
 
 networks:
   backend:

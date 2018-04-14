@@ -36,14 +36,14 @@ func (f *FileWrapper) GetFilePath(fp string) string {
 }
 
 func (f *FileWrapper) GetImagesAsBuffer(imageType ...string) ([]*shared.Image, error) {
-	var imgList []*shared.Image
+	var imgList = make([]*shared.Image, 0)
 	err := filepath.Walk(f.Dir, func(path string, fi os.FileInfo, err error) error {
-		if contains(imageType, filepath.Ext(fi.Name())) {
+		if fp := filepath.Ext(fi.Name()); contains(imageType, fp) {
 			imgFile, _ := os.Open(path)
 			buf := new(bytes.Buffer)
 			buf.ReadFrom(imgFile)
 
-			imageType := strings.ToLower(filepath.Ext(fi.Name())[:1])
+			imageType := strings.ToLower(fp[1:])
 			img := shared.NewImage(buf.Bytes(), imageType)
 			imgFile.Close()
 			imgList = append(imgList, img)

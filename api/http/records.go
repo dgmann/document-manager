@@ -7,6 +7,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"strconv"
 	"errors"
+	"bytes"
 )
 
 func registerRecords(g *gin.RouterGroup) {
@@ -105,18 +106,29 @@ func registerRecords(g *gin.RouterGroup) {
 	})
 
 	g.GET("/:recordId/pages/:imageId", func(c *gin.Context) {
-		app.Images.Serve(c, c.Param("recordId"), c.Param("imageId"))
+		record := app.Records.Find(c.Param("recordId"))
+		for _, page := range record.Pages {
+			if page.Id == c.Param("imageId") {
+				app.Images.Serve(c, c.Param("recordId"), c.Param("imageId"), page.Format)
+				return
+			}
+		}
+		c.AbortWithError(404, errors.New("page not found"))
 	})
 
 	g.POST("/:recordId/pages/:imageId/rotate/:degrees", func(c *gin.Context) {
-		images := app.Images.Get(c.Param("recordId"))
+		images, err := app.Images.Get(c.Param("recordId"))
+		if err != nil {
+			c.AbortWithError(400, err)
+			return
+		}
 		degrees, err := strconv.Atoi(c.Param("degrees"))
 		if err != nil {
 			c.AbortWithError(400, err)
 			return
 		}
 		if img, ok := images[c.Param("imageId")]; ok {
-			img, err := app.PDFProcessor.Rotate(img, degrees)
+			img, err := app.PDFProcessor.Rotate(bytes.NewBuffer(img.Image), degrees)
 			if err != nil {
 				c.AbortWithError(400, err)
 				return

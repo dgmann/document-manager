@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
 	"io"
 	"os"
@@ -12,14 +11,17 @@ import (
 	"path/filepath"
 	"strings"
 	"github.com/dgmann/document-manager/shared"
+	"github.com/dgmann/document-manager/api/models"
+	"github.com/globalsign/mgo/bson"
+	"io/ioutil"
 )
 
 type ImageRepository interface {
-	Get(id string) map[string]io.Reader
-	Set(id string, images []*shared.Image) ([]string, error)
+	Get(id string) (map[string]*shared.Image, error)
+	Set(id string, images []*shared.Image) ([]*models.Page, error)
 	SetImage(id string, fileName string, image *shared.Image) error
 	Delete(id string) error
-	Serve(context *gin.Context, recordId string, imageId string)
+	Serve(context *gin.Context, recordId string, imageId string, format string)
 }
 
 type FileSystemImageRepository struct {
@@ -30,10 +32,10 @@ func NewFileSystemImageRepository(directory string) *FileSystemImageRepository {
 	return &FileSystemImageRepository{directory: directory}
 }
 
-func (f *FileSystemImageRepository) Get(id string) map[string]io.Reader {
-	images := make(map[string]io.Reader, 0)
+func (f *FileSystemImageRepository) Get(id string) (map[string]*shared.Image, error) {
+	images := make(map[string]*shared.Image, 0)
 	p := path.Join(f.directory, id)
-	filepath.Walk(p, func(d string, info os.FileInfo, err error) error {
+	err := filepath.Walk(p, func(d string, info os.FileInfo, err error) error {
 		if err != nil {
 			log.Error(err)
 			return err
@@ -46,13 +48,21 @@ func (f *FileSystemImageRepository) Get(id string) map[string]io.Reader {
 					"directory": d,
 					"error":     err,
 				}).Error("Error reading image")
+				return err
 			}
 			fileName := strings.TrimSuffix(info.Name(), filepath.Ext(info.Name()))
-			images[fileName] = f
+			data, err := ioutil.ReadAll(f)
+			if err != nil {
+				return err
+			}
+			images[fileName] = shared.NewImage(data, filepath.Ext(info.Name()))
 		}
 		return nil
 	})
-	return images
+	if err != nil {
+		return nil, err
+	}
+	return images, nil
 }
 
 func (f *FileSystemImageRepository) Copy(fromId string, toId string) error {
@@ -61,8 +71,8 @@ func (f *FileSystemImageRepository) Copy(fromId string, toId string) error {
 	return copyFolder(sourceFolder, destinationFolder)
 }
 
-func (f *FileSystemImageRepository) Set(id string, images []*shared.Image) (results []string, err error) {
-	results = make([]string, 0)
+func (f *FileSystemImageRepository) Set(id string, images []*shared.Image) (results []*models.Page, err error) {
+	results = make([]*models.Page, 0)
 	p := path.Join(f.directory, id)
 	if _, err := os.Stat(p); os.IsNotExist(err) {
 		os.MkdirAll(p, os.ModePerm)
@@ -72,14 +82,14 @@ func (f *FileSystemImageRepository) Set(id string, images []*shared.Image) (resu
 			log.Errorf("Recovering: %v", r)
 			os.RemoveAll(p)
 			err = errors.New("failed to save images")
-			results = make([]string, 0)
+			results = make([]*models.Page, 0)
 		}
 	}()
 	for _, img := range images {
-		imgId := uuid.New().String()
+		imgId := bson.NewObjectId().Hex()
 		fp := path.Join(p, imgId)
 		save(fp, img)
-		results = append(results, imgId)
+		results = append(results, models.NewPage(imgId, img.Format))
 	}
 	return results, nil
 }
@@ -99,7 +109,7 @@ func (f *FileSystemImageRepository) Delete(id string) error {
 }
 
 func save(filePath string, img *shared.Image) error {
-	filePath = filePath + "." + img.Format
+	filePath = filePath + "." + normalizeExtension(img.Format)
 	imageFile, err := os.Create(filePath)
 	defer imageFile.Close()
 	if err != nil {
@@ -114,8 +124,9 @@ func save(filePath string, img *shared.Image) error {
 	return err
 }
 
-func (f *FileSystemImageRepository) Serve(context *gin.Context, recordId string, imageId string) {
-	p := f.getPath(recordId, imageId)
+func (f *FileSystemImageRepository) Serve(context *gin.Context, recordId string, imageId string, format string) {
+	p := f.getPath(recordId, imageId+"."+format)
+	println(p)
 	context.File(p)
 }
 
@@ -186,4 +197,11 @@ func copyFile(source string, dest string) (err error) {
 	}
 
 	return
+}
+
+func normalizeExtension(extension string) string {
+	if extension == "jpeg" {
+		return "jpg"
+	}
+	return extension
 }

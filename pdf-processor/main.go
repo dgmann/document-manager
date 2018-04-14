@@ -40,11 +40,11 @@ func main() {
 		if err != nil || len(img) == 0 {
 			c.AbortWithError(400, err)
 		}
-		rotated, format, err := image.Rotate(img, degree)
+		rotated, err := image.Rotate(img, degree)
 		if err != nil {
 			c.AbortWithError(400, err)
 		}
-		c.Data(200, "image/"+format, rotated)
+		c.JSON(200, rotated)
 	})
 	router.GET("", func(c *gin.Context) {
 		c.String(http.StatusOK, "PDFProcessor")

@@ -3,14 +3,15 @@ package image
 import (
 	"gopkg.in/gographics/imagick.v3/imagick"
 	"strings"
+	"github.com/dgmann/document-manager/shared"
 )
 
-func Rotate(img []byte, degrees float64) ([]byte, string, error) {
+func Rotate(img []byte, degrees float64) (*shared.Image, error) {
 	mw := imagick.NewMagickWand()
 	defer mw.Destroy()
 	err := mw.ReadImageBlob(img)
 	if err != nil {
-		return nil, "", err
+		return nil, err
 	}
 	format := strings.ToLower(mw.GetImageFormat())
 
@@ -20,8 +21,9 @@ func Rotate(img []byte, degrees float64) ([]byte, string, error) {
 
 	err = mw.RotateImage(pw, degrees)
 	if err != nil {
-		return nil, format, err
+		return nil, err
 	}
 	mw.ResetIterator()
-	return mw.GetImageBlob(), format, nil
+	blob := mw.GetImageBlob()
+	return shared.NewImage(blob, format), nil
 }

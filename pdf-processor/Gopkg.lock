@@ -5,7 +5,7 @@
   branch = "master"
   name = "github.com/dgmann/document-manager"
   packages = ["shared"]
-  revision = "c7a26806c871c75d3c4689987c6be569b9a476cd"
+  revision = "e37ab345268596f99734d6897e4b6166f5c9927e"
 
 [[projects]]
   name = "github.com/gin-contrib/cors"
@@ -21,11 +21,7 @@
 
 [[projects]]
   name = "github.com/gin-gonic/gin"
-  packages = [
-    ".",
-    "binding",
-    "render"
-  ]
+  packages = [".","binding","render"]
   revision = "d459835d2b077e44f7c9b453505ee29881d5d12d"
   version = "v1.2"
 
@@ -62,10 +58,7 @@
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
-  packages = [
-    "unix",
-    "windows"
-  ]
+  packages = ["unix","windows"]
   revision = "2c42eef0765b9837fbdab12011af7830f55f88f0"
 
 [[projects]]
@@ -76,10 +69,7 @@
 
 [[projects]]
   name = "gopkg.in/gographics/imagick.v3"
-  packages = [
-    "imagick",
-    "imagick/types"
-  ]
+  packages = ["imagick","imagick/types"]
   revision = "e5c95c340c8d9bf140ca670563906805b655d9d9"
   version = "v3.2.0"
 

@@ -1,7 +1,6 @@
 package repositories
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -12,14 +11,13 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
+	"github.com/dgmann/document-manager/shared"
 )
-
-const fileExtension = ".png"
 
 type ImageRepository interface {
 	Get(id string) map[string]io.Reader
-	Set(id string, images []*bytes.Buffer) ([]string, error)
-	SetImage(id string, fileName string, image *bytes.Buffer) error
+	Set(id string, images []*shared.Image) ([]string, error)
+	SetImage(id string, fileName string, image *shared.Image) error
 	Delete(id string) error
 	Serve(context *gin.Context, recordId string, imageId string)
 }
@@ -63,7 +61,7 @@ func (f *FileSystemImageRepository) Copy(fromId string, toId string) error {
 	return copyFolder(sourceFolder, destinationFolder)
 }
 
-func (f *FileSystemImageRepository) Set(id string, images []*bytes.Buffer) (results []string, err error) {
+func (f *FileSystemImageRepository) Set(id string, images []*shared.Image) (results []string, err error) {
 	results = make([]string, 0)
 	p := path.Join(f.directory, id)
 	if _, err := os.Stat(p); os.IsNotExist(err) {
@@ -80,15 +78,15 @@ func (f *FileSystemImageRepository) Set(id string, images []*bytes.Buffer) (resu
 	for _, img := range images {
 		imgId := uuid.New().String()
 		fp := path.Join(p, imgId)
-		save(fp, img.Bytes())
+		save(fp, img)
 		results = append(results, imgId)
 	}
 	return results, nil
 }
 
-func (f *FileSystemImageRepository) SetImage(id string, fileName string, image *bytes.Buffer) error {
-	p := f.getPath(id, fileName)
-	err := save(p, image.Bytes())
+func (f *FileSystemImageRepository) SetImage(recordId string, pageId string, image *shared.Image) error {
+	p := f.getPath(recordId, pageId)
+	err := save(p, image)
 	if err != nil {
 		return err
 	}
@@ -100,10 +98,8 @@ func (f *FileSystemImageRepository) Delete(id string) error {
 	return os.RemoveAll(p)
 }
 
-func save(filePath string, img []byte) error {
-	if len(filepath.Ext(filePath)) == 0 {
-		filePath = filePath + fileExtension
-	}
+func save(filePath string, img *shared.Image) error {
+	filePath = filePath + "." + img.Format
 	imageFile, err := os.Create(filePath)
 	defer imageFile.Close()
 	if err != nil {
@@ -114,7 +110,7 @@ func save(filePath string, img []byte) error {
 		}).Error("Error creating image file")
 		return err
 	}
-	_, err = imageFile.Write(img)
+	_, err = imageFile.Write(img.Image)
 	return err
 }
 
@@ -124,7 +120,7 @@ func (f *FileSystemImageRepository) Serve(context *gin.Context, recordId string,
 }
 
 func (f *FileSystemImageRepository) getPath(recordId string, imageId string) string {
-	return path.Join(f.directory, recordId, imageId+fileExtension)
+	return path.Join(f.directory, recordId, imageId)
 }
 
 func copyFolder(source string, dest string) (err error) {

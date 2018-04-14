@@ -8,15 +8,12 @@ import (
 	_ "image/jpeg"
 	_ "image/png"
 	"bytes"
+	"strings"
+	"github.com/dgmann/document-manager/shared"
 )
 
 type FileWrapper struct {
 	Dir string
-}
-
-type Image struct {
-	*bytes.Buffer
-	Type string
 }
 
 func NewFileWrapper() (*FileWrapper, error) {
@@ -27,7 +24,7 @@ func NewFileWrapper() (*FileWrapper, error) {
 	return &FileWrapper{Dir: dir}, nil
 }
 
-func (f *FileWrapper) Dispose() {
+func (f *FileWrapper) Destroy() {
 	err := os.RemoveAll(f.Dir)
 	if err != nil {
 		log.Error(err)
@@ -38,17 +35,18 @@ func (f *FileWrapper) GetFilePath(fp string) string {
 	return filepath.Join(f.Dir, fp)
 }
 
-func (f *FileWrapper) GetImagesAsBuffer(imageType ...string) ([]*Image, error) {
-	imgList := []*Image{}
+func (f *FileWrapper) GetImagesAsBuffer(imageType ...string) ([]*shared.Image, error) {
+	var imgList []*shared.Image
 	err := filepath.Walk(f.Dir, func(path string, fi os.FileInfo, err error) error {
 		if contains(imageType, filepath.Ext(fi.Name())) {
 			imgFile, _ := os.Open(path)
 			buf := new(bytes.Buffer)
 			buf.ReadFrom(imgFile)
-			imgBuff := Image{Buffer: buf}
-			imgBuff.Type = filepath.Ext(fi.Name())[:1]
+
+			imageType := strings.ToLower(filepath.Ext(fi.Name())[:1])
+			img := shared.NewImage(buf.Bytes(), imageType)
 			imgFile.Close()
-			imgList = append(imgList, &imgBuff)
+			imgList = append(imgList, img)
 		}
 		return nil
 	})

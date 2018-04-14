@@ -7,7 +7,6 @@ import (
 	log "github.com/sirupsen/logrus"
 	"strconv"
 	"errors"
-	"bytes"
 )
 
 func registerRecords(g *gin.RouterGroup) {
@@ -122,8 +121,8 @@ func registerRecords(g *gin.RouterGroup) {
 				c.AbortWithError(400, err)
 				return
 			}
-			app.Images.SetImage(c.Param("recordId"), c.Param("imageId"), bytes.NewBuffer(img))
-			c.Data(200, "image/jpeg", img)
+			app.Images.SetImage(c.Param("recordId"), c.Param("imageId"), img)
+			c.JSON(200, img)
 		} else {
 			c.AbortWithError(400, errors.New("cannot read image"))
 			return

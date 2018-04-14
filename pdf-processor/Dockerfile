@@ -6,7 +6,7 @@ RUN apk --no-cache --virtual add openssl imagemagick imagemagick-dev poppler-uti
 WORKDIR /go/src/github.com/dgmann/document-manager/pdf-processor
 COPY Gopkg.toml Gopkg.lock ./
 
-RUN dep ensure -vendor-only
+RUN dep ensure -vendor-only && rm -r vendor/github.com/dgmann/document-manager/pdf-processor
 COPY . .
 RUN go build -o /processor .
 

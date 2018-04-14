@@ -23,7 +23,7 @@ type Record struct {
 	Sender         string        `bson:"sender,omitempty" json:"sender" form:"user" binding:"required"`
 	CategoryId     bson.ObjectId `bson:"categoryId,omitempty" json:"categoryId"`
 	Tags           []string      `bson:"tags,omitempty" json:"tags"`
-	Pages          []Page        `bson:"pages,omitempty" json:"pages"`
+	Pages          []*Page       `bson:"pages,omitempty" json:"pages"`
 	RequiredAction *string       `bson:"requiredAction,omitempty" json:"requiredAction"`
 }
 
@@ -32,7 +32,7 @@ func (r *Record) SetURL(url *url.URL) {
 		r.Tags = []string{}
 	}
 	if r.Pages == nil {
-		r.Pages = []Page{}
+		r.Pages = []*Page{}
 	}
 
 	for i := range r.Pages {
@@ -72,13 +72,7 @@ func NewRecord(sender string) *Record {
 		PatientId:      nil,
 		Sender:         sender,
 		Tags:           []string{},
-		Pages:          []Page{},
+		Pages:          []*Page{},
 		RequiredAction: nil,
-	}
-}
-
-func (r *Record) SetPages(ids []string) {
-	for _, id := range ids {
-		r.Pages = append(r.Pages, Page{Id: id})
 	}
 }

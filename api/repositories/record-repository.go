@@ -96,12 +96,12 @@ func (r *RecordRepository) GetEscalated() []*models.Record {
 
 func (r *RecordRepository) Create(sender string, images []*shared.Image) (*models.Record, error) {
 	record := models.NewRecord(sender)
-	imageIds, err := r.images.Set(record.Id.Hex(), images)
+	pages, err := r.images.Set(record.Id.Hex(), images)
 	if err != nil {
 		log.Error(err)
 		return nil, err
 	}
-	record.SetPages(imageIds)
+	record.Pages = pages
 
 	if err := r.records.Insert(&record); err != nil {
 		log.Error(err)

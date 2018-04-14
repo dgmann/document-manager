@@ -1,7 +1,6 @@
 package pdfprocessor
 
 import (
-	"gopkg.in/gographics/imagick.v3/imagick"
 	"github.com/dgmann/document-manager/shared"
 	"io"
 	"os/exec"
@@ -23,21 +22,5 @@ func ToImages(data io.Reader) ([]*shared.Image, error) {
 		return nil, err
 	}
 	images, _ := fw.GetImagesAsBuffer(".png", ".jpg")
-	mw := imagick.NewMagickWand()
-	defer mw.Destroy()
-	for _, img := range images {
-		mw.ReadImageBlob(img.Image)
-
-		width := mw.GetImageWidth()
-		height := mw.GetImageHeight()
-		if height > 2000 {
-			err := mw.AdaptiveResizeImage(width/2, height/2)
-			if err != nil {
-				return nil, err
-			}
-			mw.ResetIterator()
-			img.Image = mw.GetImageBlob()
-		}
-	}
 	return images, nil
 }

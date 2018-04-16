@@ -125,12 +125,26 @@ func (r *RecordRepository) Delete(id string) error {
 	return err
 }
 
-func (r *RecordRepository) Update(id string, record models.Record) *models.Record {
+func (r *RecordRepository) Update(id string, record models.Record) (*models.Record, error) {
 	key := bson.ObjectIdHex(id)
 	if err := r.records.UpdateId(key, bson.M{"$set": record}); err != nil {
 		log.Panic(err)
+		return nil, err
 	}
 	updated := r.FindByObjectId(key)
 	r.events.Send(services.EventUpdated, updated)
-	return updated
+	return updated, nil
+}
+
+func (r *RecordRepository) UpdatePages(id string, updates []*models.PageUpdate) (*models.Record, error) {
+	record := r.Find(id)
+	pages := make(map[string]*models.Page)
+	for _, page := range record.Pages {
+		pages[page.Id] = page
+	}
+	var updated []*models.Page
+	for _, update := range updates {
+		updated = append(updated, pages[update.Id])
+	}
+	return r.Update(id, models.Record{Pages: updated})
 }

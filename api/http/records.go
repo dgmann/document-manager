@@ -85,8 +85,13 @@ func registerRecords(g *gin.RouterGroup) {
 
 		if err := json.NewDecoder(c.Request.Body).Decode(&record); err != nil {
 			c.Error(err)
+			return
 		}
-		r := app.Records.Update(c.Param("recordId"), record)
+		r, err := app.Records.Update(c.Param("recordId"), record)
+		if err != nil {
+			c.AbortWithError(400, err)
+			return
+		}
 		RespondAsJSON(c, r)
 	})
 
@@ -101,7 +106,11 @@ func registerRecords(g *gin.RouterGroup) {
 			return
 		}
 
-		r := app.Records.Update(c.Param("recordId"), models.Record{Pages: pages})
+		r, err := app.Records.Update(c.Param("recordId"), models.Record{Pages: pages})
+		if err != nil {
+			c.AbortWithError(400, err)
+			return
+		}
 		RespondAsJSON(c, r)
 	})
 
@@ -114,6 +123,21 @@ func registerRecords(g *gin.RouterGroup) {
 			}
 		}
 		c.AbortWithError(404, errors.New("page not found"))
+	})
+
+	g.POST("/:recordId/pages", func(c *gin.Context) {
+		var updates []*models.PageUpdate
+		if err := json.NewDecoder(c.Request.Body).Decode(&updates); err != nil {
+			c.Error(err)
+			return
+		}
+
+		r, err := app.Records.UpdatePages(c.Param("recordId"), updates)
+		if err != nil {
+			c.AbortWithError(400, err)
+			return
+		}
+		RespondAsJSON(c, r)
 	})
 
 	g.POST("/:recordId/pages/:imageId/rotate/:degrees", func(c *gin.Context) {

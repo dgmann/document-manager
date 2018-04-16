@@ -14,6 +14,7 @@ export interface Record {
 }
 
 export class Page {
+  id: string;
   url: string;
   content: string;
 }

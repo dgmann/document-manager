@@ -33,7 +33,7 @@ func main() {
 	patients := session.DB(dbname).C("patients")
 	images := repositories.NewFileSystemImageRepository(recordDir)
 	app := shared.App{
-		Records:      repositories.NewRecordRepository(records, images),
+		Records:      repositories.NewDBRecordRepository(records, images),
 		Images:       images,
 		Tags:         repositories.NewTagRepository(records),
 		Patients:     repositories.NewPatientRepository(patients),

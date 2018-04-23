@@ -6,8 +6,8 @@ import (
 )
 
 type App struct {
-	Records      *repositories.RecordRepository
-	Images       *repositories.FileSystemImageRepository
+	Records      repositories.RecordRepository
+	Images       repositories.ImageRepository
 	Tags         *repositories.TagRepository
 	Patients     *repositories.PatientRepository
 	Categories   *repositories.CategoryRepository

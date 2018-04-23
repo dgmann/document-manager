@@ -5,6 +5,7 @@ import (
 	"github.com/dgmann/document-manager/api/models"
 	"strings"
 	"encoding/json"
+	"github.com/globalsign/mgo/bson"
 )
 
 func registerPatients(g *gin.RouterGroup) {
@@ -68,7 +69,8 @@ func registerPatients(g *gin.RouterGroup) {
 	})
 
 	g.GET("/:patientId/records", func(c *gin.Context) {
-		records, err := app.Records.FindByPatientId(c.Param("patientId"))
+		id := c.Param("patientId")
+		records, err := app.Records.Query(bson.M{"patientId": id})
 		if err != nil {
 			c.AbortWithError(400, err)
 			return

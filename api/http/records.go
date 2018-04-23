@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"errors"
 	"bytes"
+	"github.com/globalsign/mgo/bson"
 )
 
 func registerRecords(g *gin.RouterGroup) {
@@ -16,7 +17,7 @@ func registerRecords(g *gin.RouterGroup) {
 		var records []*models.Record
 		var err error
 		if _, ok := r["inbox"]; ok {
-			records, err = app.Records.GetInbox()
+			records, err = app.Records.Query(bson.M{"$or": []bson.M{{"date": nil}, {"patientId": ""}, {"categoryId": nil}}})
 		} else {
 			query := make(map[string]interface{})
 			for k, v := range r {
@@ -33,13 +34,13 @@ func registerRecords(g *gin.RouterGroup) {
 
 	g.GET("/:recordId", func(c *gin.Context) {
 		id := c.Param("recordId")
-		if id == "inbox" {
-			records, _ := app.Records.GetInbox()
-			RespondAsJSON(c, records)
-		} else {
-			record := app.Records.Find(id)
-			RespondAsJSON(c, record)
+		record, err := app.Records.Find(id)
+		if err != nil {
+			c.AbortWithError(404, err)
+			return
 		}
+
+		RespondAsJSON(c, record)
 	})
 
 	g.POST("", func(c *gin.Context) {
@@ -96,11 +97,21 @@ func registerRecords(g *gin.RouterGroup) {
 	})
 
 	g.POST("/:recordId/append/:idtoappend", func(c *gin.Context) {
-		recordToAppend := app.Records.Find(c.Param("idtoappend"))
-		record := app.Records.Find(c.Param("recordId"))
+		recordToAppend, err := app.Records.Find(c.Param("idtoappend"))
+		if err != nil {
+			c.AbortWithError(404, err)
+			return
+		}
+
+		record, err := app.Records.Find(c.Param("recordId"))
+		if err != nil {
+			c.AbortWithError(404, err)
+			return
+		}
+
 		pages := append(record.Pages, recordToAppend.Pages...)
 
-		err := app.Images.Copy(c.Param("idtoappend"), c.Param("recordId"))
+		err = app.Images.Copy(c.Param("idtoappend"), c.Param("recordId"))
 		if err != nil {
 			c.AbortWithError(400, err)
 			return
@@ -115,7 +126,12 @@ func registerRecords(g *gin.RouterGroup) {
 	})
 
 	g.GET("/:recordId/pages/:imageId", func(c *gin.Context) {
-		record := app.Records.Find(c.Param("recordId"))
+		record, err := app.Records.Find(c.Param("recordId"))
+		if err != nil {
+			c.AbortWithError(404, err)
+			return
+		}
+
 		for _, page := range record.Pages {
 			if page.Id == c.Param("imageId") {
 				app.Images.Serve(c, c.Param("recordId"), c.Param("imageId"), page.Format)

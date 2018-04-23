@@ -9,13 +9,23 @@ import (
 	"github.com/dgmann/document-manager/shared"
 )
 
-type RecordRepository struct {
+type RecordRepository interface {
+	All() ([]*models.Record, error)
+	Find(id string) (*models.Record, error)
+	Query(query map[string]interface{}) ([]*models.Record, error)
+	Create(sender string, images []*shared.Image) (*models.Record, error)
+	Delete(id string) error
+	Update(id string, record models.Record) (*models.Record, error)
+	UpdatePages(id string, updates []*models.PageUpdate) (*models.Record, error)
+}
+
+type DBRecordRepository struct {
 	records *mgo.Collection
 	events  *services.EventService
 	images  ImageRepository
 }
 
-func NewRecordRepository(records *mgo.Collection, images ImageRepository) *RecordRepository {
+func NewDBRecordRepository(records *mgo.Collection, images ImageRepository) *DBRecordRepository {
 	processedIndex := mgo.Index{
 		Key:        []string{"patientId", "-date", "tags"},
 		Unique:     false,
@@ -41,36 +51,28 @@ func NewRecordRepository(records *mgo.Collection, images ImageRepository) *Recor
 	if err != nil {
 		log.Panicf("Error setting indices %s", err)
 	}
-	return &RecordRepository{records: records, events: services.GetEventService(), images: images}
+	return &DBRecordRepository{records: records, events: services.GetEventService(), images: images}
 }
 
-func (r *RecordRepository) All() ([]*models.Record, error) {
+func (r *DBRecordRepository) All() ([]*models.Record, error) {
 	return r.Query(bson.M{})
 }
 
-func (r *RecordRepository) Find(id string) *models.Record {
-	return r.FindByObjectId(bson.ObjectIdHex(id))
+func (r *DBRecordRepository) Find(id string) (*models.Record, error) {
+	return r.findByObjectId(bson.ObjectIdHex(id))
 }
 
-func (r *RecordRepository) FindByObjectId(id bson.ObjectId) *models.Record {
+func (r *DBRecordRepository) findByObjectId(id bson.ObjectId) (*models.Record, error) {
 	var record models.Record
 
 	if err := r.records.FindId(id).One(&record); err != nil {
-		log.WithField("error", err).Panic("Cannot find record")
-	}
-	return &record
-}
-
-func (r *RecordRepository) FindByPatientId(id string) ([]*models.Record, error) {
-	records, err := r.Query(bson.M{"patientId": id})
-	if err != nil {
-		log.WithField("error", err).Panic("Cannot find records by patient id")
+		log.WithField("error", err).Debug("Cannot find record")
 		return nil, err
 	}
-	return records, nil
+	return &record, nil
 }
 
-func (r *RecordRepository) Query(query map[string]interface{}) ([]*models.Record, error) {
+func (r *DBRecordRepository) Query(query map[string]interface{}) ([]*models.Record, error) {
 	records := make([]*models.Record, 0)
 
 	if err := r.records.Find(query).All(&records); err != nil {
@@ -81,20 +83,7 @@ func (r *RecordRepository) Query(query map[string]interface{}) ([]*models.Record
 	return records, nil
 }
 
-func (r *RecordRepository) GetInbox() ([]*models.Record, error) {
-	return r.Query(bson.M{"$or": []bson.M{{"date": nil}, {"patientId": ""}, {"categoryId": nil}}})
-}
-
-func (r *RecordRepository) GetEscalated() []*models.Record {
-	var records []*models.Record
-
-	if err := r.records.Find(bson.M{"escalated": false}).All(&records); err != nil {
-		log.Panic(err)
-	}
-	return records
-}
-
-func (r *RecordRepository) Create(sender string, images []*shared.Image) (*models.Record, error) {
+func (r *DBRecordRepository) Create(sender string, images []*shared.Image) (*models.Record, error) {
 	record := models.NewRecord(sender)
 	pages, err := r.images.Set(record.Id.Hex(), images)
 	if err != nil {
@@ -108,13 +97,16 @@ func (r *RecordRepository) Create(sender string, images []*shared.Image) (*model
 		r.images.Delete(record.Id.Hex())
 		return nil, err
 	}
-	created := r.FindByObjectId(record.Id)
+	created, err := r.findByObjectId(record.Id)
+	if err != nil {
+		return nil, err
+	}
 
 	r.events.Send(services.EventCreated, created)
 	return created, nil
 }
 
-func (r *RecordRepository) Delete(id string) error {
+func (r *DBRecordRepository) Delete(id string) error {
 	key := bson.ObjectIdHex(id)
 	err := r.records.RemoveId(key)
 	if err != nil {
@@ -125,19 +117,25 @@ func (r *RecordRepository) Delete(id string) error {
 	return err
 }
 
-func (r *RecordRepository) Update(id string, record models.Record) (*models.Record, error) {
+func (r *DBRecordRepository) Update(id string, record models.Record) (*models.Record, error) {
 	key := bson.ObjectIdHex(id)
 	if err := r.records.UpdateId(key, bson.M{"$set": record}); err != nil {
 		log.Panic(err)
 		return nil, err
 	}
-	updated := r.FindByObjectId(key)
+	updated, err := r.findByObjectId(key)
+	if err != nil {
+		return nil, err
+	}
 	r.events.Send(services.EventUpdated, updated)
 	return updated, nil
 }
 
-func (r *RecordRepository) UpdatePages(id string, updates []*models.PageUpdate) (*models.Record, error) {
-	record := r.Find(id)
+func (r *DBRecordRepository) UpdatePages(id string, updates []*models.PageUpdate) (*models.Record, error) {
+	record, err := r.Find(id)
+	if err != nil {
+		return nil, err
+	}
 	pages := make(map[string]*models.Page)
 	for _, page := range record.Pages {
 		pages[page.Id] = page

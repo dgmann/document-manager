@@ -19,6 +19,18 @@ export class Page {
   content: string;
 }
 
+export class PageUpdate {
+  public rotate: number = 0;
+
+  constructor(public id: string, public url: string) {
+  }
+
+  public static FromPage(page: Page) {
+    return new PageUpdate(page.id, page.url)
+  }
+}
+
+
 export enum RequiredAction {
   REVIEW = "review",
   ESCALATED = "escalated",

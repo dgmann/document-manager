@@ -10,6 +10,7 @@ import {
   LoadRecordsFail,
   LoadRecordsSuccess,
   RecordActionTypes,
+  UpdatePages,
   UpdateRecord,
   UpdateRecordFail,
   UpdateRecordSuccess
@@ -57,6 +58,16 @@ export class RecordEffects {
       this.http.delete(`${environment.api}/records/${action.payload.id}`).pipe(
         map(() => new DeleteRecordSuccess({id: action.payload.id})),
         catchError(err => of(new DeleteRecordFail({error: err})))
+      )
+    )
+  );
+
+  @Effect() updatePages: Observable<Action> = this.actions$.pipe(
+    ofType(RecordActionTypes.UpdatePages),
+    mergeMap((action: UpdatePages) =>
+      this.http.post<Record>(`${environment.api}/records/${action.payload.id}/pages`, action.payload.updates).pipe(
+        map(data => new UpdateRecordSuccess({record: {id: action.payload.id, changes: data}})),
+        catchError(err => of(new UpdateRecordFail({error: err})))
       )
     )
   );

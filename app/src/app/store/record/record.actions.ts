@@ -1,6 +1,6 @@
 import { Action } from '@ngrx/store';
 import { Update } from '@ngrx/entity';
-import { Record } from './record.model';
+import { PageUpdate, Record } from './record.model';
 
 export enum RecordActionTypes {
   LoadRecords = '[Record] Load Records',
@@ -12,7 +12,8 @@ export enum RecordActionTypes {
   DeleteRecord = '[Record] Delete Record',
   DeleteRecordSuccess = '[Record] Delete Record Success',
   DeleteRecordFail = '[Record] Delete Records Fail',
-  ClearRecords = '[Record] Clear Records'
+  ClearRecords = '[Record] Clear Records',
+  UpdatePages = '[Record] Update Pages'
 }
 
 export class LoadRecords implements Action {
@@ -85,6 +86,13 @@ export class ClearRecords implements Action {
   }
 }
 
+export class UpdatePages implements Action {
+  readonly type = RecordActionTypes.UpdatePages;
+
+  constructor(public payload: { id: string, updates: PageUpdate[] }) {
+  }
+}
+
 export type RecordActions =
   LoadRecords
   | LoadRecordsSuccess
@@ -95,4 +103,5 @@ export type RecordActions =
   | DeleteRecord
   | DeleteRecordSuccess
   | DeleteRecordFail
-  | ClearRecords;
+  | ClearRecords
+  | UpdatePages;

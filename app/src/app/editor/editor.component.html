@@ -1,9 +1,18 @@
-<div fxLayout="row" fxLayoutGap="1em" dnd-sortable-container [sortableData]="pages">
-  <div fxFlex="20%" fxLayoutAlign=" stretch" *ngFor="let page of pages; let i = index" dnd-sortable [sortableIndex]="i">
+<div fxLayout="column" fxLayoutGap="1em">
+  <app-page-list [pages]="pages"></app-page-list>
 
-    <mat-card>
-      <img mat-card-image [src]="page.url">
-    </mat-card>
-
+  <div class="button-row">
+    <button mat-button (click)="saveRecord()">
+      <mat-icon aria-label="save">save</mat-icon>
+      <span>Speichern</span>
+    </button>
+    <button mat-button (click)="discard()">
+      <mat-icon aria-label="delete">delete</mat-icon>
+      <span>Verwerfen</span>
+    </button>
+    <button mat-button (click)="cancel()">
+      <mat-icon aria-label="other">cancel</mat-icon>
+      <span>Abbrechen</span>
+    </button>
   </div>
 </div>

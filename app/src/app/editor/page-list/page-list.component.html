@@ -1,0 +1,9 @@
+<div fxLayout="row" fxLayoutGap="1em" dnd-sortable-container [sortableData]="pages">
+  <div fxFlex="20%" fxLayoutAlign=" stretch" *ngFor="let page of pages; let i = index" dnd-sortable [sortableIndex]="i">
+
+    <mat-card>
+      <img mat-card-image [src]="page.url">
+    </mat-card>
+
+  </div>
+</div>

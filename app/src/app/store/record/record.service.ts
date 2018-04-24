@@ -6,8 +6,8 @@ import { map } from "rxjs/operators";
 import { environment } from "../../../environments/environment";
 import { NotificationService } from "../../shared/notification-service";
 import { State } from "../reducers";
-import { DeleteRecord, LoadRecords, UpdateRecord } from "./record.actions";
-import { Record } from "./record.model";
+import { DeleteRecord, LoadRecords, UpdatePages, UpdateRecord } from "./record.actions";
+import { PageUpdate, Record } from "./record.model";
 import { selectAllRecords, selectRecordEntities } from "./record.selectors";
 
 @Injectable()
@@ -33,6 +33,10 @@ export class RecordService {
 
   public update(id: string, changes: any) {
     this.store.dispatch(new UpdateRecord({record: {id: id, changes: changes}}))
+  }
+
+  public updatePages(id: string, pages: PageUpdate[]) {
+    this.store.dispatch(new UpdatePages({id: id, updates: pages}))
   }
 
   public upload(pdf) {

@@ -2,8 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { Page, PageUpdate, Record, RecordService } from "../store";
 import { Observable } from "rxjs/Observable";
 import { ActivatedRoute } from "@angular/router";
-import { switchMap, take } from "rxjs/operators";
+import { filter, switchMap, take } from "rxjs/operators";
 import { Location } from "@angular/common";
+import { includes } from 'lodash-es';
 
 
 @Component({
@@ -34,8 +35,16 @@ export class EditorComponent implements OnInit {
   }
 
   saveRecord() {
-    this.record.pipe(take(1)).subscribe(r => this.recordService.updatePages(r.id, this.pages));
-    this.location.back();
+    this.record.pipe(take(1)).subscribe(r => {
+      this.recordService.updatePages(r.id, this.pages);
+      const sub = this.recordService.getInvalidIds().pipe(
+        filter(ids => !includes(ids, r.id))
+      ).subscribe(_ => {
+        sub.unsubscribe();
+        this.location.back();
+      })
+    });
+
   }
 
   setPages(pages: Page[]) {

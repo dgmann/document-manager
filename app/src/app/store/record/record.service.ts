@@ -8,7 +8,7 @@ import { NotificationService } from "../../shared/notification-service";
 import { State } from "../reducers";
 import { DeleteRecord, LoadRecords, UpdatePages, UpdateRecord } from "./record.actions";
 import { PageUpdate, Record } from "./record.model";
-import { selectAllRecords, selectRecordEntities } from "./record.selectors";
+import { selectAllRecords, selectInvalidIds, selectRecordEntities } from "./record.selectors";
 
 @Injectable()
 export class RecordService {
@@ -37,6 +37,10 @@ export class RecordService {
 
   public updatePages(id: string, pages: PageUpdate[]) {
     this.store.dispatch(new UpdatePages({id: id, updates: pages}))
+  }
+
+  public getInvalidIds() {
+    return this.store.select<string[]>(selectInvalidIds);
   }
 
   public upload(pdf) {

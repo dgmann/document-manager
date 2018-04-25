@@ -1,7 +1,19 @@
 <div fxLayout="row" fxLayoutGap="1em" dnd-sortable-container [sortableData]="pages">
-  <div fxFlex="20%" fxLayoutAlign=" stretch" *ngFor="let page of pages; let i = index" dnd-sortable [sortableIndex]="i">
+  <div fxFlex="20%" fxLayoutAlign=" stretch" *ngFor="let page of pages; let i = index" dnd-sortable [sortableIndex]="i"
+       [class]="'rotate-' + page.rotate">
 
     <mat-card>
+      <mat-card-header>
+        <button mat-icon-button color="accent" (click)="rotate(page, -90)">
+          <mat-icon aria-label="rotate-left">rotate_left</mat-icon>
+        </button>
+        <button mat-icon-button color="accent" (click)="rotate(page, 90)">
+          <mat-icon aria-label="rotate-right">rotate_right</mat-icon>
+        </button>
+        <button mat-icon-button color="accent">
+          <mat-icon aria-label="delete">delete</mat-icon>
+        </button>
+      </mat-card-header>
       <img mat-card-image [src]="page.url">
     </mat-card>
 

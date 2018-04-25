@@ -9,6 +9,9 @@ import (
 	"errors"
 	"bytes"
 	"github.com/globalsign/mgo/bson"
+	"fmt"
+	"strings"
+	"sync"
 )
 
 func registerRecords(g *gin.RouterGroup) {
@@ -153,6 +156,55 @@ func registerRecords(g *gin.RouterGroup) {
 			c.AbortWithError(400, err)
 			return
 		}
+
+		images, err := app.Images.Get(c.Param("recordId"))
+		if err != nil {
+			c.AbortWithError(400, err)
+			return
+		}
+
+		var errorIds []string
+		var wg sync.WaitGroup
+		var mutex = &sync.Mutex{}
+
+		for _, u := range updates {
+			if u.Rotate == 0 {
+				continue
+			}
+
+			wg.Add(1)
+			go func(update *models.PageUpdate) {
+				defer wg.Done()
+
+				if img, ok := images[update.Id]; ok {
+					img, err := app.PDFProcessor.Rotate(bytes.NewBuffer(img.Image), int(update.Rotate))
+					if err != nil {
+						mutex.Lock()
+						errorIds = append(errorIds, update.Id)
+						mutex.Unlock()
+						return
+					}
+					app.Images.SetImage(c.Param("recordId"), update.Id, img)
+					if err != nil {
+						mutex.Lock()
+						errorIds = append(errorIds, update.Id)
+						mutex.Unlock()
+						return
+					}
+				} else {
+					mutex.Lock()
+					errorIds = append(errorIds, update.Id)
+					mutex.Unlock()
+				}
+			}(u)
+		}
+
+		wg.Wait()
+		if len(errorIds) > 0 {
+			c.AbortWithError(503, errors.New(fmt.Sprintf("error rotating pages %s", strings.Join(errorIds, ","))))
+			return
+		}
+
 		RespondAsJSON(c, r)
 	})
 

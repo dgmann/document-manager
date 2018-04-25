@@ -22,6 +22,7 @@ type ImageRepository interface {
 	SetImage(id string, fileName string, image *shared.Image) error
 	Delete(id string) error
 	Serve(context *gin.Context, recordId string, imageId string, format string)
+	Copy(fromId string, toId string) error
 }
 
 type FileSystemImageRepository struct {
@@ -126,7 +127,7 @@ func save(filePath string, img *shared.Image) error {
 
 func (f *FileSystemImageRepository) Serve(context *gin.Context, recordId string, imageId string, format string) {
 	p := f.getPath(recordId, imageId+"."+format)
-	println(p)
+	context.Header("Cache-Control", "no-cache")
 	context.File(p)
 }
 

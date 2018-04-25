@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { Page } from "../../store";
+import { PageUpdate } from "../../store";
 
 @Component({
   selector: 'app-page-list',
@@ -7,7 +7,7 @@ import { Page } from "../../store";
   styleUrls: ['./page-list.component.scss']
 })
 export class PageListComponent implements OnInit {
-  @Input() pages: Page[];
+  @Input() pages: PageUpdate[];
 
   constructor() {
   }
@@ -15,4 +15,16 @@ export class PageListComponent implements OnInit {
   ngOnInit() {
   }
 
+  rotate(page: PageUpdate, degree: number) {
+    page.rotate = this.mod(page.rotate + degree, 360);
+  }
+
+  delete(page: PageUpdate) {
+    const index = this.pages.indexOf(page);
+    this.pages.splice(index, 1);
+  }
+
+  mod(n, m) {
+    return ((n % m) + m) % m;
+  }
 }

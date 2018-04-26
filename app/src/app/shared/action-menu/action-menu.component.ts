@@ -1,10 +1,11 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Record, RequiredAction } from "../../store";
 
 @Component({
   selector: 'app-action-menu',
   templateUrl: './action-menu.component.html',
-  styleUrls: ['./action-menu.component.scss']
+  styleUrls: ['./action-menu.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ActionMenuComponent implements OnInit {
   @Input() record: Record;

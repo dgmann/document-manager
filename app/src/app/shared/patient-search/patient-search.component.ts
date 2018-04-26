@@ -1,16 +1,17 @@
-import {HttpClient} from "@angular/common/http";
-import {Component, EventEmitter, OnInit, Output} from '@angular/core';
-import {FormControl} from "@angular/forms";
-import {MatAutocompleteSelectedEvent} from "@angular/material";
-import {Observable} from "rxjs/Observable";
-import {debounceTime, filter, switchMap} from "rxjs/operators";
-import {environment} from "../../../environments/environment";
-import {Patient} from "../../patient";
+import { HttpClient } from "@angular/common/http";
+import { ChangeDetectionStrategy, Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { FormControl } from "@angular/forms";
+import { MatAutocompleteSelectedEvent } from "@angular/material";
+import { Observable } from "rxjs/Observable";
+import { debounceTime, filter, switchMap } from "rxjs/operators";
+import { environment } from "../../../environments/environment";
+import { Patient } from "../../patient";
 
 @Component({
   selector: 'app-patient-search',
   templateUrl: './patient-search.component.html',
-  styleUrls: ['./patient-search.component.scss']
+  styleUrls: ['./patient-search.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PatientSearchComponent implements OnInit {
   @Output('selectPatient') selectPatient = new EventEmitter<Patient>();

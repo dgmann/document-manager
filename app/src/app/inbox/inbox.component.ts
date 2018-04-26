@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { includes, without } from 'lodash-es';
 import { DropEvent } from "ng-drag-drop";
 import { Observable } from "rxjs/Observable";
@@ -9,7 +9,8 @@ import { InboxService } from "./inbox.service";
 @Component({
   selector: 'app-inbox',
   templateUrl: './inbox.component.html',
-  styleUrls: ['./inbox.component.scss']
+  styleUrls: ['./inbox.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class InboxComponent implements OnInit{
   data: Observable<Record[]>;

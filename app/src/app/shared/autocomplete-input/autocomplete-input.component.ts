@@ -1,13 +1,14 @@
-import {Component, Input, OnInit} from '@angular/core';
-import {FormControl} from "@angular/forms";
-import {Observable} from "rxjs/Observable";
-import {concat, map, startWith, withLatestFrom} from "rxjs/operators";
-import {Category} from "../category-service";
+import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
+import { FormControl } from "@angular/forms";
+import { Observable } from "rxjs/Observable";
+import { concat, map, startWith, withLatestFrom } from "rxjs/operators";
+import { Category } from "../category-service";
 
 @Component({
   selector: 'app-autocomplete-dropdown',
   templateUrl: './autocomplete-input.component.html',
-  styleUrls: ['./autocomplete-input.component.scss']
+  styleUrls: ['./autocomplete-input.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AutocompleteInputComponent implements OnInit {
   @Input('options') options: Observable<Category[]>;

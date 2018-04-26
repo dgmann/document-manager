@@ -79,7 +79,8 @@ export class DocumentListComponent implements OnInit, AfterViewInit {
   editRecord(record: Record) {
     this.dialog.open(DocumentEditDialogComponent, {
       disableClose: true,
-      data: record
+      data: record,
+      width: "635px"
     }).afterClosed().subscribe((result: Record) => {
       if (!result) {
         return;

@@ -1,13 +1,14 @@
-import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute} from "@angular/router";
-import {BehaviorSubject} from "rxjs/BehaviorSubject";
-import {Observable} from "rxjs/Observable";
-import {combineLatest} from "rxjs/observable/combineLatest";
-import {map} from "rxjs/operators";
-import {Category} from "../shared/category-service";
-import {Record, RecordService} from "../store";
-import {PatientService} from "./patient.service";
-import {Patient} from "./store/patient.model";
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from "@angular/router";
+import { BehaviorSubject } from "rxjs/BehaviorSubject";
+import { Observable } from "rxjs/Observable";
+import { combineLatest } from "rxjs/observable/combineLatest";
+import { map, merge } from "rxjs/operators";
+import { Category } from "../shared/category-service";
+import { Record, RecordService } from "../store";
+import { PatientService } from "./patient.service";
+import { Patient } from "./store/patient.model";
+import { flatMap, uniq } from "lodash-es";
 
 @Component({
   selector: 'app-patient',
@@ -37,7 +38,8 @@ export class PatientComponent implements OnInit {
       map(patient => patient && patient.id || null)
     );
     this.tags = this.patient.pipe(
-      map(patient => patient && patient.tags || [])
+      map(patient => patient && patient.tags || []),
+      merge(this.records.pipe(map(records => uniq(flatMap(records, r => r.tags)))))
     );
     this.categories = this.patient.pipe(
       map(patient => patient && patient.categories || [])

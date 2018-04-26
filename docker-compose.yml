@@ -26,8 +26,6 @@ services:
     depends_on:
       - db
       - processor
-    volumes:
-      - "./records:/records"
 
 networks:
   backend:

@@ -1,13 +1,14 @@
-import {Component, EventEmitter, Input, Output} from '@angular/core';
-import {Observable} from "rxjs/Observable";
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import { Observable } from "rxjs/Observable";
 
 
-import {Page, Record} from "../../store";
+import { Page, Record } from "../../store";
 
 @Component({
   selector: 'app-record-viewer',
   templateUrl: './record-viewer.component.html',
-  styleUrls: ['./record-viewer.component.scss']
+  styleUrls: ['./record-viewer.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RecordViewerComponent {
   @Input('record') record: Observable<Record>;

@@ -1,4 +1,13 @@
-import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  ViewChild
+} from '@angular/core';
 import { MatDialog, MatSort, MatTableDataSource } from "@angular/material";
 import { includes } from 'lodash-es';
 import { DropEvent } from "ng-drag-drop";
@@ -12,7 +21,8 @@ import { Router } from "@angular/router";
 @Component({
   selector: 'app-document-list',
   templateUrl: './document-list.component.html',
-  styleUrls: ['./document-list.component.scss']
+  styleUrls: ['./document-list.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DocumentListComponent implements OnInit, AfterViewInit {
   @ViewChild(MatSort) sort: MatSort;

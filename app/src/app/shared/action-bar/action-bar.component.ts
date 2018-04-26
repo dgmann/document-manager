@@ -1,10 +1,11 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { RecordService, RequiredAction } from "../../store";
 
 @Component({
   selector: 'app-action-bar',
   templateUrl: './action-bar.component.html',
-  styleUrls: ['./action-bar.component.scss']
+  styleUrls: ['./action-bar.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ActionBarComponent implements OnInit {
   @Input() recordIds: string[];

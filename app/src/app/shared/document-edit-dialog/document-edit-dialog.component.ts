@@ -1,21 +1,30 @@
-import {AfterViewInit, Component, ElementRef, Inject, OnInit, ViewChild} from '@angular/core';
-import {FormControl} from "@angular/forms";
-import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material";
-import {take} from "rxjs/operators";
-import {ReplaySubject} from "rxjs/ReplaySubject";
-import {Patient} from "../../patient";
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  Inject,
+  OnInit,
+  ViewChild
+} from '@angular/core';
+import { FormControl } from "@angular/forms";
+import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material";
+import { take } from "rxjs/operators";
+import { ReplaySubject } from "rxjs/ReplaySubject";
+import { Patient } from "../../patient";
 
 
-import {Record} from "../../store";
-import {CategoryService} from "../category-service";
-import {ExternalApiService} from "../external-api.service";
-import {TagService} from "../tag-service";
+import { Record } from "../../store";
+import { CategoryService } from "../category-service";
+import { ExternalApiService } from "../external-api.service";
+import { TagService } from "../tag-service";
 
 
 @Component({
   selector: 'app-document-edit-dialog',
   templateUrl: './document-edit-dialog.component.html',
-  styleUrls: ['./document-edit-dialog.component.scss']
+  styleUrls: ['./document-edit-dialog.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DocumentEditDialogComponent implements AfterViewInit, OnInit {
   @ViewChild('datepickertoogle', {read: ElementRef}) datepickerToggle;

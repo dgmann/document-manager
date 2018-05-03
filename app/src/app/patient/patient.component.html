@@ -1,4 +1,4 @@
-<app-split-panel>
+<app-three-column-panel [(showRightColumn)]="showDetails" [(showLeftColumn)]="!showDetails">
   <div class="left-panel" fxLayout="column" fxLayoutGap="0em">
     <mat-card>
       <mat-card-title>
@@ -17,7 +17,10 @@
       </mat-card-content>
     </mat-card>
   </div>
-  <div class="right-panel">
-    <app-multi-record-list [records]="records"></app-multi-record-list>
+  <div class="center-panel">
+    <app-multi-record-list [records]="records" (clickRecord)="onSelectRecord($event)"></app-multi-record-list>
   </div>
-</app-split-panel>
+  <div class="right-panel">
+    <app-record-viewer [record]="selectedRecord"></app-record-viewer>
+  </div>
+</app-three-column-panel>

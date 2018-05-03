@@ -1,6 +1,7 @@
-import {HttpClient} from "@angular/common/http";
-import {Injectable} from "@angular/core";
-import {environment} from "../../environments/environment";
+import { HttpClient } from "@angular/common/http";
+import { Injectable } from "@angular/core";
+import { environment } from "../../environments/environment";
+import { map } from "rxjs/operators";
 
 @Injectable()
 export class CategoryService {
@@ -9,6 +10,14 @@ export class CategoryService {
 
   public get() {
     return this.http.get<Category[]>(environment.api + "/categories");
+  }
+
+  public getAsMap() {
+    return this.get().pipe(map(cat => {
+      const m = {};
+      cat.forEach(c => m[c.id] = c);
+      return m;
+    }));
   }
 
   public getByPatientId(id: string) {

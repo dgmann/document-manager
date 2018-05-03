@@ -21,6 +21,8 @@ export class PatientComponent implements OnInit {
   public patient: Observable<Patient>;
   public tags: Observable<string[]>;
   public categories: Observable<Category[]>;
+  public selectedRecord: Observable<Record>;
+  public showDetails = false;
 
   private selectedTags = new BehaviorSubject<string[]>([]);
   private selectedCategories = new BehaviorSubject<Category[]>([]);
@@ -47,6 +49,8 @@ export class PatientComponent implements OnInit {
 
     combineLatest(this.selectedTags, this.selectedCategories).subscribe(([tags, categories]) =>
       this.patientService.setFilter(categories.map(c => c.id), tags));
+
+    this.selectedRecord = this.patientService.getSelectedRecord();
   }
 
   onSelectTags(tags: string[]) {
@@ -55,5 +59,10 @@ export class PatientComponent implements OnInit {
 
   onSelectCategories(categories: Category[]) {
     this.selectedCategories.next(categories);
+  }
+
+  onSelectRecord(id: string) {
+    this.patientService.selectRecord(id);
+    this.showDetails = true;
   }
 }

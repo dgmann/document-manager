@@ -1,0 +1,23 @@
+<div class="container" fxLayout="row" fxLayoutGap="10px">
+
+  <div [fxShow]="showLeftColumn" fxFlex fxFlex.gt-lg="300px" class="scroll-column mat-elevation-z8">
+    <ng-content select=".left-panel"></ng-content>
+  </div>
+  <div [fxShow]="!showLeftColumn">
+    <button mat-icon-button (click)="openLeftColumn()">
+      <mat-icon>keyboard_arrow_right</mat-icon>
+    </button>
+  </div>
+
+  <div fxFlex class="scroll-column mat-elevation-z8">
+    <ng-content select=".center-panel"></ng-content>
+  </div>
+
+
+  <div [fxShow]="showRightColumn" fxFlex="75%" class="scroll-column mat-elevation-z8">
+    <ng-content select=".right-panel"></ng-content>
+  </div>
+</div>
+
+
+

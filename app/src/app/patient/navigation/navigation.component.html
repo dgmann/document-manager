@@ -1,3 +1,9 @@
-<button mat-button routerLinkActive="active">
-  Suche
-</button>
+<div *ngIf="patient | async; else loading; let p">
+  <span class="mat-subheading-2">{{ p?.lastName + ", " + p?.firstName }}
+    <span class="mat-subheading-1 sub-heading">{{ p?.birthDate | date: "mediumDate" }}</span>
+  </span>
+</div>
+
+<ng-template #loading>
+  <span class="mat-subheading-2">Lade...</span>
+</ng-template>

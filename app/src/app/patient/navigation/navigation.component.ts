@@ -1,4 +1,7 @@
-import {Component, OnInit} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { Observable } from "rxjs/Observable";
+import { Patient } from "..";
+import { PatientService } from "../patient.service";
 
 @Component({
   selector: 'app-navigation',
@@ -6,11 +9,13 @@ import {Component, OnInit} from '@angular/core';
   styleUrls: ['./navigation.component.scss']
 })
 export class NavigationComponent implements OnInit {
+  patient: Observable<Patient>;
 
-  constructor() {
+  constructor(private patientService: PatientService) {
   }
 
   ngOnInit() {
+    this.patient = this.patientService.getSelectedPatient();
   }
 
 }

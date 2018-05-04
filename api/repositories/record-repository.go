@@ -25,7 +25,7 @@ type DBRecordRepository struct {
 	images  ImageRepository
 }
 
-func NewDBRecordRepository(records *mgo.Collection, images ImageRepository) *DBRecordRepository {
+func newDBRecordRepository(records *mgo.Collection, images ImageRepository) *DBRecordRepository {
 	processedIndex := mgo.Index{
 		Key:        []string{"patientId", "-date", "tags"},
 		Unique:     false,

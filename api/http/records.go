@@ -14,19 +14,23 @@ import (
 	"sync"
 )
 
-func registerRecords(g *gin.RouterGroup) {
+func registerRecords(g *gin.RouterGroup, factory *Factory) {
+	recordRepository := factory.GetRecordRepository()
+	imageRepository := factory.GetImageRepository()
+	pdfProcessor := factory.GetPdfProcessor()
+
 	g.GET("", func(c *gin.Context) {
 		r := c.Request.URL.Query()
 		var records []*models.Record
 		var err error
 		if _, ok := r["inbox"]; ok {
-			records, err = app.Records.Query(bson.M{"$or": []bson.M{{"date": nil}, {"patientId": ""}, {"categoryId": nil}}})
+			records, err = recordRepository.Query(bson.M{"$or": []bson.M{{"date": nil}, {"patientId": ""}, {"categoryId": nil}}})
 		} else {
 			query := make(map[string]interface{})
 			for k, v := range r {
 				query[k] = v[0]
 			}
-			records, err = app.Records.Query(query)
+			records, err = recordRepository.Query(query)
 		}
 		if err != nil {
 			c.AbortWithError(400, err)
@@ -37,7 +41,7 @@ func registerRecords(g *gin.RouterGroup) {
 
 	g.GET("/:recordId", func(c *gin.Context) {
 		id := c.Param("recordId")
-		record, err := app.Records.Find(id)
+		record, err := recordRepository.Find(id)
 		if err != nil {
 			c.AbortWithError(404, err)
 			return
@@ -59,13 +63,13 @@ func registerRecords(g *gin.RouterGroup) {
 			}
 			log.WithFields(fields).Panic("Error opening PDF")
 		}
-		images, err := app.PDFProcessor.Convert(f)
+		images, err := pdfProcessor.Convert(f)
 		if err != nil {
 			c.AbortWithError(400, err)
 			return
 		}
 
-		record, err := app.Records.Create(sender, images)
+		record, err := recordRepository.Create(sender, images)
 		if err != nil {
 			c.AbortWithError(400, err)
 			return
@@ -75,7 +79,7 @@ func registerRecords(g *gin.RouterGroup) {
 	})
 
 	g.DELETE("/:recordId", func(c *gin.Context) {
-		err := app.Records.Delete(c.Param("recordId"))
+		err := recordRepository.Delete(c.Param("recordId"))
 		c.Header("Content-Type", "application/json; charset=utf-8")
 		if err != nil {
 			c.AbortWithError(400, err)
@@ -91,7 +95,7 @@ func registerRecords(g *gin.RouterGroup) {
 			c.Error(err)
 			return
 		}
-		r, err := app.Records.Update(c.Param("recordId"), record)
+		r, err := recordRepository.Update(c.Param("recordId"), record)
 		if err != nil {
 			c.AbortWithError(400, err)
 			return
@@ -100,13 +104,13 @@ func registerRecords(g *gin.RouterGroup) {
 	})
 
 	g.POST("/:recordId/append/:idtoappend", func(c *gin.Context) {
-		recordToAppend, err := app.Records.Find(c.Param("idtoappend"))
+		recordToAppend, err := recordRepository.Find(c.Param("idtoappend"))
 		if err != nil {
 			c.AbortWithError(404, err)
 			return
 		}
 
-		record, err := app.Records.Find(c.Param("recordId"))
+		record, err := recordRepository.Find(c.Param("recordId"))
 		if err != nil {
 			c.AbortWithError(404, err)
 			return
@@ -114,13 +118,13 @@ func registerRecords(g *gin.RouterGroup) {
 
 		pages := append(record.Pages, recordToAppend.Pages...)
 
-		err = app.Images.Copy(c.Param("idtoappend"), c.Param("recordId"))
+		err = imageRepository.Copy(c.Param("idtoappend"), c.Param("recordId"))
 		if err != nil {
 			c.AbortWithError(400, err)
 			return
 		}
 
-		r, err := app.Records.Update(c.Param("recordId"), models.Record{Pages: pages})
+		r, err := recordRepository.Update(c.Param("recordId"), models.Record{Pages: pages})
 		if err != nil {
 			c.AbortWithError(400, err)
 			return
@@ -129,7 +133,7 @@ func registerRecords(g *gin.RouterGroup) {
 	})
 
 	g.GET("/:recordId/pages/:imageId", func(c *gin.Context) {
-		record, err := app.Records.Find(c.Param("recordId"))
+		record, err := recordRepository.Find(c.Param("recordId"))
 		if err != nil {
 			c.AbortWithError(404, err)
 			return
@@ -137,7 +141,7 @@ func registerRecords(g *gin.RouterGroup) {
 
 		for _, page := range record.Pages {
 			if page.Id == c.Param("imageId") {
-				app.Images.Serve(c, c.Param("recordId"), c.Param("imageId"), page.Format)
+				imageRepository.Serve(c, c.Param("recordId"), c.Param("imageId"), page.Format)
 				return
 			}
 		}
@@ -151,13 +155,13 @@ func registerRecords(g *gin.RouterGroup) {
 			return
 		}
 
-		r, err := app.Records.UpdatePages(c.Param("recordId"), updates)
+		r, err := recordRepository.UpdatePages(c.Param("recordId"), updates)
 		if err != nil {
 			c.AbortWithError(400, err)
 			return
 		}
 
-		images, err := app.Images.Get(c.Param("recordId"))
+		images, err := imageRepository.Get(c.Param("recordId"))
 		if err != nil {
 			c.AbortWithError(400, err)
 			return
@@ -177,14 +181,14 @@ func registerRecords(g *gin.RouterGroup) {
 				defer wg.Done()
 
 				if img, ok := images[update.Id]; ok {
-					img, err := app.PDFProcessor.Rotate(bytes.NewBuffer(img.Image), int(update.Rotate))
+					img, err := pdfProcessor.Rotate(bytes.NewBuffer(img.Image), int(update.Rotate))
 					if err != nil {
 						mutex.Lock()
 						errorIds = append(errorIds, update.Id)
 						mutex.Unlock()
 						return
 					}
-					app.Images.SetImage(c.Param("recordId"), update.Id, img)
+					imageRepository.SetImage(c.Param("recordId"), update.Id, img)
 					if err != nil {
 						mutex.Lock()
 						errorIds = append(errorIds, update.Id)
@@ -209,7 +213,7 @@ func registerRecords(g *gin.RouterGroup) {
 	})
 
 	g.POST("/:recordId/pages/:imageId/rotate/:degrees", func(c *gin.Context) {
-		images, err := app.Images.Get(c.Param("recordId"))
+		images, err := imageRepository.Get(c.Param("recordId"))
 		if err != nil {
 			c.AbortWithError(400, err)
 			return
@@ -220,12 +224,12 @@ func registerRecords(g *gin.RouterGroup) {
 			return
 		}
 		if img, ok := images[c.Param("imageId")]; ok {
-			img, err := app.PDFProcessor.Rotate(bytes.NewBuffer(img.Image), degrees)
+			img, err := pdfProcessor.Rotate(bytes.NewBuffer(img.Image), degrees)
 			if err != nil {
 				c.AbortWithError(400, err)
 				return
 			}
-			app.Images.SetImage(c.Param("recordId"), c.Param("imageId"), img)
+			imageRepository.SetImage(c.Param("recordId"), c.Param("imageId"), img)
 			c.JSON(200, img)
 		} else {
 			c.AbortWithError(400, errors.New("cannot read image"))

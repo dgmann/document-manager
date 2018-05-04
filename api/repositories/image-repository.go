@@ -29,7 +29,7 @@ type FileSystemImageRepository struct {
 	directory string
 }
 
-func NewFileSystemImageRepository(directory string) *FileSystemImageRepository {
+func newFileSystemImageRepository(directory string) *FileSystemImageRepository {
 	return &FileSystemImageRepository{directory: directory}
 }
 

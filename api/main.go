@@ -2,8 +2,6 @@ package main
 
 import (
 	"github.com/dgmann/document-manager/api/http"
-	"github.com/dgmann/document-manager/api/pdf"
-	"github.com/dgmann/document-manager/api/repositories"
 	"github.com/dgmann/document-manager/api/shared"
 	"github.com/globalsign/mgo"
 	log "github.com/sirupsen/logrus"
@@ -28,20 +26,12 @@ func main() {
 		log.Errorf("Error connecting to database: %s", err)
 	}
 	defer session.Close()
-	records := session.DB(dbname).C("records")
-	categories := session.DB(dbname).C("categories")
-	patients := session.DB(dbname).C("patients")
-	images := repositories.NewFileSystemImageRepository(recordDir)
-	app := shared.App{
-		Records:      repositories.NewDBRecordRepository(records, images),
-		Images:       images,
-		Tags:         repositories.NewTagRepository(records),
-		Patients:     repositories.NewPatientRepository(patients),
-		Categories:   repositories.NewCategoryRepository(categories, records),
-		PDFProcessor: pdf.NewPDFProcessor(pdfprocessorUrl),
-	}
+
+	config := shared.NewConfig(session.DB(dbname), recordDir, pdfprocessorUrl)
+
 	services.InitHealthService(dbHost, pdfprocessorUrl)
-	http.Run(&app)
+	factory := http.NewFactory(config)
+	http.Run(factory)
 }
 
 func envOrDefault(key, def string) string {

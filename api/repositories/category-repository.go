@@ -7,16 +7,23 @@ import (
 	"github.com/dgmann/document-manager/api/models"
 )
 
-type CategoryRepository struct {
+type CategoryRepository interface {
+	All() ([]models.Category, error)
+	Find(id string) (*models.Category, error)
+	FindByPatient(id string) ([]models.Category, error)
+	Add(category string) error
+}
+
+type DBCategoryRepository struct {
 	categories *mgo.Collection
 	records    *mgo.Collection
 }
 
-func NewCategoryRepository(categories *mgo.Collection, records *mgo.Collection) *CategoryRepository {
-	return &CategoryRepository{categories: categories, records: records}
+func newDBCategoryRepository(categories *mgo.Collection, records *mgo.Collection) *DBCategoryRepository {
+	return &DBCategoryRepository{categories: categories, records: records}
 }
 
-func (c *CategoryRepository) All() ([]models.Category, error) {
+func (c *DBCategoryRepository) All() ([]models.Category, error) {
 	var categories []models.Category
 
 	if err := c.categories.Find(bson.M{}).All(&categories); err != nil {
@@ -29,7 +36,7 @@ func (c *CategoryRepository) All() ([]models.Category, error) {
 	return categories, nil
 }
 
-func (c *CategoryRepository) Find(id string) (*models.Category, error) {
+func (c *DBCategoryRepository) Find(id string) (*models.Category, error) {
 	var category models.Category
 
 	if err := c.categories.FindId(bson.ObjectIdHex(id)).One(&category); err != nil {
@@ -39,7 +46,7 @@ func (c *CategoryRepository) Find(id string) (*models.Category, error) {
 	return &category, nil
 }
 
-func (c *CategoryRepository) FindByPatient(id string) ([]models.Category, error) {
+func (c *DBCategoryRepository) FindByPatient(id string) ([]models.Category, error) {
 	categories := make([]models.Category, 0)
 	var ids []bson.ObjectId
 	if err := c.records.Find(bson.M{"patientId": id}).Distinct("categoryId", &ids); err != nil {
@@ -53,6 +60,6 @@ func (c *CategoryRepository) FindByPatient(id string) ([]models.Category, error)
 	return categories, nil
 }
 
-func (c *CategoryRepository) Add(category string) error {
+func (c *DBCategoryRepository) Add(category string) error {
 	return c.categories.Insert(models.NewCategory(category))
 }

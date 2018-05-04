@@ -8,7 +8,11 @@ import (
 	"github.com/globalsign/mgo/bson"
 )
 
-func registerPatients(g *gin.RouterGroup) {
+func registerPatients(g *gin.RouterGroup, factory *Factory) {
+	patientRepository := factory.GetPatientRepository()
+	tagRepository := factory.GetTagRepository()
+	recordRepository := factory.GetRecordRepository()
+	categoryRepository := factory.GetCategoryRepository()
 
 	g.POST("", func(c *gin.Context) {
 		var patient models.Patient
@@ -17,7 +21,7 @@ func registerPatients(g *gin.RouterGroup) {
 			c.AbortWithError(400, err)
 			return
 		}
-		if err := app.Patients.Add(&patient); err != nil {
+		if err := patientRepository.Add(&patient); err != nil {
 			c.Error(err)
 			c.AbortWithError(400, err)
 			return
@@ -35,9 +39,9 @@ func registerPatients(g *gin.RouterGroup) {
 			if len(names) > 1 {
 				firstName = names[1]
 			}
-			patients, err = app.Patients.FindByName(firstName+".*", lastName+".*")
+			patients, err = patientRepository.FindByName(firstName+".*", lastName+".*")
 		} else {
-			patients, err = app.Patients.All()
+			patients, err = patientRepository.All()
 		}
 
 		if err != nil {
@@ -48,17 +52,17 @@ func registerPatients(g *gin.RouterGroup) {
 	})
 
 	g.GET("/:patientId", func(c *gin.Context) {
-		tags, err := app.Tags.ByPatient(c.Param("patientId"))
+		tags, err := tagRepository.ByPatient(c.Param("patientId"))
 		if err != nil {
 			c.AbortWithError(400, err)
 			return
 		}
-		categories, err := app.Categories.FindByPatient(c.Param("patientId"))
+		categories, err := categoryRepository.FindByPatient(c.Param("patientId"))
 		if err != nil {
 			c.AbortWithError(400, err)
 			return
 		}
-		patient, err := app.Patients.Find(c.Param("patientId"))
+		patient, err := patientRepository.Find(c.Param("patientId"))
 		if err != nil {
 			c.AbortWithError(404, err)
 			return
@@ -70,7 +74,7 @@ func registerPatients(g *gin.RouterGroup) {
 
 	g.GET("/:patientId/records", func(c *gin.Context) {
 		id := c.Param("patientId")
-		records, err := app.Records.Query(bson.M{"patientId": id})
+		records, err := recordRepository.Query(bson.M{"patientId": id})
 		if err != nil {
 			c.AbortWithError(400, err)
 			return

@@ -1,17 +1,32 @@
 package http
 
 import (
-	"github.com/dgmann/document-manager/api/shared"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/location"
 	"github.com/gin-gonic/gin"
 	"github.com/dgmann/document-manager/api/services"
+	"github.com/dgmann/document-manager/api/repositories"
+	"github.com/dgmann/document-manager/api/pdf"
+	"github.com/dgmann/document-manager/api/shared"
 )
 
-var app *shared.App
+type Factory struct {
+	repositories.Factory
+	pdfProcessorUrl string
+}
 
-func Run(a *shared.App) {
-	app = a
+func (f *Factory) GetPdfProcessor() *pdf.PDFProcessor {
+	return pdf.NewPDFProcessor(f.pdfProcessorUrl)
+}
+
+func NewFactory(config *shared.Config) *Factory {
+	return &Factory{
+		repositories.NewFactory(config),
+		config.GetPdfProcessorUrl(),
+	}
+}
+
+func Run(factory *Factory) {
 	router := gin.Default()
 	config := cors.DefaultConfig()
 	config.AllowAllOrigins = true
@@ -20,9 +35,9 @@ func Run(a *shared.App) {
 	router.Use(location.Default())
 
 	registerWebsocket(router)
-	registerRecords(router.Group("/records"))
-	registerPatients(router.Group("/patients"))
-	registerCategories(router.Group("/categories"))
+	registerRecords(router.Group("/records"), factory)
+	registerPatients(router.Group("/patients"), factory)
+	registerCategories(router.Group("/categories"), factory)
 
 	router.GET("", func(context *gin.Context) {
 		context.String(200, "Document Manager API")
@@ -38,7 +53,7 @@ func Run(a *shared.App) {
 	})
 
 	router.GET("tags", func(context *gin.Context) {
-		tags, err := app.Tags.All()
+		tags, err := factory.GetTagRepository().All()
 		if err != nil {
 			context.AbortWithError(500, err)
 			return

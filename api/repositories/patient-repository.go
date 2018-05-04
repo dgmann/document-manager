@@ -7,15 +7,22 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-type PatientRepository struct {
+type PatientRepository interface {
+	Add(patient *models.Patient) error
+	All() ([]*models.Patient, error)
+	FindByName(firstName, lastName string) ([]*models.Patient, error)
+	Find(id string) (*models.Patient, error)
+}
+
+type DBPatientRepository struct {
 	patients *mgo.Collection
 }
 
-func NewPatientRepository(patients *mgo.Collection) *PatientRepository {
-	return &PatientRepository{patients: patients}
+func newDBPatientRepository(patients *mgo.Collection) *DBPatientRepository {
+	return &DBPatientRepository{patients: patients}
 }
 
-func (p *PatientRepository) Add(patient *models.Patient) error {
+func (p *DBPatientRepository) Add(patient *models.Patient) error {
 	if _, err := p.patients.UpsertId(patient.Id, patient); err != nil {
 		log.Error(err)
 		return err
@@ -23,7 +30,7 @@ func (p *PatientRepository) Add(patient *models.Patient) error {
 	return nil
 }
 
-func (c *PatientRepository) All() ([]*models.Patient, error) {
+func (c *DBPatientRepository) All() ([]*models.Patient, error) {
 	patients := make([]*models.Patient, 0)
 
 	if err := c.patients.Find(bson.M{}).All(&patients); err != nil {
@@ -34,7 +41,7 @@ func (c *PatientRepository) All() ([]*models.Patient, error) {
 	return patients, nil
 }
 
-func (c *PatientRepository) FindByName(firstName, lastName string) ([]*models.Patient, error) {
+func (c *DBPatientRepository) FindByName(firstName, lastName string) ([]*models.Patient, error) {
 	patients := make([]*models.Patient, 0)
 
 	if err := c.patients.Find(bson.M{
@@ -48,7 +55,7 @@ func (c *PatientRepository) FindByName(firstName, lastName string) ([]*models.Pa
 	return patients, nil
 }
 
-func (c *PatientRepository) Find(id string) (*models.Patient, error) {
+func (c *DBPatientRepository) Find(id string) (*models.Patient, error) {
 	var patient *models.Patient
 
 	if err := c.patients.Find(bson.M{"_id": id}).One(&patient); err != nil {

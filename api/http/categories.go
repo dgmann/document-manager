@@ -6,10 +6,11 @@ import (
 	"github.com/dgmann/document-manager/api/models"
 )
 
-func registerCategories(g *gin.RouterGroup) {
+func registerCategories(g *gin.RouterGroup, factory *Factory) {
+	categoryRepository := factory.GetCategoryRepository()
 
 	g.GET("", func(c *gin.Context) {
-		cat, err := app.Categories.All()
+		cat, err := categoryRepository.All()
 		if err != nil {
 			c.AbortWithError(400, err)
 			return
@@ -24,7 +25,7 @@ func registerCategories(g *gin.RouterGroup) {
 			c.AbortWithError(400, err)
 			return
 		}
-		if err := app.Categories.Add(category.Name); err != nil {
+		if err := categoryRepository.Add(category.Name); err != nil {
 			c.Error(err)
 			c.AbortWithError(400, err)
 			return

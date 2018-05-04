@@ -1,9 +1,14 @@
 <div *ngIf="categories | async as cats">
-  <mat-card class="selectable-page" *ngFor="let record of records | async" (click)="onRecordClicked(record.id)">
+  <mat-card *ngFor="let record of records | async">
     <mat-card-header>
-      <mat-card-title>{{ cats[record.categoryId]?.name }} {{ record.tags }}</mat-card-title>
+      <mat-card-title>
+        <span class="mat-subheading-2">
+          {{ cats[record.categoryId]?.name }}:
+          <span class="mat-subheading-1 sub-heading">{{ record.tags.join(", ") }}</span>
+        </span>
+      </mat-card-title>
       <mat-card-subtitle>{{ record.date | date: 'mediumDate' }}</mat-card-subtitle>
     </mat-card-header>
-    <img mat-card-image [src]="record.pages[0].url">
+    <img class="selectable-page" (click)="onRecordClicked(record.id)" mat-card-image [src]="record.pages[0].url">
   </mat-card>
 </div>

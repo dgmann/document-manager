@@ -1,3 +1,13 @@
+@import "../../../theme";
+
+.sub-heading {
+  color: $primary;
+}
+
+.mat-subheading-2 {
+  font-weight: 500;
+}
+
 .selectable-page {
   cursor: pointer;
 }

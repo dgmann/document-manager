@@ -4,6 +4,7 @@ import {
   MatAutocompleteModule,
   MatButtonModule,
   MatCardModule,
+  MatDatepickerModule,
   MatFormFieldModule,
   MatIconModule,
   MatInputModule,
@@ -24,10 +25,14 @@ import { metaReducers, reducers } from "./reducers";
 import { PatientEffects } from "./store/patient.effects";
 import { TagListComponent } from './tag-list/tag-list.component';
 import { ThreeColumnPanelComponent } from './three-column-panel/three-column-panel.component';
+import { RecordFilterComponent } from './record-filter/record-filter.component';
+import { DateRangeSelectorComponent } from './date-range-selector/date-range-selector.component';
+import { FormsModule } from "@angular/forms";
 
 @NgModule({
   imports: [
     CommonModule,
+    FormsModule,
     PatientRouterModule,
     SharedModule,
     MatButtonModule,
@@ -36,6 +41,7 @@ import { ThreeColumnPanelComponent } from './three-column-panel/three-column-pan
     MatInputModule,
     MatTableModule,
     MatCardModule,
+    MatDatepickerModule,
     MatDividerModule,
     MatSidenavModule,
     MatIconModule,
@@ -48,7 +54,9 @@ import { ThreeColumnPanelComponent } from './three-column-panel/three-column-pan
     TagListComponent,
     MultiRecordListComponent,
     CategoryListComponent,
-    ThreeColumnPanelComponent
+    ThreeColumnPanelComponent,
+    RecordFilterComponent,
+    DateRangeSelectorComponent
   ],
   providers: [
     PatientService

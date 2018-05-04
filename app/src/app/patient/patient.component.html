@@ -1,21 +1,6 @@
 <app-three-column-panel [(showRightColumn)]="showDetails" [(showLeftColumn)]="!showDetails">
-  <div class="left-panel" fxLayout="column" fxLayoutGap="0em">
-    <mat-card>
-      <mat-card-title>
-        Fachrichtungen
-      </mat-card-title>
-      <mat-card-content>
-        <app-category-list [categories]="categories" (select)="onSelectCategories($event)"></app-category-list>
-      </mat-card-content>
-    </mat-card>
-    <mat-card>
-      <mat-card-title>
-        Tags
-      </mat-card-title>
-      <mat-card-content>
-        <app-tag-list [tags]="tags" (select)="onSelectTags($event)"></app-tag-list>
-      </mat-card-content>
-    </mat-card>
+  <div class="left-panel">
+    <app-record-filter [records]="records" [patient]="patient" (change)="setFilter($event)"></app-record-filter>
   </div>
   <div class="center-panel">
     <app-multi-record-list [records]="records" (clickRecord)="onSelectRecord($event)"></app-multi-record-list>

@@ -1,6 +1,7 @@
 import { Action } from '@ngrx/store';
 import { Update } from '@ngrx/entity';
 import { PageUpdate, Record } from './record.model';
+import * as moment from "moment";
 
 export enum RecordActionTypes {
   LoadRecords = '[Record] Load Records',
@@ -27,6 +28,11 @@ export class LoadRecordsSuccess implements Action {
   readonly type = RecordActionTypes.LoadRecordsSuccess;
 
   constructor(public payload: { records: Record[] }) {
+    this.payload.records = this.payload.records.map(record => {
+      record.date = record.date && moment(record.date) || null;
+      record.receivedAt = record.receivedAt && moment(record.receivedAt) || null;
+      return record;
+    });
   }
 }
 
@@ -48,6 +54,8 @@ export class UpdateRecordSuccess implements Action {
   readonly type = RecordActionTypes.UpdateRecordSuccess;
 
   constructor(public payload: { record: Update<Record> }) {
+    this.payload.record.changes.date = this.payload.record.changes.date && moment(this.payload.record.changes.date) || null;
+    this.payload.record.changes.receivedAt = this.payload.record.changes.receivedAt && moment(this.payload.record.changes.receivedAt) || null;
   }
 }
 

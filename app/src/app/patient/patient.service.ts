@@ -8,6 +8,7 @@ import {
   State
 } from "./reducers";
 import { SelectPatient, SelectRecord, SetFilter } from "./store/patient.actions";
+import { Filter } from "./store/patient.reducer";
 
 @Injectable()
 export class PatientService {
@@ -18,8 +19,8 @@ export class PatientService {
     this.store.dispatch(new SelectPatient({id: id}));
   }
 
-  public setFilter(categoryIds: string[], tags: string[]) {
-    this.store.dispatch(new SetFilter({categoryIds: categoryIds, tags: tags}));
+  public setFilter(filter: Filter) {
+    this.store.dispatch(new SetFilter(filter));
   }
 
   public getSelectedPatient() {

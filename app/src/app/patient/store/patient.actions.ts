@@ -1,5 +1,6 @@
 import { Action } from '@ngrx/store';
 import { Patient } from "./patient.model";
+import { Filter } from "./patient.reducer";
 
 export enum PatientActionTypes {
   SelectPatientId = '[Patient] Select Patient ID',
@@ -33,7 +34,7 @@ export class SetPatientRecords implements Action {
 export class SetFilter implements Action {
   readonly type = PatientActionTypes.SetFilter;
 
-  constructor(public payload: { categoryIds: string[], tags: string[] }) {
+  constructor(public payload: Filter) {
   }
 }
 

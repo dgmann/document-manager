@@ -5,6 +5,7 @@ import { Record } from "../store";
 import { selectRecordEntities } from "../store/record/record.selectors";
 import { Patient } from "./store/patient.model";
 import * as fromPatient from './store/patient.reducer';
+import { Filter } from './store/patient.reducer';
 
 export const reducers = fromPatient.reducer;
 export {State} from './store/patient.reducer';
@@ -21,8 +22,27 @@ export const selectPatientRecordIds = createSelector(selectFeature, selectSelect
 });
 export const selectPatientRecords = createSelector(selectPatientRecordIds, selectRecordEntities, (ids: string[], records) => ids.map(id => records[id]));
 export const selectFilter = createSelector(selectFeature, (state: fromPatient.State) => state.filter);
-export const selectFilteredPatientRecords = createSelector(selectPatientRecords, selectFilter, (records: Record[], filter) =>
-  records.filter(record => (filter.categoryIds.length == 0 ? true : includes(filter.categoryIds, record.categoryId)) //Displays all records if no category is selected
-    && difference(filter.tags, record.tags).length === 0));
 export const selectSelectedRecordId = createSelector(selectFeature, (state: fromPatient.State) => state.selectedRecordId);
 export const selectSelectedRecord = createSelector(selectSelectedRecordId, selectRecordEntities, (id: string, records) => records[id]);
+
+let filterRecords = function (records: Record[], filter: Filter) {
+  return records.filter(record => {
+    let result = false;
+    if (filter.categoryIds.length == 0) {
+      result = true;
+    } else {
+      result = includes(filter.categoryIds, record.categoryId)
+    }
+    result = result && difference(filter.tags, record.tags).length === 0;
+
+    if (filter.from) {
+      result = result && record.date.isAfter(filter.from, 'day');
+    }
+    if (filter.until) {
+      result = result && record.date.isBefore(filter.until, 'day');
+    }
+
+    return result;
+  })
+};
+export const selectFilteredPatientRecords = createSelector(selectPatientRecords, selectFilter, filterRecords);

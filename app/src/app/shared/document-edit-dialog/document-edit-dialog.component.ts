@@ -18,6 +18,7 @@ import { Record } from "../../store";
 import { CategoryService } from "../category-service";
 import { ExternalApiService } from "../external-api.service";
 import { TagService } from "../tag-service";
+import * as moment from "moment";
 
 
 @Component({
@@ -39,7 +40,7 @@ export class DocumentEditDialogComponent implements AfterViewInit, OnInit {
               public categoryService: CategoryService) {
     this.record = Object.assign({}, record);
     if (!this.record.date) {
-      this.record.date = new Date();
+      this.record.date = moment();
     }
     this.record.tags = record.tags.slice();
     if (!this.record.patientId) {

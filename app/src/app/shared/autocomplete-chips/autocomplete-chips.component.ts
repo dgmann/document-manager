@@ -1,10 +1,10 @@
-import { COMMA, ENTER } from "@angular/cdk/keycodes";
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { FormControl } from "@angular/forms";
-import { MatAutocomplete, MatChipInputEvent, MatInput } from "@angular/material";
-import { difference } from 'lodash-es';
-import { Observable } from "rxjs/Observable";
-import { concat, map, startWith, withLatestFrom } from "rxjs/operators";
+import {COMMA, ENTER} from "@angular/cdk/keycodes";
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
+import {FormControl} from "@angular/forms";
+import {MatAutocomplete, MatChipInputEvent, MatInput} from "@angular/material";
+import {difference} from 'lodash-es';
+import {Observable} from "rxjs";
+import {concat, map, startWith, withLatestFrom} from "rxjs/operators";
 
 @Component({
   selector: 'app-autocomplete-chips',

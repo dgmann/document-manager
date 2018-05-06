@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { Observable } from "rxjs/Observable";
-import { Category, CategoryService } from "../../shared/category-service";
-import { Record } from "../../store";
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Observable} from "rxjs";
+import {Category, CategoryService} from "../../shared/category-service";
+import {Record} from "../../store";
 
 @Component({
   selector: 'app-multi-record-list',

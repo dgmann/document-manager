@@ -1,11 +1,11 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { Title } from "@angular/platform-browser";
-import { ActivatedRoute, NavigationEnd, Router } from "@angular/router";
-import { Observable } from "rxjs/Observable";
-import { filter, map, mergeMap } from "rxjs/operators";
-import { Patient } from "./patient";
-import { NotificationService } from "./shared/notification-service";
-import { AutorefreshService } from "./store/record/autorefresh-service";
+import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {Title} from "@angular/platform-browser";
+import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
+import {Observable} from "rxjs";
+import {filter, map, mergeMap} from "rxjs/operators";
+import {Patient} from "./patient";
+import {NotificationService} from "./shared/notification-service";
+import {AutorefreshService} from "./store/record/autorefresh-service";
 
 @Component({
   selector: 'app-root',

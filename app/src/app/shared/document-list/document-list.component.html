@@ -1,8 +1,8 @@
-<mat-table #table [dataSource]="dataSource" matSort>
+<mat-table *ngIf="selectedIds | async; let selectedRecordIds" #table [dataSource]="dataSource" matSort>
 
   <ng-container matColumnDef="date">
-    <mat-header-cell fxFlex="120px" *matHeaderCellDef mat-sort-header> Datum</mat-header-cell>
-    <mat-cell fxFlex="120px" *matCellDef="let element"> {{element.receivedAt | date:'short'}}</mat-cell>
+    <mat-header-cell fxFlex="150px" *matHeaderCellDef mat-sort-header> Datum</mat-header-cell>
+    <mat-cell fxFlex="150px" *matCellDef="let element"> {{element.receivedAt | date:'short'}}</mat-cell>
   </ng-container>
 
   <ng-container matColumnDef="sender">
@@ -12,7 +12,7 @@
 
   <ng-container matColumnDef="numpages">
     <mat-header-cell fxFlex="50px" *matHeaderCellDef mat-sort-header> Seiten</mat-header-cell>
-    <mat-cell fxFlex="50px" fxLayoutAlign="center" *matCellDef="let element"> {{element.pages.length}}</mat-cell>
+    <mat-cell fxFlex="50px" *matCellDef="let element"> {{element.pages.length}}</mat-cell>
   </ng-container>
 
   <ng-container matColumnDef="comment">
@@ -34,6 +34,7 @@
 
   <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
   <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="selectRow(row)" (dblclick)="editRecord(row)"
-           [class.selected]="isSelected(row.id)" draggable droppable [dragData]="row" [dragScope]="'record'"
+           [class.selected]="isSelected(selectedRecordIds, row.id)" draggable droppable [dragData]="row"
+           [dragScope]="'record'"
            [dropScope]="'record'" (onDrop)="drop(row, $event)"></mat-row>
 </mat-table>

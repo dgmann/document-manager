@@ -1,4 +1,4 @@
-<div fxLayout="column" fxLayout.gt-md="row" fxLayoutWrap fxLayoutAlign="center" fxLayoutGap="10px"
+<div fxLayout="column" fxLayout.gt-md="row wrap" fxLayoutAlign="center" fxLayoutGap="10px"
      *ngIf="record | async; let r">
   <div class="page-container" fxFlex.gt-md="calc(50% - 10px)" *ngFor="let page of r.pages; let i = index">
     <mat-card>

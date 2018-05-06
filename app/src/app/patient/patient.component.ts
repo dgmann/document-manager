@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from "@angular/router";
-import { Observable } from "rxjs/Observable";
-import { map } from "rxjs/operators";
-import { Record, RecordService } from "../store";
-import { PatientService } from "./patient.service";
-import { Patient } from "./store/patient.model";
-import { Filter } from "./store/patient.reducer";
+import {Component, OnInit} from '@angular/core';
+import {ActivatedRoute} from "@angular/router";
+import {Observable} from "rxjs";
+import {map} from "rxjs/operators";
+import {Record, RecordService} from "../store";
+import {PatientService} from "./patient.service";
+import {Patient} from "./store/patient.model";
+import {Filter} from "./store/patient.reducer";
 
 @Component({
   selector: 'app-patient',

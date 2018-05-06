@@ -2,7 +2,7 @@ import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {MatTableDataSource} from "@angular/material";
 import {uniq} from 'lodash-es';
 import sortBy from "lodash-es/sortBy";
-import {Observable} from "rxjs/Observable";
+import {Observable} from "rxjs";
 import {map} from "rxjs/operators";
 
 @Component({

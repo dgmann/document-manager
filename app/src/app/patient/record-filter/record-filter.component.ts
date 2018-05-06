@@ -1,14 +1,12 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { Category } from "../../shared/category-service";
-import { BehaviorSubject } from "rxjs/BehaviorSubject";
-import { combineLatest } from "rxjs/observable/combineLatest";
-import { flatMap, uniq } from "lodash-es";
-import { map, merge } from "rxjs/operators";
-import { Observable } from "rxjs/Observable";
-import { Record } from "../../store";
-import { Patient } from "..";
-import { Filter } from "../store/patient.reducer";
-import { Moment } from "moment";
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {flatMap, uniq} from "lodash-es";
+import {Moment} from "moment";
+import {BehaviorSubject, combineLatest, Observable} from "rxjs";
+import {map, merge} from "rxjs/operators";
+import {Patient} from "..";
+import {Category} from "../../shared/category-service";
+import {Record} from "../../store";
+import {Filter} from "../store/patient.reducer";
 
 @Component({
   selector: 'app-record-filter',

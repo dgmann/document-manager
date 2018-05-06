@@ -1,11 +1,11 @@
-import { HttpClient } from "@angular/common/http";
-import { ChangeDetectionStrategy, Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { FormControl } from "@angular/forms";
-import { MatAutocompleteSelectedEvent } from "@angular/material";
-import { Observable } from "rxjs/Observable";
-import { debounceTime, filter, switchMap } from "rxjs/operators";
-import { environment } from "../../../environments/environment";
-import { Patient } from "../../patient";
+import {HttpClient} from "@angular/common/http";
+import {ChangeDetectionStrategy, Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {FormControl} from "@angular/forms";
+import {MatAutocompleteSelectedEvent} from "@angular/material";
+import {Observable} from "rxjs";
+import {debounceTime, filter, switchMap} from "rxjs/operators";
+import {environment} from "../../../environments/environment";
+import {Patient} from "../../patient";
 
 @Component({
   selector: 'app-patient-search',

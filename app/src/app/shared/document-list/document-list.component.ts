@@ -8,15 +8,15 @@ import {
   Output,
   ViewChild
 } from '@angular/core';
-import { MatDialog, MatSort, MatTableDataSource } from "@angular/material";
-import { includes } from 'lodash-es';
-import { DropEvent } from "ng-drag-drop";
-import { Observable } from "rxjs/Observable";
+import {MatDialog, MatSort, MatTableDataSource} from "@angular/material";
+import {Router} from "@angular/router";
+import {includes} from 'lodash-es';
+import {DropEvent} from "ng-drag-drop";
+import {Observable} from "rxjs";
 
 
-import { Record, RecordService } from "../../store";
-import { DocumentEditDialogComponent } from "../document-edit-dialog/document-edit-dialog.component";
-import { Router } from "@angular/router";
+import {Record, RecordService} from "../../store";
+import {DocumentEditDialogComponent} from "../document-edit-dialog/document-edit-dialog.component";
 
 @Component({
   selector: 'app-document-list',
@@ -33,7 +33,6 @@ export class DocumentListComponent implements OnInit, AfterViewInit {
 
   displayedColumns = ['date', 'sender', 'numpages', 'comment', 'actions'];
   dataSource = new MatTableDataSource<Record>();
-  selectedRecordIds = [];
 
   constructor(private recordService: RecordService,
               private router: Router,
@@ -42,7 +41,6 @@ export class DocumentListComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.records.subscribe(data => this.dataSource.data = data);
-    this.selectedIds.subscribe(ids => this.selectedRecordIds = ids);
   }
 
   /**
@@ -94,8 +92,8 @@ export class DocumentListComponent implements OnInit, AfterViewInit {
     });
   }
 
-  isSelected(id: string) {
-    return includes(this.selectedRecordIds, id);
+  isSelected(selectedIds: string[], id: string) {
+    return includes(selectedIds, id);
   }
 
   openEditor(record: Record) {

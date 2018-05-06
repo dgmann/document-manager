@@ -2,7 +2,7 @@ import {HttpClient} from "@angular/common/http";
 import {Injectable} from '@angular/core';
 import {Actions, Effect, ofType} from '@ngrx/effects';
 import {Action} from "@ngrx/store";
-import {of} from "rxjs/observable/of";
+import {of} from "rxjs";
 import {catchError, map, switchMap} from "rxjs/operators";
 import {environment} from "../../../environments/environment";
 import {Record} from "../../store";

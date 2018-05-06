@@ -2,9 +2,7 @@ import {Injectable} from '@angular/core';
 import {Actions, Effect, ofType} from '@ngrx/effects';
 import {Action} from "@ngrx/store";
 import {has} from 'lodash-es';
-import {empty} from "rxjs/observable/empty";
-import {from} from "rxjs/observable/from";
-import {of} from "rxjs/observable/of";
+import {EMPTY, from, of} from "rxjs";
 import {map, switchMap} from "rxjs/operators";
 import {RequiredAction} from "../../store";
 import {
@@ -43,7 +41,7 @@ export class PhysicianEffects {
       if (has(record.changes, 'requiredAction')) {
         return of(new SetRecord({id: record.id + '', requiredAction: record.changes.requiredAction}));
       } else {
-        return empty();
+        return EMPTY;
       }
     })
   );

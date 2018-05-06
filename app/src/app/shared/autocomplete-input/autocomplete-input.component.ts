@@ -1,8 +1,8 @@
-import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
-import { FormControl } from "@angular/forms";
-import { Observable } from "rxjs/Observable";
-import { concat, map, startWith, withLatestFrom } from "rxjs/operators";
-import { Category } from "../category-service";
+import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
+import {FormControl} from "@angular/forms";
+import {Observable} from "rxjs";
+import {concat, map, startWith, withLatestFrom} from "rxjs/operators";
+import {Category} from "../category-service";
 
 @Component({
   selector: 'app-autocomplete-dropdown',

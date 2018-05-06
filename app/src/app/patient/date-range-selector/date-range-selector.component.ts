@@ -1,8 +1,7 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { Filter } from "../store/patient.reducer";
-import { BehaviorSubject } from "rxjs/BehaviorSubject";
-import { combineLatest } from "rxjs/observable/combineLatest";
-import { Moment } from "moment";
+import {ChangeDetectionStrategy, Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {Moment} from "moment";
+import {BehaviorSubject, combineLatest} from "rxjs";
+import {Filter} from "../store/patient.reducer";
 
 @Component({
   selector: 'app-date-range-selector',

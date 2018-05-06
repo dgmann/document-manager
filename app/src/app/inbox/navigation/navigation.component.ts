@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {MatSlideToggleChange} from "@angular/material";
+import {Observable} from "rxjs";
 import {InboxService} from "../inbox.service";
-import { Observable } from "rxjs/Observable";
 
 @Component({
   selector: 'app-navigation',

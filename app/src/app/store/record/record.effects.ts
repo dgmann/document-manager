@@ -1,7 +1,10 @@
-import { Injectable } from '@angular/core';
-import { Actions, Effect, ofType } from '@ngrx/effects';
-import { Observable } from "rxjs/Observable";
-import { Action } from "@ngrx/store";
+import {HttpClient} from "@angular/common/http";
+import {Injectable} from '@angular/core';
+import {Actions, Effect, ofType} from '@ngrx/effects';
+import {Action} from "@ngrx/store";
+import {Observable, of} from "rxjs";
+import {catchError, map, mergeMap} from "rxjs/operators";
+import {environment} from "../../../environments/environment"
 import {
   DeleteRecord,
   DeleteRecordFail,
@@ -15,11 +18,7 @@ import {
   UpdateRecordFail,
   UpdateRecordSuccess
 } from "./record.actions";
-import { catchError, map, mergeMap } from "rxjs/operators";
-import { HttpClient } from "@angular/common/http";
-import { Record } from "./record.model";
-import { of } from "rxjs/observable/of";
-import { environment } from "../../../environments/environment"
+import {Record} from "./record.model";
 
 
 @Injectable()

@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
-import {Observable} from "rxjs/Observable";
+import {Observable} from "rxjs";
 import {filter, map} from "rxjs/operators";
 import {Record, RecordService, RequiredAction} from "../store";
 import {PhysicianService} from "./physician.service";

@@ -1,7 +1,10 @@
 package repositories
 
+import "github.com/dgmann/document-manager/api/services"
+
 type factory struct {
-	config RepositoryConfig
+	config       RepositoryConfig
+	eventService *services.EventService
 }
 
 type Factory interface {
@@ -12,12 +15,12 @@ type Factory interface {
 	GetCategoryRepository() CategoryRepository
 }
 
-func NewFactory(config RepositoryConfig) Factory {
-	return &factory{config: config}
+func NewFactory(config RepositoryConfig, eventService *services.EventService) Factory {
+	return &factory{config: config, eventService: eventService}
 }
 
 func (f *factory) GetRecordRepository() RecordRepository {
-	return NewRecordRepository(f.config)
+	return NewRecordRepository(f.config, f.eventService)
 }
 
 func (f *factory) GetImageRepository() ImageRepository {

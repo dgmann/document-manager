@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/globalsign/mgo/bson"
-	"net/url"
 	"time"
 )
 
@@ -27,7 +26,7 @@ type Record struct {
 	RequiredAction *string       `bson:"requiredAction,omitempty" json:"requiredAction"`
 }
 
-func (r *Record) SetURL(url *url.URL) {
+func (r *Record) SetURL(url string) {
 	if r.Tags == nil {
 		r.Tags = []string{}
 	}
@@ -36,7 +35,7 @@ func (r *Record) SetURL(url *url.URL) {
 	}
 
 	for i := range r.Pages {
-		r.Pages[i].Url = fmt.Sprintf("%s/records/%s/pages/%s", url.String(), r.Id.Hex(), r.Pages[i].Id)
+		r.Pages[i].Url = fmt.Sprintf("%s/records/%s/pages/%s", url, r.Id.Hex(), r.Pages[i].Id)
 	}
 }
 

@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"github.com/dgmann/document-manager/api/shared"
+	"github.com/dgmann/document-manager/api/services"
 )
 
 type RepositoryConfig interface {
@@ -9,10 +10,10 @@ type RepositoryConfig interface {
 	shared.RecordDirectoryConfig
 }
 
-func NewRecordRepository(config RepositoryConfig) RecordRepository {
+func NewRecordRepository(config RepositoryConfig, eventService *services.EventService) RecordRepository {
 	records := config.GetDatabase().C("records")
 	images := NewImageReporitory(config)
-	return newDBRecordRepository(records, images)
+	return newDBRecordRepository(records, images, eventService)
 }
 
 func NewImageReporitory(config shared.RecordDirectoryConfig) ImageRepository {

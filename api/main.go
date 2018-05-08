@@ -20,6 +20,7 @@ func main() {
 	dbHost := envOrDefault("DB_HOST", "localhost")
 	dbname := envOrDefault("DB_NAME", "manager")
 	pdfprocessorUrl := envOrDefault("PDFPROCESSOR_URL", "http://localhost:8181")
+	baseUrl := envOrDefault("BASE_URL", "http://localhost:8080")
 
 	session, err := mgo.Dial(dbHost)
 	if err != nil {
@@ -27,7 +28,12 @@ func main() {
 	}
 	defer session.Close()
 
-	config := shared.NewConfig(session.DB(dbname), recordDir, pdfprocessorUrl)
+	config := &shared.Config{
+		Db:              session.DB(dbname),
+		RecordDir:       recordDir,
+		PdfProcessorUrl: pdfprocessorUrl,
+		BaseUrl:         baseUrl,
+	}
 
 	services.InitHealthService(dbHost, pdfprocessorUrl)
 	factory := http.NewFactory(config)

@@ -13,17 +13,28 @@ import (
 type Factory struct {
 	repositories.Factory
 	pdfProcessorUrl string
+	baseUrl         string
 }
 
 func (f *Factory) GetPdfProcessor() *pdf.Processor {
 	return pdf.NewPDFProcessor(f.pdfProcessorUrl)
 }
 
+func (f *Factory) GetResponseService() *services.ResponseService {
+	return services.NewResponseService(f.baseUrl)
+}
+
+func (f *Factory) GetEventService() *services.EventService {
+	return services.NewEventService(f.GetResponseService())
+}
+
 func NewFactory(config *shared.Config) *Factory {
-	return &Factory{
-		repositories.NewFactory(config),
-		config.GetPdfProcessorUrl(),
+	f := &Factory{
+		pdfProcessorUrl: config.GetPdfProcessorUrl(),
+		baseUrl:         config.GetBaseUrl(),
 	}
+	f.Factory = repositories.NewFactory(config, f.GetEventService())
+	return f
 }
 
 func Run(factory *Factory) {
@@ -34,7 +45,7 @@ func Run(factory *Factory) {
 	router.Use(cors.New(config))
 	router.Use(location.Default())
 
-	registerWebsocket(router)
+	registerWebsocket(router, factory.GetEventService())
 	registerRecords(router.Group("/records"), factory)
 	registerPatients(router.Group("/patients"), factory)
 	registerCategories(router.Group("/categories"), factory)

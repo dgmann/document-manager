@@ -7,7 +7,7 @@ import (
 	"gopkg.in/olahol/melody.v1"
 )
 
-func registerWebsocket(router *gin.Engine) {
+func registerWebsocket(router *gin.Engine, eventService *services.EventService) {
 	m := melody.New()
 	ws := services.NewWebSocketService()
 
@@ -23,11 +23,10 @@ func registerWebsocket(router *gin.Engine) {
 		ws.RemoveClient(s)
 	})
 
-	go publishEvents(m)
+	go publishEvents(m, eventService)
 }
 
-func publishEvents(m *melody.Melody) {
-	eventService := services.GetEventService()
+func publishEvents(m *melody.Melody, eventService *services.EventService) {
 	events := eventService.Subscribe(services.EventCreated, services.EventDeleted, services.EventUpdated)
 	for event := range events {
 		data, _ := json.Marshal(event)

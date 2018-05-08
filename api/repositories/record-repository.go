@@ -25,7 +25,7 @@ type DBRecordRepository struct {
 	images  ImageRepository
 }
 
-func newDBRecordRepository(records *mgo.Collection, images ImageRepository) *DBRecordRepository {
+func newDBRecordRepository(records *mgo.Collection, images ImageRepository, eventService *services.EventService) *DBRecordRepository {
 	processedIndex := mgo.Index{
 		Key:        []string{"patientId", "-date", "tags"},
 		Unique:     false,
@@ -51,7 +51,7 @@ func newDBRecordRepository(records *mgo.Collection, images ImageRepository) *DBR
 	if err != nil {
 		log.Panicf("Error setting indices %s", err)
 	}
-	return &DBRecordRepository{records: records, events: services.GetEventService(), images: images}
+	return &DBRecordRepository{records: records, events: eventService, images: images}
 }
 
 func (r *DBRecordRepository) All() ([]*models.Record, error) {

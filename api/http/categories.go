@@ -8,6 +8,7 @@ import (
 
 func registerCategories(g *gin.RouterGroup, factory *Factory) {
 	categoryRepository := factory.GetCategoryRepository()
+	responseService := factory.GetResponseService()
 
 	g.GET("", func(c *gin.Context) {
 		cat, err := categoryRepository.All()
@@ -15,7 +16,8 @@ func registerCategories(g *gin.RouterGroup, factory *Factory) {
 			c.AbortWithError(400, err)
 			return
 		}
-		RespondAsJSON(c, cat)
+		response := responseService.NewResponse(cat)
+		RespondAsJSON(c, response)
 	})
 
 	g.POST("", func(c *gin.Context) {
@@ -30,6 +32,7 @@ func registerCategories(g *gin.RouterGroup, factory *Factory) {
 			c.AbortWithError(400, err)
 			return
 		}
-		RespondAsJSON(c, category)
+		response := responseService.NewResponse(category)
+		RespondAsJSON(c, response)
 	})
 }

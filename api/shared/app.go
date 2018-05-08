@@ -5,17 +5,10 @@ import (
 )
 
 type Config struct {
-	db              *mgo.Database
-	recordDir       string
-	pdfProcessorUrl string
-}
-
-func NewConfig(db *mgo.Database, recordDir string, pdfProcessorUrl string) *Config {
-	return &Config{
-		db:              db,
-		recordDir:       recordDir,
-		pdfProcessorUrl: pdfProcessorUrl,
-	}
+	Db              *mgo.Database
+	RecordDir       string
+	PdfProcessorUrl string
+	BaseUrl         string
 }
 
 type DatabaseConfig interface {
@@ -30,14 +23,22 @@ type PdfProcessorConfig interface {
 	GetPdfProcessorUrl() string
 }
 
+type HttpConfig interface {
+	GetBaseUrl() string
+}
+
 func (c *Config) GetDatabase() *mgo.Database {
-	return c.db
+	return c.Db
 }
 
 func (c *Config) GetRecordDirectory() string {
-	return c.recordDir
+	return c.RecordDir
 }
 
 func (c *Config) GetPdfProcessorUrl() string {
-	return c.pdfProcessorUrl
+	return c.PdfProcessorUrl
+}
+
+func (c *Config) GetBaseUrl() string {
+	return c.BaseUrl
 }

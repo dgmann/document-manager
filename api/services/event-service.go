@@ -3,7 +3,6 @@ package services
 import (
 	"github.com/cskr/pubsub"
 	log "github.com/sirupsen/logrus"
-	"sync"
 	"time"
 )
 
@@ -16,7 +15,8 @@ const (
 )
 
 type EventService struct {
-	ps *pubsub.PubSub
+	ps              *pubsub.PubSub
+	responseService *ResponseService
 }
 
 type Event struct {
@@ -25,18 +25,8 @@ type Event struct {
 	Data      interface{} `json:"data"`
 }
 
-var instance *EventService
-var once sync.Once
-
-func GetEventService() *EventService {
-	once.Do(func() {
-		instance = newEventService()
-	})
-	return instance
-}
-
-func newEventService() *EventService {
-	e := &EventService{ps: pubsub.New(300)}
+func NewEventService(responseService *ResponseService) *EventService {
+	e := &EventService{ps: pubsub.New(300), responseService: responseService}
 	go func() {
 		c := e.Subscribe(EventCreated, EventDeleted, EventUpdated)
 		for event := range c {
@@ -55,7 +45,7 @@ func (e *EventService) Send(t EventType, data interface{}) {
 	event := Event{
 		Type:      t,
 		Timestamp: time.Now(),
-		Data:      data,
+		Data:      e.responseService.NewResponse(data),
 	}
 	e.ps.Pub(event, string(t))
 }

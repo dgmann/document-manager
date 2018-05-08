@@ -18,6 +18,7 @@ func registerRecords(g *gin.RouterGroup, factory *Factory) {
 	recordRepository := factory.GetRecordRepository()
 	imageRepository := factory.GetImageRepository()
 	pdfProcessor := factory.GetPdfProcessor()
+	responseService := factory.GetResponseService()
 
 	g.GET("", func(c *gin.Context) {
 		r := c.Request.URL.Query()
@@ -36,7 +37,8 @@ func registerRecords(g *gin.RouterGroup, factory *Factory) {
 			c.AbortWithError(400, err)
 			return
 		}
-		RespondAsJSON(c, records)
+		response := responseService.NewResponse(records)
+		RespondAsJSON(c, response)
 	})
 
 	g.GET("/:recordId", func(c *gin.Context) {
@@ -47,7 +49,8 @@ func registerRecords(g *gin.RouterGroup, factory *Factory) {
 			return
 		}
 
-		RespondAsJSON(c, record)
+		response := responseService.NewResponse(record)
+		RespondAsJSON(c, response)
 	})
 
 	g.POST("", func(c *gin.Context) {
@@ -75,7 +78,8 @@ func registerRecords(g *gin.RouterGroup, factory *Factory) {
 			return
 		}
 		c.Status(201)
-		RespondAsJSON(c, record)
+		response := responseService.NewResponse(record)
+		RespondAsJSON(c, response)
 	})
 
 	g.DELETE("/:recordId", func(c *gin.Context) {
@@ -100,7 +104,8 @@ func registerRecords(g *gin.RouterGroup, factory *Factory) {
 			c.AbortWithError(400, err)
 			return
 		}
-		RespondAsJSON(c, r)
+		response := responseService.NewResponse(r)
+		RespondAsJSON(c, response)
 	})
 
 	g.POST("/:recordId/append/:idtoappend", func(c *gin.Context) {
@@ -129,7 +134,8 @@ func registerRecords(g *gin.RouterGroup, factory *Factory) {
 			c.AbortWithError(400, err)
 			return
 		}
-		RespondAsJSON(c, r)
+		response := responseService.NewResponse(r)
+		RespondAsJSON(c, response)
 	})
 
 	g.GET("/:recordId/pages/:imageId", func(c *gin.Context) {
@@ -209,7 +215,8 @@ func registerRecords(g *gin.RouterGroup, factory *Factory) {
 			return
 		}
 
-		RespondAsJSON(c, r)
+		response := responseService.NewResponse(r)
+		RespondAsJSON(c, response)
 	})
 
 	g.POST("/:recordId/pages/:imageId/rotate/:degrees", func(c *gin.Context) {

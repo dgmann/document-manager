@@ -2,10 +2,10 @@
 
 
 [[projects]]
-  branch = "master"
   name = "github.com/cskr/pubsub"
   packages = ["."]
-  revision = "b312bed961a5b2746a79024e40b7c37e31091a6e"
+  revision = "bbadc4de95998f07a2e0d607cf90c4377832fe32"
+  version = "v1.0.0"
 
 [[projects]]
   name = "github.com/davecgh/go-spew"
@@ -17,7 +17,7 @@
   branch = "master"
   name = "github.com/dgmann/document-manager"
   packages = ["shared"]
-  revision = "aa8b2671291dbd72baf6f85058a31bda121f7dec"
+  revision = "e248646ba50161abed6c3376d6c1ec2bf033a4f4"
 
 [[projects]]
   name = "github.com/gin-contrib/cors"
@@ -29,7 +29,7 @@
   branch = "master"
   name = "github.com/gin-contrib/location"
   packages = ["."]
-  revision = "5220ebf8be6c350431168cbd884f2c0ace0e3f4c"
+  revision = "911ef8299476b8a48e11ec0c26f2a0810345b690"
 
 [[projects]]
   branch = "master"
@@ -39,31 +39,21 @@
 
 [[projects]]
   name = "github.com/gin-gonic/gin"
-  packages = [
-    ".",
-    "binding",
-    "render"
-  ]
+  packages = [".","binding","render"]
   revision = "d459835d2b077e44f7c9b453505ee29881d5d12d"
   version = "v1.2"
 
 [[projects]]
   branch = "master"
   name = "github.com/globalsign/mgo"
-  packages = [
-    ".",
-    "bson",
-    "internal/json",
-    "internal/sasl",
-    "internal/scram"
-  ]
-  revision = "896bbb89d21253a28cd5a7f8b81fe091410cb94d"
+  packages = [".","bson","internal/json","internal/sasl","internal/scram"]
+  revision = "efe0945164a7e582241f37ae8983c075f8f2e870"
 
 [[projects]]
-  branch = "master"
   name = "github.com/golang/protobuf"
   packages = ["proto"]
-  revision = "1e59b77b52bf8e4b449a57e6f79f21226d571845"
+  revision = "b4deda0973fb4c70b50d226b1af49f3da59f5265"
+  version = "v1.1.0"
 
 [[projects]]
   name = "github.com/gorilla/websocket"
@@ -86,8 +76,8 @@
 [[projects]]
   name = "github.com/sirupsen/logrus"
   packages = ["."]
-  revision = "d682213848ed68c0a260ca37d6dd5ace8423f5ba"
-  version = "v1.0.4"
+  revision = "c155da19408a8799da419ed3eeb0cb5db0ad5dbc"
+  version = "v1.0.5"
 
 [[projects]]
   name = "github.com/stretchr/testify"
@@ -96,25 +86,22 @@
   version = "v1.2.1"
 
 [[projects]]
-  branch = "master"
   name = "github.com/ugorji/go"
   packages = ["codec"]
-  revision = "9831f2c3ac1068a78f50999a30db84270f647af6"
+  revision = "b4c50a2b199d93b13dc15e78929cfb23bfdf21ab"
+  version = "v1.1.1"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/crypto"
   packages = ["ssh/terminal"]
-  revision = "13931e22f9e72ea58bb73048bc752b48c6d4d4ac"
+  revision = "4ec37c66abab2c7e02ae775328b2ff001c3f025a"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
-  packages = [
-    "unix",
-    "windows"
-  ]
-  revision = "2c42eef0765b9837fbdab12011af7830f55f88f0"
+  packages = ["unix","windows"]
+  revision = "7db1c3b1a98089d0071c84f646ff5c96aad43682"
 
 [[projects]]
   name = "gopkg.in/go-playground/validator.v8"
@@ -126,7 +113,7 @@
   branch = "v1"
   name = "gopkg.in/jarcoal/httpmock.v1"
   packages = ["."]
-  revision = "cf52904a3cf0f78f199ecade6a6df8e245d5b25a"
+  revision = "eb84b840d3d6889d2458ceed28e3c6f0d109f6c8"
 
 [[projects]]
   name = "gopkg.in/olahol/melody.v1"
@@ -135,10 +122,10 @@
   version = "v1"
 
 [[projects]]
-  branch = "v2"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
-  revision = "d670f9405373e636a5a2765eea47fac0c9bc91a4"
+  revision = "5420a8b6744d3b0345ab293f6fcba19c978f1183"
+  version = "v2.2.1"
 
 [solve-meta]
   analyzer-name = "dep"

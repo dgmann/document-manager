@@ -13,6 +13,7 @@ func registerPatients(g *gin.RouterGroup, factory *Factory) {
 	tagRepository := factory.GetTagRepository()
 	recordRepository := factory.GetRecordRepository()
 	categoryRepository := factory.GetCategoryRepository()
+	responseService := factory.GetResponseService()
 
 	g.POST("", func(c *gin.Context) {
 		var patient models.Patient
@@ -26,7 +27,8 @@ func registerPatients(g *gin.RouterGroup, factory *Factory) {
 			c.AbortWithError(400, err)
 			return
 		}
-		RespondAsJSON(c, patient)
+		response := responseService.NewResponse(patient)
+		RespondAsJSON(c, response)
 	})
 
 	g.GET("", func(c *gin.Context) {
@@ -48,7 +50,8 @@ func registerPatients(g *gin.RouterGroup, factory *Factory) {
 			c.AbortWithError(400, err)
 			return
 		}
-		RespondAsJSON(c, patients)
+		response := responseService.NewResponse(patients)
+		RespondAsJSON(c, response)
 	})
 
 	g.GET("/:patientId", func(c *gin.Context) {
@@ -69,7 +72,8 @@ func registerPatients(g *gin.RouterGroup, factory *Factory) {
 		}
 		patient.Tags = tags
 		patient.Categories = categories
-		RespondAsJSON(c, patient)
+		response := responseService.NewResponse(patient)
+		RespondAsJSON(c, response)
 	})
 
 	g.GET("/:patientId/records", func(c *gin.Context) {
@@ -79,6 +83,7 @@ func registerPatients(g *gin.RouterGroup, factory *Factory) {
 			c.AbortWithError(400, err)
 			return
 		}
-		RespondAsJSON(c, records)
+		response := responseService.NewResponse(records)
+		RespondAsJSON(c, response)
 	})
 }

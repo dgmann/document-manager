@@ -1,10 +1,10 @@
-import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
-import {includes, without} from 'lodash-es';
-import {DropEvent} from "ng-drag-drop";
-import {Observable} from "rxjs";
-import {map, take, withLatestFrom} from "rxjs/operators";
-import {Record, RecordService} from "../store";
-import {InboxService} from "./inbox.service";
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { includes, without } from 'lodash-es';
+import { DropEvent } from "ng-drag-drop";
+import { Observable } from "rxjs";
+import { map, take, withLatestFrom } from "rxjs/operators";
+import { Record, RecordService } from "../store";
+import { InboxService } from "./inbox.service";
 
 @Component({
   selector: 'app-inbox',
@@ -48,10 +48,6 @@ export class InboxComponent implements OnInit{
           this.inboxService.selectIds([record.id]);
         }
       });
-  }
-
-  updatePages(event) {
-    this.recordService.update(event.id, {pages: event.pages})
   }
 
   upload(event: DropEvent) {

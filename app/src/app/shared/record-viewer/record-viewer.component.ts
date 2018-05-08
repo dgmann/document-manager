@@ -1,8 +1,9 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
-import {Observable} from "rxjs";
+import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
+import { Observable } from "rxjs";
 
 
-import {Page, Record} from "../../store";
+import { PageUpdate, Record, RecordService } from "../../store";
+import { map } from "rxjs/operators";
 
 @Component({
   selector: 'app-record-viewer',
@@ -10,14 +11,19 @@ import {Page, Record} from "../../store";
   styleUrls: ['./record-viewer.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class RecordViewerComponent {
+export class RecordViewerComponent implements OnInit {
   @Input('record') record: Observable<Record>;
-  @Output('updatePages') updatePages = new EventEmitter<{ id: number, pages: Page[] }>();
 
-  constructor() {
+  pages$: Observable<PageUpdate[]>;
+
+  constructor(private recordService: RecordService) {
   }
 
-  public up(recordId: number, pages: Page[], index: number) {
+  public ngOnInit() {
+    this.pages$ = this.record.pipe(map(r => r.pages.map(p => PageUpdate.FromPage(p))))
+  }
+
+  public up(recordId: string, pages: PageUpdate[], index: number) {
     if (index == 0) {
       return;
     }
@@ -26,6 +32,38 @@ export class RecordViewerComponent {
     const page = pages[index - 1];
     pages[index - 1] = pages[index];
     pages[index] = page;
-    this.updatePages.emit({id: recordId, pages: pages});
+    this.recordService.updatePages(recordId, pages);
+  }
+
+  public down(recordId: string, pages: PageUpdate[], index: number) {
+    if (index >= pages.length) {
+      return;
+    }
+
+    pages = pages.slice(0);
+    const page = pages[index + 1];
+    pages[index + 1] = pages[index];
+    pages[index] = page;
+    this.recordService.updatePages(recordId, pages);
+  }
+
+  rotate(recordId: string, pages: PageUpdate[], index: number, degree: number) {
+    pages = pages.slice(0);
+    pages[index].rotate = this.mod(pages[index].rotate + degree, 360);
+    this.recordService.updatePages(recordId, pages);
+  }
+
+  delete(recordId: string, pages: PageUpdate[], index: number) {
+    pages = pages.slice(0);
+    pages.splice(index, 1);
+    this.recordService.updatePages(recordId, pages);
+  }
+
+  mod(n, m) {
+    return ((n % m) + m) % m;
+  }
+
+  trackByFn(index: number, item: PageUpdate) {
+    return item.id;
   }
 }

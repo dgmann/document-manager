@@ -14,9 +14,11 @@ import (
 	"github.com/dgmann/document-manager/api/models"
 	"github.com/globalsign/mgo/bson"
 	"io/ioutil"
+	"github.com/dgmann/document-manager/api/services"
 )
 
 type ImageRepository interface {
+	services.FileInfoService
 	Get(id string) (map[string]*shared.Image, error)
 	Set(id string, images []*shared.Image) ([]*models.Page, error)
 	SetImage(id string, fileName string, image *shared.Image) error
@@ -64,6 +66,11 @@ func (f *FileSystemImageRepository) Get(id string) (map[string]*shared.Image, er
 		return nil, err
 	}
 	return images, nil
+}
+
+func (f *FileSystemImageRepository) GetFileInfo(recordId, pageId string, format string) (os.FileInfo, error) {
+	p := f.getPath(recordId, pageId+"."+format)
+	return os.Stat(p)
 }
 
 func (f *FileSystemImageRepository) Copy(fromId string, toId string) error {
@@ -127,7 +134,6 @@ func save(filePath string, img *shared.Image) error {
 
 func (f *FileSystemImageRepository) Serve(context *gin.Context, recordId string, imageId string, format string) {
 	p := f.getPath(recordId, imageId+"."+format)
-	context.Header("Cache-Control", "no-cache")
 	context.File(p)
 }
 

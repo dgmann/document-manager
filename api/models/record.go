@@ -2,7 +2,6 @@ package models
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/globalsign/mgo/bson"
 	"time"
 )
@@ -24,19 +23,6 @@ type Record struct {
 	Tags           []string      `bson:"tags,omitempty" json:"tags"`
 	Pages          []*Page       `bson:"pages,omitempty" json:"pages"`
 	RequiredAction *string       `bson:"requiredAction,omitempty" json:"requiredAction"`
-}
-
-func (r *Record) SetURL(url string) {
-	if r.Tags == nil {
-		r.Tags = []string{}
-	}
-	if r.Pages == nil {
-		r.Pages = []*Page{}
-	}
-
-	for i := range r.Pages {
-		r.Pages[i].Url = fmt.Sprintf("%s/records/%s/pages/%s", url, r.Id.Hex(), r.Pages[i].Id)
-	}
 }
 
 func (r *Record) MarshalJSON() ([]byte, error) {

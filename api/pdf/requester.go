@@ -47,7 +47,7 @@ func(h *HttpRequester) Do(file io.Reader) (io.ReadCloser, error) {
 	}
 
 	if err != nil {
-		log.Error("PDFProcessor request error")
+		log.Error("Processor request error")
 		return nil, err
 	}
 	return res.Body, nil

@@ -9,6 +9,7 @@ import (
 func Rotate(img []byte, degrees float64) (*shared.Image, error) {
 	mw := imagick.NewMagickWand()
 	defer mw.Destroy()
+
 	err := mw.ReadImageBlob(img)
 	if err != nil {
 		return nil, err
@@ -17,8 +18,8 @@ func Rotate(img []byte, degrees float64) (*shared.Image, error) {
 
 	pw := imagick.NewPixelWand()
 	defer pw.Destroy()
-	pw.SetColor("black")
 
+	pw.SetColor("black")
 	err = mw.RotateImage(pw, degrees)
 	if err != nil {
 		return nil, err

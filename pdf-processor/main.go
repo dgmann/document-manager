@@ -12,10 +12,12 @@ import (
 	"strconv"
 )
 
-func main() {
+func init() {
 	imagick.Initialize()
 	defer imagick.Terminate()
+}
 
+func main() {
 	router := gin.Default()
 	router.Use(cors.Default())
 	router.POST("images/convert", func(c *gin.Context) {

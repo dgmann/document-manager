@@ -8,6 +8,7 @@ import (
 	"github.com/dgmann/document-manager/api/repositories"
 	"github.com/dgmann/document-manager/api/pdf"
 	"github.com/dgmann/document-manager/api/shared"
+	"github.com/bugsnag/bugsnag-go/gin"
 )
 
 type Factory struct {
@@ -42,8 +43,10 @@ func NewFactory(config *shared.Config) *Factory {
 	return f
 }
 
-func Run(factory *Factory) {
+func Run(factory *Factory, c *shared.Config) {
 	router := gin.Default()
+	router.Use(bugsnaggin.AutoNotify(c.GetBugsnagConfig()))
+
 	config := cors.DefaultConfig()
 	config.AllowAllOrigins = true
 	config.AddAllowMethods("PATCH", "DELETE")

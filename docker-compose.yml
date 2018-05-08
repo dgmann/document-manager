@@ -19,6 +19,9 @@ services:
       - DB_HOST=db
       - DB_NAME=manager
       - PDFPROCESSOR_URL=http://processor:8181
+      - RELEASE_STAGE=development
+    env_file:
+      - .bugsnag-key.env
     networks:
       - backend
     ports:

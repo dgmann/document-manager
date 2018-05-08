@@ -2,6 +2,24 @@
 
 
 [[projects]]
+  branch = "master"
+  name = "github.com/Shopify/logrus-bugsnag"
+  packages = ["."]
+  revision = "577dee27f20dd8f1a529f82210094af593be12bd"
+
+[[projects]]
+  name = "github.com/bugsnag/bugsnag-go"
+  packages = [".","errors","gin"]
+  revision = "f860f733c3d1c69181d9240eed266f94422fc99e"
+  version = "v1.3.1"
+
+[[projects]]
+  name = "github.com/bugsnag/panicwrap"
+  packages = ["."]
+  revision = "4009b2b7c78d820cc4a2e42f035bb557ce4ae45b"
+  version = "v1.2.0"
+
+[[projects]]
   name = "github.com/cskr/pubsub"
   packages = ["."]
   revision = "bbadc4de95998f07a2e0d607cf90c4377832fe32"
@@ -60,6 +78,12 @@
   packages = ["."]
   revision = "ea4d1f681babbce9545c9c5f3d5194a789c89f5b"
   version = "v1.2.0"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/kardianos/osext"
+  packages = ["."]
+  revision = "ae77be60afb1dcacde03767a8c37337fad28ac14"
 
 [[projects]]
   name = "github.com/mattn/go-isatty"
@@ -130,6 +154,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "c35358bc19f903fe1e56ab5fffcdb1515ec532c80486e12724528b452f1efe47"
+  inputs-digest = "2d9e7888e3f7a23a35264fa3edb8f42bd393cb1244010ddcb04d708ebd7cbaa4"
   solver-name = "gps-cdcl"
   solver-version = 1

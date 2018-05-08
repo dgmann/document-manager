@@ -1,7 +1,22 @@
-FROM golang:alpine as builder
+FROM golang:latest as builder
 
-RUN apk --no-cache --virtual add openssl imagemagick imagemagick-dev poppler-utils git build-base && \
-    wget -O /usr/local/bin/dep https://github.com/golang/dep/releases/download/v0.4.1/dep-linux-amd64 && chmod +x /usr/local/bin/dep
+RUN apt-get update && \
+    apt-get install -q -y wget build-essential pkg-config poppler-utils git g++ libjpeg-dev libpng-dev libtiff-dev libgif-dev --no-install-recommends && \
+    wget http://downloads.webmproject.org/releases/webp/libwebp-0.4.2.tar.gz && \
+	tar xvzf libwebp-0.4.2.tar.gz && rm libwebp-0.4.2.tar.gz && \
+	cd libwebp-0.4.2 && \
+	./configure && \
+	make && make install && \
+	cd && rm -rf libwebp-0.4.2 && \
+	wget http://www.imagemagick.org/download/ImageMagick-7.0.7-31.tar.gz && \
+	tar xvzf ImageMagick-7.0.7-31.tar.gz && rm ImageMagick-7.0.7-31.tar.gz && \
+	cd ImageMagick-* && \
+	./configure && \
+	make && make install && \
+	cd && rm -rf ImageMagick-* && \
+	ldconfig /usr/local/lib && \
+	rm -rf /var/lib/apt/lists/* && \
+	wget -O /usr/local/bin/dep https://github.com/golang/dep/releases/download/v0.4.1/dep-linux-amd64 && chmod +x /usr/local/bin/dep
 
 WORKDIR /go/src/github.com/dgmann/document-manager/pdf-processor
 COPY Gopkg.toml Gopkg.lock ./

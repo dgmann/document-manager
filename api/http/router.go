@@ -15,7 +15,7 @@ type Factory struct {
 	pdfProcessorUrl string
 }
 
-func (f *Factory) GetPdfProcessor() *pdf.PDFProcessor {
+func (f *Factory) GetPdfProcessor() *pdf.Processor {
 	return pdf.NewPDFProcessor(f.pdfProcessorUrl)
 }
 

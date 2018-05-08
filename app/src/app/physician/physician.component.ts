@@ -1,9 +1,9 @@
-import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute, Router} from "@angular/router";
-import {Observable} from "rxjs";
-import {filter, map} from "rxjs/operators";
-import {Record, RecordService, RequiredAction} from "../store";
-import {PhysicianService} from "./physician.service";
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from "@angular/router";
+import { Observable } from "rxjs";
+import { filter, map } from "rxjs/operators";
+import { Record, RecordService, RequiredAction } from "../store";
+import { PhysicianService } from "./physician.service";
 
 @Component({
   selector: 'app-physician',
@@ -43,9 +43,4 @@ export class PhysicianComponent implements OnInit {
       }
     }))
   }
-
-  updatePages(event) {
-    this.recordService.update(event.id, {pages: event.pages})
-  }
-
 }

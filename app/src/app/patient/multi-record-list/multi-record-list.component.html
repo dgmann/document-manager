@@ -1,5 +1,6 @@
-<div *ngIf="categories | async as cats">
-  <mat-card *ngFor="let record of records | async">
+<div *ngIf="categories | async as cats" fxLayout="column" fxLayout.gt-md="row wrap" fxLayoutAlign="center"
+     fxLayoutGap="10px">
+  <mat-card *ngFor="let record of records | async" fxFlex.gt-md="calc(50% - 10px)">
     <mat-card-header>
       <mat-card-title>
         <span class="mat-subheading-2">

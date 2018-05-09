@@ -6,5 +6,6 @@
 export const environment = {
   production: false,
   api: "http://localhost:8080",
-  websocket: "ws://localhost:8080/notifications"
+  websocket: "ws://localhost:8080/notifications",
+  bugsnagKey: "44bd0ddb1369a54aa3cfa44bdf04f21c"
 };

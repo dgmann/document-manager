@@ -20,7 +20,7 @@ export class RecordViewerComponent implements OnInit {
   }
 
   public ngOnInit() {
-    this.pages$ = this.record.pipe(map(r => r.pages.map(p => PageUpdate.FromPage(p))))
+    this.pages$ = this.record.pipe(map(r => r && r.pages.map(p => PageUpdate.FromPage(p)) || []))
   }
 
   public up(recordId: string, pages: PageUpdate[], index: number) {

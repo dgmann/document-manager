@@ -47,16 +47,18 @@ export class RecordService {
     const formData = new FormData();
     formData.append('pdf', pdf);
     formData.append('sender', "Client");
-    this.http.post(environment.api + "/records", formData).subscribe(() => this.notificationService.publish({
+    this.http.post<Record>(environment.api + "/records", formData).subscribe(record => this.notificationService.publish({
       timestamp: new Date(),
-      message: "PDF hochgeladen"
+      message: "PDF hochgeladen",
+      record: record
     }))
   }
 
   public append(sourceId: string, targetId: string) {
-    this.http.post(`${environment.api}/records/${sourceId}/append/${targetId}`, null).subscribe(() => this.notificationService.publish({
+    this.http.post<Record>(`${environment.api}/records/${sourceId}/append/${targetId}`, null).subscribe(record => this.notificationService.publish({
       timestamp: new Date(),
-      message: "PDF angehängt"
+      message: "PDF angehängt",
+      record: record
     }))
   }
 }

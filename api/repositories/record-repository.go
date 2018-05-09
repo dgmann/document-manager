@@ -110,9 +110,9 @@ func (r *DBRecordRepository) Delete(id string) error {
 	key := bson.ObjectIdHex(id)
 	err := r.records.RemoveId(key)
 	if err != nil {
-		log.Error(err)
+		return err
 	}
-	r.images.Delete(id)
+	err = r.images.Delete(id)
 	r.events.Send(services.EventDeleted, id)
 	return err
 }
@@ -120,7 +120,6 @@ func (r *DBRecordRepository) Delete(id string) error {
 func (r *DBRecordRepository) Update(id string, record models.Record) (*models.Record, error) {
 	key := bson.ObjectIdHex(id)
 	if err := r.records.UpdateId(key, bson.M{"$set": record}); err != nil {
-		log.Panic(err)
 		return nil, err
 	}
 	updated, err := r.findByObjectId(key)

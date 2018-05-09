@@ -8,6 +8,10 @@
           <span class="mat-subheading-1 sub-heading">{{ record.tags.join(", ") }}</span>
         </span>
       </mat-card-title>
+      <div fxFlex></div>
+      <button mat-icon-button color="primary" (click)="edit(record)">
+        <mat-icon aria-label="Edit">edit</mat-icon>
+      </button>
       <mat-card-subtitle>{{ record.date | date: 'mediumDate' }}</mat-card-subtitle>
     </mat-card-header>
     <img class="selectable-page" (click)="onRecordClicked(record.id)" mat-card-image [src]="record.pages[0].url">

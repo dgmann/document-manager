@@ -1,5 +1,5 @@
 <mat-form-field>
-  <mat-select [formControl]="formControl" placeholder="Kategorie" #singleSelect>
+  <mat-select [formControl]="formControl" placeholder="Kategorie" #singleSelect [compareWith]="compareByValue">
     <ngx-mat-select-search [formControl]="filterFormControl"></ngx-mat-select-search>
     <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
       {{option.name}}

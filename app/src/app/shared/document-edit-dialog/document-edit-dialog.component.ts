@@ -1,16 +1,24 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, Inject, OnInit, ViewChild} from '@angular/core';
-import {FormControl} from "@angular/forms";
-import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material";
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  Inject,
+  OnInit,
+  ViewChild
+} from '@angular/core';
+import { FormControl } from "@angular/forms";
+import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material";
 import * as moment from "moment";
-import {ReplaySubject} from "rxjs";
-import {take} from "rxjs/operators";
-import {Patient} from "../../patient";
+import { ReplaySubject } from "rxjs";
+import { take } from "rxjs/operators";
+import { Patient } from "../../patient";
 
 
-import {Record} from "../../store";
-import {CategoryService} from "../category-service";
-import {ExternalApiService} from "../external-api.service";
-import {TagService} from "../tag-service";
+import { Record } from "../../store";
+import { CategoryService } from "../category-service";
+import { ExternalApiService } from "../external-api.service";
+import { TagService } from "../tag-service";
 
 
 @Component({
@@ -44,7 +52,7 @@ export class DocumentEditDialogComponent implements AfterViewInit, OnInit {
     else {
       this.tabIndex.next(0);
     }
-    this.categoryFormControl = new FormControl(this.record.categoryId);
+    this.categoryFormControl = new FormControl({name: "Test", id: this.record.categoryId});
     this.categoryFormControl.valueChanges.subscribe(val => this.record.categoryId = val.id);
   }
 

@@ -1,8 +1,8 @@
-import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
-import {FormControl} from "@angular/forms";
-import {Observable} from "rxjs";
-import {concat, map, startWith, withLatestFrom} from "rxjs/operators";
-import {Category} from "../category-service";
+import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
+import { FormControl } from "@angular/forms";
+import { concat, Observable } from "rxjs";
+import { map, startWith, withLatestFrom } from "rxjs/operators";
+import { Category } from "../category-service";
 
 @Component({
   selector: 'app-autocomplete-dropdown',
@@ -24,9 +24,7 @@ export class AutocompleteInputComponent implements OnInit {
         withLatestFrom(this.options),
         map(([val, options]) => this.filter(val, options))
       );
-    this.filteredOptions = this.options.pipe(
-      concat(filtered),
-    );
+    this.filteredOptions = concat(this.options, filtered);
   }
 
   filter(val: string, options: Category[]): Category[] {
@@ -34,7 +32,7 @@ export class AutocompleteInputComponent implements OnInit {
       option.name.toLowerCase().indexOf(val.toLowerCase()) === 0);
   }
 
-  displayFn(category?: Category): string | undefined {
-    return category ? category.name : undefined;
+  compareByValue(f1: any, f2: any) {
+    return f1 && f2 && f1.id === f2.id;
   }
 }

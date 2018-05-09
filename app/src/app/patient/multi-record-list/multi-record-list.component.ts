@@ -1,7 +1,9 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {Observable} from "rxjs";
-import {Category, CategoryService} from "../../shared/category-service";
-import {Record} from "../../store";
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Observable } from "rxjs";
+import { Category, CategoryService } from "../../shared/category-service";
+import { Record, RecordService } from "../../store";
+import { DocumentEditDialogComponent } from "../../shared/document-edit-dialog/document-edit-dialog.component";
+import { MatDialog } from "@angular/material";
 
 @Component({
   selector: 'app-multi-record-list',
@@ -14,7 +16,9 @@ export class MultiRecordListComponent implements OnInit {
   @Output('clickRecord') clickRecord = new EventEmitter<string>();
   categories: Observable<{ [id: string]: Category }>;
 
-  constructor(private categoryService: CategoryService) {
+  constructor(private categoryService: CategoryService,
+              private recordService: RecordService,
+              private dialog: MatDialog) {
   }
 
   ngOnInit() {
@@ -23,6 +27,24 @@ export class MultiRecordListComponent implements OnInit {
 
   onRecordClicked(id: string) {
     this.clickRecord.emit(id);
+  }
+
+  edit(record: Record) {
+    this.dialog.open(DocumentEditDialogComponent, {
+      disableClose: true,
+      data: record,
+      width: "635px"
+    }).afterClosed().subscribe((result: Record) => {
+      if (!result) {
+        return;
+      }
+      this.recordService.update(result.id, {
+        patientId: result.patientId,
+        date: result.date,
+        tags: result.tags,
+        categoryId: result.categoryId
+      });
+    });
   }
 
 }

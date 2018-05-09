@@ -1,6 +1,6 @@
 <div class="container" fxLayout="row" fxLayoutGap="10px">
 
-  <div [fxShow]="showLeftColumn" fxFlex fxFlex.gt-lg="300px" class="scroll-column mat-elevation-z8">
+  <div [fxShow]="showLeftColumn" fxFlex="300px" class="scroll-column mat-elevation-z8">
     <ng-content select=".left-panel"></ng-content>
   </div>
   <div [fxShow]="!showLeftColumn">

@@ -1,25 +1,17 @@
 import {Injectable} from "@angular/core";
 import {select, Store} from "@ngrx/store";
-import {filter, map} from "rxjs/operators";
-import {Record, RecordService, Status} from "../store";
+import {selectInboxRecords} from "../store";
 import {selectMultiselect, selectSelectedIds, selectSelectedRecords, selectUnreadRecords, State} from "./reducers";
 import {SelectRecords, SetMultiSelect} from "./store/inbox.actions";
 
 @Injectable()
 export class InboxService {
 
-  inboxFilter: any;
-
-  constructor(private store: Store<State>, private recordService: RecordService) {
-    this.inboxFilter = (record: Record) => !record.status || record.status == Status.INBOX;
+  constructor(private store: Store<State>) {
   }
 
   public all() {
-    return this.recordService.all().pipe(map(records => records.filter(this.inboxFilter)))
-  }
-
-  public find(id: string) {
-    return this.recordService.find(id).pipe(filter(this.inboxFilter))
+    return this.store.pipe(select(selectInboxRecords));
   }
 
   public getSelectedIds() {

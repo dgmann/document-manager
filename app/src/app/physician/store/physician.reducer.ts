@@ -1,5 +1,3 @@
-import {uniq, without} from 'lodash-es';
-import {Status} from "../../store";
 import {PhysicianActions, PhysicianActionTypes} from './physician.actions';
 
 export interface State {
@@ -32,19 +30,6 @@ export function reducer(state = initialState, action: PhysicianActions): State {
       return Object.assign({}, state, {
         selectedIds: action.payload.ids
       });
-
-    case PhysicianActionTypes.SetRecord:
-      const change = {
-        escalatedIds: without(state.escalatedIds, action.payload.id),
-        reviewIds: without(state.reviewIds, action.payload.id),
-        otherIds: without(state.otherIds, action.payload.id),
-      };
-      if (action.payload.status === Status.ESCALATED
-        || action.payload.status === Status.REVIEW
-        || action.payload.status === Status.OTHER) {
-        change[action.payload.status + 'Ids'] = uniq([...state[action.payload.status + 'Ids'], action.payload.id]);
-      }
-      return Object.assign({}, state, change);
 
     default:
       return state;

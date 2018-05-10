@@ -1,50 +1,8 @@
 import {Injectable} from '@angular/core';
-import {Actions, Effect, ofType} from '@ngrx/effects';
-import {Action} from "@ngrx/store";
-import {has} from 'lodash-es';
-import {EMPTY, from, of} from "rxjs";
-import {map, switchMap} from "rxjs/operators";
-import {Status} from "../../store";
-import {
-  DeleteRecordSuccess,
-  LoadRecordsSuccess,
-  RecordActionTypes,
-  UpdateRecordSuccess
-} from "../../store/record/record.actions";
-import {SetRecord} from "./physician.actions";
+import {Actions} from '@ngrx/effects';
 
 @Injectable()
 export class PhysicianEffects {
-
-  @Effect()
-  addEffect$ = this.actions$.pipe(
-    ofType(RecordActionTypes.LoadRecordsSuccess),
-    map((action: LoadRecordsSuccess) => action.payload.records),
-    switchMap(records => from<Action>(records.map(record => new SetRecord({
-      id: record.id,
-      status: record.status
-    }))))
-  );
-
-  @Effect()
-  removeEffect$ = this.actions$.pipe(
-    ofType(RecordActionTypes.DeleteRecordSuccess),
-    map((action: DeleteRecordSuccess) => action.payload.id),
-    switchMap(id => of(new SetRecord({id: id, status: Status.NONE})))
-  );
-
-  @Effect()
-  updateEffect$ = this.actions$.pipe(
-    ofType(RecordActionTypes.UpdateRecordSuccess),
-    map((action: UpdateRecordSuccess) => action.payload.record),
-    switchMap(record => {
-      if (has(record.changes, 'status')) {
-        return of(new SetRecord({id: record.id + '', status: record.changes.status}));
-      } else {
-        return EMPTY;
-      }
-    })
-  );
 
   constructor(private actions$: Actions) {
   }

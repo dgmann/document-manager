@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { Record, RequiredAction } from "../../store";
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Record, Status} from "../../store";
 
 @Component({
   selector: 'app-action-menu',
@@ -10,7 +10,7 @@ import { Record, RequiredAction } from "../../store";
 export class ActionMenuComponent implements OnInit {
   @Input() record: Record;
   @Output() deleteRecord = new EventEmitter<Record>();
-  @Output() changeRequiredAction = new EventEmitter<{ record: Record, action: RequiredAction }>();
+  @Output() changeStatus = new EventEmitter<{ record: Record, status: Status }>();
   @Output() editRecord = new EventEmitter<Record>();
 
   constructor() {
@@ -24,8 +24,8 @@ export class ActionMenuComponent implements OnInit {
     event.stopPropagation();
   }
 
-  setRequiredAction(record: Record, action: RequiredAction) {
-    this.changeRequiredAction.emit({record: record, action: action});
+  setStatus(record: Record, action: Status) {
+    this.changeStatus.emit({record: record, status: action});
   }
 
   onEditRecord(record: Record) {

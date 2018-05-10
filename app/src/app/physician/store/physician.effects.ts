@@ -4,7 +4,7 @@ import {Action} from "@ngrx/store";
 import {has} from 'lodash-es';
 import {EMPTY, from, of} from "rxjs";
 import {map, switchMap} from "rxjs/operators";
-import {RequiredAction} from "../../store";
+import {Status} from "../../store";
 import {
   DeleteRecordSuccess,
   LoadRecordsSuccess,
@@ -22,7 +22,7 @@ export class PhysicianEffects {
     map((action: LoadRecordsSuccess) => action.payload.records),
     switchMap(records => from<Action>(records.map(record => new SetRecord({
       id: record.id,
-      requiredAction: record.requiredAction
+      status: record.status
     }))))
   );
 
@@ -30,7 +30,7 @@ export class PhysicianEffects {
   removeEffect$ = this.actions$.pipe(
     ofType(RecordActionTypes.DeleteRecordSuccess),
     map((action: DeleteRecordSuccess) => action.payload.id),
-    switchMap(id => of(new SetRecord({id: id, requiredAction: RequiredAction.NONE})))
+    switchMap(id => of(new SetRecord({id: id, status: Status.NONE})))
   );
 
   @Effect()
@@ -38,8 +38,8 @@ export class PhysicianEffects {
     ofType(RecordActionTypes.UpdateRecordSuccess),
     map((action: UpdateRecordSuccess) => action.payload.record),
     switchMap(record => {
-      if (has(record.changes, 'requiredAction')) {
-        return of(new SetRecord({id: record.id + '', requiredAction: record.changes.requiredAction}));
+      if (has(record.changes, 'status')) {
+        return of(new SetRecord({id: record.id + '', status: record.changes.status}));
       } else {
         return EMPTY;
       }

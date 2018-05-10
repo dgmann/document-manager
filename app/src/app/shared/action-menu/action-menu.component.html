@@ -1,4 +1,4 @@
-<div *ngIf="record.requiredAction == ''">
+<div *ngIf="record.status == '' || record.status == 'inbox'">
   <button mat-icon-button [matMenuTriggerFor]="menu">
     <mat-icon>more_vert</mat-icon>
   </button>
@@ -11,18 +11,18 @@
       <mat-icon aria-label="other">edit</mat-icon>
       <span>Editor</span>
     </button>
-    <button mat-menu-item (click)="setRequiredAction(record, 'escalated')">
+    <button mat-menu-item (click)="setStatus(record, 'escalated')">
       <mat-icon aria-label="escalate">arrow_upward</mat-icon>
       <span>Eskalieren</span>
     </button>
-    <button mat-menu-item (click)="setRequiredAction(record, 'other')">
+    <button mat-menu-item (click)="setStatus(record, 'other')">
       <mat-icon aria-label="other">shopping_basket</mat-icon>
       <span>Werbung</span>
     </button>
   </mat-menu>
 </div>
 
-<div *ngIf="record.requiredAction == 'escalated'">
+<div *ngIf="record.status == 'escalated'">
   <button mat-icon-button [matMenuTriggerFor]="menu">
     <mat-icon>more_vert</mat-icon>
   </button>
@@ -35,20 +35,20 @@
       <mat-icon aria-label="other">edit</mat-icon>
       <span>Editor</span>
     </button>
-    <button mat-menu-item (click)="setRequiredAction(record, '')">
+    <button mat-menu-item (click)="setStatus(record, 'inbox')">
       <mat-icon aria-label="deescalate">arrow_downward</mat-icon>
       <span>Deeskalieren</span>
     </button>
   </mat-menu>
 </div>
 
-<div *ngIf="record.requiredAction == 'review'">
+<div *ngIf="record.status == 'review'">
   <button mat-icon-button (click)="$event.stopPropagation()">
     <mat-icon aria-label="done" color="green">done</mat-icon>
   </button>
 </div>
 
-<div *ngIf="record.requiredAction == 'other'">
+<div *ngIf="record.status == 'other'">
   <button mat-icon-button [matMenuTriggerFor]="menu">
     <mat-icon>more_vert</mat-icon>
   </button>
@@ -61,7 +61,7 @@
       <mat-icon aria-label="other">edit</mat-icon>
       <span>Editor</span>
     </button>
-    <button mat-menu-item (click)="setRequiredAction(record, '')">
+    <button mat-menu-item (click)="setStatus(record, 'inbox')">
       <mat-icon aria-label="deescalate">arrow_downward</mat-icon>
       <span>Inbox</span>
     </button>

@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { RecordService, RequiredAction } from "../../store";
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {RecordService, Status} from "../../store";
 
 @Component({
   selector: 'app-action-bar',
@@ -21,8 +21,8 @@ export class ActionBarComponent implements OnInit {
     this.recordIds.forEach(id => this.recordService.delete(id));
   }
 
-  setRequiredAction(action: RequiredAction) {
-    this.recordIds.forEach(id => this.recordService.update(id, {requiredAction: action}));
+  setStatus(action: Status) {
+    this.recordIds.forEach(id => this.recordService.update(id, {status: action}));
   }
 
   setSelection(selection: boolean) {

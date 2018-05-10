@@ -23,7 +23,7 @@ export class SelectRecords implements Action {
 export class SetRecord implements Action {
   readonly type = PhysicianActionTypes.SetRecord;
 
-  constructor(public payload: { id: string, requiredAction: string }) {
+  constructor(public payload: { id: string, status: string }) {
   }
 }
 

@@ -1,6 +1,6 @@
 import {Injectable} from "@angular/core";
 import {select, Store} from "@ngrx/store";
-import {RecordService, RequiredAction} from "../store";
+import {RecordService} from "../store";
 import {
   selectEscalatedRecords,
   selectOtherRecords,
@@ -15,10 +15,6 @@ import {SelectRecords} from "./store/physician.actions";
 export class PhysicianService {
 
   constructor(private store: Store<State>, private recordService: RecordService) {
-  }
-
-  public load(action: RequiredAction) {
-    this.recordService.load({requiredAction: action})
   }
 
   public getSelectedRecords() {

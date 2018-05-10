@@ -8,7 +8,6 @@ import (
 	"strconv"
 	"errors"
 	"bytes"
-	"github.com/globalsign/mgo/bson"
 	"fmt"
 	"strings"
 	"sync"
@@ -22,17 +21,11 @@ func registerRecords(g *gin.RouterGroup, factory *Factory) {
 
 	g.GET("", func(c *gin.Context) {
 		r := c.Request.URL.Query()
-		var records []*models.Record
-		var err error
-		if _, ok := r["inbox"]; ok {
-			records, err = recordRepository.Query(bson.M{"$or": []bson.M{{"date": nil}, {"patientId": ""}, {"categoryId": nil}}})
-		} else {
-			query := make(map[string]interface{})
-			for k, v := range r {
-				query[k] = v[0]
-			}
-			records, err = recordRepository.Query(query)
+		query := make(map[string]interface{})
+		for k, v := range r {
+			query[k] = v[0]
 		}
+		records, err := recordRepository.Query(query)
 		if err != nil {
 			c.AbortWithError(400, err)
 			return
@@ -104,6 +97,11 @@ func registerRecords(g *gin.RouterGroup, factory *Factory) {
 			c.AbortWithError(400, err)
 			return
 		}
+
+		if record.PatientId != nil {
+
+		}
+
 		response := responseService.NewResponse(r)
 		RespondAsJSON(c, response)
 	})

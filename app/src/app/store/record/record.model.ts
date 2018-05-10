@@ -1,4 +1,4 @@
-import { Moment } from "moment";
+import {Moment} from "moment";
 
 export interface Record {
   id: string;
@@ -12,7 +12,7 @@ export interface Record {
   patientId: string;
   escalated: boolean;
   processed: boolean;
-  requiredAction: RequiredAction;
+  status: Status;
 }
 
 export class Page {
@@ -33,7 +33,8 @@ export class PageUpdate {
 }
 
 
-export enum RequiredAction {
+export enum Status {
+  INBOX = "inbox",
   REVIEW = "review",
   ESCALATED = "escalated",
   OTHER = "other",

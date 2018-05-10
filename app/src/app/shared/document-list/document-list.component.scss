@@ -1,6 +1,11 @@
 @import "../../../theme-variables";
 
-mat-row {
+.container {
+  width: 100%;
+  max-width: 100%;
+}
+
+.mat-row {
   cursor: pointer;
 }
 
@@ -20,6 +25,6 @@ mat-row {
   background-color: $accent-light;
 }
 
-mat-row:hover {
+.mat-row:hover {
   background-color: $accent-lighter;
 }

@@ -1,8 +1,8 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { ActionBarComponent } from './action-bar.component';
+import {ActionBarComponent} from './action-bar.component';
 
-describe('ActionBarComponent', () => {
+describe('EventSnackbarComponent', () => {
   let component: ActionBarComponent;
   let fixture: ComponentFixture<ActionBarComponent>;
 

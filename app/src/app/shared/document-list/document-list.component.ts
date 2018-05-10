@@ -31,7 +31,7 @@ export class DocumentListComponent implements OnInit, AfterViewInit {
   @Input() records: Observable<Record[]>;
   @Output() selectRecord = new EventEmitter<Record>();
 
-  displayedColumns = ['date', 'sender', 'numpages', 'comment', 'actions'];
+  displayedColumns = ['receivedAt', 'sender', 'numpages', 'comment', 'actions'];
   dataSource = new MatTableDataSource<Record>();
 
   constructor(private recordService: RecordService,
@@ -40,6 +40,7 @@ export class DocumentListComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
+    this.dataSource.sort = this.sort;
     this.records.subscribe(data => this.dataSource.data = data);
   }
 

@@ -1,6 +1,6 @@
 import {Injectable} from "@angular/core";
 import {Store} from "@ngrx/store";
-import {filter} from "rxjs/operators";
+import {filter, retry} from "rxjs/operators";
 import {environment} from "../../../environments/environment"
 import {NotificationService} from "../../shared/notification-service";
 import {NotificationMessage, NotificationMessageType, WebsocketService} from "../../shared/websocket-service";
@@ -20,7 +20,7 @@ export class AutorefreshService {
       event.type == NotificationMessageType.Created
       || event.type == NotificationMessageType.Updated
       || event.type == NotificationMessageType.Deleted);
-    ws.pipe(filterRecordEvents).subscribe(message => {
+    ws.pipe(filterRecordEvents, retry()).subscribe(message => {
       switch (message.type) {
         case NotificationMessageType.Created:
           this.store.dispatch(new LoadRecordsSuccess({
@@ -53,6 +53,11 @@ export class AutorefreshService {
           });
           break;
       }
+    }, () => {
+      this.notificationService.publish({
+        message: "Verbindung zu Server verloren",
+        timestamp: new Date()
+      })
     });
   }
 }

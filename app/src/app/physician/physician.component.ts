@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from "@angular/router";
-import { Observable } from "rxjs";
-import { filter, map } from "rxjs/operators";
-import { Record, RecordService, RequiredAction } from "../store";
-import { PhysicianService } from "./physician.service";
+import {Component, OnInit} from '@angular/core';
+import {ActivatedRoute, Router} from "@angular/router";
+import {Observable} from "rxjs";
+import {filter, map} from "rxjs/operators";
+import {Record, RecordService, Status} from "../store";
+import {PhysicianService} from "./physician.service";
 
 @Component({
   selector: 'app-physician',
@@ -24,9 +24,9 @@ export class PhysicianComponent implements OnInit {
       filter(records => records.length > 0),
       map(records => records[0])
     );
-    this.physicianService.load(RequiredAction.REVIEW);
-    this.physicianService.load(RequiredAction.ESCALATED);
-    this.physicianService.load(RequiredAction.OTHER);
+    this.recordService.load({status: Status.REVIEW});
+    this.recordService.load({status: Status.ESCALATED});
+    this.recordService.load({status: Status.OTHER});
 
     this.route
       .queryParams

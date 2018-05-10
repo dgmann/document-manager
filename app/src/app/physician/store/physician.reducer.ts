@@ -1,5 +1,5 @@
 import {uniq, without} from 'lodash-es';
-import {RequiredAction} from "../../store";
+import {Status} from "../../store";
 import {PhysicianActions, PhysicianActionTypes} from './physician.actions';
 
 export interface State {
@@ -39,8 +39,10 @@ export function reducer(state = initialState, action: PhysicianActions): State {
         reviewIds: without(state.reviewIds, action.payload.id),
         otherIds: without(state.otherIds, action.payload.id),
       };
-      if (action.payload.requiredAction !== RequiredAction.NONE) {
-        change[action.payload.requiredAction + 'Ids'] = uniq([...state[action.payload.requiredAction + 'Ids'], action.payload.id]);
+      if (action.payload.status === Status.ESCALATED
+        || action.payload.status === Status.REVIEW
+        || action.payload.status === Status.OTHER) {
+        change[action.payload.status + 'Ids'] = uniq([...state[action.payload.status + 'Ids'], action.payload.id]);
       }
       return Object.assign({}, state, change);
 

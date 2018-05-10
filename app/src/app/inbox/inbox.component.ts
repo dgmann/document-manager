@@ -1,10 +1,10 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { includes, without } from 'lodash-es';
-import { DropEvent } from "ng-drag-drop";
-import { Observable } from "rxjs";
-import { map, take, withLatestFrom } from "rxjs/operators";
-import { Record, RecordService } from "../store";
-import { InboxService } from "./inbox.service";
+import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {includes, without} from 'lodash-es';
+import {DropEvent} from "ng-drag-drop";
+import {Observable} from "rxjs";
+import {map, take, withLatestFrom} from "rxjs/operators";
+import {Record, RecordService, Status} from "../store";
+import {InboxService} from "./inbox.service";
 
 @Component({
   selector: 'app-inbox',
@@ -23,7 +23,7 @@ export class InboxComponent implements OnInit{
   }
 
   ngOnInit() {
-    this.inboxService.load();
+    this.recordService.load({status: Status.INBOX});
     this.data = this.inboxService.all();
     this.selectedRecord = this.inboxService.getSelectedRecords()
       .pipe(map(records => records && records[0] || undefined));

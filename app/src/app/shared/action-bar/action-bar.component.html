@@ -7,11 +7,11 @@
     <mat-icon color="warn" aria-label="delete">delete</mat-icon>
     <span>Löschen</span>
   </button>
-  <button mat-menu-item fxFlex (click)="setRequiredAction('escalated')">
+  <button mat-menu-item fxFlex (click)="setStatus('escalated')">
     <mat-icon aria-label="escalate">arrow_upward</mat-icon>
     <span>Eskalieren</span>
   </button>
-  <button mat-menu-item fxFlex (click)="setRequiredAction('other')">
+  <button mat-menu-item fxFlex (click)="setStatus('other')">
     <mat-icon aria-label="other">shopping_basket</mat-icon>
     <span>Werbung</span>
   </button>

@@ -27,7 +27,7 @@
     <mat-cell fxFlex="40px" class="action-group" *matCellDef="let element">
       <app-action-menu [record]="element"
                        (deleteRecord)="deleteRecord($event)"
-                       (changeRequiredAction)="setRequiredAction($event)"
+                       (changeStatus)="setStatus($event)"
                        (editRecord)="openEditor($event)"></app-action-menu>
     </mat-cell>
   </ng-container>

@@ -70,8 +70,8 @@ export class DocumentListComponent implements OnInit, AfterViewInit {
     this.recordService.append(event.source.id, event.target.id);
   }
 
-  setRequiredAction(event) {
-    this.recordService.update(event.record.id, {requiredAction: event.action});
+  setStatus(event) {
+    this.recordService.update(event.record.id, {status: event.status});
   }
 
   editRecord(record: Record) {

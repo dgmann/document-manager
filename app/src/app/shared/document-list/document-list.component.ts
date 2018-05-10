@@ -15,7 +15,7 @@ import {DropEvent} from "ng-drag-drop";
 import {Observable} from "rxjs";
 
 
-import {Record, RecordService} from "../../store";
+import {Record, RecordService, Status} from "../../store";
 import {DocumentEditDialogComponent} from "../document-edit-dialog/document-edit-dialog.component";
 
 @Component({
@@ -83,12 +83,17 @@ export class DocumentListComponent implements OnInit, AfterViewInit {
       if (!result) {
         return;
       }
-      this.recordService.update(result.id, {
+      const changes = {
         patientId: result.patientId,
         date: result.date,
         tags: result.tags,
-        categoryId: result.categoryId
-      });
+        categoryId: result.categoryId,
+        status: undefined
+      };
+      if (changes.patientId && changes.date && changes.categoryId) {
+        changes.status = Status.REVIEW;
+      }
+      this.recordService.update(result.id, changes);
     });
   }
 

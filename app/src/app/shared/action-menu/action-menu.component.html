@@ -43,7 +43,7 @@
 </div>
 
 <div *ngIf="record.status == 'review'">
-  <button mat-icon-button (click)="$event.stopPropagation()">
+  <button mat-icon-button (click)="setStatus(record, 'done')">
     <mat-icon aria-label="done" color="green">done</mat-icon>
   </button>
 </div>

@@ -21,12 +21,14 @@ import {MatSortModule} from "@angular/material/sort";
 import {MatTableModule} from "@angular/material/table";
 import {NgDragDropModule} from "ng-drag-drop";
 import {NgxMatSelectSearchModule} from "ngx-mat-select-search";
+import {ActionBarComponent} from './action-bar/action-bar.component';
 import {ActionMenuComponent} from './action-menu/action-menu.component';
 import {AutocompleteChipsComponent} from "./autocomplete-chips/autocomplete-chips.component";
 import {AutocompleteInputComponent} from "./autocomplete-input/autocomplete-input.component";
 import {CategoryService} from "./category-service";
 import {DocumentEditDialogComponent} from "./document-edit-dialog/document-edit-dialog.component";
 import {DocumentListComponent} from "./document-list/document-list.component";
+import {EventSnackbarComponent} from "./event-snackbar/event-snackbar.component";
 import {ExternalApiService} from "./external-api.service";
 import {NotificationService} from "./notification-service";
 import {PatientSearchComponent} from './patient-search/patient-search.component';
@@ -34,7 +36,6 @@ import {RecordViewerComponent} from "./record-viewer/record-viewer.component";
 import {SplitPanelComponent} from './split-panel/split-panel.component';
 import {TagService} from "./tag-service";
 import {WebsocketService} from "./websocket-service";
-import { ActionBarComponent } from './action-bar/action-bar.component';
 
 
 @NgModule({
@@ -70,10 +71,12 @@ import { ActionBarComponent } from './action-bar/action-bar.component';
     AutocompleteInputComponent,
     AutocompleteChipsComponent,
     ActionMenuComponent,
-    ActionBarComponent
+    ActionBarComponent,
+    EventSnackbarComponent
   ],
   entryComponents: [
-    DocumentEditDialogComponent
+    DocumentEditDialogComponent,
+    EventSnackbarComponent
   ],
   exports: [
     CommonModule,

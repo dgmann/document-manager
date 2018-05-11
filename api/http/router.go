@@ -85,14 +85,14 @@ func Run(factory *Factory, c *shared.Config) {
 	router.GET("archive/:recordId", func(context *gin.Context) {
 		pdfs := factory.GetPDFRepository()
 		file, err := pdfs.Get(context.Param("recordId"))
-		defer file.Close()
 		if err != nil {
 			context.AbortWithError(404, err)
 			return
 		}
+		defer file.Close()
 		data, err := ioutil.ReadAll(file)
 		if err != nil {
-			context.AbortWithError(404, err)
+			context.AbortWithError(500, err)
 			return
 		}
 		context.Data(200, "application/pdf", data)

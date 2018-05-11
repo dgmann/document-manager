@@ -7,6 +7,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"os"
 	"github.com/dgmann/document-manager/api/services"
+	"github.com/bugsnag/bugsnag-go"
 	"github.com/Shopify/logrus-bugsnag"
 )
 

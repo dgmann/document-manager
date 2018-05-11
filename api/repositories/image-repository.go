@@ -113,7 +113,12 @@ func (f *FileSystemImageRepository) SetImage(recordId string, pageId string, ima
 
 func (f *FileSystemImageRepository) Delete(id string) error {
 	p := path.Join(f.directory, id)
-	return os.RemoveAll(p)
+	err := os.RemoveAll(p)
+	if !os.IsNotExist(err) {
+		return err
+	}
+	log.Infof("%s cannot be deleted as it does not exist", p)
+	return nil
 }
 
 func save(filePath string, img *shared.Image) error {

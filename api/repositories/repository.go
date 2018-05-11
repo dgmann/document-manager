@@ -8,15 +8,17 @@ import (
 type RepositoryConfig interface {
 	shared.DatabaseConfig
 	shared.RecordDirectoryConfig
+	shared.PDFDirectoryConfig
 }
 
 func NewRecordRepository(config RepositoryConfig, eventService *services.EventService) RecordRepository {
 	records := config.GetDatabase().C("records")
-	images := NewImageReporitory(config)
-	return newDBRecordRepository(records, images, eventService)
+	images := NewImageRepository(config)
+	pdfs := NewPDFRepository(config)
+	return newDBRecordRepository(records, images, pdfs, eventService)
 }
 
-func NewImageReporitory(config shared.RecordDirectoryConfig) ImageRepository {
+func NewImageRepository(config shared.RecordDirectoryConfig) ImageRepository {
 	return newFileSystemImageRepository(config.GetRecordDirectory())
 }
 
@@ -34,4 +36,8 @@ func NewCategoryRepository(config shared.DatabaseConfig) CategoryRepository {
 	categories := config.GetDatabase().C("categories")
 	records := config.GetDatabase().C("records")
 	return newDBCategoryRepository(categories, records)
+}
+
+func NewPDFRepository(config shared.PDFDirectoryConfig) PDFRepository {
+	return newFileSystemPDFRepository(config.GetPDFDirectory())
 }

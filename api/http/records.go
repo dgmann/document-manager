@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"strings"
 	"sync"
+	"io/ioutil"
 )
 
 func registerRecords(g *gin.RouterGroup, factory *Factory) {
@@ -59,13 +60,19 @@ func registerRecords(g *gin.RouterGroup, factory *Factory) {
 			}
 			log.WithFields(fields).Panic("Error opening PDF")
 		}
-		images, err := pdfProcessor.Convert(f)
+		fileBytes, err := ioutil.ReadAll(f)
 		if err != nil {
 			c.AbortWithError(400, err)
 			return
 		}
 
-		record, err := recordRepository.Create(sender, images)
+		images, err := pdfProcessor.Convert(bytes.NewBuffer(fileBytes))
+		if err != nil {
+			c.AbortWithError(400, err)
+			return
+		}
+
+		record, err := recordRepository.Create(sender, images, bytes.NewBuffer(fileBytes))
 		if err != nil {
 			c.AbortWithError(400, err)
 			return

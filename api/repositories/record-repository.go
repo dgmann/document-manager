@@ -7,13 +7,15 @@ import (
 	"github.com/globalsign/mgo/bson"
 	log "github.com/sirupsen/logrus"
 	"github.com/dgmann/document-manager/shared"
+	"io"
+	"io/ioutil"
 )
 
 type RecordRepository interface {
 	All() ([]*models.Record, error)
 	Find(id string) (*models.Record, error)
 	Query(query map[string]interface{}) ([]*models.Record, error)
-	Create(sender string, images []*shared.Image) (*models.Record, error)
+	Create(sender string, images []*shared.Image, pdfData io.Reader) (*models.Record, error)
 	Delete(id string) error
 	Update(id string, record models.Record) (*models.Record, error)
 	UpdatePages(id string, updates []*models.PageUpdate) (*models.Record, error)
@@ -23,9 +25,10 @@ type DBRecordRepository struct {
 	records *mgo.Collection
 	events  *services.EventService
 	images  ImageRepository
+	pdfs    PDFRepository
 }
 
-func newDBRecordRepository(records *mgo.Collection, images ImageRepository, eventService *services.EventService) *DBRecordRepository {
+func newDBRecordRepository(records *mgo.Collection, images ImageRepository, pdfs PDFRepository, eventService *services.EventService) *DBRecordRepository {
 	processedIndex := mgo.Index{
 		Key:        []string{"patientId", "-date", "tags"},
 		Unique:     false,
@@ -51,7 +54,7 @@ func newDBRecordRepository(records *mgo.Collection, images ImageRepository, even
 	if err != nil {
 		log.Panicf("Error setting indices %s", err)
 	}
-	return &DBRecordRepository{records: records, events: eventService, images: images}
+	return &DBRecordRepository{records: records, events: eventService, images: images, pdfs: pdfs}
 }
 
 func (r *DBRecordRepository) All() ([]*models.Record, error) {
@@ -83,7 +86,7 @@ func (r *DBRecordRepository) Query(query map[string]interface{}) ([]*models.Reco
 	return records, nil
 }
 
-func (r *DBRecordRepository) Create(sender string, images []*shared.Image) (*models.Record, error) {
+func (r *DBRecordRepository) Create(sender string, images []*shared.Image, pdfData io.Reader) (*models.Record, error) {
 	record := models.NewRecord(sender)
 	pages, err := r.images.Set(record.Id.Hex(), images)
 	if err != nil {
@@ -92,9 +95,22 @@ func (r *DBRecordRepository) Create(sender string, images []*shared.Image) (*mod
 	}
 	record.Pages = pages
 
+	pdfBytes, err := ioutil.ReadAll(pdfData)
+	if err != nil {
+		return nil, err
+	}
+	err = r.pdfs.Set(record.Id.Hex(), pdfBytes)
+	if err != nil {
+		e := r.images.Delete(record.Id.Hex())
+		log.Error(e)
+		return nil, err
+	}
+
 	if err := r.records.Insert(&record); err != nil {
-		log.Error(err)
-		r.images.Delete(record.Id.Hex())
+		e := r.images.Delete(record.Id.Hex())
+		log.Error(e)
+		e = r.pdfs.Delete(record.Id.Hex())
+		log.Error(e)
 		return nil, err
 	}
 	created, err := r.findByObjectId(record.Id)
@@ -107,12 +123,19 @@ func (r *DBRecordRepository) Create(sender string, images []*shared.Image) (*mod
 }
 
 func (r *DBRecordRepository) Delete(id string) error {
-	key := bson.ObjectIdHex(id)
-	err := r.records.RemoveId(key)
+	err := r.images.Delete(id)
 	if err != nil {
 		return err
 	}
-	err = r.images.Delete(id)
+
+	err = r.pdfs.Delete(id)
+	if err != nil {
+		return err
+	}
+
+	key := bson.ObjectIdHex(id)
+	err = r.records.RemoveId(key)
+
 	r.events.Send(services.EventDeleted, id)
 	return err
 }

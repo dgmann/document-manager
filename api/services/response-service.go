@@ -53,4 +53,5 @@ func SetURL(r *models.Record, url string, fileInfoService FileInfoService) {
 
 		r.Pages[i].Url = fmt.Sprintf("%s/records/%s/pages/%s?modified=%d", url, r.Id.Hex(), r.Pages[i].Id, modified.Unix())
 	}
+	r.ArchivedPDF = fmt.Sprintf("%s/archive/%s", url, r.Id.Hex())
 }

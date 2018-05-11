@@ -13,6 +13,7 @@ type Factory interface {
 	GetTagRepository() TagRepository
 	GetPatientRepository() PatientRepository
 	GetCategoryRepository() CategoryRepository
+	GetPDFRepository() PDFRepository
 }
 
 func NewFactory(config RepositoryConfig, eventService *services.EventService) Factory {
@@ -24,7 +25,7 @@ func (f *factory) GetRecordRepository() RecordRepository {
 }
 
 func (f *factory) GetImageRepository() ImageRepository {
-	return NewImageReporitory(f.config)
+	return NewImageRepository(f.config)
 }
 
 func (f *factory) GetTagRepository() TagRepository {
@@ -37,4 +38,8 @@ func (f *factory) GetPatientRepository() PatientRepository {
 
 func (f *factory) GetCategoryRepository() CategoryRepository {
 	return NewCategoryRepository(f.config)
+}
+
+func (f *factory) GetPDFRepository() PDFRepository {
+	return NewPDFRepository(f.config)
 }

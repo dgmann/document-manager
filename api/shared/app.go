@@ -2,12 +2,12 @@ package shared
 
 import (
 	"github.com/globalsign/mgo"
-	"github.com/bugsnag/bugsnag-go"
 )
 
 type Config struct {
 	Db              *mgo.Database
 	RecordDir       string
+	PDFDir          string
 	PdfProcessorUrl string
 	BaseUrl         string
 	Bugsnag         bugsnag.Configuration
@@ -33,6 +33,10 @@ type BugsnagConfig interface {
 	GetBugsnagConfig() bugsnag.Configuration
 }
 
+type PDFDirectoryConfig interface {
+	GetPDFDirectory() string
+}
+
 func (c *Config) GetDatabase() *mgo.Database {
 	return c.Db
 }
@@ -51,4 +55,8 @@ func (c *Config) GetBaseUrl() string {
 
 func (c *Config) GetBugsnagConfig() bugsnag.Configuration {
 	return c.Bugsnag
+}
+
+func (c *Config) GetPDFDirectory() string {
+	return c.PDFDir
 }

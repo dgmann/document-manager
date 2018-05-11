@@ -9,6 +9,7 @@ import (
 	"github.com/dgmann/document-manager/api/pdf"
 	"github.com/dgmann/document-manager/api/shared"
 	"github.com/bugsnag/bugsnag-go/gin"
+	"io/ioutil"
 )
 
 type Factory struct {
@@ -31,7 +32,7 @@ func (f *Factory) GetEventService() *services.EventService {
 }
 
 func NewFactory(config *shared.Config) *Factory {
-	fileInfoService := repositories.NewImageReporitory(config)
+	fileInfoService := repositories.NewImageRepository(config)
 	responseService := services.NewResponseService(config.GetBaseUrl(), fileInfoService)
 	eventService := services.NewEventService(responseService)
 	f := &Factory{
@@ -79,6 +80,22 @@ func Run(factory *Factory, c *shared.Config) {
 		}
 
 		context.JSON(200, tags)
+	})
+
+	router.GET("archive/:recordId", func(context *gin.Context) {
+		pdfs := factory.GetPDFRepository()
+		file, err := pdfs.Get(context.Param("recordId"))
+		defer file.Close()
+		if err != nil {
+			context.AbortWithError(404, err)
+			return
+		}
+		data, err := ioutil.ReadAll(file)
+		if err != nil {
+			context.AbortWithError(404, err)
+			return
+		}
+		context.Data(200, "application/pdf", data)
 	})
 
 	router.Run()

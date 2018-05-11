@@ -8,7 +8,6 @@ import (
 	"os"
 	"github.com/dgmann/document-manager/api/services"
 	"github.com/Shopify/logrus-bugsnag"
-	"github.com/bugsnag/bugsnag-go"
 )
 
 func init() {
@@ -41,6 +40,7 @@ func init() {
 
 func main() {
 	recordDir := envOrDefault("RECORD_DIR", "/records")
+	archiveDir := envOrDefault("ARCHIVE_DIR", "/archive")
 	dbHost := envOrDefault("DB_HOST", "localhost")
 	dbname := envOrDefault("DB_NAME", "manager")
 	pdfprocessorUrl := envOrDefault("PDFPROCESSOR_URL", "http://localhost:8181")
@@ -55,6 +55,7 @@ func main() {
 	config := &shared.Config{
 		Db:              session.DB(dbname),
 		RecordDir:       recordDir,
+		PDFDir:          archiveDir,
 		PdfProcessorUrl: pdfprocessorUrl,
 		BaseUrl:         baseUrl,
 		Bugsnag:         bugsnagConfig,

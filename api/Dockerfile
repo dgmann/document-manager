@@ -28,6 +28,6 @@ EXPOSE 80
 
 ENV DB_HOST=localhost DB_NAME=manager PORT=80 RECORD_DIR=/records
 
-VOLUME ["/records"]
+VOLUME ["/records", "/archive"]
 
 CMD ["/api"]

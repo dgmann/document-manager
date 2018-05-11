@@ -87,7 +87,7 @@ function addToStatus(records: StatusChange[], state: State) {
 }
 
 function clearIdsFromState(records: StatusChange[], state: State) {
-  const ids = records.filter(r => !!r.status).map(record => record.id);
+  const ids = records.map(record => record.id);
   const change = {
     inboxIds: without(state.inboxIds, ...ids),
     escalatedIds: without(state.escalatedIds, ...ids),

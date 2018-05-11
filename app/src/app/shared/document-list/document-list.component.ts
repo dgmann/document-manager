@@ -99,6 +99,9 @@ export class DocumentListComponent implements OnInit, AfterViewInit {
   }
 
   isSelected(selectedIds: string[], id: string) {
+    if (!id) {
+      return false;
+    }
     return includes(selectedIds, id);
   }
 

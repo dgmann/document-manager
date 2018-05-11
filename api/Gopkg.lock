@@ -9,7 +9,11 @@
 
 [[projects]]
   name = "github.com/bugsnag/bugsnag-go"
-  packages = [".","errors","gin"]
+  packages = [
+    ".",
+    "errors",
+    "gin"
+  ]
   revision = "f860f733c3d1c69181d9240eed266f94422fc99e"
   version = "v1.3.1"
 
@@ -57,14 +61,24 @@
 
 [[projects]]
   name = "github.com/gin-gonic/gin"
-  packages = [".","binding","render"]
+  packages = [
+    ".",
+    "binding",
+    "render"
+  ]
   revision = "d459835d2b077e44f7c9b453505ee29881d5d12d"
   version = "v1.2"
 
 [[projects]]
   branch = "master"
   name = "github.com/globalsign/mgo"
-  packages = [".","bson","internal/json","internal/sasl","internal/scram"]
+  packages = [
+    ".",
+    "bson",
+    "internal/json",
+    "internal/sasl",
+    "internal/scram"
+  ]
   revision = "efe0945164a7e582241f37ae8983c075f8f2e870"
 
 [[projects]]
@@ -124,7 +138,10 @@
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
-  packages = ["unix","windows"]
+  packages = [
+    "unix",
+    "windows"
+  ]
   revision = "7db1c3b1a98089d0071c84f646ff5c96aad43682"
 
 [[projects]]

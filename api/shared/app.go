@@ -2,6 +2,7 @@ package shared
 
 import (
 	"github.com/globalsign/mgo"
+	"github.com/bugsnag/bugsnag-go"
 )
 
 type Config struct {

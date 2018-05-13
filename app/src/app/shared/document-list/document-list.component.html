@@ -38,5 +38,5 @@
   <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="selectRow(row)" (dblclick)="editRecord(row)"
       [class.selected]="isSelected(selectedRecordIds, row && row.id)" draggable droppable [dragData]="row"
       [dragScope]="'record'"
-      [dropScope]="'record'" (onDrop)="drop(row, $event)"></tr>
+      [dropScope]="'record'" (onDrop)="drop(row, $event)" (drop)="$event.preventDefault()"></tr>
 </table>

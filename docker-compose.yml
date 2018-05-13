@@ -28,6 +28,14 @@ services:
     depends_on:
       - db
       - processor
+  app:
+    build: ./app
+    depends_on:
+      - api
+    ports:
+      - "80:80"
+    networks:
+      - backend
 
 networks:
   backend:

@@ -38,5 +38,6 @@ export enum Status {
   REVIEW = "review",
   ESCALATED = "escalated",
   OTHER = "other",
+  DONE = "done",
   NONE = ""
 }

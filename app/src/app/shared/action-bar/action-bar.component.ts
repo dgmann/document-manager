@@ -11,6 +11,8 @@ export class ActionBarComponent implements OnInit {
   @Input() recordIds: string[];
   @Output() selectAll = new EventEmitter<boolean>();
 
+  status = Status;
+
   constructor(private recordService: RecordService) { }
 
   ngOnInit() {

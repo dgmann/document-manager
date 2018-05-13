@@ -11,18 +11,18 @@
       <mat-icon aria-label="other">edit</mat-icon>
       <span>Editor</span>
     </button>
-    <button mat-menu-item (click)="setStatus(record, 'escalated')">
+    <button mat-menu-item (click)="setStatus(record, status.ESCALATED)">
       <mat-icon aria-label="escalate">arrow_upward</mat-icon>
       <span>Eskalieren</span>
     </button>
-    <button mat-menu-item (click)="setStatus(record, 'other')">
+    <button mat-menu-item (click)="setStatus(record, status.OTHER)">
       <mat-icon aria-label="other">shopping_basket</mat-icon>
       <span>Werbung</span>
     </button>
   </mat-menu>
 </div>
 
-<div *ngIf="record.status == 'escalated'">
+<div *ngIf="record.status == status.ESCALATED">
   <button mat-icon-button [matMenuTriggerFor]="menu">
     <mat-icon>more_vert</mat-icon>
   </button>
@@ -35,20 +35,20 @@
       <mat-icon aria-label="other">edit</mat-icon>
       <span>Editor</span>
     </button>
-    <button mat-menu-item (click)="setStatus(record, 'inbox')">
+    <button mat-menu-item (click)="setStatus(record, status.INBOX)">
       <mat-icon aria-label="deescalate">arrow_downward</mat-icon>
       <span>Deeskalieren</span>
     </button>
   </mat-menu>
 </div>
 
-<div *ngIf="record.status == 'review'">
-  <button mat-icon-button (click)="setStatus(record, 'done')">
+<div *ngIf="record.status == status.REVIEW">
+  <button mat-icon-button (click)="setStatus(record, status.DONE)">
     <mat-icon aria-label="done" color="green">done</mat-icon>
   </button>
 </div>
 
-<div *ngIf="record.status == 'other'">
+<div *ngIf="record.status == status.OTHER">
   <button mat-icon-button [matMenuTriggerFor]="menu">
     <mat-icon>more_vert</mat-icon>
   </button>
@@ -61,7 +61,7 @@
       <mat-icon aria-label="other">edit</mat-icon>
       <span>Editor</span>
     </button>
-    <button mat-menu-item (click)="setStatus(record, 'inbox')">
+    <button mat-menu-item (click)="setStatus(record, status.INBOX)">
       <mat-icon aria-label="deescalate">arrow_downward</mat-icon>
       <span>Inbox</span>
     </button>

@@ -13,6 +13,8 @@ export class ActionMenuComponent implements OnInit {
   @Output() changeStatus = new EventEmitter<{ record: Record, status: Status }>();
   @Output() editRecord = new EventEmitter<Record>();
 
+  status = Status;
+
   constructor() {
   }
 

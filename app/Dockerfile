@@ -11,3 +11,4 @@ RUN npm run build
 FROM nginx:alpine
 
 COPY --from=builder /build/dist /usr/share/nginx/html/
+ADD .docker/site.conf /etc/nginx/conf.d/default.conf

@@ -1,4 +1,4 @@
-import {Injectable} from "@angular/core";
+import {Injectable, NgZone} from "@angular/core";
 import {MatSnackBar} from "@angular/material";
 import {groupBy, map} from "lodash-es";
 import {Subject} from "rxjs";
@@ -10,7 +10,7 @@ import {EventSnackbarComponent} from "./event-snackbar/event-snackbar.component"
 export class NotificationService {
   private events = new Subject<NotificationEvent>();
 
-  constructor(public snackbar: MatSnackBar) {
+  constructor(public snackbar: MatSnackBar, private ngZone: NgZone) {
   }
 
   publish(event: NotificationEvent) {
@@ -22,29 +22,31 @@ export class NotificationService {
   }
 
   logToSnackBar() {
-    this.events
-      .pipe(bufferTime(500), filter(events => events && events.length > 0))
-      .subscribe(events => {
-        const grouped = groupBy(events, 'payload.type');
-        const messages = map(grouped, (group, key) => {
-          const word = group.length == 1 ? "Befund" : "Befunde";
-          if (key == ActionType.UPDATED) {
-            return new GenericEvent({timestamp: new Date(), message: `${group.length} ${word} geändert.`});
-          } else if (key == ActionType.ADDED) {
-            return new GenericEvent({timestamp: new Date(), message: `${group.length} ${word} hinzugefügt.`});
-          } else if (key == ActionType.DELETED) {
-            return new GenericEvent({timestamp: new Date(), message: `${group.length} ${word} gelöscht.`});
-          } else {
-            return new GenericEvent({timestamp: new Date(), message: group.map(g => g.payload.message).join(' ,')});
-          }
+    this.ngZone.runOutsideAngular(() => {
+      this.events
+        .pipe(bufferTime(500), filter(events => events && events.length > 0))
+        .subscribe(events => {
+          const grouped = groupBy(events, 'payload.type');
+          const messages = map(grouped, (group, key) => {
+            const word = group.length == 1 ? "Befund" : "Befunde";
+            if (key == ActionType.UPDATED) {
+              return new GenericEvent({timestamp: new Date(), message: `${group.length} ${word} geändert.`});
+            } else if (key == ActionType.ADDED) {
+              return new GenericEvent({timestamp: new Date(), message: `${group.length} ${word} hinzugefügt.`});
+            } else if (key == ActionType.DELETED) {
+              return new GenericEvent({timestamp: new Date(), message: `${group.length} ${word} gelöscht.`});
+            } else {
+              return new GenericEvent({timestamp: new Date(), message: group.map(g => g.payload.message).join(' ,')});
+            }
 
+          });
+
+          this.ngZone.run(() => this.snackbar.openFromComponent(EventSnackbarComponent, {
+            data: messages,
+            duration: 3000
+          }));
         });
-
-        this.snackbar.openFromComponent(EventSnackbarComponent, {
-          data: messages,
-          duration: 3000
-        })
-      });
+    });
   }
 }
 

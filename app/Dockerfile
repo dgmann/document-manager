@@ -1,7 +1,7 @@
 FROM node:latest as builder
 
 WORKDIR /build
-ADD package.json .
+ADD package*.json ./
 RUN npm install
 
 COPY . .

@@ -61,6 +61,7 @@ export class DocumentListComponent implements OnInit, AfterViewInit {
   }
 
   drop(source: Record, event: DropEvent) {
+    event.nativeEvent.preventDefault();
     this.appendRecord({
       source: source,
       target: event.dragData

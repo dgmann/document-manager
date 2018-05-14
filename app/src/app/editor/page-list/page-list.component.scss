@@ -3,7 +3,7 @@
 }
 
 .rotate-90 img {
-  transform: rotate(90deg);
+  transform: rotate(90deg) translate(20%, 0);
 }
 
 .rotate-180 img {
@@ -11,5 +11,5 @@
 }
 
 .rotate-270 img {
-  transform: rotate(270deg);
+  transform: rotate(270deg) translate(-20%, 0);
 }

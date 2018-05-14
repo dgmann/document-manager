@@ -4,4 +4,5 @@
 
 .scroll-column {
   overflow-y: auto;
+  will-change: transform;
 }

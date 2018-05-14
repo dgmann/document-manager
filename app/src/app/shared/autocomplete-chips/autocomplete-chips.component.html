@@ -1,7 +1,7 @@
 <mat-form-field fxFlexFill>
   <mat-chip-list #chips required>
     <mat-chip *ngFor="let tag of values" [selectable]="true"
-              [removable]="true" (remove)="remove(tag)">
+              [removable]="true" (removed)="remove(tag)">
       {{tag}}
       <mat-icon matChipRemove>cancel</mat-icon>
     </mat-chip>

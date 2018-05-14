@@ -20,4 +20,4 @@ export const selectInboxRecords = createSelector(selectInboxIds, selectRecordEnt
 export const selectEscalatedRecords = createSelector(selectEscalatedIds, selectRecordEntities, (ids: string[], records: Dictionary<Record>) => ids.map(id => records[id]));
 export const selectReviewRecords = createSelector(selectReviewIds, selectRecordEntities, (ids: string[], records: Dictionary<Record>) => ids.map(id => records[id]));
 export const selectOtherRecords = createSelector(selectOtherIds, selectRecordEntities, (ids: string[], records: Dictionary<Record>) => ids.map(id => records[id]));
-export const selectDoneIRecords = createSelector(selectDoneIds, selectRecordEntities, (ids: string[], records: Dictionary<Record>) => ids.map(id => records[id]));
+export const selectDoneRecords = createSelector(selectDoneIds, selectRecordEntities, (ids: string[], records: Dictionary<Record>) => ids.map(id => records[id]));

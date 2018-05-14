@@ -26,6 +26,7 @@ import {ActionMenuComponent} from './action-menu/action-menu.component';
 import {AutocompleteChipsComponent} from "./autocomplete-chips/autocomplete-chips.component";
 import {AutocompleteInputComponent} from "./autocomplete-input/autocomplete-input.component";
 import {CategoryService} from "./category-service";
+import {CommentDialogComponent} from './comment-dialog/comment-dialog.component';
 import {DocumentEditDialogComponent} from "./document-edit-dialog/document-edit-dialog.component";
 import {DocumentListComponent} from "./document-list/document-list.component";
 import {EventSnackbarComponent} from "./event-snackbar/event-snackbar.component";
@@ -72,11 +73,13 @@ import {WebsocketService} from "./websocket-service";
     AutocompleteChipsComponent,
     ActionMenuComponent,
     ActionBarComponent,
-    EventSnackbarComponent
+    EventSnackbarComponent,
+    CommentDialogComponent
   ],
   entryComponents: [
     DocumentEditDialogComponent,
-    EventSnackbarComponent
+    EventSnackbarComponent,
+    CommentDialogComponent
   ],
   exports: [
     CommonModule,

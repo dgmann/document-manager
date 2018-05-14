@@ -1,11 +1,10 @@
-import { createFeatureSelector, createSelector, MetaReducer } from '@ngrx/store';
-import { difference, includes } from 'lodash-es';
-import { environment } from '../../environments/environment';
-import { Record } from "../store";
-import { selectRecordEntities } from "../store/record/record.selectors";
-import { Patient } from "./store/patient.model";
+import {createFeatureSelector, createSelector, MetaReducer} from '@ngrx/store';
+import {difference, includes, intersection} from 'lodash-es';
+import {environment} from '../../environments/environment';
+import {Record, selectDoneIds, selectRecordEntities} from "../store";
+import {Patient} from "./store/patient.model";
 import * as fromPatient from './store/patient.reducer';
-import { Filter } from './store/patient.reducer';
+import {Filter} from './store/patient.reducer';
 
 export const reducers = fromPatient.reducer;
 export {State} from './store/patient.reducer';
@@ -20,7 +19,7 @@ export const selectPatientRecordIds = createSelector(selectFeature, selectSelect
   }
   return state.patientRecordMap[patient.id] || [];
 });
-export const selectPatientRecords = createSelector(selectPatientRecordIds, selectRecordEntities, (ids: string[], records) => ids.map(id => records[id]));
+export const selectPatientRecords = createSelector(selectPatientRecordIds, selectDoneIds, selectRecordEntities, (ids: string[], doneIds: string[], records) => intersection(ids, doneIds).map(id => records[id]));
 export const selectFilter = createSelector(selectFeature, (state: fromPatient.State) => state.filter);
 export const selectSelectedRecordId = createSelector(selectFeature, (state: fromPatient.State) => state.selectedRecordId);
 export const selectSelectedRecord = createSelector(selectSelectedRecordId, selectRecordEntities, (id: string, records) => records[id]);

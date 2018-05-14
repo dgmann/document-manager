@@ -16,6 +16,7 @@ import {Observable} from "rxjs";
 
 
 import {Record, RecordService, Status} from "../../store";
+import {CommentDialogComponent} from "../comment-dialog/comment-dialog.component";
 import {DocumentEditDialogComponent} from "../document-edit-dialog/document-edit-dialog.component";
 
 @Component({
@@ -73,7 +74,18 @@ export class DocumentListComponent implements OnInit, AfterViewInit {
   }
 
   setStatus(event) {
-    this.recordService.update(event.record.id, {status: event.status});
+    if (event.status == Status.ESCALATED
+      || (event.status == Status.INBOX && event.record.status == Status.ESCALATED)) {
+      this.dialog.open(CommentDialogComponent, {
+        disableClose: true,
+        data: event.record,
+        width: "635px"
+      }).afterClosed().subscribe((comment: string) => {
+        this.recordService.update(event.record.id, {status: event.status, comment: comment});
+      });
+    } else {
+      this.recordService.update(event.record.id, {status: event.status});
+    }
   }
 
   editRecord(record: Record) {

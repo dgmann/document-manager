@@ -22,6 +22,7 @@ func main() {
 	})
 	http.HandleFunc("/patient", func(w http.ResponseWriter, r *http.Request) {
 		j := json.NewEncoder(w)
+		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Content-Type", "application/json;charset=utf-8")
 
 		f, err := ioutil.ReadFile(*fileName)

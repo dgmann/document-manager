@@ -1,7 +1,7 @@
 <h2 mat-dialog-title>Informationen</h2>
 <mat-dialog-content>
   <div fxLayout="row" fxLayoutGap="10px">
-    <mat-form-field [hintLabel]="(patient.getSelectedPatient() | async).lastName">
+    <mat-form-field [hintLabel]="patient?.lastName + ', ' + patient?.firstName">
       <input matInput [tabindex]="tabIndex | async" [(ngModel)]="record.patientId" minlength="1"
              placeholder="Patientennummer" #patientId="ngModel" required>
     </mat-form-field>

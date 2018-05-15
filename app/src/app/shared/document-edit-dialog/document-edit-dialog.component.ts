@@ -1,24 +1,16 @@
-import {
-  AfterViewInit,
-  ChangeDetectionStrategy,
-  Component,
-  ElementRef,
-  Inject,
-  OnInit,
-  ViewChild
-} from '@angular/core';
-import { FormControl } from "@angular/forms";
-import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material";
+import {AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, Inject, OnInit, ViewChild} from '@angular/core';
+import {FormControl} from "@angular/forms";
+import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material";
 import * as moment from "moment";
-import { ReplaySubject } from "rxjs";
-import { take } from "rxjs/operators";
-import { Patient } from "../../patient";
+import {ReplaySubject} from "rxjs";
+import {shareReplay} from "rxjs/operators";
+import {Patient} from "../../patient";
 
 
-import { Record } from "../../store";
-import { CategoryService } from "../category-service";
-import { ExternalApiService } from "../external-api.service";
-import { TagService } from "../tag-service";
+import {Record} from "../../store";
+import {CategoryService} from "../category-service";
+import {ExternalApiService} from "../external-api.service";
+import {TagService} from "../tag-service";
 
 
 @Component({
@@ -32,19 +24,22 @@ export class DocumentEditDialogComponent implements AfterViewInit, OnInit {
   public record: Record;
   public tabIndex = new ReplaySubject<number>();
   public categoryFormControl: FormControl;
+  public patient: Patient;
 
   constructor(public dialogRef: MatDialogRef<DocumentEditDialogComponent>,
               @Inject(MAT_DIALOG_DATA) record: Record,
-              public patient: ExternalApiService,
+              public patientService: ExternalApiService,
               public tagsService: TagService,
               public categoryService: CategoryService) {
+    let patientRequest = this.patientService.getSelectedPatient().pipe(shareReplay());
+    patientRequest.subscribe(p => this.patient = p);
     this.record = Object.assign({}, record);
     if (!this.record.date) {
       this.record.date = moment();
     }
     this.record.tags = record.tags.slice();
     if (!this.record.patientId) {
-      this.patient.getSelectedPatient().pipe(take(1)).subscribe((patient: Patient) => this.record.patientId = this.record.patientId || patient.id);
+      patientRequest.subscribe(p => this.record.patientId = p.id);
     }
     if (this.record.patientId && this.record.date) {
       this.tabIndex.next(-1);

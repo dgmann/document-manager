@@ -1,17 +1,18 @@
+import {HttpClient} from "@angular/common/http";
 import {Injectable} from "@angular/core";
 import {ReplaySubject} from "rxjs";
-import {Patient} from "../patient/store/patient.model";
+import {Patient} from "../patient";
 
 @Injectable()
 export class ExternalApiService {
   private current: ReplaySubject<Patient>;
 
-  constructor() {
+  constructor(private http: HttpClient) {
     this.current = new ReplaySubject<Patient>();
     this.current.next({id: "3", firstName: "John", lastName: "Doe", birthDate: new Date()});
   }
 
   getSelectedPatient() {
-    return this.current.asObservable();
+    return this.http.get<Patient>("http://localhost:3000/patient");
   }
 }

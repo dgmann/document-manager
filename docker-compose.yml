@@ -31,6 +31,10 @@ services:
       - processor
   app:
     build: ./app
+    environment:
+      - API_URL=http://localhost:8080
+      - WS_URL=ws://localhost:8080/notifications
+      - BUGSNAG_KEY=44bd0ddb1369a54aa3cfa44bdf04f21c
     depends_on:
       - api
     ports:

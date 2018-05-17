@@ -8,12 +8,12 @@ RUN apt-get update && \
 	./configure && \
 	make && make install && \
 	cd && rm -rf libwebp-0.4.2 && \
-	wget http://www.imagemagick.org/download/ImageMagick-7.0.7-31.tar.gz && \
-	tar xvzf ImageMagick-7.0.7-31.tar.gz && rm ImageMagick-7.0.7-31.tar.gz && \
-	cd ImageMagick-* && \
+	wget http://www.imagemagick.org/download/ImageMagick.tar.gz && \
+	tar xvzf ImageMagick.tar.gz && rm ImageMagick.tar.gz && \
+	cd ImageMagick* && \
 	./configure && \
 	make && make install && \
-	cd && rm -rf ImageMagick-* && \
+	cd && rm -rf ImageMagick* && \
 	ldconfig /usr/local/lib && \
 	rm -rf /var/lib/apt/lists/* && \
 	wget -O /usr/local/bin/dep https://github.com/golang/dep/releases/download/v0.4.1/dep-linux-amd64 && chmod +x /usr/local/bin/dep

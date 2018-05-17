@@ -6,7 +6,14 @@ import (
 	"github.com/dgmann/document-manager/m1-helper/m1"
 	"io/ioutil"
 	"flag"
+	"github.com/gorilla/websocket"
+	"log"
 )
+
+var upgrader = websocket.Upgrader{
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
+}
 
 func main() {
 	fileName := flag.String("f", "", "BDT file containing current patient")
@@ -18,7 +25,17 @@ func main() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("BDT file path: " + *fileName))
 	})
-	http.HandleFunc("/websocket", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/control", func(w http.ResponseWriter, r *http.Request) {
+		conn, err := upgrader.Upgrade(w, r, nil)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		conn.WriteJSON(struct {
+			command string
+		}{
+			command: "navigate",
+		})
 	})
 	http.HandleFunc("/patient", func(w http.ResponseWriter, r *http.Request) {
 		j := json.NewEncoder(w)

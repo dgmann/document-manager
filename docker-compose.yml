@@ -41,6 +41,29 @@ services:
       - "80:80"
     networks:
       - backend
+  fax_watcher:
+    build: ./directory-watcher
+    environment:
+      - DESTINATION=http://api
+      - PARSER=fax
+    depends_on:
+      - api
+    networks:
+      - backend
+    volumes:
+      - "./fax:/records"
+  scan_watcher:
+      build: ./directory-watcher
+      environment:
+        - DESTINATION=http://api
+        - PARSER=generic
+        - SENDER=Scan
+      depends_on:
+        - api
+      networks:
+        - backend
+      volumes:
+        - "./scan:/records"
 
 networks:
   backend:

@@ -28,3 +28,8 @@
 .mat-row:hover {
   background-color: $accent-lighter;
 }
+
+.mat-cell {
+  padding-right: 5px;
+  padding-left: 5px;
+}

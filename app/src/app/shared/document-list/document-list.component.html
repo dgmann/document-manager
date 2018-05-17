@@ -2,41 +2,41 @@
        matSort matSortActive="receivedAt" matSortDirection="desc" matSortDisableClear>
 
   <ng-container matColumnDef="receivedAt">
-    <th mat-header-cell fxFlex="150px" *matHeaderCellDef mat-sort-header start="desc"> Datum</th>
-    <td mat-cell fxFlex="150px" *matCellDef="let element"> {{element.receivedAt | date:'short'}}</td>
+    <mat-header-cell fxFlex="0 0 130px" *matHeaderCellDef mat-sort-header start="desc"> Datum</mat-header-cell>
+    <mat-cell fxFlex="0 0 130px" *matCellDef="let element"> {{element.receivedAt | date:'short'}}</mat-cell>
   </ng-container>
 
   <ng-container matColumnDef="sender">
-    <th mat-header-cell fxFlex="70px" *matHeaderCellDef mat-sort-header> Sender</th>
-    <td mat-cell fxFlex="70px" *matCellDef="let element"> {{element.sender}}</td>
+    <mat-header-cell fxFlex *matHeaderCellDef mat-sort-header> Sender</mat-header-cell>
+    <mat-cell fxFlex *matCellDef="let element"> {{element.sender}}</mat-cell>
   </ng-container>
 
   <ng-container matColumnDef="numpages">
-    <th mat-header-cell fxFlex="50px" *matHeaderCellDef> Seiten</th>
-    <td mat-cell fxFlex="50px" *matCellDef="let element"> {{element.pages.length}}</td>
+    <mat-header-cell fxFlex="0 0 50px" *matHeaderCellDef> Seiten</mat-header-cell>
+    <mat-cell fxFlex="0 0 50px" *matCellDef="let element"> {{element.pages.length}}</mat-cell>
   </ng-container>
 
   <ng-container matColumnDef="comment">
-    <th mat-header-cell *matHeaderCellDef> Kommentar</th>
-    <td mat-cell *matCellDef="let element" [matTooltip]="element.comment"> {{ (element.comment.length>6)?
+    <mat-header-cell fxFlex *matHeaderCellDef> Kommentar</mat-header-cell>
+    <mat-cell fxFlex *matCellDef="let element" [matTooltip]="element.comment"> {{ (element.comment.length>6)?
       (element.comment
       | slice:0:12)+'...':(element.comment)}}
-    </td>
+    </mat-cell>
   </ng-container>
 
   <ng-container matColumnDef="actions">
-    <th mat-header-cell fxFlex="40px" *matHeaderCellDef></th>
-    <td mat-cell fxFlex="40px" class="action-group" *matCellDef="let element">
+    <mat-header-cell fxFlex="0 0 50px" *matHeaderCellDef></mat-header-cell>
+    <mat-cell fxFlex="0 0 50px" class="action-group" *matCellDef="let element">
       <app-action-menu [record]="element"
                        (deleteRecord)="deleteRecord($event)"
                        (changeStatus)="setStatus($event)"
                        (editRecord)="openEditor($event)"></app-action-menu>
-    </td>
+    </mat-cell>
   </ng-container>
 
-  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-  <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="selectRow(row)" (dblclick)="editRecord(row)"
-      [class.selected]="isSelected(selectedRecordIds, row && row.id)" draggable droppable [dragData]="row"
-      [dragScope]="'record'"
-      [dropScope]="'record'" (onDrop)="drop(row, $event)" (drop)="$event.preventDefault()"></tr>
+  <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+  <mat-header-row *matRowDef="let row; columns: displayedColumns;" (click)="selectRow(row)" (dblclick)="editRecord(row)"
+                  [class.selected]="isSelected(selectedRecordIds, row && row.id)" draggable droppable [dragData]="row"
+                  [dragScope]="'record'"
+                  [dropScope]="'record'" (onDrop)="drop(row, $event)" (drop)="$event.preventDefault()"></mat-header-row>
 </table>

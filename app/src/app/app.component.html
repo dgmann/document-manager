@@ -10,7 +10,7 @@
         <div fxFlex="1 1 auto">
           <router-outlet name="navigation"></router-outlet>
         </div>
-        <app-patient-search (selectPatient)="onSelectPatient($event)"></app-patient-search>
+        <app-patient-search fxShow fxHide.lt-sm (selectPatient)="onSelectPatient($event)"></app-patient-search>
       </div>
     </mat-toolbar>
   </div>

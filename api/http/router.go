@@ -35,6 +35,7 @@ func NewFactory(config *shared.Config) *Factory {
 	fileInfoService := repositories.NewImageRepository(config)
 	responseService := services.NewResponseService(config.GetBaseUrl(), fileInfoService)
 	eventService := services.NewEventService(responseService)
+	eventService.Log()
 	f := &Factory{
 		Factory:         repositories.NewFactory(config, eventService),
 		pdfProcessorUrl: config.GetPdfProcessorUrl(),

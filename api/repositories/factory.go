@@ -17,6 +17,7 @@ type Factory interface {
 }
 
 func NewFactory(config RepositoryConfig, eventService *services.EventService) Factory {
+	//Something here consumes resources while idle. Config?
 	return &factory{config: config, eventService: eventService}
 }
 

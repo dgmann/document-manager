@@ -64,6 +64,8 @@ services:
         - backend
       volumes:
         - "./scan:/records"
+  m1-adapter:
+      build: ./m1-adapter
 
 networks:
   backend:

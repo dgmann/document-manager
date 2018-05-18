@@ -1,0 +1,12 @@
+version=12.1
+build=client64
+
+libdir=/usr/local/oracle/lib/oracle/12.2/client64/lib
+includedir=/usr/local/oracle/include/oracle/$ORACLE_INSTANTCLIENT_MAJOR/client64
+
+Name: oci8
+Description: Oracle database engine
+Version: ${version}
+Libs: -L${libdir} -lclntsh
+Libs.private:
+Cflags: -I${includedir}

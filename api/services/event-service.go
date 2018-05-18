@@ -26,7 +26,10 @@ type Event struct {
 }
 
 func NewEventService(responseService *ResponseService) *EventService {
-	e := &EventService{ps: pubsub.New(300), responseService: responseService}
+	return &EventService{ps: pubsub.New(300), responseService: responseService}
+}
+
+func (e *EventService) Log() {
 	go func() {
 		c := e.Subscribe(EventCreated, EventDeleted, EventUpdated)
 		for event := range c {
@@ -38,7 +41,6 @@ func NewEventService(responseService *ResponseService) *EventService {
 			}).Info("New Event")
 		}
 	}()
-	return e
 }
 
 func (e *EventService) Send(t EventType, data interface{}) {

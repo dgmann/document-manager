@@ -11,8 +11,9 @@ RUN npm run build
 FROM nginx:alpine
 
 COPY --from=builder /build/dist /usr/share/nginx/html/
-ADD .docker/site.conf /etc/nginx/conf.d/default.conf
-ADD .docker/run.sh /run.sh
+COPY .docker/site.conf /etc/nginx/conf.d/default.conf
+COPY .docker/nginx.conf /etc/nginx/nginx.conf
+COPY .docker/run.sh /run.sh
 
 ENV API_URL=http://localhost:8080 WS_URL=ws://localhost:8080/notifications BUGSNAG_KEY=notset
 

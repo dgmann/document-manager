@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/api/api.iml" filepath="$PROJECT_DIR$/api/api.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/directory-watcher/directory-watcher.iml" filepath="$PROJECT_DIR$/directory-watcher/directory-watcher.iml" />
+      <module fileurl="file://$PROJECT_DIR$/m1-adapter/m1-adapter.iml" filepath="$PROJECT_DIR$/m1-adapter/m1-adapter.iml" />
       <module fileurl="file://$PROJECT_DIR$/m1-helper/m1-helper.iml" filepath="$PROJECT_DIR$/m1-helper/m1-helper.iml" />
       <module fileurl="file://$PROJECT_DIR$/pdf-processor/pdf-processor.iml" filepath="$PROJECT_DIR$/pdf-processor/pdf-processor.iml" />
       <module fileurl="file://$PROJECT_DIR$/shared/shared.iml" filepath="$PROJECT_DIR$/shared/shared.iml" />

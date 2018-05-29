@@ -11,11 +11,13 @@ import (
 
 func main() {
 	argsWithoutProg := os.Args[1:]
-	command := argsWithoutProg[0]
+	command := argsWithoutProg[len(argsWithoutProg)-1]
 	if command == "database" {
 		loadDatabaseRecords()
 	} else if command == "filesystem" {
 		loadFileSystem()
+	} else {
+		println("Please specify a command. Available commands: database, filesystem")
 	}
 }
 
@@ -59,10 +61,10 @@ func loadFileSystem() {
 	manager := record.NewManager(recordDirectory)
 	index, err := manager.CreateFileIndex()
 	if err != nil {
-		println(err)
-	} else {
-		fmt.Println(index)
+		fmt.Println(err)
+		return
 	}
+	fmt.Println(index)
 	println("Patient count: ", index.TotalPatientCount)
 	println("Record count: ", index.TotalRecordCount)
 }

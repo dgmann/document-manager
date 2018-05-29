@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"path/filepath"
 	"os"
+	"github.com/pkg/errors"
 )
 
 type Manager struct {
@@ -17,6 +18,10 @@ func NewManager(dir string) *Manager {
 
 func (m *Manager) CreateFileIndex() (*FileSystemIndex, error) {
 	var files []*Record
+	if _, err := os.Stat(m.directory); os.IsNotExist(err) {
+		return nil, errors.Wrap(err, "directory to index does not exist")
+	}
+
 	err := filepath.Walk(m.directory, func(path string, info os.FileInfo, err error) error {
 		if info.IsDir() {
 			return err

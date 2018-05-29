@@ -3,20 +3,31 @@ package main
 import (
 	"net/url"
 	"github.com/dgmann/document-manager/migrator/databasereader"
+	"os"
 	"flag"
+	"github.com/dgmann/document-manager/migrator/record"
+	"fmt"
 )
 
-var username, password, hostname, instance string
+func main() {
+	argsWithoutProg := os.Args[1:]
+	command := argsWithoutProg[0]
+	if command == "database" {
+		loadDatabaseRecords()
+	} else if command == "filesystem" {
+		loadFileSystem()
+	}
+}
 
-func init() {
+func loadDatabaseRecords() {
+	var username, password, hostname, instance string
+
 	flag.StringVar(&username, "u", "", "Database username")
 	flag.StringVar(&password, "p", "", "Database password")
 	flag.StringVar(&hostname, "h", "", "Database hostname")
 	flag.StringVar(&instance, "i", "SQLExpress", "Database instance name")
 	flag.Parse()
-}
 
-func main() {
 	u := &url.URL{
 		Scheme: "sqlserver",
 		User:   url.UserPassword(username, password),
@@ -31,9 +42,27 @@ func main() {
 	}
 	defer manager.Close()
 
-	records, err := manager.Load()
+	index, err := manager.Load()
 	if err != nil {
 		println("Error loading from database", err.Error())
 	}
-	println("Patient count: ", len(records))
+	println("Patient count: ", index.TotalPatientCount)
+	println("Record count: ", index.TotalRecordCount)
+}
+
+func loadFileSystem() {
+	var recordDirectory string
+
+	flag.StringVar(&recordDirectory, "d", "", "Record Directory")
+	flag.Parse()
+
+	manager := record.NewManager(recordDirectory)
+	index, err := manager.CreateFileIndex()
+	if err != nil {
+		println(err)
+	} else {
+		fmt.Println(index)
+	}
+	println("Patient count: ", index.TotalPatientCount)
+	println("Record count: ", index.TotalRecordCount)
 }

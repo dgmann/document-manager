@@ -24,7 +24,7 @@ func (m *Manager) Close() {
 	m.db.Close()
 }
 
-func (m *Manager) Load() (PatientCategoryRecordMap, error) {
+func (m *Manager) Load() (*DatabaseIndex, error) {
 	records, err := m.loadRecords()
 	if err != nil {
 		return nil, err
@@ -37,7 +37,8 @@ func (m *Manager) Load() (PatientCategoryRecordMap, error) {
 	if err != nil {
 		return nil, err
 	}
-	return groupByPatient(merged), nil
+	index := NewDatabaseIndex(groupByPatient(merged))
+	return index, nil
 }
 
 func (m *Manager) loadRecords() ([]*Record, error) {
@@ -56,7 +57,8 @@ func (m *Manager) loadRecords() ([]*Record, error) {
 func (m *Manager) loadPdfs() ([]*PdfFile, error) {
 	var pdfs []*PdfFile
 
-	query := `select pdf.Id, pdf.Timestamp, pdf.Date, pdf.State, pdf.SenderNr, pdf.Befund_Id from PdfDatabase.dbo.PdfFiles as pdf`
+	query := `select pdf.Id, pdf.Name, pdf.Timestamp, pdf.Date, pdf.State, pdf.SenderNr, pdf.Befund_Id, pdf.Pat_Id, type.Name as Type from PdfDatabase.dbo.PdfFiles as pdf
+			  JOIN PdfDatabase.dbo.Type as type ON pdf.Type_Id = type.Id`
 	err := m.db.Select(&pdfs, query)
 	if err != nil {
 		return nil, errors.Wrap(err, "error loading pdfs")
@@ -69,14 +71,22 @@ func mergeRecordsAndPdfs(records []*Record, pdfs []*PdfFile) (map[int]*Record, e
 	var err error
 	for _, pdf := range pdfs {
 		if pdf.BefundId == nil {
-			err = errors.Wrap(err, fmt.Sprintf("cannot assign pdf %d to any record. its record id is not set", pdf.Id))
+			err = wrapError(err, fmt.Sprintf("cannot assign pdf %d to any record. its record id is not set", pdf.Id))
 		} else if record, ok := idMap[*pdf.BefundId]; ok {
 			record.PdfFiles = append(record.PdfFiles, pdf)
 		} else {
-			err = errors.Wrap(err, fmt.Sprintf("cannot assign pdf %d to any record", pdf.Id))
+			err = wrapError(err, fmt.Sprintf("cannot assign pdf %d to any record", pdf.Id))
 		}
 	}
 	return idMap, err
+}
+
+func wrapError(err error, msg string) error {
+	if err == nil {
+		return errors.New(msg)
+	} else {
+		return errors.Wrap(err, msg)
+	}
 }
 
 func createIdMap(records []*Record) map[int]*Record {

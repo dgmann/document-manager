@@ -5,7 +5,7 @@ import (
 	"github.com/dgmann/document-manager/migrator/databasereader"
 	"os"
 	"flag"
-	"github.com/dgmann/document-manager/migrator/record"
+	"github.com/dgmann/document-manager/migrator/filesystem"
 	"fmt"
 )
 
@@ -46,10 +46,11 @@ func loadDatabaseRecords() {
 
 	index, err := manager.Load()
 	if err != nil {
-		println("Error loading from database", err.Error())
+		fmt.Println("Error loading from database: ", err)
+		return
 	}
-	println("Patient count: ", index.TotalPatientCount)
-	println("Record count: ", index.TotalRecordCount)
+	println("Patient count: ", index.GetTotalPatientCount())
+	println("Record count: ", index.GetTotalPatientCount())
 }
 
 func loadFileSystem() {
@@ -58,13 +59,14 @@ func loadFileSystem() {
 	flag.StringVar(&recordDirectory, "d", "", "Record Directory")
 	flag.Parse()
 
-	manager := record.NewManager(recordDirectory)
-	index, err := manager.CreateFileIndex()
+	index, err := filesystem.CreateIndex(recordDirectory)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
+	defer index.Destroy()
+
 	fmt.Println(index)
-	println("Patient count: ", index.TotalPatientCount)
-	println("Record count: ", index.TotalRecordCount)
+	println("Patient count: ", index.GetTotalPatientCount())
+	println("Record count: ", index.GetTotalCategorizableCount())
 }

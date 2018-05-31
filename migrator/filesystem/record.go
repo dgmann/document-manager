@@ -1,22 +1,18 @@
-package record
+package filesystem
 
 import (
 	"strings"
 	"path/filepath"
 	"github.com/pkg/errors"
-	"fmt"
 	"strconv"
+	"github.com/dgmann/document-manager/migrator/shared"
+	"github.com/dgmann/document-manager/migrator/splitter"
+	"os"
 )
 
 type Record struct {
-	Name           string
-	Path           string
-	Spezialization string
-	PatId          int
-}
-
-func (r *Record) String() string {
-	return fmt.Sprintf("%s, %s: %s", r.PatId, r.Spezialization, r.Path)
+	*shared.Record
+	splittedPdfDir string
 }
 
 func NewRecordFromPath(path string) (*Record, error) {
@@ -32,10 +28,22 @@ func NewRecordFromPath(path string) (*Record, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "cannot convert patId to integer: "+path)
 	}
-	return &Record{
+	r := &shared.Record{
 		Name:           fileName,
 		Path:           path,
 		Spezialization: spezialization,
 		PatId:          patId,
-	}, nil
+	}
+	return &Record{Record: r}, nil
+}
+
+func (r *Record) LoadSubRecords() error {
+	subrecords, tmpDir, err := splitter.Split(r.Path)
+	r.SubRecords = subrecords
+	r.splittedPdfDir = tmpDir
+	return err
+}
+
+func (r *Record) Close() error {
+	return os.RemoveAll(r.splittedPdfDir)
 }

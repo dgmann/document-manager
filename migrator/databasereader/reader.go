@@ -5,6 +5,8 @@ import (
 	"github.com/pkg/errors"
 	_ "github.com/denisenkom/go-mssqldb"
 	"fmt"
+	"github.com/dgmann/document-manager/migrator/shared"
+	log "github.com/sirupsen/logrus"
 )
 
 type Manager struct {
@@ -24,7 +26,7 @@ func (m *Manager) Close() {
 	m.db.Close()
 }
 
-func (m *Manager) Load() (*DatabaseIndex, error) {
+func (m *Manager) Load() (*shared.Index, error) {
 	records, err := m.loadRecords()
 	if err != nil {
 		return nil, err
@@ -35,14 +37,15 @@ func (m *Manager) Load() (*DatabaseIndex, error) {
 	}
 	merged, err := mergeRecordsAndPdfs(records, pdfs)
 	if err != nil {
-		return nil, err
+		log.WithField("error", err).Warning("There were errors assigning pdfs to records. This may happen for example when there are unprocessed pdfs in the inbox")
 	}
-	index := NewDatabaseIndex(groupByPatient(merged))
+	slice := toSlice(merged)
+	index := shared.NewIndex(slice)
 	return index, nil
 }
 
-func (m *Manager) loadRecords() ([]*Record, error) {
-	var records []*Record
+func (m *Manager) loadRecords() ([]*shared.Record, error) {
+	var records []*shared.Record
 
 	query := `select befund.Id, befund.Pat_Id, spez.Name as Category from PdfDatabase.dbo.Befund as befund
 			  JOIN PdfDatabase.dbo.Spezialisations as spez ON befund.Spezialisation_Id = spez.Id
@@ -66,44 +69,33 @@ func (m *Manager) loadPdfs() ([]*PdfFile, error) {
 	return pdfs, nil
 }
 
-func mergeRecordsAndPdfs(records []*Record, pdfs []*PdfFile) (map[int]*Record, error) {
+func mergeRecordsAndPdfs(records []*shared.Record, pdfs []*PdfFile) (map[int]*shared.Record, error) {
 	idMap := createIdMap(records)
 	var err error
 	for _, pdf := range pdfs {
 		if pdf.BefundId == nil {
-			err = wrapError(err, fmt.Sprintf("cannot assign pdf %d to any record. its record id is not set", pdf.Id))
+			err = shared.WrapError(err, fmt.Sprintf("cannot assign pdf %d to any record. its record id is not set.", pdf.Id))
 		} else if record, ok := idMap[*pdf.BefundId]; ok {
-			record.PdfFiles = append(record.PdfFiles, pdf)
+			record.SubRecords = append(record.SubRecords, pdf.AsSubRecord())
 		} else {
-			err = wrapError(err, fmt.Sprintf("cannot assign pdf %d to any record", pdf.Id))
+			err = shared.WrapError(err, fmt.Sprintf("cannot assign pdf %d to any record", pdf.Id))
 		}
 	}
 	return idMap, err
 }
 
-func wrapError(err error, msg string) error {
-	if err == nil {
-		return errors.New(msg)
-	} else {
-		return errors.Wrap(err, msg)
-	}
-}
-
-func createIdMap(records []*Record) map[int]*Record {
-	idMap := make(map[int]*Record)
+func createIdMap(records []*shared.Record) map[int]*shared.Record {
+	idMap := make(map[int]*shared.Record)
 	for _, record := range records {
 		idMap[record.Id] = record
 	}
 	return idMap
 }
 
-func groupByPatient(records map[int]*Record) map[int]RecordsByCategory {
-	patientMap := make(map[int]RecordsByCategory)
-	for _, record := range records {
-		if patientMap[record.PatId] == nil {
-			patientMap[record.PatId] = make(RecordsByCategory)
-		}
-		patientMap[record.PatId][record.Category] = record
+func toSlice(records map[int]*shared.Record) []shared.Categorizable {
+	v := make([]shared.Categorizable, 0, len(records))
+	for _, value := range records {
+		v = append(v, value)
 	}
-	return patientMap
+	return v
 }

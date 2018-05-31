@@ -37,7 +37,7 @@ func (e *EventService) Log() {
 			log.WithFields(log.Fields{
 				"Type":      e.Type,
 				"Timestamp": e.Timestamp,
-				"Data":      e.Data,
+				"data":      e.Data,
 			}).Info("New Event")
 		}
 	}()

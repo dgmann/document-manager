@@ -39,6 +39,12 @@ func (r *Record) String() string {
 	return fmt.Sprintf("%s, %s: %s", r.PatId, r.Spezialization, r.Path)
 }
 
+func (r *Record) Equals(record *Record) bool {
+	return r.PatId == record.PatId &&
+		r.Spezialization == record.Spezialization &&
+		r.Name == record.Name
+}
+
 type SubRecord struct {
 	Id            int        `db:"Id"`
 	Name          string     `db:"Name"`

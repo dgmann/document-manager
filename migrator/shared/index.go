@@ -17,6 +17,10 @@ func NewIndex(records []Categorizable) *Index {
 	return &Index{data: index}
 }
 
+func (i *Index) GetPatient(id int) *PatientIndex {
+	return i.data[id]
+}
+
 func (i *Index) GetAllCategorizable() []Categorizable {
 	var records []Categorizable
 	for _, patient := range i.data {

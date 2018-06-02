@@ -3,25 +3,62 @@ package main
 import (
 	"net/url"
 	"github.com/dgmann/document-manager/migrator/databasereader"
-	"os"
 	"flag"
 	"github.com/dgmann/document-manager/migrator/filesystem"
+	"github.com/dgmann/document-manager/migrator/shared"
+	"github.com/pkg/errors"
+	"github.com/dgmann/document-manager/migrator/validator"
 	"fmt"
 )
 
 func main() {
-	argsWithoutProg := os.Args[1:]
-	command := argsWithoutProg[len(argsWithoutProg)-1]
-	if command == "database" {
-		loadDatabaseRecords()
-	} else if command == "filesystem" {
-		loadFileSystem()
-	} else {
-		println("Please specify a command. Available commands: database, filesystem")
+	databaseIndex, filesystemIndex, err := load()
+	if err != nil {
+		fmt.Printf("Error: %s", err)
+	}
+	err = validator.Validate(filesystemIndex, databaseIndex)
+	if err != nil {
+		fmt.Printf("Validation error: %s", err)
 	}
 }
 
-func loadDatabaseRecords() {
+func load() (*databasereader.Index, *filesystem.Index, error) {
+	errorChan := make(chan error, 2)
+	databaseIndexChan := make(chan *databasereader.Index, 1)
+	filesystemIndexChan := make(chan *filesystem.Index, 1)
+
+	go func() {
+		index, err := loadDatabaseRecords()
+		if err != nil {
+			errorChan <- errors.Wrap(err, "error loading from database")
+		}
+		databaseIndexChan <- index
+	}()
+
+	go func() {
+		index, err := loadFileSystem()
+		if err != nil {
+			errorChan <- errors.Wrap(err, "error loading from filesystem")
+		}
+		filesystemIndexChan <- index
+	}()
+
+	databaseIndex := <-databaseIndexChan
+	filesystemIndex := <-filesystemIndexChan
+
+	close(errorChan)
+	close(databaseIndexChan)
+	close(filesystemIndexChan)
+
+	var err error
+	for e := range errorChan {
+		err = shared.WrapError(err, e.Error())
+	}
+
+	return databaseIndex, filesystemIndex, err
+}
+
+func loadDatabaseRecords() (*databasereader.Index, error) {
 	var username, password, hostname, instance string
 
 	flag.StringVar(&username, "u", "", "Database username")
@@ -44,29 +81,14 @@ func loadDatabaseRecords() {
 	}
 	defer manager.Close()
 
-	index, err := manager.Load()
-	if err != nil {
-		fmt.Println("Error loading from database: ", err)
-		return
-	}
-	println("Patient count: ", index.GetTotalPatientCount())
-	println("Record count: ", index.GetTotalPatientCount())
+	return manager.Load()
 }
 
-func loadFileSystem() {
+func loadFileSystem() (*filesystem.Index, error) {
 	var recordDirectory string
 
 	flag.StringVar(&recordDirectory, "d", "", "Record Directory")
 	flag.Parse()
 
-	index, err := filesystem.CreateIndex(recordDirectory)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	defer index.Destroy()
-
-	fmt.Println(index)
-	println("Patient count: ", index.GetTotalPatientCount())
-	println("Record count: ", index.GetTotalCategorizableCount())
+	return filesystem.CreateIndex(recordDirectory)
 }

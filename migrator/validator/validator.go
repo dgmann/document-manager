@@ -8,7 +8,7 @@ import (
 	"fmt"
 )
 
-func Validate(expected filesystem.Index, actual databasereader.Index) error {
+func Validate(expected *filesystem.Index, actual *databasereader.Index) error {
 	var err error
 	if e := checkRecordCountEqual(expected, actual); e != nil {
 		err = shared.WrapError(err, e.Error())
@@ -28,7 +28,7 @@ func Validate(expected filesystem.Index, actual databasereader.Index) error {
 	return err
 }
 
-func checkRecordCountEqual(expected filesystem.Index, actual databasereader.Index) error {
+func checkRecordCountEqual(expected *filesystem.Index, actual *databasereader.Index) error {
 	expectedRecordCount := expected.GetTotalCategorizableCount()
 	actualRecordCount := actual.GetTotalCategorizableCount()
 	isRecordCountEqual := expectedRecordCount == actualRecordCount
@@ -39,7 +39,7 @@ func checkRecordCountEqual(expected filesystem.Index, actual databasereader.Inde
 	return nil
 }
 
-func checkPatientCountEqual(expected filesystem.Index, actual databasereader.Index) error {
+func checkPatientCountEqual(expected *filesystem.Index, actual *databasereader.Index) error {
 	expectedPatientCount := expected.GetTotalPatientCount()
 	actualPatientCount := actual.GetTotalPatientCount()
 	isPatientCountEqual := expectedPatientCount == actualPatientCount

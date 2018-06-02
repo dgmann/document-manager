@@ -26,7 +26,7 @@ func (m *Manager) Close() {
 	m.db.Close()
 }
 
-func (m *Manager) Load() (*shared.Index, error) {
+func (m *Manager) Load() (*Index, error) {
 	records, err := m.loadRecords()
 	if err != nil {
 		return nil, err
@@ -40,7 +40,7 @@ func (m *Manager) Load() (*shared.Index, error) {
 		log.WithField("error", err).Warning("There were errors assigning pdfs to records. This may happen for example when there are unprocessed pdfs in the inbox")
 	}
 	slice := toSlice(merged)
-	index := shared.NewIndex(slice)
+	index := newIndex(slice)
 	return index, nil
 }
 

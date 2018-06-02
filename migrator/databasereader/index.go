@@ -14,3 +14,7 @@ func (f *Index) GetRecords() []*shared.Record {
 	}
 	return records
 }
+
+func newIndex(records []shared.Categorizable) *Index {
+	return &Index{shared.NewIndex(records)}
+}

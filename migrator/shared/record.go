@@ -20,7 +20,7 @@ type Categorizable interface {
 
 type Record struct {
 	Id             int    `db:"Id"`
-	Name           string
+	Name           string `db:"Name"`
 	PatId          int    `db:"Pat_Id"`
 	Spezialization string `db:"Category"`
 	Path           string
@@ -36,7 +36,7 @@ func (r *Record) GetSpezialization() string {
 }
 
 func (r *Record) String() string {
-	return fmt.Sprintf("%s, %s: %s", r.PatId, r.Spezialization, r.Path)
+	return fmt.Sprintf("%d, %s: %s", r.PatId, r.Spezialization, r.Path)
 }
 
 func (r *Record) Equals(record *Record) bool {

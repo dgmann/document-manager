@@ -1,0 +1,23 @@
+version: "3"
+
+services:
+  migrator:
+    build: .
+    environment:
+      - DB_HOST=db
+      - DB_USER=sa
+      - DB_PASSWORD=Password%
+      - DB_NAME=PdfDatabase
+      - RECORD_DIR=/records
+    volumes:
+      - "./mounts/records:/records"
+  db:
+    image: microsoft/mssql-server-linux
+    ports:
+      - "1433:1433"
+    volumes:
+      - "./mounts/db:/var/opt/mssql"
+    environment:
+      - SA_PASSWORD=Password%
+      - ACCEPT_EULA=Y
+      - MSSQL_PID=Express

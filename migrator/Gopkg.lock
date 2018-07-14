@@ -4,20 +4,20 @@
 [[projects]]
   branch = "master"
   name = "github.com/denisenkom/go-mssqldb"
-  packages = [
-    ".",
-    "internal/cp"
-  ]
+  packages = [".","internal/cp"]
   revision = "c4e5513e46d427e67707ab54c97990301fb56c10"
 
 [[projects]]
   branch = "master"
   name = "github.com/jmoiron/sqlx"
-  packages = [
-    ".",
-    "reflectx"
-  ]
+  packages = [".","reflectx"]
   revision = "2aeb6a910c2b94f2d5eb53d9895d80e27264ec41"
+
+[[projects]]
+  name = "github.com/namsral/flag"
+  packages = ["."]
+  revision = "71ceffbeb0ba60fccc853971bb3ed4d7d90bfd04"
+  version = "v1.7.4-pre"
 
 [[projects]]
   name = "github.com/pkg/errors"
@@ -34,24 +34,18 @@
 [[projects]]
   branch = "master"
   name = "golang.org/x/crypto"
-  packages = [
-    "md4",
-    "ssh/terminal"
-  ]
+  packages = ["md4","ssh/terminal"]
   revision = "ab813273cd59e1333f7ae7bff5d027d4aadf528c"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
-  packages = [
-    "unix",
-    "windows"
-  ]
+  packages = ["unix","windows"]
   revision = "c11f84a56e43e20a78cee75a7c034031ecf57d1f"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "1b537ad4b05a29bddabc9608ef5636bd8ae1bbe0580f2f09ecd5064f14be5f7b"
+  inputs-digest = "f7132df95dd38b2f61989a7e30cf1fe8e49b204d461109656c34b73e9a9d23fd"
   solver-name = "gps-cdcl"
   solver-version = 1

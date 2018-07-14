@@ -15,22 +15,21 @@ type Record struct {
 	splittedPdfDir string
 }
 
-func NewRecordFromPath(path string) (*Record, error) {
-	split := strings.Split(path, "/")
-	if len(split) < 2 {
-		return nil, errors.New("file path cannot be parsed to create a record: " + path)
+func NewRecordFromPath(dir string) (*Record, error) {
+	directory, fileName := filepath.Split(dir)
+	if directory == "" {
+		return nil, errors.New("file dir cannot be parsed to create a record: " + dir)
 	}
 
-	fileName := split[len(split)-1]
 	spezialization := strings.TrimSuffix(fileName, filepath.Ext(fileName))
-	patIdString := split[len(split)-2]
+	patIdString := filepath.Base(directory)
 	patId, err := strconv.Atoi(patIdString)
 	if err != nil {
-		return nil, errors.Wrap(err, "cannot convert patId to integer: "+path)
+		return nil, errors.Wrap(err, "cannot convert patId to integer: "+dir)
 	}
 	r := &shared.Record{
 		Name:           fileName,
-		Path:           path,
+		Path:           dir,
 		Spezialization: spezialization,
 		PatId:          patId,
 	}

@@ -1,5 +1,10 @@
 package shared
 
+import (
+	"errors"
+	"fmt"
+)
+
 type Index struct {
 	data map[int]*PatientIndex
 }
@@ -17,8 +22,11 @@ func NewIndex(records []Categorizable) *Index {
 	return &Index{data: index}
 }
 
-func (i *Index) GetPatient(id int) *PatientIndex {
-	return i.data[id]
+func (i *Index) GetPatient(id int) (*PatientIndex, error) {
+	if patient, ok := i.data[id]; ok {
+		return patient, nil
+	}
+	return nil, errors.New(fmt.Sprintf("could not retrive patient with id %d", id))
 }
 
 func (i *Index) GetAllCategorizable() []Categorizable {
@@ -55,14 +63,14 @@ func newPatientIndex(records []Categorizable) *PatientIndex {
 func (i *PatientIndex) GetAllPatientRelated() []PatientRelated {
 	var records []PatientRelated
 	for _, record := range i.data {
-		r, ok := record.(*Record)
-		if ok {
-			records = append(records, r)
-		}
+		records = append(records, record)
 	}
 	return records
 }
 
-func (i *PatientIndex) GetBySpezialization(spez string) *Record {
-	return i.data[spez].(*Record)
+func (i *PatientIndex) GetBySpezialization(spez string) (*Record, error) {
+	if record, ok := i.data[spez]; ok {
+		return record.(*Record), nil
+	}
+	return nil, errors.New(fmt.Sprintf("no data for spezialization %s found", spez))
 }

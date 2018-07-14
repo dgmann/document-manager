@@ -3,32 +3,35 @@ package main
 import (
 	"net/url"
 	"github.com/dgmann/document-manager/migrator/databasereader"
-	"flag"
 	"github.com/dgmann/document-manager/migrator/filesystem"
 	"github.com/dgmann/document-manager/migrator/shared"
 	"github.com/pkg/errors"
 	"github.com/dgmann/document-manager/migrator/validator"
 	"fmt"
+	"os"
+	"bufio"
 )
 
 func main() {
-	databaseIndex, filesystemIndex, err := load()
+	config := shared.NewConfig()
+	databaseIndex, filesystemIndex, err := load(config)
 	if err != nil {
 		fmt.Printf("Error: %s", err)
 	}
-	err = validator.Validate(filesystemIndex, databaseIndex)
-	if err != nil {
-		fmt.Printf("Validation error: %s", err)
+	validationErrors := validator.Validate(filesystemIndex, databaseIndex)
+	if validationErrors != nil {
+		fmt.Printf("Validation error: %s", validationErrors.Error())
 	}
+	writeLines(validationErrors.Messages, config.ValidationFile)
 }
 
-func load() (*databasereader.Index, *filesystem.Index, error) {
+func load(config shared.Config) (*databasereader.Index, *filesystem.Index, error) {
 	errorChan := make(chan error, 2)
 	databaseIndexChan := make(chan *databasereader.Index, 1)
 	filesystemIndexChan := make(chan *filesystem.Index, 1)
 
 	go func() {
-		index, err := loadDatabaseRecords()
+		index, err := loadDatabaseRecords(config.Username, config.Password, config.Hostname, config.Instance, config.DbName)
 		if err != nil {
 			errorChan <- errors.Wrap(err, "error loading from database")
 		}
@@ -36,7 +39,7 @@ func load() (*databasereader.Index, *filesystem.Index, error) {
 	}()
 
 	go func() {
-		index, err := loadFileSystem()
+		index, err := loadFileSystem(config.RecordDirectory)
 		if err != nil {
 			errorChan <- errors.Wrap(err, "error loading from filesystem")
 		}
@@ -58,20 +61,15 @@ func load() (*databasereader.Index, *filesystem.Index, error) {
 	return databaseIndex, filesystemIndex, err
 }
 
-func loadDatabaseRecords() (*databasereader.Index, error) {
-	var username, password, hostname, instance string
-
-	flag.StringVar(&username, "u", "", "Database username")
-	flag.StringVar(&password, "p", "", "Database password")
-	flag.StringVar(&hostname, "h", "", "Database hostname")
-	flag.StringVar(&instance, "i", "SQLExpress", "Database instance name")
-	flag.Parse()
-
+func loadDatabaseRecords(username, password, hostname, instance, databasename string) (*databasereader.Index, error) {
+	query := url.Values{}
+	query.Add("database", databasename)
 	u := &url.URL{
-		Scheme: "sqlserver",
-		User:   url.UserPassword(username, password),
-		Host:   hostname,
-		Path:   instance,
+		Scheme:   "sqlserver",
+		User:     url.UserPassword(username, password),
+		Host:     hostname,
+		Path:     instance,
+		RawQuery: query.Encode(),
 	}
 
 	manager := databasereader.Manager{}
@@ -84,11 +82,20 @@ func loadDatabaseRecords() (*databasereader.Index, error) {
 	return manager.Load()
 }
 
-func loadFileSystem() (*filesystem.Index, error) {
-	var recordDirectory string
-
-	flag.StringVar(&recordDirectory, "d", "", "Record Directory")
-	flag.Parse()
-
+func loadFileSystem(recordDirectory string) (*filesystem.Index, error) {
 	return filesystem.CreateIndex(recordDirectory)
+}
+
+func writeLines(lines []string, path string) error {
+	file, err := os.Create(path)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	w := bufio.NewWriter(file)
+	for _, line := range lines {
+		fmt.Fprintln(w, line)
+	}
+	return w.Flush()
 }

@@ -15,7 +15,7 @@ func CreateIndex(dir string) (*Index, error) {
 	}
 
 	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
-		if info.IsDir() {
+		if info.IsDir() || filepath.Ext(info.Name()) != ".pdf" {
 			return err
 		}
 		r, err := NewRecordFromPath(path)

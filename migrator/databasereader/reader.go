@@ -47,7 +47,7 @@ func (m *Manager) Load() (*Index, error) {
 func (m *Manager) loadRecords() ([]*shared.Record, error) {
 	var records []*shared.Record
 
-	query := `select befund.Id, befund.Pat_Id, spez.Name as Category from PdfDatabase.dbo.Befund as befund
+	query := `select befund.Id, befund.Pat_Id, befund.Name, spez.Name as Category from PdfDatabase.dbo.Befund as befund
 			  JOIN PdfDatabase.dbo.Spezialisations as spez ON befund.Spezialisation_Id = spez.Id
  			  ORDER BY befund.Pat_Id`
 	err := m.db.Select(&records, query)

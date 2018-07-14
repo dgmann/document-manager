@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="Praxis PDFManager" uuid="4aa01dee-edc7-4b21-81cb-419a0b91b2a9">
+    <data-source source="LOCAL" name="PdfDatabase@localhost" uuid="74b306e3-f6fa-40e5-a22c-7c229e0f65a8">
       <driver-ref>sqlserver.ms</driver-ref>
-      <synchronize>true</synchronize>
       <jdbc-driver>com.microsoft.sqlserver.jdbc.SQLServerDriver</jdbc-driver>
-      <jdbc-url>jdbc:sqlserver://192.168.255.101\SQLEXPRESS;database=PdfDatabase</jdbc-url>
+      <jdbc-url>jdbc:sqlserver://localhost;database=PdfDatabase</jdbc-url>
       <driver-properties>
         <property name="applicationName" value="DataGrip" />
       </driver-properties>

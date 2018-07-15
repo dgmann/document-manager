@@ -16,5 +16,5 @@ func (f *Index) GetRecords() []*shared.Record {
 }
 
 func newIndex(records []shared.Categorizable) *Index {
-	return &Index{shared.NewIndex(records)}
+	return &Index{shared.NewIndex("database", records)}
 }

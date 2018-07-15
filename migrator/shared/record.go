@@ -6,6 +6,7 @@ import (
 )
 
 type PatientRelated interface {
+	RecordContainer
 	GetPatientId() int
 }
 
@@ -18,6 +19,10 @@ type Categorizable interface {
 	SpezializationRelated
 }
 
+type RecordContainer interface {
+	GetRecord() *Record
+}
+
 type Record struct {
 	Id             int    `db:"Id"`
 	Name           string `db:"Name"`
@@ -25,6 +30,10 @@ type Record struct {
 	Spezialization string `db:"Category"`
 	Path           string
 	SubRecords     []*SubRecord
+}
+
+func (r *Record) GetRecord() *Record {
+	return r
 }
 
 func (r *Record) GetPatientId() int {

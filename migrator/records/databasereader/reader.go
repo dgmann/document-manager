@@ -1,7 +1,6 @@
 package databasereader
 
 import (
-	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
 	_ "github.com/denisenkom/go-mssqldb"
 	"fmt"
@@ -11,20 +10,12 @@ import (
 )
 
 type Manager struct {
-	db *sqlx.DB
+	*shared.Manager
 }
 
-func (m *Manager) Open(dsn string) error {
-	db, err := sqlx.Open("sqlserver", dsn)
-	if err != nil {
-		return err
-	}
-	m.db = db
-	return nil
-}
+func NewManager(config shared.Config) *Manager {
 
-func (m *Manager) Close() {
-	m.db.Close()
+	return &Manager{shared.NewManager(config)}
 }
 
 func (m *Manager) Load() (*Index, error) {
@@ -51,7 +42,7 @@ func (m *Manager) loadRecords() ([]models.RecordContainer, error) {
 	query := `select befund.Id, befund.Pat_Id, befund.Name, spez.Name as Category from PdfDatabase.dbo.Befund as befund
 			  JOIN PdfDatabase.dbo.Spezialisations as spez ON befund.Spezialisation_Id = spez.Id
  			  ORDER BY befund.Pat_Id`
-	err := m.db.Select(&records, query)
+	err := m.Db.Select(&records, query)
 	if err != nil {
 		return nil, errors.Wrap(err, "error loading records")
 	}
@@ -67,7 +58,7 @@ func (m *Manager) loadPdfs() ([]*PdfFile, error) {
 
 	query := `select pdf.Id, pdf.Name, pdf.Timestamp, pdf.Date, pdf.State, pdf.SenderNr, pdf.Befund_Id, pdf.Pat_Id, type.Name as Type from PdfDatabase.dbo.PdfFiles as pdf
 			  JOIN PdfDatabase.dbo.Type as type ON pdf.Type_Id = type.Id`
-	err := m.db.Select(&pdfs, query)
+	err := m.Db.Select(&pdfs, query)
 	if err != nil {
 		return nil, errors.Wrap(err, "error loading pdfs")
 	}

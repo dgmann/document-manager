@@ -5,29 +5,45 @@ import (
 	"github.com/dgmann/document-manager/migrator/records/databasereader"
 	"github.com/pkg/errors"
 	"fmt"
-	"strings"
 	"github.com/dgmann/document-manager/migrator/records/models"
+	"github.com/dgmann/document-manager/migrator/shared"
 )
 
-func Validate(expected *filesystem.Index, actual *databasereader.Index) *validationError {
+func Validate(expected *filesystem.Index, actual *databasereader.Index, manager *shared.Manager) ([]Resolvable, *Error) {
 	var err []string
+	var resolvable []Resolvable
 	if e := isRecordCountEqual(expected, actual); e != nil {
 		err = append(err, e.Error())
 	}
 	if e := isPatientCountEqual(expected, actual); e != nil {
 		err = append(err, e.Error())
 	}
-	missingInDatabase := findMissing(expected, actual.Index)
+	resolvableInDatabase, missingInDatabase := findMissing(expected, actual.Index, filesystemErrorFactory())
 	err = append(err, missingInDatabase...)
+	resolvable = append(resolvable, resolvableInDatabase...)
 
-	missingInFileSystem := findMissing(actual, expected.Index)
+	resolvableInFileSystem, missingInFileSystem := findMissing(actual, expected.Index, databaseErrorFactory(manager))
 	err = append(err, missingInFileSystem...)
+	resolvable = append(resolvable, resolvableInFileSystem...)
 
-	return &validationError{err}
+	return resolvable, &Error{err}
 }
 
-func findMissing(expected models.RecordIndex, actual *models.Index) []string {
+func databaseErrorFactory(manager *shared.Manager) func(container models.RecordContainer) Resolvable {
+	return func(container models.RecordContainer) Resolvable {
+		return NewDatabaseValidationError(container, manager)
+	}
+}
+
+func filesystemErrorFactory() func(container models.RecordContainer) Resolvable {
+	return func(container models.RecordContainer) Resolvable {
+		return NewFilesystemValidationError(container)
+	}
+}
+
+func findMissing(expected models.RecordIndex, actual *models.Index, errorFactory func(container models.RecordContainer) Resolvable) ([]Resolvable, []string) {
 	var err []string
+	var resolvable []Resolvable
 	for _, expectedRecord := range expected.Records() {
 		patId := expectedRecord.PatientId()
 		spez := expectedRecord.Spezialization()
@@ -39,13 +55,14 @@ func findMissing(expected models.RecordIndex, actual *models.Index) []string {
 		actualRecord, e := actualPatient.GetBySpezialization(spez)
 		if e != nil {
 			err = append(err, fmt.Sprintf("error finding matching record in %s for patient %d and spezialization %s", actual.Name, patId, spez))
+			resolvable = append(resolvable, errorFactory(expectedRecord))
 			continue
 		}
 		if !expectedRecord.Record().Equals(actualRecord.Record()) {
 			err = append(err, fmt.Sprintf("record mismatch. Expected %s, Actual %s", expectedRecord, actualRecord))
 		}
 	}
-	return err
+	return resolvable, err
 }
 
 func isRecordCountEqual(expected *filesystem.Index, actual *databasereader.Index) error {
@@ -67,12 +84,4 @@ func isPatientCountEqual(expected *filesystem.Index, actual *databasereader.Inde
 		return errors.New(fmt.Sprintf("patient count mismatch. Expected: %d, Actual: %d", expected.GetTotalPatientCount(), actual.GetTotalPatientCount()))
 	}
 	return nil
-}
-
-type validationError struct {
-	Messages []string
-}
-
-func (e *validationError) Error() string {
-	return strings.Join(e.Messages, ";")
 }

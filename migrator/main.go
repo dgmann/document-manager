@@ -1,7 +1,6 @@
 package main
 
 import (
-	"net/url"
 	"github.com/dgmann/document-manager/migrator/records/databasereader"
 	"github.com/dgmann/document-manager/migrator/records/filesystem"
 	"github.com/dgmann/document-manager/migrator/shared"
@@ -10,28 +9,43 @@ import (
 	"fmt"
 	"os"
 	"bufio"
+	"strings"
 )
 
 func main() {
 	config := shared.NewConfig()
-	databaseIndex, filesystemIndex, err := load(config)
+	recordManager := databasereader.NewManager(config)
+	err := recordManager.Open()
 	if err != nil {
-		fmt.Printf("Error: %s", err)
+		println("Error opening connection: ", err.Error())
+		return
 	}
-	validationErrors := validator.Validate(filesystemIndex, databaseIndex)
+	defer recordManager.Close()
+
+	databaseIndex, filesystemIndex, err := load(config, recordManager)
+	if err != nil {
+		fmt.Printf("Error: %s\n", err)
+	}
+
+	resolvable, validationErrors := validator.Validate(filesystemIndex, databaseIndex, recordManager.Manager)
 	if validationErrors != nil {
-		fmt.Printf("Validation error: %s", validationErrors.Error())
+		fmt.Printf("Validation error: %s\n", validationErrors.Error())
 	}
 	writeLines(validationErrors.Messages, config.ValidationFile)
+	if !askForConfirmation() {
+		fmt.Printf("Aborted")
+		return
+	}
+	println(len(resolvable))
 }
 
-func load(config shared.Config) (*databasereader.Index, *filesystem.Index, error) {
+func load(config shared.Config, manager *databasereader.Manager) (*databasereader.Index, *filesystem.Index, error) {
 	errorChan := make(chan error, 2)
 	databaseIndexChan := make(chan *databasereader.Index, 1)
 	filesystemIndexChan := make(chan *filesystem.Index, 1)
 
 	go func() {
-		index, err := loadDatabaseRecords(config.Username, config.Password, config.Hostname, config.Instance, config.DbName)
+		index, err := manager.Load()
 		if err != nil {
 			errorChan <- errors.Wrap(err, "error loading from database")
 		}
@@ -61,28 +75,6 @@ func load(config shared.Config) (*databasereader.Index, *filesystem.Index, error
 	return databaseIndex, filesystemIndex, err
 }
 
-func loadDatabaseRecords(username, password, hostname, instance, databasename string) (*databasereader.Index, error) {
-	query := url.Values{}
-	query.Add("database", databasename)
-	u := &url.URL{
-		Scheme:   "sqlserver",
-		User:     url.UserPassword(username, password),
-		Host:     hostname,
-		Path:     instance,
-		RawQuery: query.Encode(),
-	}
-
-	manager := databasereader.Manager{}
-	err := manager.Open(u.String())
-	if err != nil {
-		println("Error opening connection: ", err)
-		return nil, err
-	}
-	defer manager.Close()
-
-	return manager.Load()
-}
-
 func loadFileSystem(recordDirectory string) (*filesystem.Index, error) {
 	return filesystem.CreateIndex(recordDirectory)
 }
@@ -99,4 +91,22 @@ func writeLines(lines []string, path string) error {
 		fmt.Fprintln(w, line)
 	}
 	return w.Flush()
+}
+
+func askForConfirmation() bool {
+	var s string
+
+	fmt.Printf("Resolve validation errors? (y/N): ")
+	_, err := fmt.Scan(&s)
+	if err != nil {
+		panic(err)
+	}
+
+	s = strings.TrimSpace(s)
+	s = strings.ToLower(s)
+
+	if s == "y" || s == "yes" {
+		return true
+	}
+	return false
 }

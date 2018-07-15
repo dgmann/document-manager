@@ -1,47 +1,40 @@
-package shared
+package models
 
 import (
 	"time"
 	"fmt"
 )
 
-type PatientRelated interface {
-	RecordContainer
-	GetPatientId() int
-}
-
-type SpezializationRelated interface {
-	GetSpezialization() string
-}
-
-type Categorizable interface {
-	PatientRelated
-	SpezializationRelated
-}
-
 type RecordContainer interface {
-	GetRecord() *Record
+	Record() *Record
+	Spezialization() string
+	PatientId() int
+	LoadSubRecords() error
 }
 
 type Record struct {
-	Id             int    `db:"Id"`
-	Name           string `db:"Name"`
-	PatId          int    `db:"Pat_Id"`
-	Spezialization string `db:"Category"`
-	Path           string
-	SubRecords     []*SubRecord
+	Id         int    `db:"Id"`
+	Name       string `db:"Name"`
+	PatId      int    `db:"Pat_Id"`
+	Spez       string `db:"Category"`
+	Path       string
+	SubRecords []*SubRecord
 }
 
-func (r *Record) GetRecord() *Record {
+func (r *Record) Record() *Record {
 	return r
 }
 
-func (r *Record) GetPatientId() int {
+func (r *Record) PatientId() int {
 	return r.PatId
 }
 
-func (r *Record) GetSpezialization() string {
-	return r.Spezialization
+func (r *Record) Spezialization() string {
+	return r.Spez
+}
+
+func (r *Record) LoadSubRecords() error {
+	return nil
 }
 
 func (r *Record) String() string {
@@ -50,7 +43,7 @@ func (r *Record) String() string {
 
 func (r *Record) Equals(record *Record) bool {
 	return r.PatId == record.PatId &&
-		r.Spezialization == record.Spezialization &&
+		r.Spez == record.Spez &&
 		r.Name == record.Name
 }
 

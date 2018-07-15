@@ -2,15 +2,15 @@ package databasereader
 
 import (
 	"path"
-	"github.com/dgmann/document-manager/migrator/shared"
+	"github.com/dgmann/document-manager/migrator/records/models"
 )
 
 type PdfFile struct {
-	shared.SubRecord
+	models.SubRecord
 	PathExtension *string    `db:"PathExtension"`
 }
 
-func (p *PdfFile) AsSubRecord() *shared.SubRecord {
+func (p *PdfFile) AsSubRecord() *models.SubRecord {
 	s := p.SubRecord
 	s.Path = p.GetPath()
 	return &s

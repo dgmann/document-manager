@@ -2,8 +2,8 @@ package main
 
 import (
 	"net/url"
-	"github.com/dgmann/document-manager/migrator/databasereader"
-	"github.com/dgmann/document-manager/migrator/filesystem"
+	"github.com/dgmann/document-manager/migrator/records/databasereader"
+	"github.com/dgmann/document-manager/migrator/records/filesystem"
 	"github.com/dgmann/document-manager/migrator/shared"
 	"github.com/pkg/errors"
 	"github.com/dgmann/document-manager/migrator/validator"
@@ -76,6 +76,7 @@ func loadDatabaseRecords(username, password, hostname, instance, databasename st
 	err := manager.Open(u.String())
 	if err != nil {
 		println("Error opening connection: ", err)
+		return nil, err
 	}
 	defer manager.Close()
 

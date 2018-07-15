@@ -4,12 +4,12 @@ import (
 	"path/filepath"
 	"os"
 	"github.com/pkg/errors"
-	"github.com/dgmann/document-manager/migrator/shared"
 	"io"
+	"github.com/dgmann/document-manager/migrator/records/models"
 )
 
 func CreateIndex(dir string) (*Index, error) {
-	var files []CategorizableCloser
+	var files []RecordContainerCloser
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
 		return nil, errors.Wrap(err, "directory to index does not exist")
 	}
@@ -26,7 +26,7 @@ func CreateIndex(dir string) (*Index, error) {
 	return index, err
 }
 
-type CategorizableCloser interface {
-	shared.Categorizable
+type RecordContainerCloser interface {
+	models.RecordContainer
 	io.Closer
 }

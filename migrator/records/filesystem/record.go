@@ -5,13 +5,15 @@ import (
 	"path/filepath"
 	"github.com/pkg/errors"
 	"strconv"
-	"github.com/dgmann/document-manager/migrator/shared"
 	"github.com/dgmann/document-manager/migrator/splitter"
 	"os"
+	"github.com/dgmann/document-manager/migrator/records/models"
 )
 
+type embeddedRecord = models.Record
+
 type Record struct {
-	*shared.Record
+	*embeddedRecord
 	splittedPdfDir string
 }
 
@@ -27,13 +29,13 @@ func NewRecordFromPath(dir string) (*Record, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "cannot convert patId to integer: "+dir)
 	}
-	r := &shared.Record{
-		Name:           fileName,
-		Path:           dir,
-		Spezialization: spezialization,
-		PatId:          patId,
+	r := &models.Record{
+		Name:  fileName,
+		Path:  dir,
+		Spez:  spezialization,
+		PatId: patId,
 	}
-	return &Record{Record: r}, nil
+	return &Record{embeddedRecord: r}, nil
 }
 
 func (r *Record) LoadSubRecords() error {

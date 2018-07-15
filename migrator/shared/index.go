@@ -7,9 +7,10 @@ import (
 
 type Index struct {
 	data map[int]*PatientIndex
+	Name string
 }
 
-func NewIndex(records []Categorizable) *Index {
+func NewIndex(name string, records []Categorizable) *Index {
 	recordsByPatient := make(map[int][]Categorizable)
 	for _, record := range records {
 		recordsByPatient[record.GetPatientId()] = append(recordsByPatient[record.GetPatientId()], record)
@@ -19,14 +20,14 @@ func NewIndex(records []Categorizable) *Index {
 	for patientId, records := range recordsByPatient {
 		index[patientId] = newPatientIndex(records)
 	}
-	return &Index{data: index}
+	return &Index{data: index, Name: name}
 }
 
 func (i *Index) GetPatient(id int) (*PatientIndex, error) {
 	if patient, ok := i.data[id]; ok {
 		return patient, nil
 	}
-	return nil, errors.New(fmt.Sprintf("could not retrive patient with id %d", id))
+	return nil, errors.New(fmt.Sprintf("could not find patient with id %d in %s", id, i.Name))
 }
 
 func (i *Index) GetAllCategorizable() []Categorizable {
@@ -70,7 +71,7 @@ func (i *PatientIndex) GetAllPatientRelated() []PatientRelated {
 
 func (i *PatientIndex) GetBySpezialization(spez string) (*Record, error) {
 	if record, ok := i.data[spez]; ok {
-		return record.(*Record), nil
+		return record.GetRecord(), nil
 	}
 	return nil, errors.New(fmt.Sprintf("no data for spezialization %s found", spez))
 }

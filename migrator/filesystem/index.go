@@ -14,7 +14,7 @@ func newIndex(data []CategorizableCloser) *Index {
 	for _, d := range data {
 		cast = append(cast, d)
 	}
-	return &Index{Index: shared.NewIndex(cast)}
+	return &Index{Index: shared.NewIndex("filesystem", cast)}
 }
 
 func (i *Index) Destroy() {

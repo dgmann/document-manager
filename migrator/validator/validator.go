@@ -6,6 +6,7 @@ import (
 	"github.com/pkg/errors"
 	"fmt"
 	"strings"
+	"github.com/dgmann/document-manager/migrator/shared"
 )
 
 func Validate(expected *filesystem.Index, actual *databasereader.Index) *validationError {
@@ -16,7 +17,17 @@ func Validate(expected *filesystem.Index, actual *databasereader.Index) *validat
 	if e := checkPatientCountEqual(expected, actual); e != nil {
 		err = append(err, e.Error())
 	}
+	missingInDatabase := findMissing(expected, actual.Index)
+	err = append(err, missingInDatabase...)
 
+	missingInFileSystem := findMissing(actual, expected.Index)
+	err = append(err, missingInFileSystem...)
+
+	return &validationError{err}
+}
+
+func findMissing(expected shared.RecordIndex, actual *shared.Index) []string {
+	var err []string
 	for _, expectedRecord := range expected.GetRecords() {
 		patId := expectedRecord.PatId
 		spez := expectedRecord.Spezialization
@@ -27,14 +38,14 @@ func Validate(expected *filesystem.Index, actual *databasereader.Index) *validat
 		}
 		actualRecord, e := actualPatient.GetBySpezialization(spez)
 		if e != nil {
-			err = append(err, fmt.Sprintf("error finding matching record in database for patient %d and spezialization %s", patId, spez))
+			err = append(err, fmt.Sprintf("error finding matching record in %s for patient %d and spezialization %s", actual.Name, patId, spez))
 			continue
 		}
 		if !expectedRecord.Equals(actualRecord) {
 			err = append(err, fmt.Sprintf("record mismatch. Expected %s, Actual %s", expectedRecord, actualRecord))
 		}
 	}
-	return &validationError{err}
+	return err
 }
 
 func checkRecordCountEqual(expected *filesystem.Index, actual *databasereader.Index) error {

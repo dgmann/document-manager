@@ -22,7 +22,7 @@ func CreateIndex(dir string) (*Index, error) {
 		files = append(files, r)
 		return err
 	})
-	index := newIndex(files)
+	index := newIndex(files, dir)
 	return index, err
 }
 

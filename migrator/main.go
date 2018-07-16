@@ -31,6 +31,7 @@ func main() {
 	if validationErrors != nil {
 		fmt.Printf("Validation error: %s\n", validationErrors.Error())
 	}
+
 	writeLines(validationErrors.Messages, config.ValidationFile)
 	if !askForConfirmation() {
 		fmt.Printf("Aborted")

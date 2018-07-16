@@ -12,12 +12,18 @@ import (
 func Validate(expected *filesystem.Index, actual *databasereader.Index, manager *shared.Manager) ([]Resolvable, *Error) {
 	var err []string
 	var resolvable []Resolvable
+
 	if e := isRecordCountEqual(expected, actual); e != nil {
 		err = append(err, e.Error())
 	}
 	if e := isPatientCountEqual(expected, actual); e != nil {
 		err = append(err, e.Error())
 	}
+	invalidDirectories := expected.Validate()
+	for _, dir := range invalidDirectories {
+		err = append(err, fmt.Sprintf("Invalid directory structure: %s", dir))
+	}
+
 	resolvableInDatabase, missingInDatabase := findMissing(expected, actual.Index, filesystemErrorFactory())
 	err = append(err, missingInDatabase...)
 	resolvable = append(resolvable, resolvableInDatabase...)

@@ -10,6 +10,19 @@ type Index struct {
 	Name string
 }
 
+type PatientCountable interface {
+	GetTotalPatientCount() int
+}
+
+type RecordCountable interface {
+	GetTotalRecordCount() int
+}
+
+type Countable interface {
+	PatientCountable
+	RecordCountable
+}
+
 func NewIndex(name string, records []RecordContainer) *Index {
 	recordsByPatient := make(map[int][]RecordContainer)
 	for _, record := range records {

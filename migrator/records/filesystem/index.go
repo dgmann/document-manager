@@ -8,7 +8,7 @@ import (
 )
 
 type Index struct {
-	*models.Index
+	models.Index
 	Path string
 }
 
@@ -17,7 +17,7 @@ func newIndex(data []RecordContainerCloser, path string) *Index {
 	for _, d := range data {
 		cast = append(cast, d)
 	}
-	return &Index{Index: models.NewIndex("filesystem", cast), Path: filepath.Clean(path)}
+	return &Index{Index: *models.NewIndex("filesystem", cast), Path: filepath.Clean(path)}
 }
 
 func (i *Index) Destroy() {

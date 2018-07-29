@@ -8,6 +8,8 @@ import (
 	"github.com/dgmann/document-manager/migrator/splitter"
 	"os"
 	"github.com/dgmann/document-manager/migrator/records/models"
+	pdf "github.com/unidoc/unidoc/pdf/model"
+	"github.com/sirupsen/logrus"
 )
 
 type embeddedRecord = models.Record
@@ -29,11 +31,13 @@ func NewRecordFromPath(dir string) (*Record, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "cannot convert patId to integer: "+dir)
 	}
+
 	r := &models.Record{
 		Name:  fileName,
 		Path:  dir,
 		Spez:  spezialization,
 		PatId: patId,
+		Pages: -2,
 	}
 	return &Record{embeddedRecord: r}, nil
 }
@@ -43,6 +47,32 @@ func (r *Record) LoadSubRecords() error {
 	r.SubRecords = subrecords
 	r.splittedPdfDir = tmpDir
 	return err
+}
+
+func (r *Record) PageCount() int {
+	if r.Pages != -2 {
+		return r.Pages
+	}
+	pageCount, err := getPageCount(r.Path)
+	if err != nil {
+		logrus.Warn("cannot read page count of file: ", r.Path)
+	}
+	r.Pages = pageCount
+	return r.Pages
+}
+
+func getPageCount(file string) (int, error) {
+	f, err := os.Open(file)
+	if err != nil {
+		return -1, err
+	}
+	defer f.Close()
+	pdfReader, err := pdf.NewPdfReader(f)
+	if err != nil {
+		return -1, err
+	}
+
+	return pdfReader.GetNumPages()
 }
 
 func (r *Record) Close() error {

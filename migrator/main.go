@@ -10,6 +10,7 @@ import (
 	"os"
 	"bufio"
 	"strings"
+	"github.com/sirupsen/logrus"
 )
 
 func main() {
@@ -17,24 +18,24 @@ func main() {
 	recordManager := databasereader.NewManager(config)
 	err := recordManager.Open()
 	if err != nil {
-		println("Error opening connection: ", err.Error())
+		logrus.WithError(err).Fatal("Error opening connection")
 		return
 	}
 	defer recordManager.Close()
 
 	databaseIndex, filesystemIndex, err := load(config, recordManager)
 	if err != nil {
-		fmt.Printf("Error: %s\n", err)
+		logrus.WithError(err).Error("error loading data")
 	}
 
 	resolvable, validationErrors := validator.Validate(filesystemIndex, databaseIndex, recordManager.Manager)
 	if validationErrors != nil {
-		fmt.Printf("Validation error: %s\n", validationErrors.Error())
+		logrus.WithError(validationErrors).Warn("validation error")
 	}
 
 	writeLines(validationErrors.Messages, config.ValidationFile)
 	if !askForConfirmation() {
-		fmt.Printf("Aborted")
+		fmt.Printf("Aborted\n")
 		return
 	}
 	println(len(resolvable))
@@ -97,7 +98,7 @@ func writeLines(lines []string, path string) error {
 func askForConfirmation() bool {
 	var s string
 
-	fmt.Printf("Resolve validation errors? (y/N): ")
+	fmt.Printf("Resolve validation errors? (y/N): \n")
 	_, err := fmt.Scan(&s)
 	if err != nil {
 		panic(err)

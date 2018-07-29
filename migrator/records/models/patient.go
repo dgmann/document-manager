@@ -5,6 +5,10 @@ import (
 	"errors"
 )
 
+type PatientIndex interface {
+	GetPatient(id int) (*Patient, error)
+}
+
 type Patient struct {
 	data map[string]RecordContainer
 }

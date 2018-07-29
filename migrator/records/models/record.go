@@ -5,8 +5,13 @@ import (
 	"fmt"
 )
 
+type RecordIndex interface {
+	Records() []RecordContainer
+}
+
 type RecordContainer interface {
 	Record() *Record
+	PageCount() int
 	Spezialization() string
 	PatientId() int
 	LoadSubRecords() error
@@ -17,12 +22,17 @@ type Record struct {
 	Name       string `db:"Name"`
 	PatId      int    `db:"Pat_Id"`
 	Spez       string `db:"Category"`
+	Pages      int    `db:"Pages"`
 	Path       string
 	SubRecords []*SubRecord
 }
 
 func (r *Record) Record() *Record {
 	return r
+}
+
+func (r *Record) PageCount() int {
+	return r.Pages
 }
 
 func (r *Record) PatientId() int {

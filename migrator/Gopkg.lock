@@ -32,10 +32,22 @@
   version = "v1.0.5"
 
 [[projects]]
+  name = "github.com/unidoc/unidoc"
+  packages = ["common","common/license","pdf/core","pdf/model","pdf/model/fonts","pdf/model/sampling","pdf/model/textencoding","pdf/ps"]
+  revision = "9fdc8d26688ca9964bee20ad128fcbb985099a05"
+  version = "v2.1.0"
+
+[[projects]]
   branch = "master"
   name = "golang.org/x/crypto"
   packages = ["md4","ssh/terminal"]
   revision = "ab813273cd59e1333f7ae7bff5d027d4aadf528c"
+
+[[projects]]
+  branch = "master"
+  name = "golang.org/x/image"
+  packages = ["tiff/lzw"]
+  revision = "c73c2afc3b812cdd6385de5a50616511c4a3d458"
 
 [[projects]]
   branch = "master"
@@ -46,6 +58,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "f7132df95dd38b2f61989a7e30cf1fe8e49b204d461109656c34b73e9a9d23fd"
+  inputs-digest = "34c73f3250509764cf3b48c12de50fc5ec967cecd80193c0e0840aa422c9ad04"
   solver-name = "gps-cdcl"
   solver-version = 1

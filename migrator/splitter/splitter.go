@@ -7,6 +7,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"github.com/dgmann/document-manager/migrator/records/models"
+	pdf "github.com/unidoc/unidoc/pdf/model"
 )
 
 func Split(path string) ([]*models.SubRecord, string, error) {
@@ -19,6 +20,12 @@ func Split(path string) ([]*models.SubRecord, string, error) {
 }
 
 func splitByBookmarks(inputFile, outDir string) ([]*models.SubRecord, error) {
+	f, _ := os.Open(inputFile)
+	defer f.Close()
+
+	pdfReader, _ := pdf.NewPdfReader(f)
+	bookmarks, _ := getBookmarks(pdfReader)
+	println(bookmarks)
 	cmd := exec.Command("java", "-jar", "C:\\Users\\David\\AppData\\Local\\Temp\\SplitPDF.jar", "-iFile", inputFile, " -CleanOutputFolder", "-oFolder", outDir)
 	err := cmd.Run()
 	if err != nil {

@@ -19,7 +19,7 @@ func Split(path string) ([]*models.SubRecord, string, error) {
 }
 
 func splitByBookmarks(inputFile, outDir string) ([]*models.SubRecord, error) {
-	cmd := exec.Command("java", "-jar", "./SplitPDF.jar", "-iFile", inputFile, " -CleanOutputFolder", "-oFolder", outDir)
+	cmd := exec.Command("java", "-jar", "C:\\Users\\David\\AppData\\Local\\Temp\\SplitPDF.jar", "-iFile", inputFile, " -CleanOutputFolder", "-oFolder", outDir)
 	err := cmd.Run()
 	if err != nil {
 		return nil, err

@@ -56,7 +56,7 @@ func (m *Manager) loadRecords() ([]models.RecordContainer, error) {
 func (m *Manager) loadPdfs() ([]*PdfFile, error) {
 	var pdfs []*PdfFile
 
-	query := `select pdf.Id, pdf.Name, pdf.Timestamp, pdf.Date, pdf.State, pdf.SenderNr, pdf.Befund_Id, pdf.Pat_Id, type.Name as Type from PdfDatabase.dbo.PdfFiles as pdf
+	query := `select pdf.Id, pdf.Name, pdf.Timestamp, pdf.Date, pdf.State, pdf.SenderNr, pdf.Befund_Id, pdf.Pat_Id, pdf.Pages, type.Name as Type from PdfDatabase.dbo.PdfFiles as pdf
 			  JOIN PdfDatabase.dbo.Type as type ON pdf.Type_Id = type.Id`
 	err := m.Db.Select(&pdfs, query)
 	if err != nil {

@@ -1,7 +1,6 @@
 package models
 
 import (
-	"time"
 	"fmt"
 )
 
@@ -9,12 +8,16 @@ type RecordIndex interface {
 	Records() []RecordContainer
 }
 
+type PageCountable interface {
+	PageCount() int
+}
+
 type RecordContainer interface {
 	Record() *Record
-	PageCount() int
 	Spezialization() string
 	PatientId() int
 	LoadSubRecords() error
+	PageCountable
 }
 
 type Record struct {
@@ -24,7 +27,7 @@ type Record struct {
 	Spez       string `db:"Category"`
 	Pages      int    `db:"Pages"`
 	Path       string
-	SubRecords []*SubRecord
+	SubRecords []SubRecordContainer
 }
 
 func (r *Record) Record() *Record {
@@ -55,18 +58,4 @@ func (r *Record) Equals(record *Record) bool {
 	return r.PatId == record.PatId &&
 		r.Spez == record.Spez &&
 		r.Name == record.Name
-}
-
-type SubRecord struct {
-	Id            int        `db:"Id"`
-	Name          string     `db:"Name"`
-	Date          *time.Time `db:"Date"`
-	ReceivedAt    time.Time  `db:"Timestamp"`
-	State         int        `db:"State"`
-	Type          *string    `db:"Type"`
-	SenderNr      *string    `db:"SenderNr"`
-	PathExtension *string    `db:"PathExtension"`
-	BefundId      *int       `db:"Befund_Id"`
-	PatId         *int       `db:"Pat_Id"`
-	Path          string
 }

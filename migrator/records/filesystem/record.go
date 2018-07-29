@@ -44,7 +44,11 @@ func NewRecordFromPath(dir string) (*Record, error) {
 
 func (r *Record) LoadSubRecords() error {
 	subrecords, tmpDir, err := splitter.Split(r.Path)
-	r.SubRecords = subrecords
+	var convertedSubRecords []models.SubRecordContainer
+	for _, subrecord := range subrecords {
+		convertedSubRecords = append(convertedSubRecords, &SubRecord{*subrecord})
+	}
+	r.SubRecords = convertedSubRecords
 	r.splittedPdfDir = tmpDir
 	return err
 }
@@ -73,6 +77,10 @@ func getPageCount(file string) (int, error) {
 	}
 
 	return pdfReader.GetNumPages()
+}
+
+func (r *Record) GetPath() string {
+	return r.Path
 }
 
 func (r *Record) Close() error {

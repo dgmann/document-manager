@@ -27,6 +27,7 @@ func main() {
 	if err != nil {
 		logrus.WithError(err).Error("error loading data")
 	}
+	defer filesystemIndex.Destroy()
 
 	resolvable, validationErrors := validator.Validate(filesystemIndex, databaseIndex, recordManager.Manager)
 	if validationErrors != nil {

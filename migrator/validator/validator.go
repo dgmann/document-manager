@@ -7,8 +7,6 @@ import (
 	"fmt"
 	"github.com/dgmann/document-manager/migrator/records/models"
 	"github.com/dgmann/document-manager/migrator/shared"
-	"sync"
-	"runtime"
 	"github.com/sirupsen/logrus"
 )
 
@@ -43,9 +41,11 @@ func Validate(actual *filesystem.Index, expected *databasereader.Index, manager 
 	resolvable = append(resolvable, resolvableInFileSystem...)
 
 	logrus.Info("Find records where the number of pages does not equal the information stored in the database")
-	pagecountMismatch := isPageCountEqual(expected, actual)
+	pagecountMismatch := parallel(expected.Records(), comparePageCount(actual))
 	err = append(err, pagecountMismatch...)
 
+	invalidSubrecords := parallel(actual.Records(), compareSubRecordCount())
+	err = append(err, invalidSubrecords...)
 	return resolvable, &Error{err}
 }
 
@@ -106,64 +106,27 @@ func isPatientCountEqual(expected models.PatientCountable, actual models.Patient
 	return nil
 }
 
-func isPageCountEqual(expected models.RecordIndex, actual models.PatientIndex) []string {
-	workerCount := runtime.NumCPU()
-	runtime.GOMAXPROCS(workerCount + 1)
-	errCh := make(chan error)
-
-	records := expected.Records()
-	chunk := len(records) / workerCount
-
-	var wg sync.WaitGroup
-	for i := 0; i < workerCount; i++ {
-		wg.Add(1)
-		go func(start int) {
-			end := start + chunk
-
-			if end > len(records) {
-				end = len(records)
-			}
-
-			for j := start; j < end; j = j + 1 {
-				errCh <- comparePageCount(records[j], actual)
-			}
-			wg.Done()
-		}(i * chunk)
-	}
-
-	var err []string
-	go func() {
-		for e := range errCh {
-			if e != nil {
-				err = append(err, e.Error())
-			}
+func comparePageCount(actual models.PatientIndex) compareFunc {
+	return func(record models.RecordContainer) error {
+		patient, e := actual.GetPatient(record.PatientId())
+		if e != nil {
+			return nil
 		}
-	}()
-
-	wg.Wait()
-	close(errCh)
-	return err
-}
-
-func comparePageCount(expectedRecord models.RecordContainer, actual models.PatientIndex) error {
-	patient, e := actual.GetPatient(expectedRecord.PatientId())
-	if e != nil {
+		actualRecord, e := patient.GetBySpezialization(record.Spezialization())
+		if e != nil {
+			return nil
+		}
+		expectedPageCount := record.PageCount()
+		actualPageCount := actualRecord.PageCount()
+		path := getPath(actualRecord, record)
+		if expectedPageCount != actualPageCount {
+			return errors.New(fmt.Sprintf("page count mismatch for %s. Expected %d, Actual %d", path, expectedPageCount, actualPageCount))
+		}
+		if expectedPageCount == -1 || actualPageCount == -1 {
+			return errors.New(fmt.Sprintf("pdf file %s is corrupted", path))
+		}
 		return nil
 	}
-	actualRecord, e := patient.GetBySpezialization(expectedRecord.Spezialization())
-	if e != nil {
-		return nil
-	}
-	expectedPageCount := expectedRecord.PageCount()
-	actualPageCount := actualRecord.PageCount()
-	path := getPath(actualRecord, expectedRecord)
-	if expectedPageCount != actualPageCount {
-		return errors.New(fmt.Sprintf("page count mismatch for %s. Expected %d, Actual %d", path, expectedPageCount, actualPageCount))
-	}
-	if expectedPageCount == -1 || actualPageCount == -1 {
-		return errors.New(fmt.Sprintf("pdf file %s is corrupted", path))
-	}
-	return nil
 }
 
 func getPath(a models.RecordContainer, b models.RecordContainer) string {
@@ -174,4 +137,21 @@ func getPath(a models.RecordContainer, b models.RecordContainer) string {
 		return b.Record().Path
 	}
 	return ""
+}
+
+func compareSubRecordCount() compareFunc {
+	return func(record models.RecordContainer) error {
+		err := record.LoadSubRecords()
+		if err != nil {
+			return err
+		}
+		count := 0
+		for _, subrecord := range record.Record().SubRecords {
+			count += subrecord.PageCount()
+		}
+		if count != record.PageCount() {
+			return errors.New(fmt.Sprintf("record page count of %s does not match with its subrecords. Record: %d, Subrecords: %d", record.Record().Path, record.PageCount(), count))
+		}
+		return nil
+	}
 }

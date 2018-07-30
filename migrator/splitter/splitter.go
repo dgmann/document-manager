@@ -4,10 +4,11 @@ import (
 	"io/ioutil"
 	"github.com/pkg/errors"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"github.com/dgmann/document-manager/migrator/records/models"
-	pdf "github.com/unidoc/unidoc/pdf/model"
+	pdfModel "github.com/unidoc/unidoc/pdf/model"
+	"github.com/satori/go.uuid"
+	"time"
 )
 
 func Split(path string) ([]*models.SubRecord, string, error) {
@@ -15,33 +16,79 @@ func Split(path string) ([]*models.SubRecord, string, error) {
 	if err != nil {
 		return nil, tmpDir, errors.Wrap(err, "error creating tmp dir")
 	}
-	subrecords, err := splitByBookmarks(path, tmpDir)
-	return subrecords, tmpDir, err
+	pages, bookmarks, err := readPagesAndBookmarks(path)
+	if err != nil {
+		return nil, tmpDir, errors.Wrap(err, "error reading bookmarks")
+	}
+	splitted := splitByBookmarks(pages, bookmarks)
+	subrecords, err := save(splitted, tmpDir)
+	if err != nil {
+		return nil, tmpDir, errors.Wrap(err, "error saving pdf")
+	}
+	return subrecords, tmpDir, nil
 }
 
-func splitByBookmarks(inputFile, outDir string) ([]*models.SubRecord, error) {
-	f, _ := os.Open(inputFile)
+func readPagesAndBookmarks(input string) ([]*pdfModel.PdfPage, []*Bookmark, error) {
+	f, err := os.Open(input)
+	if err != nil {
+		return nil, nil, err
+	}
 	defer f.Close()
 
-	pdfReader, _ := pdf.NewPdfReader(f)
-	bookmarks, _ := getBookmarks(pdfReader)
-	println(bookmarks)
-	cmd := exec.Command("java", "-jar", "C:\\Users\\David\\AppData\\Local\\Temp\\SplitPDF.jar", "-iFile", inputFile, " -CleanOutputFolder", "-oFolder", outDir)
-	err := cmd.Run()
+	pdfReader, err := pdfModel.NewPdfReader(f)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	return getSubfiles(outDir)
+	bookmarks, err := getBookmarks(pdfReader)
+	return pdfReader.PageList, bookmarks, err
 }
 
-func getSubfiles(directory string) ([]*models.SubRecord, error) {
-	var pdfList = make([]*models.SubRecord, 0)
-	err := filepath.Walk(directory, func(path string, fi os.FileInfo, err error) error {
-		if filepath.Ext(fi.Name()) == ".pdf" {
-			pdfFile := &models.SubRecord{Path: path}
-			pdfList = append(pdfList, pdfFile)
+type SplittedPdf struct {
+	Title time.Time
+	Pages []*pdfModel.PdfPage
+}
+
+func splitByBookmarks(pages []*pdfModel.PdfPage, bookmarks []*Bookmark) []*SplittedPdf {
+	var pdfList = make([]*SplittedPdf, len(bookmarks))
+	lastIndex := len(pages)
+	if len(bookmarks) == 0 {
+		return []*SplittedPdf{{Title: time.Now(), Pages: pages}}
+	}
+	if bookmarks[len(bookmarks)-1].PageNumber >= len(pages) {
+		return []*SplittedPdf{}
+	}
+	for i := len(bookmarks) - 1; i >= 0; i-- {
+		bookmark := bookmarks[i]
+		pageRange := pages[bookmark.PageNumber:lastIndex]
+		lastIndex = bookmark.PageNumber
+		pdfList[i] = &SplittedPdf{Title: bookmark.Title, Pages: pageRange}
+	}
+	return pdfList
+}
+
+func save(pdfs []*SplittedPdf, outDir string) ([]*models.SubRecord, error) {
+	var pdfList = make([]*models.SubRecord, 0, len(pdfs))
+	for _, pdf := range pdfs {
+		writer := pdfModel.NewPdfWriter()
+		for _, p := range pdf.Pages {
+			writer.AddPage(p)
 		}
-		return nil
-	})
-	return pdfList, err
+		p := filepath.Join(outDir, uuid.NewV4().String()+".pdf")
+		f, err := os.Create(p)
+		if err != nil {
+			return nil, err
+		}
+		err = writer.Write(f)
+		if err != nil {
+			return nil, err
+		}
+		f.Close()
+
+		pdfFile := &models.SubRecord{
+			Path: p,
+			Date: &pdf.Title,
+		}
+		pdfList = append(pdfList, pdfFile)
+	}
+	return pdfList, nil
 }

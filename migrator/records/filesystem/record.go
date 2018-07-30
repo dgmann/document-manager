@@ -43,14 +43,23 @@ func NewRecordFromPath(dir string) (*Record, error) {
 }
 
 func (r *Record) LoadSubRecords() error {
+	if len(r.SubRecords) > 0 { // Already loaded
+		return nil
+	}
 	subrecords, tmpDir, err := splitter.Split(r.Path)
+	if err != nil {
+		return err
+	}
 	var convertedSubRecords []models.SubRecordContainer
 	for _, subrecord := range subrecords {
+		subrecord.BefundId = &r.Id
+		subrecord.PatId = &r.PatId
+		subrecord.Spezialization = &r.Spez
 		convertedSubRecords = append(convertedSubRecords, &SubRecord{*subrecord})
 	}
 	r.SubRecords = convertedSubRecords
 	r.splittedPdfDir = tmpDir
-	return err
+	return nil
 }
 
 func (r *Record) PageCount() int {

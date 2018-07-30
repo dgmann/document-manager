@@ -4,6 +4,7 @@ import (
 	"github.com/unidoc/unidoc/pdf/model"
 	"time"
 	"github.com/unidoc/unidoc/pdf/core"
+	"sort"
 )
 
 func getBookmarks(reader *model.PdfReader) ([]*Bookmark, error) {
@@ -45,6 +46,9 @@ func getBookmarks(reader *model.PdfReader) ([]*Bookmark, error) {
 	for _, b := range bookmarkMap {
 		bookmarks = append(bookmarks, b)
 	}
+	sort.Slice(bookmarks, func(i, j int) bool {
+		return bookmarks[i].PageNumber < bookmarks[j].PageNumber
+	})
 	return bookmarks, nil
 }
 

@@ -40,9 +40,9 @@ func Validate(actual *filesystem.Index, expected *databasereader.Index, manager 
 	err = append(err, missingInFileSystem...)
 	resolvable = append(resolvable, resolvableInFileSystem...)
 
-	logrus.Info("Find records where the number of pages does not equal the information stored in the database")
-	pagecountMismatch := parallel(expected.Records(), comparePageCount(actual))
-	err = append(err, pagecountMismatch...)
+	//logrus.Info("Find records where the number of pages does not equal the information stored in the database")
+	//pagecountMismatch := parallel(expected.Records(), comparePageCount(actual))
+	//err = append(err, pagecountMismatch...)
 
 	invalidSubrecords := parallel(actual.Records(), compareSubRecordCount())
 	err = append(err, invalidSubrecords...)

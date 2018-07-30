@@ -11,8 +11,8 @@ import (
 	"time"
 )
 
-func Split(path string) ([]*models.SubRecord, string, error) {
-	tmpDir, err := ioutil.TempDir("", "migration_")
+func Split(path string, outputDir string) ([]*models.SubRecord, string, error) {
+	tmpDir, err := ioutil.TempDir(outputDir, "migration_")
 	if err != nil {
 		return nil, tmpDir, errors.Wrap(err, "error creating tmp dir")
 	}

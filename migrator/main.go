@@ -11,6 +11,7 @@ import (
 	"bufio"
 	"strings"
 	"github.com/sirupsen/logrus"
+	"path/filepath"
 )
 
 func main() {
@@ -27,7 +28,11 @@ func main() {
 	if err != nil {
 		logrus.WithError(err).Error("error loading data")
 	}
-	defer filesystemIndex.Destroy()
+	err = filesystemIndex.Save(filepath.Join(config.DataDirectory, "filesystem.gob"))
+	if err != nil {
+		logrus.WithError(err).Error("error saving filesystemindex to disk")
+	}
+	defer filesystemIndex.Destroy() // TODO: Remove
 
 	resolvable, validationErrors := validator.Validate(filesystemIndex, databaseIndex, recordManager.Manager)
 	if validationErrors != nil {
@@ -60,6 +65,8 @@ func load(config shared.Config, manager *databasereader.Manager) (*databasereade
 		if err != nil {
 			errorChan <- errors.Wrap(err, "error loading from filesystem")
 		}
+		logrus.Info("load sub records")
+		index.LoadSubRecords(config.SplittedDirectory)
 		filesystemIndexChan <- index
 	}()
 

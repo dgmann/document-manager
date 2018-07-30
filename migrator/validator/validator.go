@@ -141,10 +141,6 @@ func getPath(a models.RecordContainer, b models.RecordContainer) string {
 
 func compareSubRecordCount() compareFunc {
 	return func(record models.RecordContainer) error {
-		err := record.LoadSubRecords()
-		if err != nil {
-			return err
-		}
 		count := 0
 		for _, subrecord := range record.Record().SubRecords {
 			count += subrecord.PageCount()

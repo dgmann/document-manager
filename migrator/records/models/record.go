@@ -16,7 +16,6 @@ type RecordContainer interface {
 	Record() *Record
 	Spezialization() string
 	PatientId() int
-	LoadSubRecords() error
 	PageCountable
 }
 
@@ -44,10 +43,6 @@ func (r *Record) PatientId() int {
 
 func (r *Record) Spezialization() string {
 	return r.Spez
-}
-
-func (r *Record) LoadSubRecords() error {
-	return nil
 }
 
 func (r *Record) String() string {

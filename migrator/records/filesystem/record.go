@@ -5,18 +5,17 @@ import (
 	"path/filepath"
 	"github.com/pkg/errors"
 	"strconv"
-	"github.com/dgmann/document-manager/migrator/splitter"
 	"os"
 	"github.com/dgmann/document-manager/migrator/records/models"
 	pdf "github.com/unidoc/unidoc/pdf/model"
 	"github.com/sirupsen/logrus"
 )
 
-type embeddedRecord = models.Record
+type EmbeddedRecord = models.Record
 
 type Record struct {
-	*embeddedRecord
-	splittedPdfDir string
+	*EmbeddedRecord
+	SplittedPdfDir string
 }
 
 func NewRecordFromPath(dir string) (*Record, error) {
@@ -39,27 +38,7 @@ func NewRecordFromPath(dir string) (*Record, error) {
 		PatId: patId,
 		Pages: -2,
 	}
-	return &Record{embeddedRecord: r}, nil
-}
-
-func (r *Record) LoadSubRecords() error {
-	if len(r.SubRecords) > 0 { // Already loaded
-		return nil
-	}
-	subrecords, tmpDir, err := splitter.Split(r.Path)
-	if err != nil {
-		return err
-	}
-	var convertedSubRecords []models.SubRecordContainer
-	for _, subrecord := range subrecords {
-		subrecord.BefundId = &r.Id
-		subrecord.PatId = &r.PatId
-		subrecord.Spezialization = &r.Spez
-		convertedSubRecords = append(convertedSubRecords, &SubRecord{*subrecord})
-	}
-	r.SubRecords = convertedSubRecords
-	r.splittedPdfDir = tmpDir
-	return nil
+	return &Record{EmbeddedRecord: r}, nil
 }
 
 func (r *Record) PageCount() int {
@@ -93,5 +72,5 @@ func (r *Record) GetPath() string {
 }
 
 func (r *Record) Close() error {
-	return os.RemoveAll(r.splittedPdfDir)
+	return os.RemoveAll(r.SplittedPdfDir)
 }

@@ -2,10 +2,10 @@ package filesystem
 
 import "github.com/dgmann/document-manager/migrator/records/models"
 
-type embeddedSubrecord = models.SubRecord
+type EmbeddedSubrecord = models.SubRecord
 
 type SubRecord struct {
-	embeddedSubrecord
+	EmbeddedSubrecord
 }
 
 func (r *SubRecord) PageCount() int {
@@ -17,5 +17,5 @@ func (r *SubRecord) PageCount() int {
 }
 
 func (r *SubRecord) SubRecord() *models.SubRecord {
-	return &r.embeddedSubrecord
+	return &r.EmbeddedSubrecord
 }

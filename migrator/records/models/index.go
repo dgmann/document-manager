@@ -3,6 +3,8 @@ package models
 import (
 	"errors"
 	"fmt"
+	"os"
+	"encoding/gob"
 )
 
 type Index struct {
@@ -21,6 +23,10 @@ type RecordCountable interface {
 type Countable interface {
 	PatientCountable
 	RecordCountable
+}
+
+type Savable interface {
+	Save(path string) error
 }
 
 func NewIndex(name string, records []RecordContainer) *Index {
@@ -58,4 +64,32 @@ func (i *Index) GetTotalPatientCount() int {
 
 func (i *Index) GetTotalRecordCount() int {
 	return len(i.Records())
+}
+
+func (i *Index) Save(path string) error {
+	file, err := os.Create(path)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	encoder := gob.NewEncoder(file)
+	return encoder.Encode(i.Data)
+}
+
+func (i *Index) Load(path string) error {
+	file, err := os.Open(path)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	decoder := gob.NewDecoder(file)
+	var data map[int]*Patient
+	err = decoder.Decode(data)
+	if err != nil {
+		return err
+	}
+	i.Data = data
+	return nil
 }

@@ -3,8 +3,10 @@ package filesystem
 import (
 	"io"
 	"github.com/dgmann/document-manager/migrator/records/models"
-	"github.com/dgmann/document-manager/migrator/shared"
 	"path/filepath"
+	"github.com/dgmann/document-manager/migrator/splitter"
+	"github.com/dgmann/document-manager/migrator/shared"
+	"encoding/gob"
 )
 
 type Index struct {
@@ -28,17 +30,6 @@ func (i *Index) Destroy() {
 	}
 }
 
-func (i *Index) LoadAllSubRecords() error {
-	var err error
-	for _, r := range i.Records() {
-		e := r.Record().LoadSubRecords()
-		if e != nil {
-			err = shared.WrapError(err, e.Error())
-		}
-	}
-	return err
-}
-
 func (i *Index) Validate() []string {
 	invalidDirectories := make(map[string]struct{})
 	for _, r := range i.Records() {
@@ -53,4 +44,55 @@ func (i *Index) Validate() []string {
 		keys = append(keys, k)
 	}
 	return keys
+}
+
+func (i *Index) LoadSubRecords(dir string) error {
+	var err error
+	for _, r := range i.Records() {
+		e := loadSubRecord(r.(*Record), dir)
+		if e != nil {
+			err = shared.WrapError(err, e.Error())
+		}
+	}
+	return err
+}
+
+func loadSubRecord(record *Record, dir string) error {
+	if len(record.SubRecords) > 0 { // Already loaded
+		return nil
+	}
+	subrecords, tmpDir, err := splitter.Split(record.Path, dir)
+	if err != nil {
+		return err
+	}
+	var convertedSubRecords []models.SubRecordContainer
+	for _, subrecord := range subrecords {
+		subrecord.BefundId = &record.Id
+		subrecord.PatId = &record.PatId
+		subrecord.Spezialization = &record.Spez
+		convertedSubRecords = append(convertedSubRecords, &SubRecord{*subrecord})
+	}
+	record.SubRecords = convertedSubRecords
+	record.SplittedPdfDir = tmpDir
+	return nil
+}
+
+func (i *Index) SubRecords() []models.SubRecordContainer {
+	var subrecords []models.SubRecordContainer
+	for _, record := range i.Records() {
+		subrecords = append(subrecords, record.Record().SubRecords...)
+	}
+	return subrecords
+}
+
+func (i *Index) Save(dir string) error {
+	gob.Register(&Record{})
+	gob.Register(&SubRecord{})
+	return i.Index.Save(dir)
+}
+
+func (i *Index) Load(path string) error {
+	gob.Register(&Record{})
+	gob.Register(&SubRecord{})
+	return i.Index.Load(path)
 }

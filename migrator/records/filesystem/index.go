@@ -7,6 +7,8 @@ import (
 	"github.com/dgmann/document-manager/migrator/splitter"
 	"github.com/dgmann/document-manager/migrator/shared"
 	"encoding/gob"
+	"errors"
+	"strings"
 )
 
 type Index struct {
@@ -47,14 +49,11 @@ func (i *Index) Validate() []string {
 }
 
 func (i *Index) LoadSubRecords(dir string) error {
-	var err error
-	for _, r := range i.Records() {
-		e := loadSubRecord(r.(*Record), dir)
-		if e != nil {
-			err = shared.WrapError(err, e.Error())
-		}
-	}
-	return err
+	err := shared.Parallel(i.Records(), func(record models.RecordContainer) error {
+		return loadSubRecord(record.(*Record), dir)
+	})
+
+	return errors.New(strings.Join(err, "; "))
 }
 
 func loadSubRecord(record *Record, dir string) error {

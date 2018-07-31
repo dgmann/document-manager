@@ -26,6 +26,12 @@ func CreateIndex(dir string) (*Index, error) {
 	return index, err
 }
 
+func LoadIndexFromFile(dir string) (*Index, error) {
+	index := &Index{}
+	err := index.Load(dir)
+	return index, err
+}
+
 type RecordContainerCloser interface {
 	models.RecordContainer
 	io.Closer

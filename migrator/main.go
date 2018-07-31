@@ -12,9 +12,15 @@ import (
 	"strings"
 	"github.com/sirupsen/logrus"
 	"path/filepath"
+	"net/http"
+	_ "net/http/pprof"
 )
 
 func main() {
+	go func() {
+		logrus.Info(http.ListenAndServe("localhost:6060", nil))
+	}()
+
 	config := shared.NewConfig()
 	recordManager := databasereader.NewManager(config)
 	err := recordManager.Open()
@@ -61,7 +67,10 @@ func load(config shared.Config, manager *databasereader.Manager) (*databasereade
 	}()
 
 	go func() {
-		index, err := loadFileSystem(config.RecordDirectory)
+		index, err := filesystem.LoadIndexFromFile(filepath.Join(config.DataDirectory, "filesystem.gob"))
+		if err != nil {
+			index, err = loadFileSystem(config.RecordDirectory)
+		}
 		if err != nil {
 			errorChan <- errors.Wrap(err, "error loading from filesystem")
 		}

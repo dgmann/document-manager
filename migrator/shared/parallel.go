@@ -1,4 +1,4 @@
-package validator
+package shared
 
 import (
 	"github.com/dgmann/document-manager/migrator/records/models"
@@ -6,9 +6,9 @@ import (
 	"sync"
 )
 
-type compareFunc func(record models.RecordContainer) error
+type ParallelExecFunc func(record models.RecordContainer) error
 
-func parallel(records []models.RecordContainer, action compareFunc) []string {
+func Parallel(records []models.RecordContainer, action ParallelExecFunc) []string {
 	workerCount := runtime.NumCPU()
 	runtime.GOMAXPROCS(workerCount + 1)
 	errCh := make(chan error)

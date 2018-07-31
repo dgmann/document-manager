@@ -40,11 +40,11 @@ func Validate(actual *filesystem.Index, expected *databasereader.Index, manager 
 	err = append(err, missingInFileSystem...)
 	resolvable = append(resolvable, resolvableInFileSystem...)
 
-	//logrus.Info("Find records where the number of pages does not equal the information stored in the database")
-	//pagecountMismatch := parallel(expected.Records(), comparePageCount(actual))
-	//err = append(err, pagecountMismatch...)
+	logrus.Info("Find records where the number of pages does not equal the information stored in the database")
+	pagecountMismatch := shared.Parallel(expected.Records(), comparePageCount(actual))
+	err = append(err, pagecountMismatch...)
 
-	invalidSubrecords := parallel(actual.Records(), compareSubRecordCount())
+	invalidSubrecords := shared.Parallel(actual.Records(), compareSubRecordCount())
 	err = append(err, invalidSubrecords...)
 	return resolvable, &Error{err}
 }
@@ -106,7 +106,7 @@ func isPatientCountEqual(expected models.PatientCountable, actual models.Patient
 	return nil
 }
 
-func comparePageCount(actual models.PatientIndex) compareFunc {
+func comparePageCount(actual models.PatientIndex) shared.ParallelExecFunc {
 	return func(record models.RecordContainer) error {
 		patient, e := actual.GetPatient(record.PatientId())
 		if e != nil {
@@ -139,7 +139,7 @@ func getPath(a models.RecordContainer, b models.RecordContainer) string {
 	return ""
 }
 
-func compareSubRecordCount() compareFunc {
+func compareSubRecordCount() shared.ParallelExecFunc {
 	return func(record models.RecordContainer) error {
 		count := 0
 		for _, subrecord := range record.Record().SubRecords {

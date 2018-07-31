@@ -73,16 +73,17 @@ func save(pdfs []*SplittedPdf, outDir string) ([]*models.SubRecord, error) {
 		for _, p := range pdf.Pages {
 			writer.AddPage(p)
 		}
+		pdf.Pages = nil // Set to nil in order to prevent memory problems
 		p := filepath.Join(outDir, uuid.NewV4().String()+".pdf")
 		f, err := os.Create(p)
 		if err != nil {
 			return nil, err
 		}
 		err = writer.Write(f)
+		f.Close()
 		if err != nil {
 			return nil, err
 		}
-		f.Close()
 
 		pdfFile := &models.SubRecord{
 			Path: p,

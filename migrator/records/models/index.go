@@ -74,7 +74,7 @@ func (i *Index) Save(path string) error {
 	defer file.Close()
 
 	encoder := gob.NewEncoder(file)
-	return encoder.Encode(i.Data)
+	return encoder.Encode(i)
 }
 
 func (i *Index) Load(path string) error {
@@ -85,11 +85,5 @@ func (i *Index) Load(path string) error {
 	defer file.Close()
 
 	decoder := gob.NewDecoder(file)
-	var data map[int]*Patient
-	err = decoder.Decode(data)
-	if err != nil {
-		return err
-	}
-	i.Data = data
-	return nil
+	return decoder.Decode(i)
 }

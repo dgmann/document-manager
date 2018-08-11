@@ -1,13 +1,13 @@
 package filesystem
 
 import (
-	"io"
-	"github.com/dgmann/document-manager/migrator/records/models"
-	"path/filepath"
-	"github.com/dgmann/document-manager/migrator/splitter"
-	"github.com/dgmann/document-manager/migrator/shared"
 	"encoding/gob"
 	"errors"
+	"github.com/dgmann/document-manager/migrator/records/models"
+	"github.com/dgmann/document-manager/migrator/shared"
+	"github.com/dgmann/document-manager/migrator/splitter"
+	"io"
+	"path/filepath"
 	"strings"
 )
 
@@ -49,7 +49,7 @@ func (i *Index) Validate() []string {
 }
 
 func (i *Index) LoadSubRecords(dir string) error {
-	err := shared.Parallel(i.Records(), func(record models.RecordContainer) error {
+	err := shared.ParallelRecords(i.Records(), func(record models.RecordContainer) error {
 		return loadSubRecord(record.(*Record), dir)
 	})
 
@@ -76,7 +76,9 @@ func loadSubRecord(record *Record, dir string) error {
 	return nil
 }
 
-func (i *Index) SubRecords() []models.SubRecordContainer {
+type SubRecordList = []models.SubRecordContainer
+
+func (i *Index) SubRecords() SubRecordList {
 	var subrecords []models.SubRecordContainer
 	for _, record := range i.Records() {
 		subrecords = append(subrecords, record.Record().SubRecords...)

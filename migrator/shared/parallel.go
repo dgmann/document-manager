@@ -6,14 +6,26 @@ import (
 	"sync"
 )
 
-type ParallelExecFunc func(record models.RecordContainer) error
+type ParallelExecFunc func(value interface{}) error
+type ParallelRecordExecFunc func(record models.RecordContainer) error
 
-func Parallel(records []models.RecordContainer, action ParallelExecFunc) []string {
+func ParallelRecords(values []models.RecordContainer, action ParallelRecordExecFunc) []string {
+	var interfaceSlice = make([]interface{}, len(values))
+	for i, d := range values {
+		interfaceSlice[i] = d
+	}
+	execFunc := func(value interface{}) error {
+		return action(value.(models.RecordContainer))
+	}
+	return Parallel(interfaceSlice, execFunc)
+}
+
+func Parallel(values []interface{}, action ParallelExecFunc) []string {
 	workerCount := runtime.NumCPU()
 	runtime.GOMAXPROCS(workerCount + 1)
 	errCh := make(chan error)
 
-	chunk := len(records) / workerCount
+	chunk := len(values) / workerCount
 
 	var wg sync.WaitGroup
 	for i := 0; i < workerCount; i++ {
@@ -21,12 +33,12 @@ func Parallel(records []models.RecordContainer, action ParallelExecFunc) []strin
 		go func(start int) {
 			end := start + chunk
 
-			if end > len(records) {
-				end = len(records)
+			if end > len(values) {
+				end = len(values)
 			}
 
 			for j := start; j < end; j = j + 1 {
-				errCh <- action(records[j])
+				errCh <- action(values[j])
 			}
 			wg.Done()
 		}(i * chunk)

@@ -3,11 +3,11 @@ package shared
 import "github.com/namsral/flag"
 
 type Config struct {
-	Username, Password, Hostname, Instance, RecordDirectory, DbName, ValidationFile, SplittedDirectory, DataDirectory string
+	Username, Password, Hostname, Instance, RecordDirectory, DbName, ValidationFile, SplittedDirectory, DataDirectory, ApiURL string
 }
 
 func NewConfig() Config {
-	var username, password, hostname, instance, recordDirectory, dbName, validationFile, splittedDir, dataDirectory string
+	var username, password, hostname, instance, recordDirectory, dbName, validationFile, splittedDir, dataDirectory, apiURL string
 
 	flag.StringVar(&username, "db_user", "", "Database Username")
 	flag.StringVar(&password, "db_password", "", "Database Password")
@@ -19,6 +19,8 @@ func NewConfig() Config {
 	flag.StringVar(&recordDirectory, "record_dir", "/records", "Record Directory")
 	flag.StringVar(&splittedDir, "splitted_dir", "/splitted", "Splitted Records Directory")
 	flag.StringVar(&dataDirectory, "data_dir", "/data", "Data Directory")
+
+	flag.StringVar(&apiURL, "api_url", "http://localhost", "The URL of the API")
 	flag.Parse()
 
 	return Config{
@@ -31,5 +33,6 @@ func NewConfig() Config {
 		DataDirectory:     dataDirectory,
 		DbName:            dbName,
 		ValidationFile:    validationFile,
+		ApiURL:            apiURL,
 	}
 }

@@ -8,7 +8,6 @@ import (
 	"io/ioutil"
 	"mime/multipart"
 	"net/http"
-	"os"
 )
 
 type HttpUploader struct {
@@ -24,12 +23,7 @@ func (u *HttpUploader) Upload(create *NewRecord) error {
 		"sender":     create.Sender,
 		"receivedAt": create.ReceivedAt.String(),
 	}
-	pdf, err := os.Open(create.PdfPath)
-	if err != nil {
-		return err
-	}
-	defer pdf.Close()
-	req, err := newfileUploadRequest(u.url+"/records", params, pdf)
+	req, err := newfileUploadRequest(u.url+"/records", params, create.File)
 	if err != nil {
 		return err
 	}

@@ -1,6 +1,7 @@
 package record
 
 import (
+	"io"
 	"time"
 )
 
@@ -15,10 +16,10 @@ func NewRepository(url string) *Repository {
 type NewRecord struct {
 	Sender       string
 	ReceivedAt   time.Time
-	PdfPath      string
+	File         io.Reader
 	RetryCounter int
 }
 
-func (r *Repository) Create(record *NewRecord) {
-	r.uploader.Upload(record)
+func (r *Repository) Create(record *NewRecord) error {
+	return r.uploader.Upload(record)
 }

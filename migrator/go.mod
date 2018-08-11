@@ -4,7 +4,7 @@ module github.com/dgmann/document-manager/migrator
         cloud.google.com/go v0.26.0 // indirect
         github.com/davecgh/go-spew v1.1.0 // indirect
         github.com/denisenkom/go-mssqldb v0.0.0-20180707235734-242fa5aa1b45
-        github.com/dgmann/document-manager/api-client v0.0.0-20180811121728-4c8004edabe1
+        github.com/dgmann/document-manager/api-client v0.0.0-20180811165742-2b45a5b63695
         github.com/fsnotify/fsnotify v1.4.7 // indirect
         github.com/go-sql-driver/mysql v1.4.0 // indirect
         github.com/golang/protobuf v1.1.0 // indirect

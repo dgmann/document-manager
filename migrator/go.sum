@@ -6,6 +6,8 @@ github.com/denisenkom/go-mssqldb v0.0.0-20180707235734-242fa5aa1b45 h1:UW8VerkZA
 github.com/denisenkom/go-mssqldb v0.0.0-20180707235734-242fa5aa1b45/go.mod h1:xN/JuLBIz4bjkxNmByTiV1IbhfnYb6oo99phBn4Eqhc=
 github.com/dgmann/document-manager/api-client v0.0.0-20180811121728-4c8004edabe1 h1:qkP6K8xqA7s6ow4lMKm871t/boUXQvXiA9OI0VUnly0=
 github.com/dgmann/document-manager/api-client v0.0.0-20180811121728-4c8004edabe1/go.mod h1:Rve6iU1aVqWHo9RqQqpaaqrVYaP8lOhVNPTn3tVlG6M=
+github.com/dgmann/document-manager/api-client v0.0.0-20180811165742-2b45a5b63695 h1:0xCgYU5uROG9DFIWB3JK49diQ4Azhk/4+3l5GbkskyQ=
+github.com/dgmann/document-manager/api-client v0.0.0-20180811165742-2b45a5b63695/go.mod h1:Rve6iU1aVqWHo9RqQqpaaqrVYaP8lOhVNPTn3tVlG6M=
 github.com/fsnotify/fsnotify v1.4.7 h1:IXs+QLmnXW2CcXuY+8Mzv/fWEsPGWxqefPtCP5CnV9I=
 github.com/fsnotify/fsnotify v1.4.7/go.mod h1:jwhsz4b93w/PPRr/qN1Yymfu8t87LnFCMoQvtojpjFo=
 github.com/go-sql-driver/mysql v1.4.0 h1:7LxgVwFb2hIQtMm87NdgAVfXjnt4OePseqT1tKx+opk=

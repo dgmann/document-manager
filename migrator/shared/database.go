@@ -10,14 +10,14 @@ type Manager struct {
 	dsn string
 }
 
-func NewManager(config Config) *Manager {
+func NewManager(dbName, username, password, hostname, instance string) *Manager {
 	query := url.Values{}
-	query.Add("database", config.DbName)
+	query.Add("database", dbName)
 	u := &url.URL{
 		Scheme:   "sqlserver",
-		User:     url.UserPassword(config.Username, config.Password),
-		Host:     config.Hostname,
-		Path:     config.Instance,
+		User:     url.UserPassword(username, password),
+		Host:     hostname,
+		Path:     instance,
 		RawQuery: query.Encode(),
 	}
 

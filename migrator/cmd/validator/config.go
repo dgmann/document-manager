@@ -1,26 +1,27 @@
-package shared
+package main
 
 import "github.com/namsral/flag"
 
 type Config struct {
-	Username, Password, Hostname, Instance, RecordDirectory, DbName, ValidationFile, SplittedDirectory, DataDirectory, ApiURL string
+	Username, Password, Hostname, Instance, RecordDirectory, DbName, ValidationFile, SplittedDirectory, DataDirectory, OutputFile string
 }
 
 func NewConfig() Config {
-	var username, password, hostname, instance, recordDirectory, dbName, validationFile, splittedDir, dataDirectory, apiURL string
+	var username, password, hostname, instance, recordDirectory, dbName, validationFile, splittedDir, dataDirectory, outputFile string
 
 	flag.StringVar(&username, "db_user", "", "Database Username")
 	flag.StringVar(&password, "db_password", "", "Database Password")
 	flag.StringVar(&hostname, "db_host", "", "Database Hostname")
 	flag.StringVar(&instance, "db_instance", "", "Database Instance name")
 	flag.StringVar(&dbName, "db_name", "", "Database name")
-	flag.StringVar(&validationFile, "validation_file", "./error.log", "Validation File")
+	flag.StringVar(&validationFile, "validation_file", "/data/error.log", "Validation File")
 
 	flag.StringVar(&recordDirectory, "record_dir", "/records", "Record Directory")
 	flag.StringVar(&splittedDir, "splitted_dir", "/splitted", "Splitted Records Directory")
 	flag.StringVar(&dataDirectory, "data_dir", "/data", "Data Directory")
 
-	flag.StringVar(&apiURL, "api_url", "http://localhost", "The URL of the API")
+	flag.StringVar(&outputFile, "output", "/data/output.txt", "Output file which can be imported")
+
 	flag.Parse()
 
 	return Config{
@@ -33,6 +34,6 @@ func NewConfig() Config {
 		DataDirectory:     dataDirectory,
 		DbName:            dbName,
 		ValidationFile:    validationFile,
-		ApiURL:            apiURL,
+		OutputFile:        outputFile,
 	}
 }

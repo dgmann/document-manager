@@ -64,6 +64,7 @@ services:
         - "./scan:/records"
   m1-adapter:
       build: ./m1-adapter
-
+  migrator:
+    build: ./migrator
 networks:
   backend:

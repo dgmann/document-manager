@@ -7,8 +7,6 @@ import (
 	"github.com/pkg/errors"
 	"github.com/dgmann/document-manager/migrator/validator"
 	"fmt"
-	"os"
-	"bufio"
 	"strings"
 	"github.com/sirupsen/logrus"
 	"path/filepath"
@@ -21,8 +19,8 @@ func main() {
 		logrus.Info(http.ListenAndServe("localhost:6060", nil))
 	}()
 
-	config := shared.NewConfig()
-	recordManager := databasereader.NewManager(config)
+	config := NewConfig()
+	recordManager := databasereader.NewManager(config.DbName, config.Username, config.Password, config.Hostname, config.Instance)
 	err := recordManager.Open()
 	if err != nil {
 		logrus.WithError(err).Fatal("Error opening connection")
@@ -38,22 +36,30 @@ func main() {
 	if err != nil {
 		logrus.WithError(err).Error("error saving filesystemindex to disk")
 	}
-	defer filesystemIndex.Destroy() // TODO: Remove
 
 	resolvable, validationErrors := validator.Validate(filesystemIndex, databaseIndex, recordManager.Manager)
 	if validationErrors != nil {
 		logrus.WithError(validationErrors).Warn("validation error")
 	}
 
-	writeLines(validationErrors.Messages, config.ValidationFile)
-	if !askForConfirmation() {
-		fmt.Printf("Aborted\n")
+	shared.WriteLines(validationErrors.Messages, config.ValidationFile)
+	if askForConfirmation() {
+		fmt.Printf("Trying to resolve them\n")
+		for _, r := range resolvable {
+			r.Resolve()
+		}
 		return
 	}
-	println(len(resolvable))
+
+	var filesToImport []string
+	for _, r := range filesystemIndex.SubRecords() {
+		filesToImport = append(filesToImport, r.SubRecord().Path)
+	}
+	shared.WriteLines(filesToImport, config.OutputFile)
+	fmt.Printf("Successfully created file to import\n")
 }
 
-func load(config shared.Config, manager *databasereader.Manager) (*databasereader.Index, *filesystem.Index, error) {
+func load(config Config, manager *databasereader.Manager) (*databasereader.Index, *filesystem.Index, error) {
 	errorChan := make(chan error, 2)
 	databaseIndexChan := make(chan *databasereader.Index, 1)
 	filesystemIndexChan := make(chan *filesystem.Index, 1)
@@ -96,20 +102,6 @@ func load(config shared.Config, manager *databasereader.Manager) (*databasereade
 
 func loadFileSystem(recordDirectory string) (*filesystem.Index, error) {
 	return filesystem.CreateIndex(recordDirectory)
-}
-
-func writeLines(lines []string, path string) error {
-	file, err := os.Create(path)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
-	w := bufio.NewWriter(file)
-	for _, line := range lines {
-		fmt.Fprintln(w, line)
-	}
-	return w.Flush()
 }
 
 func askForConfirmation() bool {

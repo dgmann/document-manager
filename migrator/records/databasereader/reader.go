@@ -13,9 +13,9 @@ type Manager struct {
 	*shared.Manager
 }
 
-func NewManager(config shared.Config) *Manager {
+func NewManager(dbName, username, password, hostname, instance string) *Manager {
 
-	return &Manager{shared.NewManager(config)}
+	return &Manager{shared.NewManager(dbName, username, password, hostname, instance)}
 }
 
 func (m *Manager) Load() (*Index, error) {

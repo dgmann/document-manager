@@ -1,20 +1,21 @@
-FROM golang as builder
+FROM golang:rc-stretch as builder
+ENV GO111MODULE=on
 
-RUN curl -fsSL -o /usr/local/bin/dep https://github.com/golang/dep/releases/download/v0.4.1/dep-linux-amd64 && chmod +x /usr/local/bin/dep
-WORKDIR /go/src/github.com/dgmann/document-manager/migrator
-COPY Gopkg.toml Gopkg.lock ./
+WORKDIR /src
+COPY go.mod go.sum ./
+RUN go get
 
-RUN dep ensure -vendor-only
 COPY . .
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o /migrator .
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o /validator ./cmd/validator && \
+    CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o /importer ./cmd/importer
 
 
 FROM openjdk:jre-alpine
 RUN wget -O SplitPDF.jar "https://sourceforge.net/projects/splitpdf/files/latest/download"
-COPY --from=builder /migrator /migrator
 
-ENV DIRECTORY=/records DESTINATION=http://api PARSER=generic SENDER=Scan RETRY=5
+COPY --from=builder /validator /validator
+COPY --from=builder /importer /importer
 
-VOLUME ["/records"]
+VOLUME ["/data", "/records", "/splitted"]
 
-CMD ["/migrator"]
+CMD ["/validator"]

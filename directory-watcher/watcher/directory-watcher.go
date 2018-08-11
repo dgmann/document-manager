@@ -1,7 +1,6 @@
 package watcher
 
 import (
-	"github.com/dgmann/document-manager/directory-watcher/models"
 	"github.com/dgmann/document-manager/directory-watcher/parser"
 	"io/ioutil"
 	"os"
@@ -10,19 +9,20 @@ import (
 	"errors"
 	"fmt"
 	"path"
+	"github.com/dgmann/document-manager/api-client/record"
 )
 
 type DirectoryWatcher struct {
 	ticker        *time.Ticker
 	watchedFiles  map[string]struct{}
-	recordChannel chan *models.RecordCreate
+	recordChannel chan *record.NewRecord
 	retryCount    int
 }
 
 func NewDirectoryWatcher(scanInterval, retry int) *DirectoryWatcher {
 	return &DirectoryWatcher{
 		ticker:        time.NewTicker(time.Duration(scanInterval) * time.Second),
-		recordChannel: make(chan *models.RecordCreate),
+		recordChannel: make(chan *record.NewRecord),
 		watchedFiles:  make(map[string]struct{}),
 		retryCount:    retry,
 	}
@@ -33,7 +33,7 @@ func (w *DirectoryWatcher) Close() {
 	close(w.recordChannel)
 }
 
-func (w *DirectoryWatcher) Watch(dir string, parser parser.Parser) <-chan *models.RecordCreate {
+func (w *DirectoryWatcher) Watch(dir string, parser parser.Parser) <-chan *record.NewRecord {
 	go func() {
 		for range w.ticker.C {
 			files, err := ioutil.ReadDir(dir)
@@ -55,7 +55,7 @@ func (w *DirectoryWatcher) Watch(dir string, parser parser.Parser) <-chan *model
 	return w.recordChannel
 }
 
-func (w *DirectoryWatcher) Done(record *models.RecordCreate) {
+func (w *DirectoryWatcher) Done(record *record.NewRecord) {
 	if err := w.remove(record); err != nil {
 		log.WithField("error", err).WithField("record", record).Infof("error processing record")
 	} else {
@@ -63,7 +63,7 @@ func (w *DirectoryWatcher) Done(record *models.RecordCreate) {
 	}
 }
 
-func (w *DirectoryWatcher) Error(record *models.RecordCreate) {
+func (w *DirectoryWatcher) Error(record *record.NewRecord) {
 	record.RetryCounter++
 	if record.RetryCounter <= w.retryCount {
 		go func(record *models.RecordCreate) {
@@ -76,7 +76,7 @@ func (w *DirectoryWatcher) Error(record *models.RecordCreate) {
 	}
 }
 
-func (w *DirectoryWatcher) add(record *models.RecordCreate) {
+func (w *DirectoryWatcher) add(record *record.NewRecord) {
 	if _, ok := w.watchedFiles[record.PdfPath]; ok {
 		return
 	}
@@ -86,7 +86,7 @@ func (w *DirectoryWatcher) add(record *models.RecordCreate) {
 	w.recordChannel <- record
 }
 
-func (w *DirectoryWatcher) remove(record *models.RecordCreate) error {
+func (w *DirectoryWatcher) remove(record *record.NewRecord) error {
 	if _, ok := w.watchedFiles[record.PdfPath]; !ok {
 		return errors.New(fmt.Sprintf("record %s not found", record.PdfPath))
 	}

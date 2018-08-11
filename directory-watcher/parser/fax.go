@@ -1,7 +1,7 @@
 package parser
 
 import (
-	"github.com/dgmann/document-manager/directory-watcher/models"
+	"github.com/dgmann/document-manager/api-client/record"
 	"strings"
 	"time"
 )
@@ -9,7 +9,7 @@ import (
 type Fax struct {
 }
 
-func (f *Fax) Parse(fileName string) *models.RecordCreate {
+func (f *Fax) Parse(fileName string) *record.NewRecord {
 	sender := ""
 	receviedAt := time.Now()
 	toParse := strings.TrimSuffix(fileName, ".pdf")
@@ -26,7 +26,7 @@ func (f *Fax) Parse(fileName string) *models.RecordCreate {
 		}
 	}
 
-	return &models.RecordCreate{
+	return &record.NewRecord{
 		Sender:     sender,
 		ReceivedAt: receviedAt,
 	}

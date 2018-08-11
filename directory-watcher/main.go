@@ -4,8 +4,9 @@ import (
 	"github.com/namsral/flag"
 	"github.com/dgmann/document-manager/directory-watcher/watcher"
 	"github.com/dgmann/document-manager/directory-watcher/parser"
-	"github.com/dgmann/document-manager/directory-watcher/upload"
+	"github.com/dgmann/document-manager/api-client/record"
 	log "github.com/sirupsen/logrus"
+	"os"
 )
 
 var directory string
@@ -34,7 +35,7 @@ func init() {
 
 func main() {
 	w := watcher.NewDirectoryWatcher(scanInterval, retryCount)
-	uploader := upload.NewHttpUploader(destination)
+	uploader := record.NewHttpUploader(destination)
 	var p parser.Parser
 	if pars == "fax" {
 		p = &parser.Fax{}
@@ -47,7 +48,14 @@ func main() {
 	}
 	records := w.Watch(directory, p)
 	for record := range records {
-		err := uploader.Upload(record)
+		f, err := os.Open(record.PdfPath)
+		if err != nil {
+			log.WithField("record", record).WithField("error", err).Errorf("error opening pdf")
+			w.Error(record)
+		}
+		record.File = f
+		err = uploader.Upload(record.NewRecord)
+		f.Close()
 		if err != nil {
 			log.WithField("record", record).WithField("error", err).Errorf("error uploading record")
 			w.Error(record)

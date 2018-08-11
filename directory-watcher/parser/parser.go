@@ -1,7 +1,7 @@
 package parser
 
-import "github.com/dgmann/document-manager/directory-watcher/models"
+import "github.com/dgmann/document-manager/api-client/record"
 
 type Parser interface {
-	Parse(fileName string) *models.RecordCreate
+	Parse(fileName string) *record.NewRecord
 }

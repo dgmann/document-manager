@@ -51,7 +51,6 @@ func registerRecords(g *gin.RouterGroup, factory *Factory) {
 		file, _ := c.FormFile("pdf")
 		sender := c.PostForm("sender")
 		f, err := file.Open()
-		defer f.Close()
 		if err != nil {
 			fields := log.Fields{
 				"name":  file.Filename,
@@ -59,7 +58,9 @@ func registerRecords(g *gin.RouterGroup, factory *Factory) {
 				"error": err,
 			}
 			log.WithFields(fields).Panic("Error opening PDF")
+			return
 		}
+		defer f.Close()
 		fileBytes, err := ioutil.ReadAll(f)
 		if err != nil {
 			c.AbortWithError(400, err)

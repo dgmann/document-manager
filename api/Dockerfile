@@ -1,10 +1,10 @@
-FROM golang as builder
+FROM golang:rc-stretch as builder
+ENV GO111MODULE=on
 
-RUN curl -fsSL -o /usr/local/bin/dep https://github.com/golang/dep/releases/download/v0.4.1/dep-linux-amd64 && chmod +x /usr/local/bin/dep
-WORKDIR /go/src/github.com/dgmann/document-manager/api
-COPY Gopkg.toml Gopkg.lock ./
+WORKDIR /src
+COPY go.mod go.sum ./
+RUN go get
 
-RUN dep ensure -vendor-only && rm -r vendor/github.com/dgmann/document-manager/api
 COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o /api .
 

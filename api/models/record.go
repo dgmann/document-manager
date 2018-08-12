@@ -62,19 +62,19 @@ func statusToString(val *Status) string {
 }
 
 type CreateRecord struct {
-	Date       *time.Time `form:"date"`
-	ReceivedAt *time.Time `form:"receivedAt"`
-	Sender     string     `form:"sender"`
-	Comment    *string    `form:"comment"`
-	PatientId  *string    `form:"patientId"`
-	Tags       []string   `form:"tags"`
-	Status     *Status    `form:"status"`
+	Date       time.Time `form:"date" time_format:"2006-01-02T15:04:05Z07:00"`
+	ReceivedAt time.Time `form:"receivedAt" time_format:"2006-01-02T15:04:05Z07:00"`
+	Sender     string    `form:"sender"`
+	Comment    *string   `form:"comment"`
+	PatientId  *string   `form:"patientId"`
+	Tags       []string  `form:"tags"`
+	Status     *Status   `form:"status"`
 }
 
 func NewRecord(data CreateRecord) *Record {
 	record := &Record{
 		Id:         bson.NewObjectId(),
-		Date:       data.Date,
+		Date:       &data.Date,
 		ReceivedAt: time.Now(),
 		Comment:    data.Comment,
 		PatientId:  data.PatientId,
@@ -83,8 +83,8 @@ func NewRecord(data CreateRecord) *Record {
 		Pages:      []*Page{},
 		Status:     data.Status,
 	}
-	if data.ReceivedAt == nil {
-		record.ReceivedAt = *data.ReceivedAt
+	if !data.ReceivedAt.IsZero() {
+		record.ReceivedAt = data.ReceivedAt
 	}
 	if record.Tags == nil {
 		record.Tags = []string{}

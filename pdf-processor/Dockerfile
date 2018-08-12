@@ -1,4 +1,5 @@
-FROM golang:latest as builder
+FROM golang:rc-stretch as builder
+ENV GO111MODULE=on
 
 RUN apt-get update && \
     apt-get install -q -y wget build-essential pkg-config poppler-utils git g++ libjpeg-dev libpng-dev libtiff-dev libgif-dev --no-install-recommends && \
@@ -15,13 +16,12 @@ RUN apt-get update && \
 	make && make install && \
 	cd && rm -rf ImageMagick* && \
 	ldconfig /usr/local/lib && \
-	rm -rf /var/lib/apt/lists/* && \
-	wget -O /usr/local/bin/dep https://github.com/golang/dep/releases/download/v0.4.1/dep-linux-amd64 && chmod +x /usr/local/bin/dep
+	rm -rf /var/lib/apt/lists/*
 
-WORKDIR /go/src/github.com/dgmann/document-manager/pdf-processor
-COPY Gopkg.toml Gopkg.lock ./
+WORKDIR /src
+COPY go.mod go.sum ./
+RUN go get
 
-RUN dep ensure -vendor-only && rm -r vendor/github.com/dgmann/document-manager/pdf-processor
 COPY . .
 RUN go build -o /processor .
 

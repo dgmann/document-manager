@@ -20,7 +20,7 @@ func NewConfig() Config {
 	flag.StringVar(&splittedDir, "splitted_dir", "/splitted", "Splitted Records Directory")
 	flag.StringVar(&dataDirectory, "data_dir", "/data", "Data Directory")
 
-	flag.StringVar(&outputFile, "output", "/data/output.txt", "Output file which can be imported")
+	flag.StringVar(&outputFile, "output", "/data/output.gob", "Output file which can be imported")
 
 	flag.Parse()
 

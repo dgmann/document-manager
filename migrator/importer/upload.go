@@ -4,6 +4,7 @@ import (
 	"github.com/dgmann/document-manager/api-client/record"
 	"github.com/dgmann/document-manager/migrator/shared"
 	"os"
+	"github.com/sirupsen/logrus"
 )
 
 type Importer struct {
@@ -30,11 +31,15 @@ func (i *Importer) uploadFunc() shared.ParallelExecFunc {
 		if err != nil {
 			return err
 		}
-		i.recordRepository.Create(&record.NewRecord{
+		logrus.WithField("record", r).Info("upload file")
+		err = i.recordRepository.Create(&record.NewRecord{
 			CreateRecord: r.CreateRecord,
 			File:         f,
 		})
+		if err != nil {
+			logrus.WithError(err).Error("error uploading file")
+		}
 		f.Close()
-		return nil
+		return err
 	}
 }

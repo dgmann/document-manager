@@ -14,6 +14,8 @@ github.com/dgmann/document-manager/api v0.0.0-20180812180544-770baf60f36a h1:thv
 github.com/dgmann/document-manager/api v0.0.0-20180812180544-770baf60f36a/go.mod h1:E7WMeXPHTwjCvdHMIh+wlq/I7G697LQ6eUfp7FMi0kc=
 github.com/dgmann/document-manager/api-client v0.0.0-20180812180937-077fa8d1aeef h1:EQ3heiAcJ8l8WzldYiGoj8W18Kz/6xhRreKdX+8KoD8=
 github.com/dgmann/document-manager/api-client v0.0.0-20180812180937-077fa8d1aeef/go.mod h1:pMdEizhXUjURfti0OIKbgK+yLoOaQ3AU6noqEAwGylI=
+github.com/dgmann/document-manager/api-client v0.0.0-20180812181320-98b2a24062c2 h1:6WEuCkriV7wIrpCsdYSzGYOm8e8a6+YbiIdOSh/ly4w=
+github.com/dgmann/document-manager/api-client v0.0.0-20180812181320-98b2a24062c2/go.mod h1:pMdEizhXUjURfti0OIKbgK+yLoOaQ3AU6noqEAwGylI=
 github.com/dgmann/document-manager/shared v0.0.0-20180811155848-da48cdc1e362/go.mod h1:8a7LOi42xbs0LHITiBNNAb4RTapn4mm4LRcqAf1G654=
 github.com/fsnotify/fsnotify v1.4.7 h1:IXs+QLmnXW2CcXuY+8Mzv/fWEsPGWxqefPtCP5CnV9I=
 github.com/fsnotify/fsnotify v1.4.7/go.mod h1:jwhsz4b93w/PPRr/qN1Yymfu8t87LnFCMoQvtojpjFo=

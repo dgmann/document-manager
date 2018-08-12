@@ -28,3 +28,5 @@ COPY --from=builder /validator /validator
 COPY --from=builder /importer /importer
 
 VOLUME ["/data", "/records", "/splitted"]
+
+CMD ["/importer"]

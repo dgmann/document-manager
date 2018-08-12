@@ -3,7 +3,7 @@ module github.com/dgmann/document-manager/migrator
 require (
 	cloud.google.com/go v0.26.0 // indirect
 	github.com/denisenkom/go-mssqldb v0.0.0-20180707235734-242fa5aa1b45
-		github.com/dgmann/document-manager/api-client v0.0.0-20180812180937-077fa8d1aeef
+        github.com/dgmann/document-manager/api-client v0.0.0-20180812181320-98b2a24062c2
 	github.com/go-sql-driver/mysql v1.4.0 // indirect
 	github.com/google/go-cmp v0.2.0 // indirect
 	github.com/jmoiron/sqlx v0.0.0-20180614180643-0dae4fefe7c0

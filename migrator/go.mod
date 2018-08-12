@@ -4,7 +4,7 @@ require (
 	cloud.google.com/go v0.26.0 // indirect
 	github.com/denisenkom/go-mssqldb v0.0.0-20180707235734-242fa5aa1b45
 	github.com/dgmann/document-manager/api v0.0.0-20180812075534-c45d43a1cf2c // indirect
-	github.com/dgmann/document-manager/api-client v0.0.0-20180812174417-24d988fde539
+		github.com/dgmann/document-manager/api-client v0.0.0-20180812175535-04d9933a67dd
 	github.com/go-sql-driver/mysql v1.4.0 // indirect
 	github.com/google/go-cmp v0.2.0 // indirect
 	github.com/jmoiron/sqlx v0.0.0-20180614180643-0dae4fefe7c0

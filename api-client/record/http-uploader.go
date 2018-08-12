@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"mime/multipart"
 	"net/http"
+	"time"
 )
 
 type HttpUploader struct {
@@ -43,10 +44,10 @@ func createParamMap(create *NewRecord) map[string]string {
 		"sender": create.Sender,
 	}
 	if create.Date != nil {
-		params["date"] = create.Date.String()
+		params["date"] = create.Date.Format(time.RFC3339)
 	}
 	if create.ReceivedAt != nil {
-		params["receivedAt"] = create.ReceivedAt.String()
+		params["receivedAt"] = create.ReceivedAt.Format(time.RFC3339)
 	}
 	if create.PatientId != nil {
 		params["patientId"] = *create.PatientId

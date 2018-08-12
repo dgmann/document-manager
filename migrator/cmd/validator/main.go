@@ -60,8 +60,8 @@ func main() {
 		subrecord := r.SubRecord()
 		patId := strconv.Itoa(*subrecord.PatId)
 		newRecord := record.CreateRecord{
-			ReceivedAt: &subrecord.ReceivedAt,
-			Date:       subrecord.Date,
+			ReceivedAt: subrecord.ReceivedAt,
+			Date:       *subrecord.Date,
 			Status:     &status,
 			PatientId:  &patId,
 		}
@@ -70,8 +70,12 @@ func main() {
 			Path:         subrecord.Path,
 		})
 	}
-	filesToImport.Save(config.OutputFile)
-	fmt.Printf("Successfully created file to import\n")
+	err = filesToImport.Save(config.OutputFile)
+	if err != nil {
+		fmt.Printf("Error creating output %v\n", err)
+	} else {
+		fmt.Printf("Successfully created file to import\n")
+	}
 }
 
 func load(config Config, manager *databasereader.Manager) (*databasereader.Index, *filesystem.Index, error) {

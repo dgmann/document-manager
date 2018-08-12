@@ -66,5 +66,39 @@ services:
       build: ./m1-adapter
   migrator:
     build: ./migrator
+    command: cat
+    volumes:
+      - "./migrator/mounts/records:/records"
+      - "./migrator/mounts/data:/data"
+      - "./migrator/mounts/splitted:/splitted"
+    depends_on:
+      - mssql
+    networks:
+      - backend
+      - legacy
+    environment:
+      - DB_HOST=mssql
+      - DB_USER=sa
+      - DB_PASSWORD=Password%
+      - DB_NAME=PdfDatabase
+      - DB_INSTANCE=
+      - RECORD_DIR=/records
+      - VALIDATION_FILE=/data/validation.log
+      - SPLITTED_DIR=/splitted
+      - DATA_DIR=/data
+      - API_URL=http://10.0.0.38:8080
+  mssql:
+    image: microsoft/mssql-server-linux
+    ports:
+    - "1433:1433"
+    volumes:
+    - "./migrator/mounts/db:/var/opt/mssql"
+    networks:
+      - legacy
+    environment:
+    - SA_PASSWORD=Password%
+    - ACCEPT_EULA=Y
+    - MSSQL_PID=Express
 networks:
   backend:
+  legacy:

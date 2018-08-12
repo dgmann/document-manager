@@ -49,7 +49,11 @@ func registerRecords(g *gin.RouterGroup, factory *Factory) {
 
 	g.POST("", func(c *gin.Context) {
 		var newRecord models.CreateRecord
-		c.Bind(&newRecord)
+		if err := c.Bind(&newRecord); err != nil {
+			log.WithError(err).Error("error decoding data")
+			c.AbortWithError(400, err)
+			return
+		}
 
 		file, _ := c.FormFile("pdf")
 		f, err := file.Open()

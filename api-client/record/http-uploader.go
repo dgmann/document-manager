@@ -19,10 +19,7 @@ func NewHttpUploader(url string) *HttpUploader {
 }
 
 func (u *HttpUploader) Upload(create *NewRecord) error {
-	params := map[string]string{
-		"sender":     create.Sender,
-		"receivedAt": create.ReceivedAt.String(),
-	}
+	params := createParamMap(create)
 	req, err := newfileUploadRequest(u.url+"/records", params, create.File)
 	if err != nil {
 		return err
@@ -39,6 +36,28 @@ func (u *HttpUploader) Upload(create *NewRecord) error {
 		return errors.New(fmt.Sprintf("bad response. Status: %v, Message: %s", resp.StatusCode, string(body)))
 	}
 	return nil
+}
+
+func createParamMap(create *NewRecord) map[string]string {
+	params := map[string]string{
+		"sender": create.Sender,
+	}
+	if create.Date != nil {
+		params["date"] = create.Date.String()
+	}
+	if create.ReceivedAt != nil {
+		params["receivedAt"] = create.ReceivedAt.String()
+	}
+	if create.PatientId != nil {
+		params["patientId"] = *create.PatientId
+	}
+	if create.Status != nil {
+		params["status"] = string(*create.Status)
+	}
+	if create.Comment != nil {
+		params["comment"] = *create.Comment
+	}
+	return params
 }
 
 func newfileUploadRequest(uri string, params map[string]string, file io.Reader) (*http.Request, error) {

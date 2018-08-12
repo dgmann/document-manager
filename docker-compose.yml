@@ -7,6 +7,8 @@ services:
       - backend
     ports:
       - "27017:27017"
+    volumes:
+      - "mongo:/data/db"
   processor:
     build: ./pdf-processor
     ports:
@@ -66,7 +68,6 @@ services:
       build: ./m1-adapter
   migrator:
     build: ./migrator
-    command: cat
     volumes:
       - "./migrator/mounts/records:/records"
       - "./migrator/mounts/data:/data"
@@ -102,3 +103,5 @@ services:
 networks:
   backend:
   legacy:
+volumes:
+  mongo:

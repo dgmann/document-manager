@@ -15,7 +15,7 @@ type RecordRepository interface {
 	All() ([]*models.Record, error)
 	Find(id string) (*models.Record, error)
 	Query(query map[string]interface{}) ([]*models.Record, error)
-	Create(sender string, images []*shared.Image, pdfData io.Reader) (*models.Record, error)
+	Create(data models.CreateRecord, images []*shared.Image, pdfData io.Reader) (*models.Record, error)
 	Delete(id string) error
 	Update(id string, record models.Record) (*models.Record, error)
 	UpdatePages(id string, updates []*models.PageUpdate) (*models.Record, error)
@@ -86,8 +86,8 @@ func (r *DBRecordRepository) Query(query map[string]interface{}) ([]*models.Reco
 	return records, nil
 }
 
-func (r *DBRecordRepository) Create(sender string, images []*shared.Image, pdfData io.Reader) (*models.Record, error) {
-	record := models.NewRecord(sender)
+func (r *DBRecordRepository) Create(data models.CreateRecord, images []*shared.Image, pdfData io.Reader) (*models.Record, error) {
+	record := models.NewRecord(data)
 	pages, err := r.images.Set(record.Id.Hex(), images)
 	if err != nil {
 		log.Error(err)

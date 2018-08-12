@@ -48,8 +48,10 @@ func registerRecords(g *gin.RouterGroup, factory *Factory) {
 	})
 
 	g.POST("", func(c *gin.Context) {
+		var newRecord models.CreateRecord
+		c.Bind(&newRecord)
+
 		file, _ := c.FormFile("pdf")
-		sender := c.PostForm("sender")
 		f, err := file.Open()
 		if err != nil {
 			fields := log.Fields{
@@ -73,7 +75,7 @@ func registerRecords(g *gin.RouterGroup, factory *Factory) {
 			return
 		}
 
-		record, err := recordRepository.Create(sender, images, bytes.NewBuffer(fileBytes))
+		record, err := recordRepository.Create(newRecord, images, bytes.NewBuffer(fileBytes))
 		if err != nil {
 			c.AbortWithError(400, err)
 			return

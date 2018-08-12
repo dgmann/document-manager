@@ -61,17 +61,37 @@ func statusToString(val *Status) string {
 	return string(*val)
 }
 
-func NewRecord(sender string) *Record {
-	status := StatusInbox
-	return &Record{
+type CreateRecord struct {
+	Date       *time.Time `form:"date"`
+	ReceivedAt *time.Time `form:"receivedAt"`
+	Sender     string     `form:"sender"`
+	Comment    *string    `form:"comment"`
+	PatientId  *string    `form:"patientId"`
+	Tags       []string   `form:"tags"`
+	Status     *Status    `form:"status"`
+}
+
+func NewRecord(data CreateRecord) *Record {
+	record := &Record{
 		Id:         bson.NewObjectId(),
-		Date:       nil,
+		Date:       data.Date,
 		ReceivedAt: time.Now(),
-		Comment:    nil,
-		PatientId:  nil,
-		Sender:     sender,
-		Tags:       []string{},
+		Comment:    data.Comment,
+		PatientId:  data.PatientId,
+		Sender:     data.Sender,
+		Tags:       data.Tags,
 		Pages:      []*Page{},
-		Status:     &status,
+		Status:     data.Status,
 	}
+	if data.ReceivedAt == nil {
+		record.ReceivedAt = *data.ReceivedAt
+	}
+	if record.Tags == nil {
+		record.Tags = []string{}
+	}
+	if record.Status == nil {
+		status := StatusInbox
+		record.Status = &status
+	}
+	return record
 }

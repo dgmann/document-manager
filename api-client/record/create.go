@@ -2,7 +2,7 @@ package record
 
 import (
 	"io"
-	"time"
+	"github.com/dgmann/document-manager/api/models"
 )
 
 type Repository struct {
@@ -13,9 +13,11 @@ func NewRepository(url string) *Repository {
 	return &Repository{uploader: NewHttpUploader(url)}
 }
 
+type CreateRecord = models.CreateRecord
+type Status = models.Status
+
 type NewRecord struct {
-	Sender       string
-	ReceivedAt   time.Time
+	CreateRecord
 	File         io.Reader
 	RetryCounter int
 }

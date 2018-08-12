@@ -76,7 +76,7 @@ func loadSubRecord(record *Record, dir string) error {
 	return nil
 }
 
-type SubRecordList = []models.SubRecordContainer
+type SubRecordList []models.SubRecordContainer
 
 func (i *Index) SubRecords() SubRecordList {
 	var subrecords []models.SubRecordContainer

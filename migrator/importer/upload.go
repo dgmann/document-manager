@@ -4,10 +4,6 @@ import (
 	"github.com/dgmann/document-manager/api-client/record"
 	"github.com/dgmann/document-manager/migrator/shared"
 	"os"
-	"path"
-	"path/filepath"
-	"strings"
-	"time"
 )
 
 type Importer struct {
@@ -18,9 +14,9 @@ func NewImporter(url string) *Importer {
 	return &Importer{recordRepository: record.NewRepository(url)}
 }
 
-func (i *Importer) Import(paths []string) []string {
-	var interfaceSlice = make([]interface{}, len(paths))
-	for i, d := range paths {
+func (i *Importer) Import(records ImportableRecordList) []string {
+	var interfaceSlice = make([]interface{}, len(records))
+	for i, d := range records {
 		interfaceSlice[i] = d
 	}
 	unsuccessFull := shared.Parallel(interfaceSlice, i.uploadFunc())
@@ -29,20 +25,14 @@ func (i *Importer) Import(paths []string) []string {
 
 func (i *Importer) uploadFunc() shared.ParallelExecFunc {
 	return func(value interface{}) error {
-		p := value.(string)
-		fileName := path.Base(p)
-		receivedAt, err := time.Parse("02.01.2006", strings.TrimSuffix(fileName, filepath.Ext(fileName)))
-		if err != nil {
-			return err
-		}
-		f, err := os.Open(p)
+		r := value.(ImportableRecord)
+		f, err := os.Open(r.Path)
 		if err != nil {
 			return err
 		}
 		i.recordRepository.Create(&record.NewRecord{
-			Sender:     "",
-			File:       f,
-			ReceivedAt: receivedAt,
+			CreateRecord: r.CreateRecord,
+			File:         f,
 		})
 		f.Close()
 		return nil

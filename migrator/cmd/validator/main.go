@@ -12,6 +12,9 @@ import (
 	"path/filepath"
 	"net/http"
 	_ "net/http/pprof"
+	"github.com/dgmann/document-manager/migrator/importer"
+	"github.com/dgmann/document-manager/api-client/record"
+	"strconv"
 )
 
 func main() {
@@ -51,11 +54,23 @@ func main() {
 		return
 	}
 
-	var filesToImport []string
+	var filesToImport importer.ImportableRecordList
+	status := record.StatusDone
 	for _, r := range filesystemIndex.SubRecords() {
-		filesToImport = append(filesToImport, r.SubRecord().Path)
+		subrecord := r.SubRecord()
+		patId := strconv.Itoa(*subrecord.PatId)
+		newRecord := record.CreateRecord{
+			ReceivedAt: &subrecord.ReceivedAt,
+			Date:       subrecord.Date,
+			Status:     &status,
+			PatientId:  &patId,
+		}
+		filesToImport = append(filesToImport, importer.ImportableRecord{
+			CreateRecord: newRecord,
+			Path:         subrecord.Path,
+		})
 	}
-	shared.WriteLines(filesToImport, config.OutputFile)
+	filesToImport.Save(config.OutputFile)
 	fmt.Printf("Successfully created file to import\n")
 }
 

@@ -14,8 +14,6 @@ github.com/dgmann/document-manager/api v0.0.0-20180812074516-2ab2b79531d7 h1:MjA
 github.com/dgmann/document-manager/api v0.0.0-20180812074516-2ab2b79531d7/go.mod h1:MrthU5MPLnQTmCrlyrAUAt83e3YA/FcyKRV4ihMTIIA=
 github.com/dgmann/document-manager/api v0.0.0-20180812075534-c45d43a1cf2c h1:ep9bt4/o9qTFJuAB5I1LUsHcezDfs8GpXc/y4OAdMtw=
 github.com/dgmann/document-manager/api v0.0.0-20180812075534-c45d43a1cf2c/go.mod h1:MrthU5MPLnQTmCrlyrAUAt83e3YA/FcyKRV4ihMTIIA=
-github.com/dgmann/document-manager/api-client v0.0.0-20180812174417-24d988fde539 h1:qx3+Zk/2sbFsukdK8DE1ZL03sKr5qLVoqHkLlkKhQNk=
-github.com/dgmann/document-manager/api-client v0.0.0-20180812174417-24d988fde539/go.mod h1:wMHA2tr1OOnlOsqWRC5N9Cvq3mmZNDrsGtRUVhr5Oes=
 github.com/dgmann/document-manager/api-client v0.0.0-20180812175535-04d9933a67dd h1:DfXB/OISxSuWC74SSuWNf5b5W1rCFwX/I3r0SSS3EoI=
 github.com/dgmann/document-manager/api-client v0.0.0-20180812175535-04d9933a67dd/go.mod h1:wMHA2tr1OOnlOsqWRC5N9Cvq3mmZNDrsGtRUVhr5Oes=
 github.com/dgmann/document-manager/shared v0.0.0-20180811155848-da48cdc1e362/go.mod h1:8a7LOi42xbs0LHITiBNNAb4RTapn4mm4LRcqAf1G654=

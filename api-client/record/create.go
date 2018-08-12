@@ -16,6 +16,14 @@ func NewRepository(url string) *Repository {
 type CreateRecord = models.CreateRecord
 type Status = models.Status
 
+const (
+	StatusInbox     = models.StatusInbox
+	StatusEscalated = models.StatusEscalated
+	StatusReview    = models.StatusReview
+	StatusOther     = models.StatusOther
+	StatusDone      = models.StatusDone
+)
+
 type NewRecord struct {
 	CreateRecord
 	File         io.Reader

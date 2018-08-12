@@ -43,10 +43,10 @@ func createParamMap(create *NewRecord) map[string]string {
 	params := map[string]string{
 		"sender": create.Sender,
 	}
-	if create.Date != nil {
+	if !create.Date.IsZero() {
 		params["date"] = create.Date.Format(time.RFC3339)
 	}
-	if create.ReceivedAt != nil {
+	if !create.ReceivedAt.IsZero() {
 		params["receivedAt"] = create.ReceivedAt.Format(time.RFC3339)
 	}
 	if create.PatientId != nil {

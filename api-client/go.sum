@@ -9,10 +9,10 @@ github.com/bugsnag/panicwrap v1.2.0/go.mod h1:D/8v3kj0zr8ZAKg1AQ6crr+5VwKN5eIywR
 github.com/cskr/pubsub v1.0.1 h1:zAaDV+uWy55qU+guKH0skkEGTePJpnBy/BJ3YwwDmOo=
 github.com/cskr/pubsub v1.0.1/go.mod h1:Sa0GZ6ObN+iL7BemRztT4twaIREPOG+9UXtWhOL/SLg=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
-github.com/dgmann/document-manager/api v0.0.0-20180812074516-2ab2b79531d7 h1:MjAGLgDFeIzI9Ifs2catopDzXZAAUUzdb2He0Cn3OlU=
-github.com/dgmann/document-manager/api v0.0.0-20180812074516-2ab2b79531d7/go.mod h1:MrthU5MPLnQTmCrlyrAUAt83e3YA/FcyKRV4ihMTIIA=
-github.com/dgmann/document-manager/api v0.0.0-20180812180544-770baf60f36a h1:thvj7L9sCMPZihJW2nyBnsLgWr2IIn0bwe3+o3XA7vM=
-github.com/dgmann/document-manager/api v0.0.0-20180812180544-770baf60f36a/go.mod h1:E7WMeXPHTwjCvdHMIh+wlq/I7G697LQ6eUfp7FMi0kc=
+github.com/dgmann/document-manager/api v0.0.0-20180812193112-c3faeff7e6b1 h1:I5tyhTe+dV3nPI7K+gK0gzbFb/65TJJ0U9/OazrNAjA=
+github.com/dgmann/document-manager/api v0.0.0-20180812193112-c3faeff7e6b1/go.mod h1:E7WMeXPHTwjCvdHMIh+wlq/I7G697LQ6eUfp7FMi0kc=
+github.com/dgmann/document-manager/api v0.0.0-20180813154541-2a1f6fd003bd h1:uIYAEMlYtH1ZfOB71YL5rqvbuphaPEJ/mSo4Bw8dKpc=
+github.com/dgmann/document-manager/api v0.0.0-20180813154541-2a1f6fd003bd/go.mod h1:E7WMeXPHTwjCvdHMIh+wlq/I7G697LQ6eUfp7FMi0kc=
 github.com/dgmann/document-manager/shared v0.0.0-20180811155848-da48cdc1e362 h1:UzX0cLdfSfn49kCWqsW9PObq4OII/WHaREVjEx0aYt4=
 github.com/dgmann/document-manager/shared v0.0.0-20180811155848-da48cdc1e362/go.mod h1:8a7LOi42xbs0LHITiBNNAb4RTapn4mm4LRcqAf1G654=
 github.com/fsnotify/fsnotify v1.4.7/go.mod h1:jwhsz4b93w/PPRr/qN1Yymfu8t87LnFCMoQvtojpjFo=
@@ -39,7 +39,6 @@ github.com/kr/pretty v0.1.0/go.mod h1:dAy3ld7l9f0ibDNOQOHHMYYIIbhfbHSm3C4ZsoJORN
 github.com/kr/pty v1.1.1/go.mod h1:pFQYn66WHrOpPYNljwOMqo10TkYh1fy3cYio2l3bCsQ=
 github.com/kr/text v0.1.0 h1:45sCR5RtlFHMR4UwH9sdQ5TC8v0qDQCHnXt+kaKSTVE=
 github.com/kr/text v0.1.0/go.mod h1:4Jbv+DJW3UT/LiOwJeYQe1efqtUx/iVham/4vfdArNI=
-github.com/manucorporat/sse v0.0.0-20160126180136-ee05b128a739/go.mod h1:zUx1mhth20V3VKgL5jbd1BSQcW4Fy6Qs4PZvQwRFwzM=
 github.com/mattn/go-isatty v0.0.3 h1:ns/ykhmWi7G9O+8a448SecJU3nSMBXJfqQkl0upE1jI=
 github.com/mattn/go-isatty v0.0.3/go.mod h1:M+lRXTBqGeGNdLjl/ufCoiOlB5xdOkqRJdNxMWT7Zi4=
 github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd/go.mod h1:6dJC0mAP4ikYIbvyc7fijjWJddQyLn8Ig3JB5CqoB9Q=

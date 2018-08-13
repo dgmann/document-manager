@@ -1,4 +1,4 @@
-import {Moment} from "moment";
+import { Moment } from "moment";
 
 export interface Record {
   id: string;
@@ -7,7 +7,7 @@ export interface Record {
   comment: string;
   sender: string;
   pages: Page[];
-  categoryId: string;
+  category: string;
   tags: string[];
   patientId: string;
   escalated: boolean;

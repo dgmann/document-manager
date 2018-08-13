@@ -42,7 +42,7 @@ export class MultiRecordListComponent implements OnInit {
         patientId: result.patientId,
         date: result.date,
         tags: result.tags,
-        categoryId: result.categoryId
+        category: result.category
       });
     });
   }

@@ -23,7 +23,7 @@ type Record struct {
 	PatientId   *string       `bson:"patientId,omitempty" json:"patientId"`
 	Comment     *string       `bson:"comment,omitempty" json:"comment"`
 	Sender      string        `bson:"sender,omitempty" json:"sender" form:"user" binding:"required"`
-	CategoryId  bson.ObjectId `bson:"categoryId,omitempty" json:"categoryId"`
+	Category    *string       `bson:"category,omitempty" json:"category"`
 	Tags        []string      `bson:"tags,omitempty" json:"tags"`
 	Pages       []*Page       `bson:"pages,omitempty" json:"pages"`
 	Status      *Status       `bson:"status,omitempty" json:"status"`
@@ -38,7 +38,7 @@ func (r *Record) MarshalJSON() ([]byte, error) {
 		"patientId":   toString(r.PatientId),
 		"comment":     toString(r.Comment),
 		"sender":      r.Sender,
-		"categoryId":  r.CategoryId,
+		"category":    r.Category,
 		"tags":        r.Tags,
 		"pages":       r.Pages,
 		"status":      statusToString(r.Status),
@@ -69,6 +69,7 @@ type CreateRecord struct {
 	PatientId  *string   `form:"patientId"`
 	Tags       []string  `form:"tags"`
 	Status     *Status   `form:"status"`
+	Category   *string   `form:"category"`
 }
 
 func NewRecord(data CreateRecord) *Record {
@@ -82,6 +83,7 @@ func NewRecord(data CreateRecord) *Record {
 		Tags:       data.Tags,
 		Pages:      []*Page{},
 		Status:     data.Status,
+		Category:   data.Category,
 	}
 	if !data.ReceivedAt.IsZero() {
 		record.ReceivedAt = data.ReceivedAt

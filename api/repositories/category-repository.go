@@ -11,7 +11,7 @@ type CategoryRepository interface {
 	All() ([]models.Category, error)
 	Find(id string) (*models.Category, error)
 	FindByPatient(id string) ([]models.Category, error)
-	Add(category string) error
+	Add(id, category string) error
 }
 
 type DBCategoryRepository struct {
@@ -60,6 +60,6 @@ func (c *DBCategoryRepository) FindByPatient(id string) ([]models.Category, erro
 	return categories, nil
 }
 
-func (c *DBCategoryRepository) Add(category string) error {
-	return c.categories.Insert(models.NewCategory(category))
+func (c *DBCategoryRepository) Add(id, category string) error {
+	return c.categories.Insert(models.NewCategory(id, category))
 }

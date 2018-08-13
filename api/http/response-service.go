@@ -12,4 +12,9 @@ func RespondAsJSON(c *gin.Context, data interface{}) {
 	}
 }
 
+func RespondWithError(c *gin.Context, code int, err error) {
+	c.JSON(code, gin.H{"error": err.Error()})
+	return
+}
+
 

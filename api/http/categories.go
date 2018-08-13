@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"encoding/json"
 	"github.com/dgmann/document-manager/api/models"
+	"net/http"
 )
 
 func registerCategories(g *gin.RouterGroup, factory *Factory) {
@@ -23,13 +24,11 @@ func registerCategories(g *gin.RouterGroup, factory *Factory) {
 	g.POST("", func(c *gin.Context) {
 		var category models.Category
 		if err := json.NewDecoder(c.Request.Body).Decode(&category); err != nil {
-			c.Error(err)
-			c.AbortWithError(400, err)
+			RespondWithError(c, http.StatusBadRequest, err)
 			return
 		}
-		if err := categoryRepository.Add(category.Name); err != nil {
-			c.Error(err)
-			c.AbortWithError(400, err)
+		if err := categoryRepository.Add(category.Id, category.Name); err != nil {
+			RespondWithError(c, http.StatusConflict, err)
 			return
 		}
 		response := responseService.NewResponse(category)

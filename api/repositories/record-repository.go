@@ -30,7 +30,7 @@ type DBRecordRepository struct {
 
 func newDBRecordRepository(records *mgo.Collection, images ImageRepository, pdfs PDFRepository, eventService *services.EventService) *DBRecordRepository {
 	processedIndex := mgo.Index{
-		Key:        []string{"patientId", "-date", "tags"},
+		Key:        []string{"patientId", "-date", "tags", "status"},
 		Unique:     false,
 		DropDups:   false,
 		Background: true,
@@ -42,18 +42,6 @@ func newDBRecordRepository(records *mgo.Collection, images ImageRepository, pdfs
 		log.Panicf("Error setting indices %s", err)
 	}
 
-	actionIndex := mgo.Index{
-		Key:        []string{"requiredAction"},
-		Unique:     false,
-		DropDups:   false,
-		Background: true,
-		Sparse:     true,
-	}
-
-	err = records.EnsureIndex(actionIndex)
-	if err != nil {
-		log.Panicf("Error setting indices %s", err)
-	}
 	return &DBRecordRepository{records: records, events: eventService, images: images, pdfs: pdfs}
 }
 

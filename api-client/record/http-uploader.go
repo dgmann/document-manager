@@ -58,6 +58,9 @@ func createParamMap(create *NewRecord) map[string]string {
 	if create.Comment != nil {
 		params["comment"] = *create.Comment
 	}
+	if create.Category != nil {
+		params["category"] = *create.Category
+	}
 	return params
 }
 

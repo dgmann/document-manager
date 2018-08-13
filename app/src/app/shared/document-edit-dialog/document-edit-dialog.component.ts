@@ -1,16 +1,24 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, Inject, OnInit, ViewChild} from '@angular/core';
-import {FormControl} from "@angular/forms";
-import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material";
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  Inject,
+  OnInit,
+  ViewChild
+} from '@angular/core';
+import { FormControl } from "@angular/forms";
+import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material";
 import * as moment from "moment";
-import {ReplaySubject} from "rxjs";
-import {shareReplay} from "rxjs/operators";
-import {Patient} from "../../patient";
+import { Observable, ReplaySubject } from "rxjs";
+import { shareReplay } from "rxjs/operators";
+import { Patient } from "../../patient";
 
 
-import {Record} from "../../store";
-import {CategoryService} from "../category-service";
-import {ExternalApiService} from "../external-api.service";
-import {TagService} from "../tag-service";
+import { Record } from "../../store";
+import { Category, CategoryService } from "../category-service";
+import { ExternalApiService } from "../external-api.service";
+import { TagService } from "../tag-service";
 
 
 @Component({
@@ -25,6 +33,7 @@ export class DocumentEditDialogComponent implements AfterViewInit, OnInit {
   public tabIndex = new ReplaySubject<number>();
   public categoryFormControl: FormControl;
   public patient: Patient;
+  categories: Observable<Category[]>;
 
   constructor(public dialogRef: MatDialogRef<DocumentEditDialogComponent>,
               @Inject(MAT_DIALOG_DATA) record: Record,
@@ -32,6 +41,7 @@ export class DocumentEditDialogComponent implements AfterViewInit, OnInit {
               public tagsService: TagService,
               public categoryService: CategoryService) {
     let patientRequest = this.patientService.getSelectedPatient().pipe(shareReplay());
+    this.categories = categoryService.get();
     patientRequest.subscribe(p => this.patient = p);
     this.record = Object.assign({}, record);
     if (!this.record.date) {
@@ -47,8 +57,8 @@ export class DocumentEditDialogComponent implements AfterViewInit, OnInit {
     else {
       this.tabIndex.next(0);
     }
-    this.categoryFormControl = new FormControl({name: "Test", id: this.record.categoryId});
-    this.categoryFormControl.valueChanges.subscribe(val => this.record.categoryId = val.id);
+    this.categoryFormControl = new FormControl({name: "Test", id: this.record.category});
+    this.categoryFormControl.valueChanges.subscribe(val => this.record.category = val.id);
   }
 
   ngOnInit() {
@@ -66,6 +76,6 @@ export class DocumentEditDialogComponent implements AfterViewInit, OnInit {
   }
 
   valid() {
-    return this.record.date && this.record.patientId && this.record.categoryId;
+    return this.record.date && this.record.patientId && this.record.category;
   }
 }

@@ -1,10 +1,10 @@
-import {createFeatureSelector, createSelector, MetaReducer} from '@ngrx/store';
-import {difference, includes, intersection} from 'lodash-es';
-import {environment} from '../../environments/environment';
-import {Record, selectDoneIds, selectRecordEntities} from "../store";
-import {Patient} from "./store/patient.model";
+import { createFeatureSelector, createSelector, MetaReducer } from '@ngrx/store';
+import { difference, includes, intersection } from 'lodash-es';
+import { environment } from '../../environments/environment';
+import { Record, selectDoneIds, selectRecordEntities } from "../store";
+import { Patient } from "./store/patient.model";
 import * as fromPatient from './store/patient.reducer';
-import {Filter} from './store/patient.reducer';
+import { Filter } from './store/patient.reducer';
 
 export const reducers = fromPatient.reducer;
 export {State} from './store/patient.reducer';
@@ -30,7 +30,7 @@ let filterRecords = function (records: Record[], filter: Filter) {
     if (filter.categoryIds.length == 0) {
       result = true;
     } else {
-      result = includes(filter.categoryIds, record.categoryId)
+      result = includes(filter.categoryIds, record.category)
     }
     result = result && difference(filter.tags, record.tags).length === 0;
 

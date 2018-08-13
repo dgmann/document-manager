@@ -8,16 +8,16 @@ import {
   Output,
   ViewChild
 } from '@angular/core';
-import {MatDialog, MatSort, MatTableDataSource} from "@angular/material";
-import {Router} from "@angular/router";
-import {includes} from 'lodash-es';
-import {DropEvent} from "ng-drag-drop";
-import {Observable} from "rxjs";
+import { MatDialog, MatSort, MatTableDataSource } from "@angular/material";
+import { Router } from "@angular/router";
+import { includes } from 'lodash-es';
+import { DropEvent } from "ng-drag-drop";
+import { Observable } from "rxjs";
 
 
-import {Record, RecordService, Status} from "../../store";
-import {CommentDialogComponent} from "../comment-dialog/comment-dialog.component";
-import {DocumentEditDialogComponent} from "../document-edit-dialog/document-edit-dialog.component";
+import { Record, RecordService, Status } from "../../store";
+import { CommentDialogComponent } from "../comment-dialog/comment-dialog.component";
+import { DocumentEditDialogComponent } from "../document-edit-dialog/document-edit-dialog.component";
 
 @Component({
   selector: 'app-document-list',
@@ -101,10 +101,10 @@ export class DocumentListComponent implements OnInit, AfterViewInit {
         patientId: result.patientId,
         date: result.date,
         tags: result.tags,
-        categoryId: result.categoryId,
+        category: result.category,
         status: undefined
       };
-      if (changes.patientId && changes.date && changes.categoryId) {
+      if (changes.patientId && changes.date && changes.category) {
         changes.status = Status.REVIEW;
       }
       this.recordService.update(result.id, changes);

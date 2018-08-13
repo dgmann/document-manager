@@ -75,7 +75,7 @@ type CreateRecord struct {
 func NewRecord(data CreateRecord) *Record {
 	record := &Record{
 		Id:         bson.NewObjectId(),
-		Date:       &data.Date,
+		Date:       nil,
 		ReceivedAt: time.Now(),
 		Comment:    data.Comment,
 		PatientId:  data.PatientId,
@@ -84,6 +84,9 @@ func NewRecord(data CreateRecord) *Record {
 		Pages:      []*Page{},
 		Status:     data.Status,
 		Category:   data.Category,
+	}
+	if !data.Date.IsZero() {
+		record.Date = &data.Date
 	}
 	if !data.ReceivedAt.IsZero() {
 		record.ReceivedAt = data.ReceivedAt

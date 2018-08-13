@@ -21,7 +21,7 @@ services:
       - DB_HOST=db
       - DB_NAME=manager
       - PDFPROCESSOR_URL=http://processor:8181
-      - BASE_URL=http://192.168.178.38:8080
+      - BASE_URL=http://localhost:8080
       - RELEASE_STAGE=development
       - BUGSNAG_API_KEY=1199963e39770335f40ec3c3228a7390
     networks:

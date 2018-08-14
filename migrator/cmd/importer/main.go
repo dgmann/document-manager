@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"github.com/dgmann/document-manager/migrator/shared"
 	"sync"
+	"github.com/dgmann/document-manager/api-client/repository"
+	"strings"
 )
 
 func main() {
@@ -39,7 +41,17 @@ func main() {
 	go func() {
 		logrus.WithField("count", len(importData.Patients)).Info("start importing patients")
 		for _, patient := range importData.Patients {
-			i.Import("/patients", patient)
+			p := repository.Patient{
+				Id: patient.Id,
+			}
+			if patient.Name != nil {
+				splitted := strings.Split(*patient.Name, ",")
+				if len(splitted) == 2 {
+					p.LastName = splitted[0]
+					p.FirstName = splitted[1]
+				}
+			}
+			i.Import("/patients", p)
 		}
 		logrus.Info("patients successfully imported")
 		wg.Done()

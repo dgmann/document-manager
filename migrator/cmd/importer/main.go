@@ -5,6 +5,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"net/http"
 	"github.com/dgmann/document-manager/migrator/shared"
+	"sync"
 )
 
 func main() {
@@ -16,16 +17,39 @@ func main() {
 	config := NewConfig()
 	i := importer.NewImporter(config.ApiURL)
 
-	var importableRecords importer.ImportableRecordList
+	var importData importer.Import
 	logrus.WithField("file", config.InputFile).Info("Load records")
-	err := importableRecords.Load(config.InputFile)
+	err := importData.Load(config.InputFile)
 	if err != nil {
 		logrus.WithError(err).Fatal("error opening input file")
 		return
 	}
-	logrus.WithField("count", len(importableRecords)).Info("Start importing")
-	notImported := i.Import(importableRecords)
-	logrus.WithField("unsuccessful", len(notImported)).Info("Import finished")
+
+	var wg sync.WaitGroup
+	wg.Add(1)
+	go func() {
+		logrus.WithField("count", len(importData.Categories)).Info("start importing categories")
+		for _, category := range importData.Categories {
+			i.Import("/categories", category)
+		}
+		logrus.Info("categories successfully imported")
+		wg.Done()
+	}()
+	wg.Add(1)
+	go func() {
+		logrus.WithField("count", len(importData.Patients)).Info("start importing patients")
+		for _, patient := range importData.Patients {
+			i.Import("/patients", patient)
+		}
+		logrus.Info("patients successfully imported")
+		wg.Done()
+	}()
+
+	logrus.WithField("count", len(importData.Records)).Info("Start importing")
+	notImported := i.ImportRecords(importData.Records)
+
+	wg.Wait()
+	logrus.WithField("unsuccessful", len(notImported)).Info("ImportRecords finished")
 	err = shared.WriteLines(notImported, config.ErrorFile)
 	if err != nil {
 		logrus.WithError(err).Fatal("error writing output file")

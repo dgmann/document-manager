@@ -5,23 +5,29 @@ import (
 	"github.com/dgmann/document-manager/migrator/shared"
 	"os"
 	"github.com/sirupsen/logrus"
+	"github.com/dgmann/document-manager/api-client/repository"
 )
 
 type Importer struct {
+	repository       *repository.Repository
 	recordRepository *record.Repository
 }
 
 func NewImporter(url string) *Importer {
-	return &Importer{recordRepository: record.NewRepository(url)}
+	return &Importer{recordRepository: record.NewRepository(url), repository: repository.NewRepository(url)}
 }
 
-func (i *Importer) Import(records ImportableRecordList) []string {
+func (i *Importer) ImportRecords(records []ImportableRecord) []string {
 	var interfaceSlice = make([]interface{}, len(records))
 	for i, d := range records {
 		interfaceSlice[i] = d
 	}
 	unsuccessFull := shared.Parallel(interfaceSlice, i.uploadFunc())
 	return unsuccessFull
+}
+
+func (i *Importer) Import(path string, model interface{}) error {
+	return i.repository.Create(path, model)
 }
 
 func (i *Importer) uploadFunc() shared.ParallelExecFunc {

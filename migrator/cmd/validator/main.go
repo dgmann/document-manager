@@ -15,6 +15,8 @@ import (
 	"github.com/dgmann/document-manager/migrator/importer"
 	"github.com/dgmann/document-manager/api-client/record"
 	"strconv"
+	"github.com/dgmann/document-manager/migrator/patients"
+	"github.com/dgmann/document-manager/migrator/categories"
 )
 
 func main() {
@@ -54,7 +56,7 @@ func main() {
 		return
 	}
 
-	var filesToImport importer.ImportableRecordList
+	var filesToImport []importer.ImportableRecord
 	status := record.StatusDone
 	for _, r := range filesystemIndex.SubRecords() {
 		subrecord := r.SubRecord()
@@ -70,11 +72,25 @@ func main() {
 			Path:         subrecord.Path,
 		})
 	}
-	err = filesToImport.Save(config.OutputFile)
+	pats, err := patients.All(recordManager.Db)
+	if err != nil {
+		logrus.WithError(err).Error("error fetching patients")
+	}
+	cats, err := categories.All(recordManager.Db)
+	if err != nil {
+		logrus.WithError(err).Error("error fetching categories")
+	}
+	importable := importer.Import{
+		Records:    filesToImport,
+		Patients:   pats,
+		Categories: cats,
+	}
+
+	err = importable.Save(config.OutputFile)
 	if err != nil {
 		fmt.Printf("Error creating output %v\n", err)
 	} else {
-		fmt.Printf("Successfully created file to import\n")
+		fmt.Printf("Successfully created file to import at %s\n", config.OutputFile)
 	}
 }
 

@@ -1,9 +1,11 @@
 package importer
 
 import (
-	"github.com/dgmann/document-manager/api-client/record"
 	"os"
 	"encoding/gob"
+	"github.com/dgmann/document-manager/api-client/record"
+	"github.com/dgmann/document-manager/migrator/patients"
+	"github.com/dgmann/document-manager/migrator/categories"
 )
 
 type ImportableRecord struct {
@@ -11,9 +13,13 @@ type ImportableRecord struct {
 	Path string
 }
 
-type ImportableRecordList []ImportableRecord
+type Import struct {
+	Categories []*categories.Category
+	Patients   []*patients.Patient
+	Records    []ImportableRecord
+}
 
-func (i ImportableRecordList) Save(path string) error {
+func (i Import) Save(path string) error {
 	file, err := os.Create(path)
 	if err != nil {
 		return err
@@ -24,7 +30,7 @@ func (i ImportableRecordList) Save(path string) error {
 	return encoder.Encode(i)
 }
 
-func (i *ImportableRecordList) Load(path string) error {
+func (i *Import) Load(path string) error {
 	file, err := os.Open(path)
 	if err != nil {
 		return err

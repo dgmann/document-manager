@@ -66,6 +66,7 @@ func main() {
 			Date:       *subrecord.Date,
 			Status:     &status,
 			PatientId:  &patId,
+			Category:   subrecord.Spezialization,
 		}
 		filesToImport = append(filesToImport, importer.ImportableRecord{
 			CreateRecord: newRecord,

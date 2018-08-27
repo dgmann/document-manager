@@ -17,6 +17,9 @@ services:
       - backend
   api:
     build: ./api
+    volumes:
+      - "E:/mounts/records:/records"
+      - "E:/mounts/archive:/archive"
     environment:
       - DB_HOST=db
       - DB_NAME=manager

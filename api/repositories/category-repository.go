@@ -5,6 +5,7 @@ import (
 	"github.com/globalsign/mgo/bson"
 	log "github.com/sirupsen/logrus"
 	"github.com/dgmann/document-manager/api/models"
+	"fmt"
 )
 
 type CategoryRepository interface {
@@ -39,7 +40,7 @@ func (c *DBCategoryRepository) All() ([]models.Category, error) {
 func (c *DBCategoryRepository) Find(id string) (*models.Category, error) {
 	var category models.Category
 
-	if err := c.categories.FindId(bson.ObjectIdHex(id)).One(&category); err != nil {
+	if err := c.categories.Find(bson.M{"_id": id}).One(&category); err != nil {
 		log.WithField("error", err).Panic("Cannot find record")
 		return nil, err
 	}
@@ -48,11 +49,12 @@ func (c *DBCategoryRepository) Find(id string) (*models.Category, error) {
 
 func (c *DBCategoryRepository) FindByPatient(id string) ([]models.Category, error) {
 	categories := make([]models.Category, 0)
-	var ids []bson.ObjectId
-	if err := c.records.Find(bson.M{"patientId": id}).Distinct("categoryId", &ids); err != nil {
+	var ids []string
+	if err := c.records.Find(bson.M{"patientId": id}).Distinct("category", &ids); err != nil {
 		log.WithField("error", err).Panic("Cannot find categories by patient id")
 		return nil, err
 	}
+	fmt.Printf("ids %v", ids)
 	if err := c.categories.Find(bson.M{"_id": bson.M{"$in": ids}}).All(&categories); err != nil {
 		log.WithField("error", err).Panic("Cannot resolve category ids")
 		return nil, err

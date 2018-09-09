@@ -7,7 +7,8 @@ export enum PatientActionTypes {
   SetPatient = '[Patient] Set Patient',
   SetPatientRecords = '[Patient] Set Patient Record ids',
   SetFilter = '[Patient] Set Filter',
-  SelectRecord = '[Patient] Select Record'
+  SelectRecord = '[Patient] Select Record',
+  SelectCategory = '[Patient] Select Category'
 }
 
 export class SelectPatient implements Action {
@@ -45,8 +46,16 @@ export class SelectRecord implements Action {
   }
 }
 
+export class SelectCategory implements Action {
+  readonly type = PatientActionTypes.SelectCategory;
+
+  constructor(public payload: { id: string }) {
+  }
+}
+
 export type PatientActions = SelectPatient
   | SetPatientRecords
   | SetPatient
   | SetFilter
-  | SelectRecord;
+  | SelectRecord
+  | SelectCategory;

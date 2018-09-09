@@ -1,4 +1,5 @@
 @import "../../../theme";
+@import '~@angular/material/theming';
 
 .sub-heading {
   color: $primary;
@@ -10,4 +11,13 @@
 
 .selectable-page {
   cursor: pointer;
+}
+
+.page-container {
+  @include mat-elevation(8);
+  margin-bottom: 10px;
+}
+
+mat-card-header {
+  border-bottom: 1px solid $accent-light;
 }

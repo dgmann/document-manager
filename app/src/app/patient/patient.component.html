@@ -3,7 +3,9 @@
     <app-record-filter [records]="records" [patient]="patient" (change)="setFilter($event)"></app-record-filter>
   </div>
   <div class="center-panel">
-    <app-multi-record-list [records]="records" (clickRecord)="onSelectRecord($event)"></app-multi-record-list>
+    <app-multi-record-list [records]="records" [categories]="categories" [selectedCategory]="selectedCategory"
+                           (selectedCategoryChange)="onSelectedCategoryChange($event)"
+                           (clickRecord)="onSelectRecord($event)"></app-multi-record-list>
   </div>
   <div class="right-panel">
     <app-record-viewer [record]="selectedRecord"></app-record-viewer>

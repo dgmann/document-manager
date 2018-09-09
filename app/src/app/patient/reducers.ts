@@ -23,6 +23,7 @@ export const selectPatientRecords = createSelector(selectPatientRecordIds, selec
 export const selectFilter = createSelector(selectFeature, (state: fromPatient.State) => state.filter);
 export const selectSelectedRecordId = createSelector(selectFeature, (state: fromPatient.State) => state.selectedRecordId);
 export const selectSelectedRecord = createSelector(selectSelectedRecordId, selectRecordEntities, (id: string, records) => records[id]);
+export const selectSelectedCategoryId = createSelector(selectFeature, (state: fromPatient.State) => state.selectedCategory);
 
 let filterRecords = function (records: Record[], filter: Filter) {
   return records.filter(record => {

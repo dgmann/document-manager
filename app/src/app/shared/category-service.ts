@@ -13,11 +13,12 @@ export class CategoryService {
   }
 
   public getAsMap() {
-    return this.get().pipe(map(cat => {
-      const m = {};
-      cat.forEach(c => m[c.id] = c);
-      return m;
-    }));
+    return this.get().pipe(
+      map(cat => cat.reduce((accumulator, currentValue) => ({
+        ...accumulator,
+        [currentValue.id]: currentValue
+      }), {} as { [id: string]: Category }))
+    );
   }
 
   public getByPatientId(id: string) {

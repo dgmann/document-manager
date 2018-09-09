@@ -1,9 +1,11 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { Observable } from "rxjs";
+import { combineLatest, Observable } from "rxjs";
 import { Category, CategoryService } from "../../shared/category-service";
 import { Record, RecordService } from "../../store";
 import { DocumentEditDialogComponent } from "../../shared/document-edit-dialog/document-edit-dialog.component";
 import { MatDialog } from "@angular/material";
+import { distinctUntilChanged, filter, map, take } from "rxjs/operators";
+import { findIndex, groupBy, sortBy } from 'lodash-es';
 
 @Component({
   selector: 'app-multi-record-list',
@@ -12,9 +14,14 @@ import { MatDialog } from "@angular/material";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MultiRecordListComponent implements OnInit {
-  @Input('records') records: Observable<Record[]>;
-  @Output('clickRecord') clickRecord = new EventEmitter<string>();
-  categories: Observable<{ [id: string]: Category }>;
+  @Input() records: Observable<Record[]>;
+  @Input() selectedCategory: Observable<string>;
+  @Input() categories: Observable<{ [id: string]: Category }>;
+  @Output() clickRecord = new EventEmitter<string>();
+  @Output() selectedCategoryChange = new EventEmitter<string>();
+
+  groupedRecords: Observable<{ category: string, records: Record[] }[]>;
+  selectedIndex: Observable<number>;
 
   constructor(private categoryService: CategoryService,
               private recordService: RecordService,
@@ -22,7 +29,16 @@ export class MultiRecordListComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.categories = this.categoryService.getAsMap()
+    this.groupedRecords = this.records.pipe(
+      map(records => groupBy(records, 'category')),
+      map(grouped => Object.entries(grouped)
+        .map(entry => ({category: entry[0], records: entry[1]}))),
+      map(grouped => sortBy(grouped, ['category']))
+    );
+    this.selectedIndex = combineLatest(this.groupedRecords, this.selectedCategory).pipe(
+      map(([categories, selectedCategory]) => findIndex(categories, {category: selectedCategory})),
+      distinctUntilChanged()
+    );
   }
 
   onRecordClicked(id: string) {
@@ -45,6 +61,15 @@ export class MultiRecordListComponent implements OnInit {
         category: result.category
       });
     });
+  }
+
+  onSelectedIndexChange(index: number) {
+    this.groupedRecords
+      .pipe(
+        take(1),
+        map(groups => groups[index].category),
+        filter(c => !!c)
+      ).subscribe(category => this.selectedCategoryChange.emit(category));
   }
 
 }

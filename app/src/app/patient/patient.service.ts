@@ -3,11 +3,12 @@ import { select, Store } from "@ngrx/store";
 import {
   selectFilteredPatientRecords,
   selectPatientRecords,
+  selectSelectedCategoryId,
   selectSelectedPatient,
   selectSelectedRecord,
   State
 } from "./reducers";
-import { SelectPatient, SelectRecord, SetFilter } from "./store/patient.actions";
+import { SelectCategory, SelectPatient, SelectRecord, SetFilter } from "./store/patient.actions";
 import { Filter } from "./store/patient.reducer";
 
 @Injectable()
@@ -41,5 +42,13 @@ export class PatientService {
 
   public getSelectedRecord() {
     return this.store.pipe(select(selectSelectedRecord));
+  }
+
+  public selectCategory(id: string) {
+    this.store.dispatch(new SelectCategory({id}))
+  }
+
+  public getSelectedCategory() {
+    return this.store.pipe(select(selectSelectedCategoryId));
   }
 }

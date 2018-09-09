@@ -1,19 +1,24 @@
-<div *ngIf="categories | async as cats" fxLayout="column" fxLayout.gt-md="row wrap" fxLayoutAlign="center"
-     fxLayoutGap="10px">
-  <mat-card *ngFor="let record of records | async" fxFlex.gt-md="calc(50% - 10px)">
-    <mat-card-header>
-      <mat-card-title>
-        <span class="mat-subheading-2">
-          {{ cats[record.category]?.name }}:
-          <span class="mat-subheading-1 sub-heading">{{ record.tags.join(", ") }}</span>
-        </span>
-      </mat-card-title>
-      <div fxFlex></div>
-      <button mat-icon-button color="primary" (click)="edit(record)">
-        <mat-icon aria-label="Edit">edit</mat-icon>
-      </button>
-      <mat-card-subtitle>{{ record.date | date: 'mediumDate' }}</mat-card-subtitle>
-    </mat-card-header>
-    <img class="selectable-page" (click)="onRecordClicked(record.id)" mat-card-image [src]="record.pages[0].url">
-  </mat-card>
-</div>
+<ng-container *ngIf="categories | async as cats">
+  <mat-tab-group (selectedIndexChange)="onSelectedIndexChange($event)" [selectedIndex]="selectedIndex | async">
+    <mat-tab *ngFor="let recordGroup of groupedRecords | async; trackBy: recordGroup?.category"
+             [label]="cats[recordGroup.category]?.name">
+      <ng-template matTabContent>
+        <div fxLayout="column" fxLayout.gt-md="row wrap" fxLayoutAlign="center"
+             fxLayoutGap="10px">
+          <mat-card class="page-container" *ngFor="let record of recordGroup.records" fxFlex.gt-md="calc(50% - 10px)">
+            <mat-card-header>
+              <mat-card-title><h2>{{ record.date | date: 'mediumDate' }}</h2></mat-card-title>
+              <mat-card-subtitle>{{ record.tags.join(", ") }}</mat-card-subtitle>
+              <div fxFlex></div>
+              <button mat-icon-button color="primary" (click)="edit(record)">
+                <mat-icon aria-label="Edit">edit</mat-icon>
+              </button>
+            </mat-card-header>
+            <img class="selectable-page" (click)="onRecordClicked(record.id)" mat-card-image
+                 [src]="record.pages[0].url">
+          </mat-card>
+        </div>
+      </ng-template>
+    </mat-tab>
+  </mat-tab-group>
+</ng-container>

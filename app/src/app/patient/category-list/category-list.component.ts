@@ -1,10 +1,9 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {MatTableDataSource} from "@angular/material";
-import {uniq} from "lodash-es";
-import sortBy from "lodash-es/sortBy";
-import {Observable} from "rxjs";
-import {map} from "rxjs/operators";
-import {Category} from "../../shared/category-service";
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { MatTableDataSource } from "@angular/material";
+import { sortBy, uniq } from "lodash-es";
+import { Observable } from "rxjs";
+import { map } from "rxjs/operators";
+import { Category } from "../../shared/category-service";
 
 @Component({
   selector: 'app-category-list',
@@ -27,15 +26,37 @@ export class CategoryListComponent implements OnInit {
     ).subscribe(data => this.dataSource.data = data);
   }
 
-  onSelect(category: Category) {
-    let index = this.selectedCategories.indexOf(category);
+  onSelect(event: MouseEvent, category: Category) {
+    event.preventDefault();
+    event.stopPropagation();
 
-    if (index >= 0) {
-      this.selectedCategories.splice(index, 1);
+    if (event.getModifierState("Control")) {
+      let index = this.selectedCategories.indexOf(category);
+
+      if (index >= 0) {
+        this.selectedCategories.splice(index, 1);
+      } else {
+        this.selectedCategories = uniq([...this.selectedCategories, category]);
+      }
+    } else if (event.getModifierState("Shift")) {
+      if (this.selectedCategories.length == 0) {
+        this.selectedCategories = [category];
+        return;
+      }
+      const firstCategory = this.selectedCategories[0];
+      const selectFrom = this.dataSource.data.indexOf(firstCategory);
+      const selectUntil = this.dataSource.data.indexOf(category);
+      const indices = [selectFrom, selectUntil].sort();
+      this.selectedCategories = this.dataSource.data.slice(indices[0], indices[1] + 1);
     } else {
-      this.selectedCategories = uniq([...this.selectedCategories, category]);
+      if (this.selectedCategories.length == 1 && this.selectedCategories[0] && this.selectedCategories[0] == category) {
+        this.selectedCategories = []
+      } else {
+        this.selectedCategories = [category];
+      }
     }
-    this.select.emit(this.selectedCategories);
-  }
 
+    this.select.emit(this.selectedCategories);
+    return false;
+  }
 }

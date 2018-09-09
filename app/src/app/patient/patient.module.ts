@@ -9,7 +9,8 @@ import {
   MatIconModule,
   MatInputModule,
   MatSidenavModule,
-  MatTableModule
+  MatTableModule,
+  MatTabsModule
 } from "@angular/material";
 import { MatDividerModule } from '@angular/material/divider';
 import { EffectsModule } from "@ngrx/effects";
@@ -45,6 +46,7 @@ import { FormsModule } from "@angular/forms";
     MatDividerModule,
     MatSidenavModule,
     MatIconModule,
+    MatTabsModule,
     StoreModule.forFeature("patient", reducers, {metaReducers}),
     EffectsModule.forFeature([PatientEffects]),
   ],

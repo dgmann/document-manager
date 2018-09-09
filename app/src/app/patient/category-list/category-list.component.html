@@ -8,6 +8,6 @@
   <mat-header-row class="tag-header" style="display: none;" *matHeaderRowDef="displayedColumns"></mat-header-row>
   <mat-row class="selectable-row" *matRowDef="let row; columns: displayedColumns;"
            [class.selected]="selectedCategories.indexOf(row) >= 0"
-           (click)="onSelect(row)"></mat-row>
+           (click)="onSelect($event, row)"></mat-row>
 </mat-table>
 

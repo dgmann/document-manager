@@ -19,8 +19,11 @@ RUN GOOS=linux go build -a -installsuffix cgo -o /m1-adapter .
 
 
 FROM sergeymakinen/oracle-instant-client
+COPY .docker/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 COPY --from=builder /m1-adapter /m1-adapter
 
-ENV DSN="m1/a7haj9@192.168.255.103:1521:M1DB"
+ENV DSN=""
 
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["/m1-adapter"]

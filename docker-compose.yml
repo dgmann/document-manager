@@ -76,7 +76,10 @@ services:
         PORT: "9000"
         DSN: "m1/a7haj9@192.168.255.103:1521/m1db"
   migrator:
-    build: ./migrator
+    build:
+      context: ./migrator
+      args:
+        GITHUB_TOKEN: ""
     volumes:
       - "./migrator/mounts/records:/records"
       - "./migrator/mounts/data:/data"

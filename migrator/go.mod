@@ -1,5 +1,7 @@
 module github.com/dgmann/document-manager/migrator
 
+replace github.com/unidoc/unidoc => github.com/dgmann/unidoc v2.2.0+incompatible
+
 require (
 	cloud.google.com/go v0.26.0 // indirect
 	github.com/denisenkom/go-mssqldb v0.0.0-20180707235734-242fa5aa1b45

@@ -1,13 +1,13 @@
 package splitter
 
 import (
-	"io/ioutil"
+	"github.com/dgmann/document-manager/migrator/records/models"
 	"github.com/pkg/errors"
+	"github.com/satori/go.uuid"
+	pdfModel "github.com/unidoc/unidoc/pdf/model"
+	"io/ioutil"
 	"os"
 	"path/filepath"
-	"github.com/dgmann/document-manager/migrator/records/models"
-	pdfModel "github.com/unidoc/unidoc/pdf/model"
-	"github.com/satori/go.uuid"
 	"time"
 )
 

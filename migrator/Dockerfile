@@ -1,9 +1,12 @@
-FROM golang:rc-stretch as builder
+FROM golang:latest as builder
+ARG GITHUB_TOKEN
 ENV GO111MODULE=on
+
+RUN git config --global url."https:///$GITHUB_TOKEN:x-oauth-basic@github.com/".insteadOf "https://github.com/"
 
 WORKDIR /src
 COPY go.mod go.sum ./
-RUN go get
+RUN go mod download
 
 COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o /validator ./cmd/validator && \
@@ -19,6 +22,7 @@ RUN zip -r -0 /zoneinfo.zip .
 
 
 FROM scratch
+WORKDIR /
 ENV ZONEINFO /zoneinfo.zip
 COPY --from=alpine /zoneinfo.zip /
 # the tls certificates:
@@ -28,5 +32,17 @@ COPY --from=builder /validator /validator
 COPY --from=builder /importer /importer
 
 VOLUME ["/data", "/records", "/splitted"]
+
+ENV DB_HOST=localhost \
+    DB_USER=sa \
+    DB_PASSWORD=Password% \
+    DB_NAME=PdfDatabase \
+    DB_INSTANCE="" \
+    RECORD_DIR=/records \
+    VALIDATION_FILE=/data/validation.log \
+    SPLITTED_DIR=/splitted \
+    DATA_DIR=/data \
+    OUTPUT=/data/output.gob \
+    INPUT=/data/output.gob
 
 CMD ["/importer"]

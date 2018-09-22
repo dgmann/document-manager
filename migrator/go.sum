@@ -28,6 +28,9 @@ github.com/dgmann/document-manager/api-client v0.0.0-20180814214107-86ddee701676
 github.com/dgmann/document-manager/shared v0.0.0-20180811155848-da48cdc1e362/go.mod h1:8a7LOi42xbs0LHITiBNNAb4RTapn4mm4LRcqAf1G654=
 github.com/dgmann/document-manager/shared v0.0.0-20180814203937-ef2696715e22/go.mod h1:8a7LOi42xbs0LHITiBNNAb4RTapn4mm4LRcqAf1G654=
 github.com/dgmann/document-manager/shared v0.0.0-20180814214107-86ddee701676/go.mod h1:8a7LOi42xbs0LHITiBNNAb4RTapn4mm4LRcqAf1G654=
+github.com/dgmann/unidoc v2.1.0+incompatible/go.mod h1:0OKkiB4EuXIjQmywvfTHBU6YV/VAvG1jM1ROngyoot4=
+github.com/dgmann/unidoc v2.1.1+incompatible/go.mod h1:0OKkiB4EuXIjQmywvfTHBU6YV/VAvG1jM1ROngyoot4=
+github.com/dgmann/unidoc v2.2.0+incompatible/go.mod h1:0OKkiB4EuXIjQmywvfTHBU6YV/VAvG1jM1ROngyoot4=
 github.com/fsnotify/fsnotify v1.4.7 h1:IXs+QLmnXW2CcXuY+8Mzv/fWEsPGWxqefPtCP5CnV9I=
 github.com/fsnotify/fsnotify v1.4.7/go.mod h1:jwhsz4b93w/PPRr/qN1Yymfu8t87LnFCMoQvtojpjFo=
 github.com/gin-contrib/cors v0.0.0-20180514151808-6f0a820f94be/go.mod h1:cw+u9IsAkC16e42NtYYVCLsHYXE98nB3M7Dr9mLSeH4=

@@ -1,15 +1,15 @@
-package pdfprocessor
+package pdfimages
 
 import (
-	"io/ioutil"
-	"os"
+	"bytes"
+	"github.com/dgmann/document-manager/shared"
 	log "github.com/sirupsen/logrus"
-	"path/filepath"
 	_ "image/jpeg"
 	_ "image/png"
-	"bytes"
+	"io/ioutil"
+	"os"
+	"path/filepath"
 	"strings"
-	"github.com/dgmann/document-manager/shared"
 )
 
 type FileWrapper struct {

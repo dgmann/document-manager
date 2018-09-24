@@ -1,23 +1,26 @@
 package http
 
 import (
+	"bytes"
 	"encoding/json"
+	"errors"
+	"fmt"
 	"github.com/dgmann/document-manager/api/models"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
+	"io/ioutil"
 	"strconv"
-	"errors"
-	"bytes"
-	"fmt"
 	"strings"
 	"sync"
-	"io/ioutil"
 )
 
 func registerRecords(g *gin.RouterGroup, factory *Factory) {
 	recordRepository := factory.GetRecordRepository()
 	imageRepository := factory.GetImageRepository()
-	pdfProcessor := factory.GetPdfProcessor()
+	pdfProcessor, err := factory.GetPdfProcessor()
+	if err != nil {
+		log.WithError(err).Error("Cannot reach PDF processor")
+	}
 	responseService := factory.GetResponseService()
 
 	g.GET("", func(c *gin.Context) {

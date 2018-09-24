@@ -1,10 +1,10 @@
-package pdfprocessor
+package pdfimages
 
 import (
 	"github.com/dgmann/document-manager/shared"
+	log "github.com/sirupsen/logrus"
 	"io"
 	"os/exec"
-	log "github.com/sirupsen/logrus"
 )
 
 func ToImages(data io.Reader) ([]*shared.Image, error) {

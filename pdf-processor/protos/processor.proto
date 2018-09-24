@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package processor;
+
+service PdfProcessor {
+    // Convert the pages of a PDF file to images.
+    //
+    // Convert the pages of a PDF file to images.
+    rpc ConvertPdfToImage (Pdf) returns (stream Image) {
+    }
+}
+
+message Pdf {
+    bytes Content = 1;
+}
+
+message Image {
+    string Format = 1;
+    bytes Content = 2;
+}

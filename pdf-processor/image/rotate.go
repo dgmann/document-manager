@@ -1,9 +1,9 @@
 package image
 
 import (
+	"github.com/dgmann/document-manager/shared"
 	"gopkg.in/gographics/imagick.v3/imagick"
 	"strings"
-	"github.com/dgmann/document-manager/shared"
 )
 
 func Rotate(img []byte, degrees float64) (*shared.Image, error) {

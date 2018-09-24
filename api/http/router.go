@@ -1,14 +1,14 @@
 package http
 
 import (
+	"github.com/bugsnag/bugsnag-go/gin"
+	"github.com/dgmann/document-manager/api/pdf"
+	"github.com/dgmann/document-manager/api/repositories"
+	"github.com/dgmann/document-manager/api/services"
+	"github.com/dgmann/document-manager/api/shared"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/location"
 	"github.com/gin-gonic/gin"
-	"github.com/dgmann/document-manager/api/services"
-	"github.com/dgmann/document-manager/api/repositories"
-	"github.com/dgmann/document-manager/api/pdf"
-	"github.com/dgmann/document-manager/api/shared"
-	"github.com/bugsnag/bugsnag-go/gin"
 	"io/ioutil"
 )
 
@@ -19,7 +19,7 @@ type Factory struct {
 	eventService    *services.EventService
 }
 
-func (f *Factory) GetPdfProcessor() *pdf.Processor {
+func (f *Factory) GetPdfProcessor() (*pdf.Processor, error) {
 	return pdf.NewPDFProcessor(f.pdfProcessorUrl)
 }
 

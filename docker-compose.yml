@@ -74,7 +74,7 @@ services:
         - "9000:9000"
       environment:
         PORT: "9000"
-        DSN: "m1/a7haj9@192.168.255.103:1521/m1db"
+        DSN: ""
   migrator:
     build:
       context: ./migrator

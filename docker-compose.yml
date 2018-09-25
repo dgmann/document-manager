@@ -13,6 +13,7 @@ services:
     build: ./pdf-processor
     ports:
       - "8181:8181"
+      - "9000:9000"
     networks:
       - backend
   api:
@@ -23,7 +24,7 @@ services:
     environment:
       - DB_HOST=db
       - DB_NAME=manager
-      - PDFPROCESSOR_URL=http://processor:8181
+      - PDFPROCESSOR_URL=processor:9000
       - BASE_URL=http://localhost:8080
       - RELEASE_STAGE=development
       - BUGSNAG_API_KEY=1199963e39770335f40ec3c3228a7390

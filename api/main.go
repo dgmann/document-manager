@@ -1,14 +1,14 @@
 package main
 
 import (
+	"github.com/Shopify/logrus-bugsnag"
+	"github.com/bugsnag/bugsnag-go"
 	"github.com/dgmann/document-manager/api/http"
+	"github.com/dgmann/document-manager/api/services"
 	"github.com/dgmann/document-manager/api/shared"
 	"github.com/globalsign/mgo"
 	log "github.com/sirupsen/logrus"
 	"os"
-	"github.com/dgmann/document-manager/api/services"
-	"github.com/bugsnag/bugsnag-go"
-	"github.com/Shopify/logrus-bugsnag"
 )
 
 func init() {
@@ -44,7 +44,7 @@ func main() {
 	archiveDir := envOrDefault("ARCHIVE_DIR", "/archive")
 	dbHost := envOrDefault("DB_HOST", "localhost")
 	dbname := envOrDefault("DB_NAME", "manager")
-	pdfprocessorUrl := envOrDefault("PDFPROCESSOR_URL", "http://localhost:8181")
+	pdfprocessorUrl := envOrDefault("PDFPROCESSOR_URL", "127.0.0.1:9000")
 	baseUrl := envOrDefault("BASE_URL", "http://localhost:8080")
 
 	session, err := mgo.Dial(dbHost)

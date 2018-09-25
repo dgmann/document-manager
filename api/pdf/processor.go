@@ -2,14 +2,11 @@ package pdf
 
 import (
 	"context"
-	"encoding/json"
-	"github.com/dgmann/document-manager/pdf-processor/processor"
+	"github.com/dgmann/document-manager/pdf-processor/api"
 	"github.com/dgmann/document-manager/shared"
-	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"io"
 	"io/ioutil"
-	"strconv"
 )
 
 type Processor struct {
@@ -18,7 +15,8 @@ type Processor struct {
 }
 
 func NewPDFProcessor(baseUrl string) (*Processor, error) {
-	conn, err := grpc.Dial(baseUrl)
+	insecure := grpc.WithInsecure()
+	conn, err := grpc.Dial(baseUrl, insecure)
 	if err != nil {
 		return nil, err
 	}
@@ -36,8 +34,8 @@ func (p *Processor) Convert(f io.Reader) ([]*shared.Image, error) {
 		return nil, err
 	}
 
-	client := processor.NewPdfProcessorClient(p.conn)
-	stream, err := client.ConvertPdfToImage(context.Background(), &processor.Pdf{Content: b})
+	client := api.NewPdfProcessorClient(p.conn)
+	stream, err := client.ConvertPdfToImage(context.Background(), &api.Pdf{Content: b})
 
 	var images []*shared.Image
 	for {
@@ -53,43 +51,13 @@ func (p *Processor) Convert(f io.Reader) ([]*shared.Image, error) {
 	return images, nil
 }
 
-func (p *Processor) httpRequest(f io.Reader) ([]*shared.Image, error) {
-	requester := NewHttpRequester(p.baseUrl + "/images/convert")
-	result, err := p.Upload(requester, f)
-	if err != nil {
-		log.Errorf("Error fetching images: %s", err)
-		return nil, err
-	}
-	return result, nil
-}
-
-func (p *Processor) Upload(requester Requester, file io.Reader) ([]*shared.Image, error) {
-	result, err := requester.Do(file)
-	if err != nil {
-		log.WithField("error", err).Error("Error transforming pdf to images")
-		return nil, err
-	}
-	defer result.Close()
-	var images []*shared.Image
-	if json.NewDecoder(result).Decode(&images) != nil {
-		log.WithField("error", err).Error("Error decoding response")
-		return nil, err
-	}
-	return images, nil
-}
-
 func (p *Processor) Rotate(image io.Reader, degrees int) (*shared.Image, error) {
-	requester := NewHttpRequester(p.baseUrl + "/images/rotate/" + strconv.Itoa(degrees))
-	result, err := requester.Do(image)
+	b, err := ioutil.ReadAll(image)
 	if err != nil {
-		log.WithField("error", err).Error("Error rotating image")
 		return nil, err
 	}
-	defer result.Close()
-	var img shared.Image
-	if json.NewDecoder(result).Decode(&img) != nil {
-		log.WithField("error", err).Error("Error decoding response")
-		return nil, err
-	}
-	return &img, nil
+
+	client := api.NewPdfProcessorClient(p.conn)
+	result, err := client.RotateImage(context.Background(), &api.Rotate{Content: b, Degree: float64(degrees)})
+	return shared.NewImage(result.Content, result.Format), err
 }

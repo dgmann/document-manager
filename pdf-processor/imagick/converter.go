@@ -1,16 +1,13 @@
 package imagick
 
 import (
-	"github.com/dgmann/document-manager/shared"
+	"github.com/dgmann/document-manager/pdf-processor/api"
 	"gopkg.in/gographics/imagick.v3/imagick"
 	"io"
 	"io/ioutil"
 )
 
-type Converter struct {
-}
-
-func (c Converter) ToImages(data io.Reader) ([]*shared.Image, error) {
+func (c *Processor) ToImages(data io.Reader) ([]*api.Image, error) {
 	mw := imagick.NewMagickWand()
 	defer mw.Destroy()
 
@@ -43,7 +40,7 @@ func (c Converter) ToImages(data io.Reader) ([]*shared.Image, error) {
 	}
 	mw.ResetIterator()
 
-	var images []*shared.Image
+	var images []*api.Image
 	for mw.NextImage() {
 		if err := mw.NormalizeImage(); err != nil {
 			return nil, err
@@ -80,7 +77,8 @@ func (c Converter) ToImages(data io.Reader) ([]*shared.Image, error) {
 		}
 
 		blob := mw.GetImageBlob()
-		img := shared.NewImage(blob, format)
+
+		img := &api.Image{Content: blob, Format: format}
 		images = append(images, img)
 	}
 

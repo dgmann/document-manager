@@ -2,34 +2,26 @@ package main
 
 import (
 	"fmt"
-	"github.com/dgmann/document-manager/pdf-processor/converter"
-	imagickConverter "github.com/dgmann/document-manager/pdf-processor/converter/imagick"
-	"github.com/dgmann/document-manager/pdf-processor/image"
-	"github.com/dgmann/document-manager/pdf-processor/processor"
+	"github.com/dgmann/document-manager/pdf-processor/api"
+	"github.com/dgmann/document-manager/pdf-processor/imagick"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
-	"gopkg.in/gographics/imagick.v3/imagick"
 	"io/ioutil"
 	"net"
 	"net/http"
 	"strconv"
 )
 
-func init() {
-	imagick.Initialize()
-	defer imagick.Terminate()
-}
-
 func main() {
-	pdfToImage := imagickConverter.Converter{}
-	go startGRPC(pdfToImage)
+	processor := imagick.NewProcessor()
+	go startGRPC(processor, processor)
 
 	router := gin.Default()
 	router.Use(cors.Default())
 	router.POST("images/convert", func(c *gin.Context) {
-		images, err := pdfToImage.ToImages(c.Request.Body)
+		images, err := processor.ToImages(c.Request.Body)
 		defer c.Request.Body.Close()
 		if err != nil {
 			c.Status(400)
@@ -51,7 +43,7 @@ func main() {
 		if err != nil || len(img) == 0 {
 			c.AbortWithError(400, err)
 		}
-		rotated, err := image.Rotate(img, degree)
+		rotated, err := processor.Rotate(img, degree)
 		if err != nil {
 			c.AbortWithError(400, err)
 		}
@@ -63,13 +55,13 @@ func main() {
 	router.Run(":8181")
 }
 
-func startGRPC(converter converter.PdfToImageConverter) {
+func startGRPC(converter api.PdfToImageConverter, rotator api.Rotator) {
 	port := 9000
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
 	grpcServer := grpc.NewServer()
-	processor.RegisterPdfProcessorServer(grpcServer, processor.NewGRPCServer(converter))
+	api.RegisterPdfProcessorServer(grpcServer, api.NewGRPCServer(converter, rotator))
 	grpcServer.Serve(lis)
 }

@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package processor;
+package api;
 
 service PdfProcessor {
     // Convert the pages of a PDF file to images.

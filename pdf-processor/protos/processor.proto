@@ -8,6 +8,13 @@ service PdfProcessor {
     // Convert the pages of a PDF file to images.
     rpc ConvertPdfToImage (Pdf) returns (stream Image) {
     }
+    rpc RotateImage (Rotate) returns (Image) {
+    }
+}
+
+message Rotate {
+    bytes Content = 1;
+    double Degree = 2;
 }
 
 message Pdf {

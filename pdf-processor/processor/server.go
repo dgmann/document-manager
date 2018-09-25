@@ -2,7 +2,9 @@ package processor
 
 import (
 	"bytes"
+	"context"
 	"github.com/dgmann/document-manager/pdf-processor/converter"
+	"github.com/dgmann/document-manager/pdf-processor/image"
 )
 
 type GRPCServer struct {
@@ -28,4 +30,15 @@ func (g *GRPCServer) ConvertPdfToImage(pdf *Pdf, sender PdfProcessor_ConvertPdfT
 	}
 
 	return nil
+}
+
+func (g *GRPCServer) RotateImage(ctx context.Context, rotate *Rotate) (*Image, error) {
+	rotated, err := image.Rotate(rotate.Content, rotate.Degree)
+	if err != nil {
+		return nil, err
+	}
+	return &Image{
+		Content: rotated.Image,
+		Format:  rotated.Format,
+	}, nil
 }

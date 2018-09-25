@@ -1,12 +1,12 @@
-package image
+package imagick
 
 import (
-	"github.com/dgmann/document-manager/shared"
+	"github.com/dgmann/document-manager/pdf-processor/api"
 	"gopkg.in/gographics/imagick.v3/imagick"
 	"strings"
 )
 
-func Rotate(img []byte, degrees float64) (*shared.Image, error) {
+func (c *Processor) Rotate(img []byte, degrees float64) (*api.Image, error) {
 	mw := imagick.NewMagickWand()
 	defer mw.Destroy()
 
@@ -26,5 +26,5 @@ func Rotate(img []byte, degrees float64) (*shared.Image, error) {
 	}
 	mw.ResetIterator()
 	blob := mw.GetImageBlob()
-	return shared.NewImage(blob, format), nil
+	return &api.Image{Content: blob, Format: format}, nil
 }

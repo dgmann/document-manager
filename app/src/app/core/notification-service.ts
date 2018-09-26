@@ -10,22 +10,26 @@ import { EventSnackbarComponent } from "../shared";
   providedIn: "root"
 })
 export class NotificationService {
-  private events = new Subject<NotificationEvent>();
+  private _events$ = new Subject<NotificationEvent>();
+
+  public get events$() {
+    return this._events$.asObservable();
+  }
 
   constructor(public snackbar: MatSnackBar, private ngZone: NgZone) {
   }
 
   publish(event: NotificationEvent) {
-    this.events.next(event);
+    this._events$.next(event);
   }
 
   logToConsole() {
-    this.events.subscribe(event => console.log(event.toString()))
+    this.events$.subscribe(event => console.log(event.toString()))
   }
 
   logToSnackBar() {
     this.ngZone.runOutsideAngular(() => {
-      this.events
+      this.events$
         .pipe(bufferTime(500), filter(events => events && events.length > 0))
         .subscribe(events => {
           const grouped = groupBy(events, 'payload.type');

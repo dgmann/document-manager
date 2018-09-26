@@ -5,23 +5,27 @@ import { environment } from "../../environments/environment"
 import { DeleteRecordSuccess, LoadRecordsSuccess, State, UpdateRecordSuccess } from "./store";
 import { ActionType, GenericEvent, NotificationService, RecordEvent } from "./notification-service";
 import { NotificationMessage, NotificationMessageType, WebsocketService } from "./websocket-service";
+import { Observable } from "rxjs";
 
 @Injectable({
   providedIn: "root"
 })
 export class AutorefreshService {
+  public webSocket$: Observable<NotificationMessage>;
+
   constructor(private store: Store<State>,
               private websocketService: WebsocketService,
               private notificationService: NotificationService) {
-  }
-
-  start() {
-    let ws = this.websocketService.create(environment.websocket);
+    const ws = this.websocketService.create(environment.websocket);
     const filterRecordEvents = filter((event: NotificationMessage) =>
       event.type == NotificationMessageType.Created
       || event.type == NotificationMessageType.Updated
       || event.type == NotificationMessageType.Deleted);
-    ws.pipe(filterRecordEvents, retry()).subscribe(message => {
+    this.webSocket$ = ws.pipe(filterRecordEvents, retry())
+  }
+
+  start() {
+    this.webSocket$.subscribe(message => {
       switch (message.type) {
         case NotificationMessageType.Created:
           this.store.dispatch(new LoadRecordsSuccess({

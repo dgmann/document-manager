@@ -1,10 +1,10 @@
-import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
-import {includes, without} from 'lodash-es';
-import {DropEvent} from "ng-drag-drop";
-import {Observable} from "rxjs";
-import {map, take, withLatestFrom} from "rxjs/operators";
-import {Record, RecordService, Status} from "../store";
-import {InboxService} from "./inbox.service";
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { includes, without } from 'lodash-es';
+import { DropEvent } from "ng-drag-drop";
+import { Observable } from "rxjs";
+import { map, take, withLatestFrom } from "rxjs/operators";
+import { Record, Status } from "../core/store";
+import { InboxService } from "./inbox.service";
 
 @Component({
   selector: 'app-inbox',
@@ -13,55 +13,66 @@ import {InboxService} from "./inbox.service";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class InboxComponent implements OnInit{
-  data: Observable<Record[]>;
+  records: Observable<Record[]>;
   selectedRecord: Observable<Record>;
   selectedIds: Observable<string[]>;
   isMultiselect: Observable<boolean>;
 
-  constructor(private inboxService: InboxService,
-              private recordService: RecordService) {
+  constructor(private inboxService: InboxService) {
   }
 
   ngOnInit() {
-    this.recordService.load({status: Status.INBOX});
-    this.data = this.inboxService.all();
-    this.selectedRecord = this.inboxService.getSelectedRecords()
+    this.inboxService.loadRecords();
+    this.records = this.inboxService.allInboxRecords$;
+    this.selectedRecord = this.inboxService.selectedRecords$
       .pipe(map(records => records && records[0] || undefined));
-    this.selectedIds = this.inboxService.getSelectedIds();
-    this.isMultiselect = this.inboxService.getMultiselect();
+    this.selectedIds = this.inboxService.selectedIds$;
+    this.isMultiselect = this.inboxService.isMultiSelect$;
   }
 
-  selectRecord(record: Record) {
-    this.inboxService.getSelectedIds()
+  onSelectRecord(id: string) {
+    this.inboxService.selectedIds$
       .pipe(
         take(1),
-        withLatestFrom(this.inboxService.getMultiselect())
+        withLatestFrom(this.inboxService.isMultiSelect$)
       )
       .subscribe(([ids, multiselect]) => {
+        let idsToSelect = [];
         if (multiselect) {
-          if (includes(ids, record.id)) {
-            this.inboxService.selectIds(without(ids, record.id));
+          if (includes(ids, id)) {
+            idsToSelect = without(ids, id);
           } else {
-            this.inboxService.selectIds([...ids, record.id]);
+            idsToSelect = [...ids, id];
           }
         } else {
-          this.inboxService.selectIds([record.id]);
+          idsToSelect = [id];
         }
+        this.inboxService.selectIds(idsToSelect);
       });
   }
 
-  upload(event: DropEvent) {
+  onDrop(event: DropEvent) {
     for (let file of event.nativeEvent.dataTransfer.files) {
-      this.recordService.upload(file)
+      this.inboxService.upload(file)
     }
   }
 
-  selectAllRecords(all: boolean) {
+  onSelectAllRecords(all: boolean) {
     if (all) {
-      this.data.pipe(take(1)).subscribe((records: Record[]) => this.inboxService.selectIds(records.map(r => r.id)));
+      this.inboxService.allInboxRecordIds$
+        .pipe(take(1))
+        .subscribe(ids => this.inboxService.selectIds(ids));
     }
     else {
       this.inboxService.selectIds([]);
     }
+  }
+
+  onDeleteSelectedRecords() {
+    this.inboxService.deleteSelectedRecords();
+  }
+
+  onSetStatusOfSelectedRecords(status: Status) {
+    this.inboxService.updateSelectedRecords({status})
   }
 }

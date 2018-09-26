@@ -1,8 +1,8 @@
-import {Injectable} from "@angular/core";
-import {select, Store} from "@ngrx/store";
-import {selectEscalatedRecords, selectOtherRecords, selectReviewRecords} from "../store";
-import {selectSelectedIds, selectSelectedRecords, State} from "./reducers";
-import {SelectRecords} from "./store/physician.actions";
+import { Injectable } from "@angular/core";
+import { select, Store } from "@ngrx/store";
+import { selectEscalatedRecords, selectOtherRecords, selectReviewRecords } from "../core/store/index";
+import { selectSelectedIds, selectSelectedRecords, State } from "./reducers";
+import { SelectRecords } from "./store/physician.actions";
 
 @Injectable()
 export class PhysicianService {

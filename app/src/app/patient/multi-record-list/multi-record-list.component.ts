@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { combineLatest, Observable } from "rxjs";
-import { Category, CategoryService } from "../../shared/category-service";
-import { Record, RecordService } from "../../store";
+import { Category, CategoryService } from "../../core";
+import { Record, RecordService } from "../../core/store/index";
 import { DocumentEditDialogComponent } from "../../shared/document-edit-dialog/document-edit-dialog.component";
 import { MatDialog } from "@angular/material";
 import { distinctUntilChanged, filter, map, take } from "rxjs/operators";

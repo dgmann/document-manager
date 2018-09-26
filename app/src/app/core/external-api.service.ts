@@ -1,9 +1,11 @@
-import {HttpClient} from "@angular/common/http";
-import {Injectable} from "@angular/core";
-import {ReplaySubject} from "rxjs";
-import {Patient} from "../patient";
+import { HttpClient } from "@angular/common/http";
+import { Injectable } from "@angular/core";
+import { ReplaySubject } from "rxjs";
+import { Patient } from "../patient";
 
-@Injectable()
+@Injectable({
+  providedIn: "root"
+})
 export class ExternalApiService {
   private current: ReplaySubject<Patient>;
 

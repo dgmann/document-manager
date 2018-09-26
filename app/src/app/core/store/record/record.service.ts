@@ -1,16 +1,18 @@
-import {HttpClient} from "@angular/common/http";
-import {Injectable} from "@angular/core";
-import {Dictionary} from "@ngrx/entity/src/models";
-import {Store} from "@ngrx/store";
-import {map} from "rxjs/operators";
-import {environment} from "../../../environments/environment";
-import {ActionType, NotificationService, RecordEvent} from "../../shared/notification-service";
-import {State} from "../reducers";
-import {DeleteRecord, LoadRecords, UpdatePages, UpdateRecord} from "./record.actions";
-import {PageUpdate, Record} from "./record.model";
-import {selectAllRecords, selectInvalidIds, selectRecordEntities} from "./record.selectors";
+import { HttpClient } from "@angular/common/http";
+import { Injectable } from "@angular/core";
+import { Dictionary } from "@ngrx/entity/src/models";
+import { Store } from "@ngrx/store";
+import { map } from "rxjs/operators";
+import { environment } from "../../../../environments/environment";
+import { ActionType, NotificationService, RecordEvent } from "../../../core";
+import { State } from "../reducers";
+import { DeleteRecord, LoadRecords, UpdatePages, UpdateRecord } from "./record.actions";
+import { PageUpdate, Record } from "./record.model";
+import { selectAllRecords, selectInvalidIds, selectRecordEntities } from "./record.selectors";
 
-@Injectable()
+@Injectable({
+  providedIn: "root"
+})
 export class RecordService {
   constructor(private store: Store<State>, private http: HttpClient, private notificationService: NotificationService) {
   }

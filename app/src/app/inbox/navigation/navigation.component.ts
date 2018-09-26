@@ -1,7 +1,7 @@
-import {Component, OnInit} from '@angular/core';
-import {MatSlideToggleChange} from "@angular/material";
-import {Observable} from "rxjs";
-import {InboxService} from "../inbox.service";
+import { Component, OnInit } from '@angular/core';
+import { MatSlideToggleChange } from "@angular/material";
+import { Observable } from "rxjs";
+import { InboxService } from "../inbox.service";
 
 @Component({
   selector: 'app-navigation',
@@ -14,7 +14,7 @@ export class NavigationComponent implements OnInit {
   constructor(private inboxService: InboxService) {}
 
   ngOnInit() {
-    this.isMultiSelect = this.inboxService.getMultiselect();
+    this.isMultiSelect = this.inboxService.isMultiSelect$;
   }
 
   onChangeMultiSelect(event: MatSlideToggleChange) {

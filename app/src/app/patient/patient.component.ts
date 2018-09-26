@@ -2,12 +2,12 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from "@angular/router";
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
-import { Record, RecordService } from "../store";
+import { Record, RecordService } from "../core/store/index";
 import { PatientService } from "./patient.service";
 import { Patient } from "./store/patient.model";
 import { Filter } from "./store/patient.reducer";
 import { untilDestroyed } from "ngx-take-until-destroy";
-import { Category, CategoryService } from "../shared/category-service";
+import { Category, CategoryService } from "../core";
 
 
 @Component({

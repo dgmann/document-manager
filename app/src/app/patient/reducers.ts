@@ -1,7 +1,7 @@
 import { createFeatureSelector, createSelector, MetaReducer } from '@ngrx/store';
 import { difference, includes, intersection } from 'lodash-es';
 import { environment } from '../../environments/environment';
-import { Record, selectDoneIds, selectRecordEntities } from "../store";
+import { Record, selectDoneIds, selectRecordEntities } from "../core/store/index";
 import { Patient } from "./store/patient.model";
 import * as fromPatient from './store/patient.reducer';
 import { Filter } from './store/patient.reducer';

@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { PageUpdate } from "../../store";
+import { PageUpdate } from "../../core/store/index";
 
 @Component({
   selector: 'app-page-list',

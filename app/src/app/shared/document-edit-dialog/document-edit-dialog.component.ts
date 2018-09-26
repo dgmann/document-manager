@@ -15,11 +15,8 @@ import { shareReplay } from "rxjs/operators";
 import { Patient } from "../../patient";
 
 
-import { Record } from "../../store";
-import { Category, CategoryService } from "../category-service";
-import { ExternalApiService } from "../external-api.service";
-import { TagService } from "../tag-service";
-
+import { Record } from "../../core/store";
+import { Category, CategoryService, ExternalApiService } from "../../core";
 
 @Component({
   selector: 'app-document-edit-dialog',
@@ -38,7 +35,6 @@ export class DocumentEditDialogComponent implements AfterViewInit, OnInit {
   constructor(public dialogRef: MatDialogRef<DocumentEditDialogComponent>,
               @Inject(MAT_DIALOG_DATA) record: Record,
               public patientService: ExternalApiService,
-              public tagsService: TagService,
               public categoryService: CategoryService) {
     let patientRequest = this.patientService.getSelectedPatient().pipe(shareReplay());
     this.categories = categoryService.get();

@@ -1,7 +1,7 @@
-import {CommonModule} from "@angular/common";
-import {NgModule} from "@angular/core";
-import {FlexLayoutModule} from "@angular/flex-layout";
-import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import { CommonModule } from "@angular/common";
+import { NgModule } from "@angular/core";
+import { FlexLayoutModule } from "@angular/flex-layout";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import {
   MatAutocompleteModule,
   MatChipsModule,
@@ -14,35 +14,34 @@ import {
   MatSelectModule,
   MatTooltipModule
 } from "@angular/material";
-import {MatMomentDateModule} from "@angular/material-moment-adapter";
-import {MatButtonModule} from "@angular/material/button";
-import {MatCardModule} from "@angular/material/card";
-import {MatSortModule} from "@angular/material/sort";
-import {MatTableModule} from "@angular/material/table";
-import {NgDragDropModule} from "ng-drag-drop";
-import {NgxMatSelectSearchModule} from "ngx-mat-select-search";
-import {ActionBarComponent} from './action-bar/action-bar.component';
-import {ActionMenuComponent} from './action-menu/action-menu.component';
-import {AutocompleteChipsComponent} from "./autocomplete-chips/autocomplete-chips.component";
-import {AutocompleteInputComponent} from "./autocomplete-input/autocomplete-input.component";
-import {CategoryService} from "./category-service";
-import {CommentDialogComponent} from './comment-dialog/comment-dialog.component';
-import {DocumentEditDialogComponent} from "./document-edit-dialog/document-edit-dialog.component";
-import {DocumentListComponent} from "./document-list/document-list.component";
-import {EventSnackbarComponent} from "./event-snackbar/event-snackbar.component";
-import {ExternalApiService} from "./external-api.service";
-import {NotificationService} from "./notification-service";
-import {PatientSearchComponent} from './patient-search/patient-search.component';
-import {RecordViewerComponent} from "./record-viewer/record-viewer.component";
-import {SplitPanelComponent} from './split-panel/split-panel.component';
-import {TagService} from "./tag-service";
-import {WebsocketService} from "./websocket-service";
+import { MatMomentDateModule } from "@angular/material-moment-adapter";
+import { MatButtonModule } from "@angular/material/button";
+import { MatCardModule } from "@angular/material/card";
+import { MatSortModule } from "@angular/material/sort";
+import { MatTableModule } from "@angular/material/table";
+import { NgDragDropModule } from "ng-drag-drop";
+import { NgxMatSelectSearchModule } from "ngx-mat-select-search";
+import { ActionBarComponent } from './action-bar/action-bar.component';
+import { ActionMenuComponent } from './action-menu/action-menu.component';
+import { AutocompleteChipsComponent } from "./autocomplete-chips/autocomplete-chips.component";
+import { AutocompleteInputComponent } from "./autocomplete-input/autocomplete-input.component";
+import { CommentDialogComponent } from './comment-dialog/comment-dialog.component';
+import { DocumentEditDialogComponent } from "./document-edit-dialog/document-edit-dialog.component";
+import { DocumentListComponent } from "./document-list/document-list.component";
+import { EventSnackbarComponent } from "./event-snackbar/event-snackbar.component";
+import { PatientSearchComponent } from './patient-search/patient-search.component';
+import { RecordViewerComponent } from "./record-viewer/record-viewer.component";
+import { SplitPanelComponent } from './split-panel/split-panel.component';
+import { HttpClientModule } from "@angular/common/http";
+import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 
 
 @NgModule({
   imports: [
     CommonModule,
+    HttpClientModule,
     FormsModule,
+    BrowserAnimationsModule,
     ReactiveFormsModule,
     FlexLayoutModule,
     MatSelectModule,
@@ -94,16 +93,4 @@ import {WebsocketService} from "./websocket-service";
   providers: []
 })
 export class SharedModule {
-  static forRoot() {
-    return {
-      ngModule: SharedModule,
-      providers: [
-        ExternalApiService,
-        WebsocketService,
-        NotificationService,
-        TagService,
-        CategoryService
-      ]
-    }
-  }
 }

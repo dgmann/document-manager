@@ -1,8 +1,11 @@
 <app-split-panel>
-  <div class="left-panel" droppable (onDrop)="upload($event)" (dragover)="$event.preventDefault();">
-    <app-action-bar [hidden]="!(isMultiselect | async)" [recordIds]="selectedIds | async" (selectAll)="selectAllRecords($event)"></app-action-bar>
-    <app-document-list [records]="data" [selectedIds]="selectedIds"
-                       (selectRecord)="selectRecord($event)"></app-document-list>
+  <div class="left-panel" droppable (onDrop)="onDrop($event)" (dragover)="$event.preventDefault();">
+    <app-action-bar [hidden]="!(isMultiselect | async)"
+                    (delete)="onDeleteSelectedRecords()"
+                    (changeStatus)="onSetStatusOfSelectedRecords($event)"
+                    (selectAll)="onSelectAllRecords($event)"></app-action-bar>
+    <app-document-list [records]="records" [selectedIds]="selectedIds"
+                       (selectRecord)="onSelectRecord($event.id)"></app-document-list>
   </div>
   <div class="right-panel">
     <app-record-viewer [record]="selectedRecord"></app-record-viewer>

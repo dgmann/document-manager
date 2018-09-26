@@ -1,5 +1,5 @@
 import { ActionReducerMap, MetaReducer } from '@ngrx/store';
-import { environment } from '../../environments/environment';
+import { environment } from '../../../environments/environment';
 import * as fromRecord from './record/record.reducer';
 
 export interface State {

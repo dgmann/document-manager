@@ -3,7 +3,7 @@ import { MatTableDataSource } from "@angular/material";
 import { sortBy, uniq } from "lodash-es";
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
-import { Category } from "../../shared/category-service";
+import { Category } from "../../core";
 
 @Component({
   selector: 'app-category-list',

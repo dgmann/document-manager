@@ -1,6 +1,6 @@
-import {Dictionary} from "@ngrx/entity/src/models";
-import {createFeatureSelector, createSelector} from "@ngrx/store";
-import {Record} from "./record.model";
+import { Dictionary } from "@ngrx/entity/src/models";
+import { createFeatureSelector, createSelector } from "@ngrx/store";
+import { Record } from "./record.model";
 import * as fromRecord from './record.reducer';
 
 export const selectRecordState = createFeatureSelector<fromRecord.State>('records');

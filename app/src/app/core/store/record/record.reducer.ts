@@ -1,9 +1,9 @@
-import {createEntityAdapter, EntityAdapter, EntityState, Update} from '@ngrx/entity';
-import {uniq} from "lodash-es";
+import { createEntityAdapter, EntityAdapter, EntityState, Update } from '@ngrx/entity';
+import { uniq } from "lodash-es";
 import union from 'lodash-es/union';
 import without from 'lodash-es/without';
-import {RecordActions, RecordActionTypes} from './record.actions';
-import {Record} from './record.model';
+import { RecordActions, RecordActionTypes } from './record.actions';
+import { Record } from './record.model';
 
 export interface State extends EntityState<Record> {
   // additional entities state properties

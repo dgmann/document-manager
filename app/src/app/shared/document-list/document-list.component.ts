@@ -15,7 +15,7 @@ import { DropEvent } from "ng-drag-drop";
 import { Observable } from "rxjs";
 
 
-import { Record, RecordService, Status } from "../../store";
+import { Record, RecordService, Status } from "../../core/store";
 import { CommentDialogComponent } from "../comment-dialog/comment-dialog.component";
 import { DocumentEditDialogComponent } from "../document-edit-dialog/document-edit-dialog.component";
 

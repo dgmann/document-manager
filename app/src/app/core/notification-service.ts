@@ -1,12 +1,14 @@
-import {Injectable, NgZone} from "@angular/core";
-import {MatSnackBar} from "@angular/material";
-import {groupBy, map} from "lodash-es";
-import {Subject} from "rxjs";
-import {bufferTime, filter} from "rxjs/operators";
-import {Record} from "../store";
-import {EventSnackbarComponent} from "./event-snackbar/event-snackbar.component";
+import { Injectable, NgZone } from "@angular/core";
+import { MatSnackBar } from "@angular/material";
+import { groupBy, map } from "lodash-es";
+import { Subject } from "rxjs";
+import { bufferTime, filter } from "rxjs/operators";
+import { Record } from "./store";
+import { EventSnackbarComponent } from "../shared";
 
-@Injectable()
+@Injectable({
+  providedIn: "root"
+})
 export class NotificationService {
   private events = new Subject<NotificationEvent>();
 

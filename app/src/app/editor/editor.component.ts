@@ -1,10 +1,10 @@
-import {Location} from "@angular/common";
-import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute} from "@angular/router";
-import {includes} from 'lodash-es';
-import {Observable} from "rxjs";
-import {filter, switchMap, take} from "rxjs/operators";
-import {Page, PageUpdate, Record, RecordService} from "../store";
+import { Location } from "@angular/common";
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from "@angular/router";
+import { includes } from 'lodash-es';
+import { Observable } from "rxjs";
+import { filter, switchMap, take } from "rxjs/operators";
+import { Page, PageUpdate, Record, RecordService } from "../core/store/index";
 
 
 @Component({

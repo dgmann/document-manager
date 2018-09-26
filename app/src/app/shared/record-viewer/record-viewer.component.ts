@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core
 import { Observable } from "rxjs";
 
 
-import { PageUpdate, Record, RecordService } from "../../store";
+import { PageUpdate, Record, RecordService } from "../../core/store/index";
 import { map } from "rxjs/operators";
 
 @Component({

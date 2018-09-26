@@ -1,13 +1,14 @@
-import {Injectable} from "@angular/core";
-import {Store} from "@ngrx/store";
-import {filter, retry} from "rxjs/operators";
-import {environment} from "../../../environments/environment"
-import {ActionType, GenericEvent, NotificationService, RecordEvent} from "../../shared/notification-service";
-import {NotificationMessage, NotificationMessageType, WebsocketService} from "../../shared/websocket-service";
-import {State} from "../reducers";
-import {DeleteRecordSuccess, LoadRecordsSuccess, UpdateRecordSuccess} from "./record.actions";
+import { Injectable } from "@angular/core";
+import { Store } from "@ngrx/store";
+import { filter, retry } from "rxjs/operators";
+import { environment } from "../../environments/environment"
+import { DeleteRecordSuccess, LoadRecordsSuccess, State, UpdateRecordSuccess } from "./store";
+import { ActionType, GenericEvent, NotificationService, RecordEvent } from "./notification-service";
+import { NotificationMessage, NotificationMessageType, WebsocketService } from "./websocket-service";
 
-@Injectable()
+@Injectable({
+  providedIn: "root"
+})
 export class AutorefreshService {
   constructor(private store: Store<State>,
               private websocketService: WebsocketService,

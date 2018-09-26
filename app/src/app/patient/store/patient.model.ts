@@ -1,4 +1,4 @@
-import {Category} from "../../shared/category-service";
+import { Category } from "../../core";
 
 export interface Patient {
   id: string;

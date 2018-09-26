@@ -1,7 +1,9 @@
-import {Injectable} from "@angular/core";
-import {webSocket} from "rxjs/webSocket";
+import { Injectable } from "@angular/core";
+import { webSocket } from "rxjs/webSocket";
 
-@Injectable()
+@Injectable({
+  providedIn: "root"
+})
 export class WebsocketService {
   public create(url: string) {
     return webSocket<NotificationMessage>(url);

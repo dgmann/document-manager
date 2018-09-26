@@ -1,9 +1,9 @@
-import {Injectable} from '@angular/core';
-import {Actions, Effect, ofType} from '@ngrx/effects';
-import {of} from "rxjs";
-import {map, mergeMap} from "rxjs/operators";
-import {LoadRecordsSuccess, RecordActionTypes} from "../../store/record/record.actions";
-import {AddUnreadRecords, InboxActionTypes, RemoveUnreadRecords, SelectRecords} from "./inbox.actions";
+import { Injectable } from '@angular/core';
+import { Actions, Effect, ofType } from '@ngrx/effects';
+import { of } from "rxjs";
+import { map, mergeMap } from "rxjs/operators";
+import { LoadRecordsSuccess, RecordActionTypes } from "../../core/store/record/record.actions";
+import { AddUnreadRecords, InboxActionTypes, RemoveUnreadRecords, SelectRecords } from "./inbox.actions";
 
 @Injectable()
 export class InboxEffects {

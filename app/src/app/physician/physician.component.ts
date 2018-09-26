@@ -1,9 +1,9 @@
-import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute, Router} from "@angular/router";
-import {Observable} from "rxjs";
-import {filter, map} from "rxjs/operators";
-import {Record, RecordService, Status} from "../store";
-import {PhysicianService} from "./physician.service";
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from "@angular/router";
+import { Observable } from "rxjs";
+import { filter, map } from "rxjs/operators";
+import { Record, RecordService, Status } from "../core/store/index";
+import { PhysicianService } from "./physician.service";
 
 @Component({
   selector: 'app-physician',

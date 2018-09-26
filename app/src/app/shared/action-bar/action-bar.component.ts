@@ -1,5 +1,5 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {RecordService, Status} from "../../store";
+import { ChangeDetectionStrategy, Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Status } from "../../core/store/index";
 
 @Component({
   selector: 'app-action-bar',
@@ -8,23 +8,22 @@ import {RecordService, Status} from "../../store";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ActionBarComponent implements OnInit {
-  @Input() recordIds: string[];
   @Output() selectAll = new EventEmitter<boolean>();
+  @Output() delete = new EventEmitter<void>();
+  @Output() changeStatus = new EventEmitter<Status>();
 
   status = Status;
-
-  constructor(private recordService: RecordService) { }
 
   ngOnInit() {
   }
 
   onDeleteRecord(event) {
     event.stopPropagation();
-    this.recordIds.forEach(id => this.recordService.delete(id));
+    this.delete.emit();
   }
 
   setStatus(action: Status) {
-    this.recordIds.forEach(id => this.recordService.update(id, {status: action}));
+    this.changeStatus.emit(action);
   }
 
   setSelection(selection: boolean) {

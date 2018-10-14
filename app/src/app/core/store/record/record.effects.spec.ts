@@ -3,6 +3,7 @@ import { provideMockActions } from '@ngrx/effects/testing';
 import { Observable } from 'rxjs/Observable';
 
 import { RecordEffects } from './record.effects';
+import { HttpClientTestingModule } from "@angular/common/http/testing";
 
 describe('RecordService', () => {
   let actions$: Observable<any>;
@@ -10,6 +11,9 @@ describe('RecordService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
+      imports: [
+        HttpClientTestingModule
+      ],
       providers: [
         RecordEffects,
         provideMockActions(() => actions$)

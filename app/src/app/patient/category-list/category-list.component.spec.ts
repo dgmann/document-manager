@@ -1,6 +1,8 @@
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import {CategoryListComponent} from './category-list.component';
+import { CategoryListComponent } from './category-list.component';
+import { MatTableModule } from "@angular/material";
+import { of } from "rxjs";
 
 describe('CategoryListComponent', () => {
   let component: CategoryListComponent;
@@ -8,6 +10,9 @@ describe('CategoryListComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
+      imports: [
+        MatTableModule,
+      ],
       declarations: [CategoryListComponent]
     })
       .compileComponents();
@@ -16,6 +21,7 @@ describe('CategoryListComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(CategoryListComponent);
     component = fixture.componentInstance;
+    component.categories = of([]);
     fixture.detectChanges();
   });
 

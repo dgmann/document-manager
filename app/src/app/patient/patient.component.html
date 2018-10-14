@@ -5,6 +5,7 @@
   <div class="center-panel">
     <app-multi-record-list [records]="records" [categories]="categories" [selectedCategory]="selectedCategory"
                            (selectedCategoryChange)="onSelectedCategoryChange($event)"
+                           (updateRecord)="onUpdateRecord($event)"
                            (clickRecord)="onSelectRecord($event)"></app-multi-record-list>
   </div>
   <div class="right-panel">

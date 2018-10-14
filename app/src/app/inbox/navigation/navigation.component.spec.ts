@@ -1,14 +1,29 @@
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import {NavigationComponent} from './navigation.component';
+import { NavigationComponent } from './navigation.component';
+import { NgDragDropModule } from "ng-drag-drop";
+import { MatSlideToggleModule } from "@angular/material";
+import { InboxService } from "../inbox.service";
+import { of } from "rxjs";
+import createSpy = jasmine.createSpy;
 
-describe('NavigationComponent', () => {
+describe('Inbox NavigationComponent', () => {
   let component: NavigationComponent;
   let fixture: ComponentFixture<NavigationComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [NavigationComponent]
+      imports: [
+        NgDragDropModule,
+        MatSlideToggleModule,
+      ],
+      declarations: [NavigationComponent],
+      providers: [{
+        provide: InboxService, useValue: {
+          isMultiSelect$: of(false),
+          setMultiselect: createSpy('setMultiselect')
+        }
+      }]
     })
       .compileComponents();
   }));

@@ -1,11 +1,10 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { combineLatest, Observable } from "rxjs";
-import { Category, CategoryService } from "../../core";
-import { Record, RecordService } from "../../core/store/index";
-import { DocumentEditDialogComponent } from "../../shared/document-edit-dialog/document-edit-dialog.component";
-import { MatDialog } from "@angular/material";
+import { Category } from "../../core";
+import { Record } from "../../core/store";
 import { distinctUntilChanged, filter, map, take } from "rxjs/operators";
-import { findIndex, groupBy, sortBy } from 'lodash-es';
+import { findIndex, groupBy, sortBy } from 'lodash-es'
+import { DocumentEditDialogService, EditResult } from "../../shared";
 
 @Component({
   selector: 'app-multi-record-list',
@@ -19,13 +18,12 @@ export class MultiRecordListComponent implements OnInit {
   @Input() categories: Observable<{ [id: string]: Category }>;
   @Output() clickRecord = new EventEmitter<string>();
   @Output() selectedCategoryChange = new EventEmitter<string>();
+  @Output() updateRecord = new EventEmitter<EditResult>();
 
   groupedRecords: Observable<{ category: string, records: Record[] }[]>;
   selectedIndex: Observable<number>;
 
-  constructor(private categoryService: CategoryService,
-              private recordService: RecordService,
-              private dialog: MatDialog) {
+  constructor(private dialog: DocumentEditDialogService) {
   }
 
   ngOnInit() {
@@ -46,21 +44,7 @@ export class MultiRecordListComponent implements OnInit {
   }
 
   edit(record: Record) {
-    this.dialog.open(DocumentEditDialogComponent, {
-      disableClose: true,
-      data: record,
-      width: "635px"
-    }).afterClosed().subscribe((result: Record) => {
-      if (!result) {
-        return;
-      }
-      this.recordService.update(result.id, {
-        patientId: result.patientId,
-        date: result.date,
-        tags: result.tags,
-        category: result.category
-      });
-    });
+    this.dialog.open(record).subscribe(result => this.updateRecord.emit(result));
   }
 
   onSelectedIndexChange(index: number) {
@@ -71,5 +55,4 @@ export class MultiRecordListComponent implements OnInit {
         filter(c => !!c)
       ).subscribe(category => this.selectedCategoryChange.emit(category));
   }
-
 }

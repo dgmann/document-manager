@@ -1,6 +1,12 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { EditorComponent } from './editor.component';
+import { PageListComponent } from "./page-list/page-list.component";
+import { MatButtonModule, MatCardModule, MatIconModule } from "@angular/material";
+import { DndModule } from "ng2-dnd";
+import { RecordService } from "../core/store";
+import { RouterTestingModule } from "@angular/router/testing";
+import createSpyObj = jasmine.createSpyObj;
 
 describe('EditorComponent', () => {
   let component: EditorComponent;
@@ -8,7 +14,20 @@ describe('EditorComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [EditorComponent]
+      imports: [
+        MatCardModule,
+        MatButtonModule,
+        MatIconModule,
+        DndModule.forRoot(),
+        RouterTestingModule
+      ],
+      declarations: [
+        EditorComponent,
+        PageListComponent
+      ],
+      providers: [
+        {provide: RecordService, useValue: createSpyObj(['find', 'updatePages', 'getInvalidIds'])}
+      ]
     })
       .compileComponents();
   }));

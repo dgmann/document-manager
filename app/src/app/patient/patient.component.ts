@@ -2,12 +2,13 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from "@angular/router";
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
-import { Record, RecordService } from "../core/store/index";
+import { Record, RecordService } from "../core/store";
 import { PatientService } from "./patient.service";
 import { Patient } from "./store/patient.model";
 import { Filter } from "./store/patient.reducer";
 import { untilDestroyed } from "ngx-take-until-destroy";
 import { Category, CategoryService } from "../core";
+import { EditResult } from "../shared";
 
 
 @Component({
@@ -64,5 +65,9 @@ export class PatientComponent implements OnInit, OnDestroy {
 
   onSelectedCategoryChange(category: string) {
     this.router.navigate(["."], {relativeTo: this.route, queryParams: {category}});
+  }
+
+  onUpdateRecord(data: EditResult) {
+    this.recordService.update(data.id, data.change);
   }
 }

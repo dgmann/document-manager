@@ -1,6 +1,6 @@
 import { AutorefreshService } from "./autorefresh-service";
 import { NotificationMessage, NotificationMessageType } from "./websocket-service";
-import { ActionType, GenericEvent, RecordEvent } from "./notification-service";
+import { ActionType, RecordEvent } from "./notification-service";
 import { DeleteRecordSuccess, LoadRecordsSuccess, UpdateRecordSuccess } from "./store";
 import { of, throwError } from "rxjs";
 import createSpyObj = jasmine.createSpyObj;
@@ -99,10 +99,6 @@ describe('AutoRefreshService', () => {
     service.webSocket$ = throwError(null);
     service.start();
 
-    const expectedNotification = new GenericEvent({
-      message: "Verbindung zum Server verloren",
-      timestamp: new Date()
-    });
-    expect(notificationService.publish).toHaveBeenCalledWith(expectedNotification);
+    expect(notificationService.publish).toHaveBeenCalled();
   });
 });

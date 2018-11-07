@@ -9,6 +9,7 @@ import { Moment } from "moment";
   providedIn: "root"
 })
 export class DocumentEditDialogService {
+
   constructor(private dialog: MatDialog) {
   }
 

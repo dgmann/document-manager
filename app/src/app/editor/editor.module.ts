@@ -4,19 +4,21 @@ import { EditorComponent } from './editor.component';
 import { MatButtonModule, MatCardModule, MatIconModule } from "@angular/material";
 import { EditorRouterModule } from "./editor.routes";
 import { SharedModule } from "../shared";
-import { DndModule } from "ng2-dnd";
 import { EditorGuard } from "./editor.guard";
 import { PageListComponent } from './page-list/page-list.component';
+import { DragDropModule } from "@angular/cdk/drag-drop";
+import { FlexLayoutModule } from "@angular/flex-layout";
 
 @NgModule({
   imports: [
     CommonModule,
+    FlexLayoutModule,
     MatCardModule,
     MatButtonModule,
     MatIconModule,
     SharedModule,
-    DndModule,
-    EditorRouterModule
+    EditorRouterModule,
+    DragDropModule
   ],
   declarations: [EditorComponent, PageListComponent],
   exports: [EditorComponent],

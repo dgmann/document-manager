@@ -33,3 +33,33 @@
   padding-right: 5px;
   padding-left: 5px;
 }
+
+.drag-border {
+  border: $primary-lighter solid 1px;
+  background-color: $accent-light;
+}
+
+.drag-handle {
+  cursor: pointer;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+  cursor: -moz-grabbing;
+  cursor: -webkit-grabbing;
+}
+
+/* Droppable */
+
+.drag-hint-border {
+
+}
+
+.drag-over-border {
+  border: $primary solid 1px;
+  background-color: $accent-light;
+}
+
+.drag-transit {
+  border: $primary solid 1px;
+}

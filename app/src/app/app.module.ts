@@ -1,7 +1,6 @@
 import { registerLocaleData } from '@angular/common';
 import localeDe from '@angular/common/locales/de';
 import { ErrorHandler, LOCALE_ID, NgModule } from '@angular/core';
-import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatButtonModule, MatIconModule, MatSnackBarModule } from "@angular/material";
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -16,6 +15,7 @@ import { environment } from "../environments/environment";
 import { AppComponent } from './app.component';
 import { AppRoutesModule } from "./app.router";
 import { CoreModule } from "./core/core.module";
+import { SharedModule } from "./shared";
 
 
 const bugsnagClient = bugsnag(environment.bugsnagKey);
@@ -31,9 +31,9 @@ registerLocaleData(localeDe, 'de');
   ],
   imports: [
     BrowserModule,
+    SharedModule,
     BrowserAnimationsModule,
     AppRoutesModule,
-    FlexLayoutModule,
     MatIconModule,
     MatButtonModule,
     MatSidenavModule,

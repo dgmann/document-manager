@@ -1,20 +1,25 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { Dictionary } from "@ngrx/entity/src/models";
-import { Store } from "@ngrx/store";
+import { select, Store } from "@ngrx/store";
 import { map } from "rxjs/operators";
 import { environment } from "../../../../environments/environment";
-import { ActionType, NotificationService, RecordEvent } from "../../../core";
 import { State } from "../reducers";
 import { DeleteRecord, LoadRecords, UpdatePages, UpdateRecord } from "./record.actions";
 import { PageUpdate, Record } from "./record.model";
 import { selectAllRecords, selectInvalidIds, selectRecordEntities } from "./record.selectors";
+import { Observable } from "rxjs";
+import { ActionType, NotificationService, RecordEvent } from "../../notification-service";
 
 @Injectable({
   providedIn: "root"
 })
 export class RecordService {
-  constructor(private store: Store<State>, private http: HttpClient, private notificationService: NotificationService) {
+  public records: Observable<Record[]>;
+  public invalidIds: Observable<string[]>;
+
+  constructor(private store: Store<State>, private http: HttpClient, private notifications: NotificationService) {
+    this.records = this.store.pipe(select(selectAllRecords));
+    this.invalidIds = this.store.pipe(select(selectInvalidIds));
   }
 
   public load(query: { [param: string]: string }) {
@@ -22,11 +27,7 @@ export class RecordService {
   }
 
   public find(id: string) {
-    return this.store.select<Dictionary<Record>>(selectRecordEntities).pipe<Record>(map(entities => entities[id]));
-  }
-
-  public all() {
-    return this.store.select<Record[]>(selectAllRecords)
+    return this.store.pipe(select(selectRecordEntities), map(entities => entities[id]));
   }
 
   public delete(id: string) {
@@ -41,15 +42,11 @@ export class RecordService {
     this.store.dispatch(new UpdatePages({id: id, updates: pages}))
   }
 
-  public getInvalidIds() {
-    return this.store.select<string[]>(selectInvalidIds);
-  }
-
   public upload(pdf) {
     const formData = new FormData();
     formData.append('pdf', pdf);
     formData.append('sender', "Client");
-    this.http.post<Record>(environment.api + "/records", formData).subscribe(record => this.notificationService.publish(new RecordEvent({
+    this.http.post<Record>(environment.api + "/records", formData).subscribe(record => this.notifications.publish(new RecordEvent({
       type: ActionType.NONE,
       timestamp: new Date(),
       message: "PDF hochladen...",
@@ -58,11 +55,11 @@ export class RecordService {
   }
 
   public append(sourceId: string, targetId: string) {
-    this.http.post<Record>(`${environment.api}/records/${sourceId}/append/${targetId}`, null).subscribe(record => this.notificationService.publish(new RecordEvent({
+    this.http.post<Record>(`${environment.api}/records/${sourceId}/append/${targetId}`, null).subscribe(record => this.notifications.publish(new RecordEvent({
       type: ActionType.NONE,
       timestamp: new Date(),
       message: "PDF anhängen...",
       record: record
-    })))
+    })));
   }
 }

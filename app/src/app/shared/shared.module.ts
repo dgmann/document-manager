@@ -28,12 +28,11 @@ import { AutocompleteInputComponent } from "./autocomplete-input/autocomplete-in
 import { CommentDialogComponent } from './comment-dialog/comment-dialog.component';
 import { DocumentEditDialogComponent } from "./document-edit-dialog/document-edit-dialog.component";
 import { DocumentListComponent } from "./document-list/document-list.component";
-import { EventSnackbarComponent } from "./event-snackbar/event-snackbar.component";
 import { PatientSearchComponent } from './patient-search/patient-search.component';
 import { RecordViewerComponent } from "./record-viewer/record-viewer.component";
 import { SplitPanelComponent } from './split-panel/split-panel.component';
 import { HttpClientModule } from "@angular/common/http";
-import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
+import { DragDropModule } from "@angular/cdk/drag-drop";
 
 
 @NgModule({
@@ -41,7 +40,6 @@ import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
     CommonModule,
     HttpClientModule,
     FormsModule,
-    BrowserAnimationsModule,
     ReactiveFormsModule,
     FlexLayoutModule,
     MatSelectModule,
@@ -60,7 +58,8 @@ import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
     MatDatepickerModule,
     MatChipsModule,
     MatMenuModule,
-    NgxMatSelectSearchModule
+    NgxMatSelectSearchModule,
+    DragDropModule
   ],
   declarations: [
     RecordViewerComponent,
@@ -72,12 +71,10 @@ import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
     AutocompleteChipsComponent,
     ActionMenuComponent,
     ActionBarComponent,
-    EventSnackbarComponent,
     CommentDialogComponent
   ],
   entryComponents: [
     DocumentEditDialogComponent,
-    EventSnackbarComponent,
     CommentDialogComponent
   ],
   exports: [

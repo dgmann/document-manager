@@ -1,6 +1,7 @@
-<div fxLayout="row" fxLayoutGap="1em" dnd-sortable-container [sortableData]="pages">
-  <div fxFlex="20%" fxLayoutAlign=" stretch" *ngFor="let page of pages; let i = index" dnd-sortable [sortableIndex]="i"
-       [class]="'rotate-' + page.rotate">
+<div cdkDropList cdkDropListOrientation="horizontal" class="page-list" (cdkDropListDropped)="drop($event)"
+     fxLayout="row" fxLayoutGap="1em">
+  <div cdkDrag cdkDragLockAxis="x" class="page-box" fxFlex="20%" fxLayoutAlign="stretch" *ngFor="let page of pages;"
+       [ngClass]="'rotate-' + page.rotate">
 
     <mat-card>
       <mat-card-header>
@@ -14,7 +15,7 @@
           <mat-icon aria-label="delete">delete</mat-icon>
         </button>
       </mat-card-header>
-      <img mat-card-image [src]="page.url">
+      <img ondragstart="return false;" ondrop="return false;" mat-card-image [src]="page.url">
     </mat-card>
 
   </div>

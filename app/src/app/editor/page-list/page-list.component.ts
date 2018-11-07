@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { PageUpdate } from "../../core/store/index";
+import { PageUpdate } from "../../core/store";
+import { CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
 
 @Component({
   selector: 'app-page-list',
@@ -13,6 +14,10 @@ export class PageListComponent implements OnInit {
   }
 
   ngOnInit() {
+  }
+
+  drop(event: CdkDragDrop<string[]>) {
+    moveItemInArray(this.pages, event.previousIndex, event.currentIndex);
   }
 
   rotate(page: PageUpdate, degree: number) {

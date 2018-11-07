@@ -4,7 +4,7 @@ import { groupBy, map } from "lodash-es";
 import { Subject } from "rxjs";
 import { bufferTime, filter } from "rxjs/operators";
 import { Record } from "./store";
-import { EventSnackbarComponent } from "../shared";
+import { EventSnackbarComponent } from "./event-snackbar/event-snackbar.component";
 
 @Injectable({
   providedIn: "root"
@@ -16,7 +16,7 @@ export class NotificationService {
     return this._events$.asObservable();
   }
 
-  constructor(public snackbar: MatSnackBar, private ngZone: NgZone) {
+  constructor(public snackbar: MatSnackBar, private ngZone: NgZone,) {
   }
 
   publish(event: NotificationEvent) {

@@ -4,7 +4,7 @@ import { ActivatedRoute } from "@angular/router";
 import { includes } from 'lodash-es';
 import { Observable } from "rxjs";
 import { filter, switchMap, take } from "rxjs/operators";
-import { Page, PageUpdate, Record, RecordService } from "../core/store/index";
+import { Page, PageUpdate, Record, RecordService } from "../core/store";
 
 
 @Component({
@@ -37,7 +37,7 @@ export class EditorComponent implements OnInit {
   saveRecord() {
     this.record.pipe(take(1)).subscribe(r => {
       this.recordService.updatePages(r.id, this.pages);
-      const sub = this.recordService.getInvalidIds().pipe(
+      const sub = this.recordService.invalidIds.pipe(
         filter(ids => !includes(ids, r.id))
       ).subscribe(_ => {
         sub.unsubscribe();

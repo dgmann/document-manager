@@ -4,6 +4,7 @@ import {
   Component,
   ElementRef,
   Inject,
+  OnDestroy,
   OnInit,
   ViewChild
 } from '@angular/core';
@@ -16,7 +17,8 @@ import { Patient } from "../../patient";
 
 
 import { Record } from "../../core/store";
-import { Category, CategoryService, ExternalApiService } from "../../core";
+import { Category, CategoryService, ExternalApiService, TagService } from "../../core";
+import { untilDestroyed } from "ngx-take-until-destroy";
 
 @Component({
   selector: 'app-document-edit-dialog',
@@ -24,26 +26,37 @@ import { Category, CategoryService, ExternalApiService } from "../../core";
   styleUrls: ['./document-edit-dialog.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DocumentEditDialogComponent implements AfterViewInit, OnInit {
+export class DocumentEditDialogComponent implements AfterViewInit, OnInit, OnDestroy {
   @ViewChild('datepickertoogle', {read: ElementRef}) datepickerToggle;
   public record: Record;
   public tabIndex = new ReplaySubject<number>();
   public categoryFormControl: FormControl;
   public patient: Patient;
-  categories: Observable<Category[]>;
+  public categories: Observable<Category[]>;
+  public tags: Observable<string[]>;
 
   constructor(public dialogRef: MatDialogRef<DocumentEditDialogComponent>,
               @Inject(MAT_DIALOG_DATA) record: Record,
               public patientService: ExternalApiService,
-              public categoryService: CategoryService) {
-    let patientRequest = this.patientService.getSelectedPatient().pipe(shareReplay());
-    this.categories = categoryService.get();
-    patientRequest.subscribe(p => this.patient = p);
+              public categoryService: CategoryService,
+              public tagService: TagService) {
     this.record = Object.assign({}, record);
+    this.record.tags = record.tags.slice();
+  }
+
+  ngOnInit() {
+    this.categoryService.load();
+    this.categories = this.categoryService.categories;
+
+    this.tagService.load();
+    this.tags = this.tagService.tags;
+
+    let patientRequest = this.patientService.getSelectedPatient().pipe(untilDestroyed(this), shareReplay());
+    patientRequest.subscribe(p => this.patient = p);
+
     if (!this.record.date) {
       this.record.date = moment();
     }
-    this.record.tags = record.tags.slice();
     if (!this.record.patientId) {
       patientRequest.subscribe(p => this.record.patientId = p.id);
     }
@@ -54,11 +67,10 @@ export class DocumentEditDialogComponent implements AfterViewInit, OnInit {
       this.tabIndex.next(0);
     }
     this.categoryFormControl = new FormControl({name: "Test", id: this.record.category});
-    this.categoryFormControl.valueChanges.subscribe(val => this.record.category = val.id);
+    this.categoryFormControl.valueChanges.pipe(untilDestroyed(this)).subscribe(val => this.record.category = val.id);
   }
 
-  ngOnInit() {
-
+  ngOnDestroy(): void {
   }
 
   ngAfterViewInit(): void {

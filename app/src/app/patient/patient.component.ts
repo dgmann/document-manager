@@ -46,7 +46,8 @@ export class PatientComponent implements OnInit, OnDestroy {
     this.patientId = this.patient.pipe(
       map(patient => patient && patient.id || null)
     );
-    this.categories = this.categoryService.getAsMap();
+    this.categoryService.load();
+    this.categories = this.categoryService.categoryMap;
 
     this.selectedRecord = this.patientService.getSelectedRecord();
   }

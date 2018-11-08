@@ -13,6 +13,7 @@ export interface State extends EntityState<Record> {
   reviewIds: string[];
   otherIds: string[];
   doneIds: string[];
+  isLoading: boolean;
 }
 
 export const adapter: EntityAdapter<Record> = createEntityAdapter<Record>();
@@ -24,59 +25,63 @@ export const initialState: State = adapter.getInitialState({
   escalatedIds: [],
   reviewIds: [],
   otherIds: [],
-  doneIds: []
+  doneIds: [],
+  isLoading: false
 });
 
 export function reducer(state = initialState,
                         action: RecordActions): State {
   switch (action.type) {
-    case RecordActionTypes.LoadRecordsSuccess: {
-      let s = adapter.addMany(action.payload.records, state);
-      s = clearIdsFromState(action.payload.records, s);
-      return addToStatus(action.payload.records, s);
-    }
+    case RecordActionTypes.LoadRecords:
+      return {
+        ...state,
+        isLoading: true
+      };
 
-    case RecordActionTypes.UpdateRecordSuccess: {
-      let s = adapter.updateOne(action.payload.record, state);
-      s.invalidIds = without(s.invalidIds, action.payload.record.id + '');
+    case RecordActionTypes.LoadRecordsFail:
+      return {
+        ...state,
+        isLoading: false
+      };
+
+    case RecordActionTypes.LoadRecordsSuccess:
+      let stateWithRecord = adapter.addMany(action.payload.records, state);
+      stateWithRecord = clearIdsFromState(action.payload.records, stateWithRecord);
+      return {
+        ...addToStatus(action.payload.records, stateWithRecord),
+        isLoading: false
+      };
+
+    case RecordActionTypes.UpdateRecordSuccess:
+      let updatedState = adapter.updateOne(action.payload.record, state);
+      updatedState.invalidIds = without(updatedState.invalidIds, action.payload.record.id + '');
       const statusChanges = recordUpdatesToStatusChanges([action.payload.record]);
-      s = clearIdsFromState(statusChanges, s);
-      return addToStatus(statusChanges, s);
-    }
+      updatedState = clearIdsFromState(statusChanges, updatedState);
+      return addToStatus(statusChanges, updatedState);
 
-    case RecordActionTypes.DeleteRecordSuccess: {
-      let s = adapter.removeOne(action.payload.id, state);
-      s.invalidIds = without(s.invalidIds, action.payload.id);
-      return clearIdsFromState([{id: action.payload.id}], s);
-    }
+    case RecordActionTypes.DeleteRecordSuccess:
+      let stateWithoutRecord = adapter.removeOne(action.payload.id, state);
+      stateWithoutRecord.invalidIds = without(stateWithoutRecord.invalidIds, action.payload.id);
+      return clearIdsFromState([{id: action.payload.id}], stateWithoutRecord);
 
-    case RecordActionTypes.ClearRecords: {
-      let s = adapter.removeAll(state);
-      return Object.assign({}, s, {
-        inboxIds: [],
-        escalatedIds: [],
-        reviewIds: [],
-        otherIds: [],
-        doneIds: []
-      })
-    }
+    case RecordActionTypes.ClearRecords:
+      return initialState;
 
-    case RecordActionTypes.UpdateRecord: {
-      return Object.assign({}, state, {
-        invalidIds: union(state.invalidIds, [action.payload.record.id])
-      });
-    }
+    case RecordActionTypes.UpdateRecord:
+      return {
+        ...state,
+        invalidIds: union(state.invalidIds, [action.payload.record.id as string])
+      };
 
     case RecordActionTypes.UpdatePages:
-    case RecordActionTypes.DeleteRecord: {
-      return Object.assign({}, state, {
+    case RecordActionTypes.DeleteRecord:
+      return {
+        ...state,
         invalidIds: union(state.invalidIds, [action.payload.id])
-      });
-    }
+      };
 
-    default: {
+    default:
       return state;
-    }
   }
 }
 
@@ -95,7 +100,10 @@ function clearIdsFromState(records: StatusChange[], state: State) {
     otherIds: without(state.otherIds, ...ids),
     doneIds: without(state.doneIds, ...ids)
   };
-  return Object.assign({}, state, change);
+  return {
+    ...state,
+    ...change
+  }
 }
 
 interface StatusChange {

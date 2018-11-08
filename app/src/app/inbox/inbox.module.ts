@@ -1,15 +1,15 @@
-import {NgModule} from '@angular/core';
-import {MatSlideToggleModule} from "@angular/material";
-import {EffectsModule} from "@ngrx/effects";
-import {StoreModule} from "@ngrx/store";
-import {NgDragDropModule} from "ng-drag-drop";
-import {SharedModule} from "../shared";
-import {InboxComponent} from './inbox.component';
-import {InboxRouterModule} from "./inbox.routes";
-import {InboxService} from "./inbox.service";
-import {NavigationComponent} from "./navigation/navigation.component";
-import {metaReducers, reducers} from './reducers';
-import {InboxEffects} from "./store/inbox.effects";
+import { NgModule } from '@angular/core';
+import { MatProgressSpinnerModule, MatSlideToggleModule } from "@angular/material";
+import { EffectsModule } from "@ngrx/effects";
+import { StoreModule } from "@ngrx/store";
+import { NgDragDropModule } from "ng-drag-drop";
+import { SharedModule } from "../shared";
+import { InboxComponent } from './inbox.component';
+import { InboxRouterModule } from "./inbox.routes";
+import { InboxService } from "./inbox.service";
+import { NavigationComponent } from "./navigation/navigation.component";
+import { metaReducers, reducers } from './reducers';
+import { InboxEffects } from "./store/inbox.effects";
 
 @NgModule({
   imports: [
@@ -18,6 +18,7 @@ import {InboxEffects} from "./store/inbox.effects";
     InboxRouterModule,
     NgDragDropModule,
     MatSlideToggleModule,
+    MatProgressSpinnerModule,
     SharedModule
   ],
   declarations: [

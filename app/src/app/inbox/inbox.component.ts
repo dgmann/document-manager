@@ -17,8 +17,10 @@ export class InboxComponent implements OnInit{
   selectedRecord: Observable<Record>;
   selectedIds: Observable<string[]>;
   isMultiselect: Observable<boolean>;
+  isLoading$: Observable<boolean>;
 
   constructor(private inboxService: InboxService) {
+    this.isLoading$ = this.inboxService.isLoading$;
   }
 
   ngOnInit() {

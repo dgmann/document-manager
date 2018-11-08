@@ -21,7 +21,7 @@ export function actionSanitizer(action) {
       maxAge: 25,
       actionSanitizer: actionSanitizer
     }) : [],
-    EffectsModule.forRoot([RecordEffects])
+    EffectsModule.forRoot([RecordEffects]),
   ],
   declarations: []
 })

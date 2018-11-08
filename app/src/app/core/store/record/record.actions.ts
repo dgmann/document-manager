@@ -113,3 +113,5 @@ export type RecordActions =
   | DeleteRecordFail
   | ClearRecords
   | UpdatePages;
+
+export type RecordErrorActions = LoadRecordsFail | UpdateRecordFail | DeleteRecordFail;

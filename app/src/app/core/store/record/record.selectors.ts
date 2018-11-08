@@ -9,6 +9,7 @@ export const selectRecordIds = createSelector(selectRecordState, fromRecord.sele
 export const selectRecordEntities = createSelector(selectRecordState, fromRecord.selectEntities);
 export const selectAllRecords = createSelector(selectRecordState, fromRecord.selectAll);
 export const selectInvalidIds = createSelector(selectRecordState, (state: fromRecord.State) => state.invalidIds);
+export const selectIsLoading = createSelector(selectRecordState, state => state.isLoading);
 
 export const selectInboxIds = createSelector(selectRecordState, (state: fromRecord.State) => state.inboxIds);
 export const selectEscalatedIds = createSelector(selectRecordState, (state: fromRecord.State) => state.escalatedIds);

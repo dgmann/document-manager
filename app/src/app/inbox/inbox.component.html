@@ -1,5 +1,6 @@
 <app-split-panel>
-  <div class="left-panel" droppable (onDrop)="onDrop($event)" (dragover)="$event.preventDefault();">
+  <div *ngIf="!(isLoading$ | async); else loading" class="left-panel" droppable (onDrop)="onDrop($event)"
+       (dragover)="$event.preventDefault();">
     <app-action-bar [hidden]="!(isMultiselect | async)"
                     (delete)="onDeleteSelectedRecords()"
                     (changeStatus)="onSetStatusOfSelectedRecords($event)"
@@ -11,3 +12,9 @@
     <app-record-viewer [record]="selectedRecord"></app-record-viewer>
   </div>
 </app-split-panel>
+
+<ng-template #loading>
+  <div class="left-panel" fxLayout="row" fxLayoutAlign="center center">
+    <mat-spinner></mat-spinner>
+  </div>
+</ng-template>

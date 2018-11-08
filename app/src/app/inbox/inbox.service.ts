@@ -13,6 +13,7 @@ export class InboxService {
   public selectedIds$: Observable<string[]>;
   public selectedRecords$: Observable<Record[]>;
   public isMultiSelect$: Observable<boolean>;
+  public isLoading$: Observable<boolean>;
 
   constructor(private store: Store<State>,
               private recordService: RecordService) {
@@ -21,6 +22,7 @@ export class InboxService {
     this.selectedIds$ = this.store.pipe(select(selectSelectedIds));
     this.selectedRecords$ = this.store.pipe(select(selectSelectedRecords));
     this.isMultiSelect$ = this.store.pipe(select(selectMultiselect));
+    this.isLoading$ = this.recordService.isLoading$;
   }
 
   public loadRecords() {

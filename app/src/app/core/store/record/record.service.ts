@@ -6,7 +6,7 @@ import { environment } from "../../../../environments/environment";
 import { State } from "../reducers";
 import { DeleteRecord, LoadRecords, UpdatePages, UpdateRecord } from "./record.actions";
 import { PageUpdate, Record } from "./record.model";
-import { selectAllRecords, selectInvalidIds, selectRecordEntities } from "./record.selectors";
+import { selectAllRecords, selectInvalidIds, selectIsLoading, selectRecordEntities } from "./record.selectors";
 import { Observable } from "rxjs";
 import { ActionType, NotificationService, RecordEvent } from "../../notification-service";
 
@@ -16,10 +16,12 @@ import { ActionType, NotificationService, RecordEvent } from "../../notification
 export class RecordService {
   public records: Observable<Record[]>;
   public invalidIds: Observable<string[]>;
+  public isLoading$: Observable<boolean>;
 
   constructor(private store: Store<State>, private http: HttpClient, private notifications: NotificationService) {
     this.records = this.store.pipe(select(selectAllRecords));
     this.invalidIds = this.store.pipe(select(selectInvalidIds));
+    this.isLoading$ = this.store.pipe(select(selectIsLoading));
   }
 
   public load(query: { [param: string]: string }) {

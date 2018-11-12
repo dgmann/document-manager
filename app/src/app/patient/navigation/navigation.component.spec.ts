@@ -1,6 +1,9 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { NavigationComponent } from './navigation.component';
+import { CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
+import { PatientService } from "../patient.service";
+import createSpy = jasmine.createSpy;
 
 describe('Patient NavigationComponent', () => {
   let component: NavigationComponent;
@@ -8,7 +11,9 @@ describe('Patient NavigationComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [NavigationComponent]
+      declarations: [NavigationComponent],
+      providers: [{provide: PatientService, useValue: {getSelectedPatient: createSpy()}}],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })
       .compileComponents();
   }));

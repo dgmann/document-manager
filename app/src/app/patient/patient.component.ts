@@ -36,20 +36,20 @@ export class PatientComponent implements OnInit, OnDestroy {
     this.route.params
       .pipe(untilDestroyed(this))
       .subscribe(params => this.patientService.selectPatient(params['id']));
-    this.selectedCategory = this.patientService.getSelectedCategory();
+    this.selectedCategory = this.patientService.selectedCategory$;
     this.route.queryParamMap
       .pipe(untilDestroyed(this))
       .subscribe(params => this.patientService.selectCategory(params.get('category')));
 
-    this.records = this.patientService.getFilteredPatientRecords();
-    this.patient = this.patientService.getSelectedPatient();
+    this.records = this.patientService.filteredPatientRecord$;
+    this.patient = this.patientService.selectedPatient$;
     this.patientId = this.patient.pipe(
       map(patient => patient && patient.id || null)
     );
     this.categoryService.load();
     this.categories = this.categoryService.categoryMap;
 
-    this.selectedRecord = this.patientService.getSelectedRecord();
+    this.selectedRecord = this.patientService.selectedRecord$;
   }
 
   ngOnDestroy() {

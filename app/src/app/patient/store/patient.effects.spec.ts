@@ -1,8 +1,9 @@
-import {TestBed} from '@angular/core/testing';
-import {provideMockActions} from '@ngrx/effects/testing';
-import {Observable} from 'rxjs/Observable';
+import { TestBed } from '@angular/core/testing';
+import { provideMockActions } from '@ngrx/effects/testing';
+import { Observable } from 'rxjs/Observable';
 
-import {PatientEffects} from './patient.effects';
+import { PatientEffects } from './patient.effects';
+import { HttpClientTestingModule } from "@angular/common/http/testing";
 
 describe('ExternalApiService', () => {
   let actions$: Observable<any>;
@@ -10,6 +11,9 @@ describe('ExternalApiService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
+      imports: [
+        HttpClientTestingModule
+      ],
       providers: [
         PatientEffects,
         provideMockActions(() => actions$)

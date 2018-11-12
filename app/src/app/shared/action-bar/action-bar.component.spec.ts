@@ -1,6 +1,7 @@
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import {ActionBarComponent} from './action-bar.component';
+import { ActionBarComponent } from './action-bar.component';
+import { MatIconModule } from "@angular/material";
 
 describe('EventSnackbarComponent', () => {
   let component: ActionBarComponent;
@@ -8,6 +9,9 @@ describe('EventSnackbarComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
+      imports: [
+        MatIconModule
+      ],
       declarations: [ ActionBarComponent ]
     })
     .compileComponents();

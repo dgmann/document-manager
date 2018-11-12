@@ -22,7 +22,9 @@ export class EditorComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.record = this.route.params.pipe(switchMap(params => this.recordService.find(params['id'])));
+    this.record = this.route.params.pipe(
+      switchMap(params => this.recordService.find(params['id']))
+    );
     this.record.subscribe(r => this.setPages(r.pages));
   }
 

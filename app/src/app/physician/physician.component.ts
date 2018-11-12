@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from "@angular/router";
 import { Observable } from "rxjs";
 import { filter, map } from "rxjs/operators";
-import { Record, RecordService, Status } from "../core/store/index";
+import { Record } from "../core/store/index";
 import { PhysicianService } from "./physician.service";
 
 @Component({
@@ -14,19 +14,16 @@ export class PhysicianComponent implements OnInit {
   selectedRecord: Observable<Record>;
 
   constructor(private physicianService: PhysicianService,
-              private recordService: RecordService,
               private route: ActivatedRoute,
               private router: Router) {
   }
 
   ngOnInit() {
-    this.selectedRecord = this.physicianService.getSelectedRecords().pipe(
+    this.selectedRecord = this.physicianService.selectedRecords$.pipe(
       filter(records => records.length > 0),
       map(records => records[0])
     );
-    this.recordService.load({status: Status.REVIEW});
-    this.recordService.load({status: Status.ESCALATED});
-    this.recordService.load({status: Status.OTHER});
+    this.physicianService.load();
 
     this.route
       .queryParams
@@ -35,7 +32,7 @@ export class PhysicianComponent implements OnInit {
         this.physicianService.selectIds([id]);
       });
 
-    this.physicianService.getSelectedIds().subscribe(ids => this.router.navigate([], {
+    this.physicianService.selectedIds$.subscribe(ids => this.router.navigate([], {
       relativeTo: this.route,
       queryParams: {
         ...this.route.snapshot.queryParams,

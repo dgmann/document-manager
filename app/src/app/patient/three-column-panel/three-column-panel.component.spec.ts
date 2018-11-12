@@ -1,6 +1,8 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ThreeColumnPanelComponent } from './three-column-panel.component';
+import { CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
+import { FlexLayoutModule } from "@angular/flex-layout";
 
 describe('ThreeColumnPanelComponent', () => {
   let component: ThreeColumnPanelComponent;
@@ -8,7 +10,9 @@ describe('ThreeColumnPanelComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ThreeColumnPanelComponent]
+      imports: [FlexLayoutModule],
+      declarations: [ThreeColumnPanelComponent],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })
       .compileComponents();
   }));

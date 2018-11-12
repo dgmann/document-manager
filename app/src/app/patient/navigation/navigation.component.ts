@@ -1,7 +1,7 @@
-import {Component, OnInit} from '@angular/core';
-import {Observable} from "rxjs";
-import {Patient} from "..";
-import {PatientService} from "../patient.service";
+import { Component, OnInit } from '@angular/core';
+import { Observable } from "rxjs";
+import { Patient } from "..";
+import { PatientService } from "../patient.service";
 
 @Component({
   selector: 'app-navigation',
@@ -15,7 +15,7 @@ export class NavigationComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.patient = this.patientService.getSelectedPatient();
+    this.patient = this.patientService.selectedPatient$;
   }
 
 }

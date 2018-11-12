@@ -16,8 +16,8 @@ export class PageOtherComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.records = this.physicianService.getOther();
-    this.selectedIds = this.physicianService.getSelectedIds();
+    this.records = this.physicianService.otherRecords$;
+    this.selectedIds = this.physicianService.selectedIds$;
   }
 
   selectRecord(record: Record) {

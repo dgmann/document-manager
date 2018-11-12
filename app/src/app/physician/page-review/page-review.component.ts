@@ -16,8 +16,8 @@ export class PageReviewComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.records = this.physicianService.getToReview();
-    this.selectedIds = this.physicianService.getSelectedIds();
+    this.records = this.physicianService.reviewRecords$;
+    this.selectedIds = this.physicianService.selectedIds$;
   }
 
   selectRecord(record: Record) {

@@ -6,6 +6,8 @@ import { of } from "rxjs";
 import { SharedModule } from "../shared";
 import { RecordService, Status } from "../core/store";
 import { RouterTestingModule } from "@angular/router/testing";
+import { CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
+import { NoopAnimationsModule } from "@angular/platform-browser/animations";
 import createSpy = jasmine.createSpy;
 import createSpyObj = jasmine.createSpyObj;
 
@@ -18,7 +20,8 @@ describe('InboxComponent', () => {
     TestBed.configureTestingModule({
       imports: [
         SharedModule,
-        RouterTestingModule
+        RouterTestingModule,
+        NoopAnimationsModule
       ],
       declarations: [InboxComponent],
       providers: [{
@@ -33,7 +36,10 @@ describe('InboxComponent', () => {
           deleteSelectedRecords: createSpy('deleteSelectedRecords'),
           updateSelectedRecords: createSpy('updateSelectedRecords')
         }
-      }, {provide: RecordService, useValue: createSpyObj('RecordService', ['updatePages'])}]
+      },
+        {provide: RecordService, useValue: createSpyObj('RecordService', ['updatePages'])}
+      ],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
     inboxService = TestBed.get(InboxService);
   }));

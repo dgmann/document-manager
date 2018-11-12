@@ -1,7 +1,7 @@
-import {Component, OnInit} from '@angular/core';
-import {Observable} from "rxjs";
-import {map} from "rxjs/operators";
-import {PhysicianService} from "../physician.service";
+import { Component, OnInit } from '@angular/core';
+import { Observable } from "rxjs";
+import { map } from "rxjs/operators";
+import { PhysicianService } from "../physician.service";
 
 @Component({
   selector: 'app-navigation',
@@ -16,9 +16,9 @@ export class NavigationComponent implements OnInit {
 
   constructor(private physicianService: PhysicianService) {
     const countMap = map((records: any[]) => records.length);
-    this.reviewCount = physicianService.getToReview().pipe(countMap);
-    this.escalatedCount = physicianService.getEscalated().pipe(countMap);
-    this.otherCount = physicianService.getOther().pipe(countMap);
+    this.reviewCount = physicianService.reviewRecords$.pipe(countMap);
+    this.escalatedCount = physicianService.escalatedRecords$.pipe(countMap);
+    this.otherCount = physicianService.otherRecords$.pipe(countMap);
   }
 
   ngOnInit() {

@@ -16,8 +16,8 @@ export class PageEscalatedComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.records = this.physicianService.getEscalated();
-    this.selectedIds = this.physicianService.getSelectedIds();
+    this.records = this.physicianService.escalatedRecords$;
+    this.selectedIds = this.physicianService.selectedIds$;
   }
 
   selectRecord(record: Record) {

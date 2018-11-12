@@ -1,6 +1,10 @@
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import {PatientSearchComponent} from './patient-search.component';
+import { PatientSearchComponent } from './patient-search.component';
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { MatAutocompleteModule } from "@angular/material";
+import { CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
+import { HttpClientTestingModule } from "@angular/common/http/testing";
 
 describe('PatientSearchComponent', () => {
   let component: PatientSearchComponent;
@@ -8,7 +12,14 @@ describe('PatientSearchComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [PatientSearchComponent]
+      imports: [
+        FormsModule,
+        MatAutocompleteModule,
+        ReactiveFormsModule,
+        HttpClientTestingModule
+      ],
+      declarations: [PatientSearchComponent],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })
       .compileComponents();
   }));

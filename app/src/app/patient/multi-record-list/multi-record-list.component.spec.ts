@@ -9,7 +9,6 @@ import createSpyObj = jasmine.createSpyObj;
 describe('MultiRecordListComponent', () => {
   let component: MultiRecordListComponent;
   let fixture: ComponentFixture<MultiRecordListComponent>;
-  let editService;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({

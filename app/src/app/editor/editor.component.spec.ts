@@ -3,10 +3,10 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { EditorComponent } from './editor.component';
 import { PageListComponent } from "./page-list/page-list.component";
 import { MatButtonModule, MatCardModule, MatIconModule } from "@angular/material";
-import { DndModule } from "ng2-dnd";
 import { RecordService } from "../core/store";
 import { RouterTestingModule } from "@angular/router/testing";
-import createSpyObj = jasmine.createSpyObj;
+import { of } from "rxjs";
+import createSpy = jasmine.createSpy;
 
 describe('EditorComponent', () => {
   let component: EditorComponent;
@@ -18,7 +18,6 @@ describe('EditorComponent', () => {
         MatCardModule,
         MatButtonModule,
         MatIconModule,
-        DndModule.forRoot(),
         RouterTestingModule
       ],
       declarations: [
@@ -26,7 +25,13 @@ describe('EditorComponent', () => {
         PageListComponent
       ],
       providers: [
-        {provide: RecordService, useValue: createSpyObj(['find', 'updatePages', 'getInvalidIds'])}
+        {
+          provide: RecordService, useValue: {
+            find: createSpy().and.returnValue(of({pages: []})),
+            updatePages: createSpy(),
+            getInvalidIds: createSpy()
+          }
+        }
       ]
     })
       .compileComponents();

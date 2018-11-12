@@ -1,6 +1,9 @@
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import {CommentDialogComponent} from './comment-dialog.component';
+import { CommentDialogComponent } from './comment-dialog.component';
+import { MAT_DIALOG_DATA, MatDialogModule } from "@angular/material";
+import { CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
+import { FormsModule } from "@angular/forms";
 
 describe('CommentDialogComponent', () => {
   let component: CommentDialogComponent;
@@ -8,7 +11,15 @@ describe('CommentDialogComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [CommentDialogComponent]
+      imports: [
+        FormsModule,
+        MatDialogModule
+      ],
+      providers: [
+        {provide: MAT_DIALOG_DATA, useValue: {}}
+      ],
+      declarations: [CommentDialogComponent],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })
       .compileComponents();
   }));

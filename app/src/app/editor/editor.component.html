@@ -1,12 +1,16 @@
 <div fxLayout="column" fxLayoutGap="1em">
   <app-page-list [pages]="pages"></app-page-list>
 
-  <div class="button-row">
-    <button mat-button (click)="saveRecord()">
+  <div *ngIf="record$ | async as record" class="button-row">
+    <button mat-button (click)="saveRecord(record.id)">
       <mat-icon aria-label="save">save</mat-icon>
       <span>Speichern</span>
     </button>
-    <button mat-button (click)="discard()">
+    <button mat-button (click)="reset(record.id)">
+      <mat-icon aria-label="cached">cached</mat-icon>
+      <span>Orginal wiederherstellen</span>
+    </button>
+    <button mat-button (click)="discard(record.pages)">
       <mat-icon aria-label="delete">delete</mat-icon>
       <span>Verwerfen</span>
     </button>

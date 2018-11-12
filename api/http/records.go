@@ -123,6 +123,41 @@ func registerRecords(g *gin.RouterGroup, factory *Factory) {
 		RespondAsJSON(c, response)
 	})
 
+	g.PUT("/:recordId/reset", func(c *gin.Context) {
+		recordId := c.Param("recordId")
+		pdfs := factory.GetPDFRepository()
+		f, err := pdfs.Get(recordId)
+		if err != nil {
+			c.AbortWithError(404, err)
+			return
+		}
+
+		fileBytes, err := ioutil.ReadAll(f)
+		if err != nil {
+			c.AbortWithError(500, err)
+			return
+		}
+
+		images, err := pdfProcessor.Convert(bytes.NewBuffer(fileBytes))
+		if err != nil {
+			c.AbortWithError(500, err)
+			return
+		}
+
+		pages, err := imageRepository.Set(recordId, images)
+		if err != nil {
+			c.AbortWithError(500, err)
+			return
+		}
+		updated, err := recordRepository.Update(recordId, models.Record{Pages: pages})
+		if err != nil {
+			c.AbortWithError(500, err)
+			return
+		}
+		response := responseService.NewResponse(updated)
+		RespondAsJSON(c, response)
+	})
+
 	g.POST("/:recordId/append/:idtoappend", func(c *gin.Context) {
 		recordToAppend, err := recordRepository.Find(c.Param("idtoappend"))
 		if err != nil {

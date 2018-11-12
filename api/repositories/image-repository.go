@@ -3,18 +3,18 @@ package repositories
 import (
 	"errors"
 	"fmt"
+	"github.com/dgmann/document-manager/api/models"
+	"github.com/dgmann/document-manager/api/services"
+	"github.com/dgmann/document-manager/shared"
 	"github.com/gin-gonic/gin"
+	"github.com/globalsign/mgo/bson"
 	log "github.com/sirupsen/logrus"
 	"io"
+	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
 	"strings"
-	"github.com/dgmann/document-manager/shared"
-	"github.com/dgmann/document-manager/api/models"
-	"github.com/globalsign/mgo/bson"
-	"io/ioutil"
-	"github.com/dgmann/document-manager/api/services"
 )
 
 type ImageRepository interface {
@@ -82,9 +82,13 @@ func (f *FileSystemImageRepository) Copy(fromId string, toId string) error {
 func (f *FileSystemImageRepository) Set(id string, images []*shared.Image) (results []*models.Page, err error) {
 	results = make([]*models.Page, 0)
 	p := path.Join(f.directory, id)
+	if err := os.RemoveAll(p); err != nil {
+		log.WithField("recordId", id).Debug("image folder did not exist yet")
+	}
 	if _, err := os.Stat(p); os.IsNotExist(err) {
 		os.MkdirAll(p, os.ModePerm)
 	}
+
 	defer func() {
 		if r := recover(); r != nil {
 			log.Errorf("Recovering: %v", r)

@@ -8,7 +8,7 @@ import { DeleteRecord, LoadRecords, UpdatePages, UpdateRecord } from "./record.a
 import { PageUpdate, Record } from "./record.model";
 import { selectAllRecords, selectInvalidIds, selectIsLoading, selectRecordEntities } from "./record.selectors";
 import { Observable } from "rxjs";
-import { ActionType, NotificationService, RecordEvent } from "../../notification-service";
+import { ActionType, GenericEvent, NotificationService, RecordEvent } from "../../notification-service";
 
 @Injectable({
   providedIn: "root"
@@ -45,23 +45,48 @@ export class RecordService {
   }
 
   public upload(pdf) {
+    this.notifications.publish(new GenericEvent({
+      timestamp: new Date(),
+      message: "PDF wird hochgeladen..."
+    }));
+
     const formData = new FormData();
     formData.append('pdf', pdf);
     formData.append('sender', "Client");
-    this.http.post<Record>(environment.api + "/records", formData).subscribe(record => this.notifications.publish(new RecordEvent({
-      type: ActionType.NONE,
-      timestamp: new Date(),
-      message: "PDF hochladen...",
-      record: record
+    this.http.post<Record>(environment.api + "/records", formData)
+      .subscribe(record => this.notifications.publish(new RecordEvent({
+        type: ActionType.NONE,
+        timestamp: new Date(),
+        message: "PDF hochgeladen",
+        record: record
     })));
   }
 
   public append(sourceId: string, targetId: string) {
-    this.http.post<Record>(`${environment.api}/records/${sourceId}/append/${targetId}`, null).subscribe(record => this.notifications.publish(new RecordEvent({
-      type: ActionType.NONE,
+    this.notifications.publish(new GenericEvent({
       timestamp: new Date(),
-      message: "PDF anhängen...",
-      record: record
+      message: "PDF wird angehängt..."
+    }));
+    this.http.post<Record>(`${environment.api}/records/${sourceId}/append/${targetId}`, null)
+      .subscribe(record => this.notifications.publish(new RecordEvent({
+        type: ActionType.NONE,
+        timestamp: new Date(),
+        message: "PDF angehängt",
+        record: record
+      })));
+  }
+
+  public reset(id: string) {
+    this.notifications.publish(new GenericEvent({
+      timestamp: new Date(),
+      message: "Befund wird zurückgesetzt..."
+    }));
+    this.http.put<Record>(`${environment.api}/records/${id}/reset`, null)
+      .subscribe(record => this.notifications.publish(new RecordEvent({
+        type: ActionType.NONE,
+        timestamp: new Date(),
+        message: "Befund zurückgesetzt",
+        record: record
     })));
   }
 }

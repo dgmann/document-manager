@@ -3,10 +3,10 @@ package repositories
 import (
 	"github.com/dgmann/document-manager/api/models"
 	"github.com/dgmann/document-manager/api/services"
+	"github.com/dgmann/document-manager/shared"
 	"github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
 	log "github.com/sirupsen/logrus"
-	"github.com/dgmann/document-manager/shared"
 	"io"
 	"io/ioutil"
 )
@@ -141,6 +141,7 @@ func (r *DBRecordRepository) Update(id string, record models.Record) (*models.Re
 	return updated, nil
 }
 
+// UpdatePages updates the pages specified while keeping the rest of the original pages
 func (r *DBRecordRepository) UpdatePages(id string, updates []*models.PageUpdate) (*models.Record, error) {
 	record, err := r.Find(id)
 	if err != nil {

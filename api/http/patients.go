@@ -1,11 +1,11 @@
 package http
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/dgmann/document-manager/api/models"
-	"strings"
 	"encoding/json"
+	"github.com/dgmann/document-manager/api/models"
+	"github.com/gin-gonic/gin"
 	"github.com/globalsign/mgo/bson"
+	"strings"
 )
 
 func registerPatients(g *gin.RouterGroup, factory *Factory) {
@@ -55,17 +55,19 @@ func registerPatients(g *gin.RouterGroup, factory *Factory) {
 	})
 
 	g.GET("/:patientId", func(c *gin.Context) {
-		tags, err := tagRepository.ByPatient(c.Param("patientId"))
+		patientId := c.Param("patientId")
+
+		tags, err := tagRepository.ByPatient(patientId)
 		if err != nil {
 			c.AbortWithError(400, err)
 			return
 		}
-		categories, err := categoryRepository.FindByPatient(c.Param("patientId"))
+		categories, err := categoryRepository.FindByPatient(patientId)
 		if err != nil {
 			c.AbortWithError(400, err)
 			return
 		}
-		patient, err := patientRepository.Find(c.Param("patientId"))
+		patient, err := patientRepository.Find(patientId)
 		if err != nil {
 			c.AbortWithError(404, err)
 			return
@@ -73,6 +75,32 @@ func registerPatients(g *gin.RouterGroup, factory *Factory) {
 		patient.Tags = tags
 		patient.Categories = categories
 		response := responseService.NewResponse(patient)
+		RespondAsJSON(c, response)
+	})
+
+	g.GET("/:patientId/tags", func(c *gin.Context) {
+		patientId := c.Param("patientId")
+
+		tags, err := tagRepository.ByPatient(patientId)
+		if err != nil {
+			c.AbortWithError(404, err)
+			return
+		}
+
+		response := responseService.NewResponse(tags)
+		RespondAsJSON(c, response)
+	})
+
+	g.GET("/:patientId/categories", func(c *gin.Context) {
+		patientId := c.Param("patientId")
+
+		categories, err := categoryRepository.FindByPatient(patientId)
+		if err != nil {
+			c.AbortWithError(404, err)
+			return
+		}
+
+		response := responseService.NewResponse(categories)
 		RespondAsJSON(c, response)
 	})
 

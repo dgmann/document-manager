@@ -1,21 +1,47 @@
 package main
 
 import (
+	"fmt"
 	"github.com/dgmann/document-manager/m1-adapter/m1"
 	"github.com/gin-gonic/gin"
 	"os"
 )
 
-var dsn string
+var username string
+var password string
+var host string
+var port string
+var dbname string
 
 func init() {
-	dsn = getEnv("DSN", "")
-	if len(dsn) == 0 {
-		panic("invalid connection string: " + dsn)
+	username = getEnv("DB_USERNAME", "")
+	if len(username) == 0 {
+		panic("invalid username: " + username)
+	}
+
+	password = getEnv("DB_PASSWORD", "")
+	if len(password) == 0 {
+		panic("invalid password: " + password)
+	}
+
+	host = getEnv("DB_HOST", "")
+	if len(host) == 0 {
+		panic("invalid host: " + host)
+	}
+
+	port = getEnv("DB_PORT", "1521")
+	if len(port) == 0 {
+		panic("invalid port: " + port)
+	}
+
+	dbname = getEnv("DB_NAME", "M1DB")
+	if len(dbname) == 0 {
+		panic("invalid host: " + dbname)
 	}
 }
 
 func main() {
+	dsn := fmt.Sprintf("%s/%s@%s:%s/%s", username, password, host, port, dbname)
 	adapter := m1.NewDatabaseAdapter(dsn)
 	err := adapter.Connect()
 	if err != nil {
@@ -32,7 +58,16 @@ func main() {
 	})
 
 	r.GET("/patients", func(c *gin.Context) {
-		pats, err := adapter.GetAllPatients()
+		firstname := c.Query("firstname")
+		lastname := c.Query("lastname")
+		var pats []*m1.Patient
+		var err error
+
+		if firstname != "" || lastname != "" {
+			pats, err = adapter.FindPatientsByName(firstname, lastname)
+		} else {
+			pats, err = adapter.GetAllPatients()
+		}
 		if err != nil {
 			c.AbortWithStatusJSON(500, gin.H{
 				"error": err.Error(),

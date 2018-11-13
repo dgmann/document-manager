@@ -6,6 +6,7 @@
       <module fileurl="file://$PROJECT_DIR$/api-client/api-client.iml" filepath="$PROJECT_DIR$/api-client/api-client.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/directory-watcher/directory-watcher.iml" filepath="$PROJECT_DIR$/directory-watcher/directory-watcher.iml" />
+      <module fileurl="file://$PROJECT_DIR$/gateway/gateway.iml" filepath="$PROJECT_DIR$/gateway/gateway.iml" />
       <module fileurl="file://$PROJECT_DIR$/m1-adapter/m1-adapter.iml" filepath="$PROJECT_DIR$/m1-adapter/m1-adapter.iml" />
       <module fileurl="file://$PROJECT_DIR$/m1-helper/m1-helper.iml" filepath="$PROJECT_DIR$/m1-helper/m1-helper.iml" />
       <module fileurl="file://$PROJECT_DIR$/migrator/migrator.iml" filepath="$PROJECT_DIR$/migrator/migrator.iml" />

@@ -1,6 +1,18 @@
 version: "3"
 services:
 
+  gateway:
+    image: nginx:alpine
+    volumes:
+      - ./gateway/config.nginx:/etc/nginx/nginx.conf
+    ports:
+      - 80:80
+    networks:
+      - backend
+    depends_on:
+      - api
+      - app
+      - m1-adapter
   db:
     image: mongo:latest
     networks:
@@ -30,8 +42,6 @@ services:
       - BUGSNAG_API_KEY=1199963e39770335f40ec3c3228a7390
     networks:
       - backend
-    ports:
-      - "8080:80"
     depends_on:
       - db
       - processor
@@ -41,8 +51,6 @@ services:
       - API_URL=http://localhost:8080
       - WS_URL=ws://localhost:8080/notifications
       - BUGSNAG_KEY=44bd0ddb1369a54aa3cfa44bdf04f21c
-    ports:
-      - "80:80"
     networks:
       - backend
   fax_watcher:
@@ -70,12 +78,13 @@ services:
         - "./scan:/records"
   m1-adapter:
       build: ./m1-adapter
-      network_mode: "host"
-      ports:
-        - "9000:9000"
       environment:
-        PORT: "9000"
-        DSN: ""
+        PORT: "80"
+        DB_USERNAME: "m1"
+        DB_PASSWORD: "a7haj9"
+        DB_HOST: "192.168.255.103"
+      networks:
+      - backend
   migrator:
     build:
       context: ./migrator

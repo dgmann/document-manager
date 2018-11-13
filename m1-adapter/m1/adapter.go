@@ -61,6 +61,41 @@ func (a *DatabaseAdapter) GetAllPatients() ([]*Patient, error) {
 	return patients, nil
 }
 
+func (a *DatabaseAdapter) FindPatientsByName(firstname, lastname string) ([]*Patient, error) {
+	firstname += "%"
+	lastname += "%"
+	rows, err := a.db.Query(`Select Distinct
+								pat.PATID_EXT as PatID,
+								pat.Name as Nachname,
+								pat.Vorname as Vorname,
+								pat.GebDatum as GebDatum,
+								wohn.WOHN_PLZ as PLZ,
+								wohn.WOHN_STR as Strasse,
+								wohnort.ORT_NAME as Ort
+								From M1PATNT pat
+								JOIN M1ADRSS adress on pat.Entty_id = adress.entty_ID
+								JOIN M1TELNR telnr on adress.ADRSS_ID = telnr.ADRSS_ID
+								LEFT OUTER JOIN M1WOHN wohn on adress.Wohn_ID = wohn.Wohn_ID
+								LEFT OUTER JOIN M1ORT wohnort on wohn.ORT_ID = wohnort.ORT_ID
+								WHERE LOWER(pat.Vorname) LIKE LOWER(:firstname)
+								AND LOWER(pat.Name) LIKE LOWER(:lastname)
+								ORDER BY pat.NAME, pat.VORNAME`, firstname, lastname)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var patients = make([]*Patient, 0)
+	for rows.Next() {
+		patient, err := rowToPatient(rows)
+		if err != nil {
+			return nil, err
+		}
+		patients = append(patients, patient)
+	}
+	return patients, nil
+}
+
 func (a *DatabaseAdapter) GetPatient(id string) (*Patient, error) {
 	row := a.db.QueryRow(`Select Distinct
 								pat.PATID_EXT as PatID,

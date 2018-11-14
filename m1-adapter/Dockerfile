@@ -23,7 +23,9 @@ COPY .docker/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 COPY --from=builder /m1-adapter /m1-adapter
 
-ENV DB_USERNAME="" DB_PASSWORD="" DB_HOST="" DB_PORT=1521 DB_NAME=M1DB
+ENV PORT=80 DB_USERNAME="" DB_PASSWORD="" DB_HOST="" DB_PORT=1521 DB_NAME=M1DB
+
+EXPOSE 80
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["/m1-adapter"]

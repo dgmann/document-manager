@@ -1,8 +1,8 @@
 package repositories
 
 import (
-	"github.com/globalsign/mgo"
 	"github.com/dgmann/document-manager/api/models"
+	"github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
 	log "github.com/sirupsen/logrus"
 )

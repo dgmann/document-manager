@@ -50,14 +50,6 @@ func (c *Processor) ToImages(data io.Reader) ([]*api.Image, error) {
 			return nil, err
 		}
 
-		kernel, err := imagick.NewKernelInfo("3x1:1,0,1")
-		if err != nil {
-			return nil, err
-		}
-		if err := mw.MorphologyImage(imagick.MORPHOLOGY_THICKEN, 1, kernel); err != nil {
-			return nil, err
-		}
-
 		factor := float64(mw.GetImageWidth()) / 720.0
 		if err := mw.ScaleImage(uint(float64(mw.GetImageWidth())/factor), uint(float64(mw.GetImageHeight())/factor)); err != nil {
 			return nil, err

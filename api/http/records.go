@@ -58,7 +58,13 @@ func registerRecords(g *gin.RouterGroup, factory *Factory) {
 			return
 		}
 
-		file, _ := c.FormFile("pdf")
+		file, err := c.FormFile("pdf")
+		if err != nil {
+			log.WithError(err).Error("no file specified in upload")
+			c.AbortWithError(400, err)
+			return
+		}
+
 		f, err := file.Open()
 		if err != nil {
 			fields := log.Fields{
@@ -67,6 +73,7 @@ func registerRecords(g *gin.RouterGroup, factory *Factory) {
 				"error": err,
 			}
 			log.WithFields(fields).Panic("Error opening PDF")
+			c.AbortWithError(400, err)
 			return
 		}
 		defer f.Close()

@@ -1,6 +1,5 @@
-FROM golang:latest as builder
+FROM golang:1.11 as builder
 ARG GITHUB_TOKEN
-ENV GO111MODULE=on
 
 RUN git config --global url."https:///$GITHUB_TOKEN:x-oauth-basic@github.com/".insteadOf "https://github.com/"
 

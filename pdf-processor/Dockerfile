@@ -27,4 +27,6 @@ RUN go build -o /processor .
 
 EXPOSE 8181
 
+ENV GIN_MODE=release
+
 CMD ["/processor"]

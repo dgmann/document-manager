@@ -2,10 +2,10 @@ package importer
 
 import (
 	"github.com/dgmann/document-manager/api-client/record"
-	"github.com/dgmann/document-manager/migrator/shared"
-	"os"
-	"github.com/sirupsen/logrus"
 	"github.com/dgmann/document-manager/api-client/repository"
+	"github.com/dgmann/document-manager/migrator/shared"
+	"github.com/sirupsen/logrus"
+	"os"
 )
 
 type Importer struct {

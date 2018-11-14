@@ -36,6 +36,9 @@ func (p *Processor) Convert(f io.Reader) ([]*shared.Image, error) {
 
 	client := api.NewPdfProcessorClient(p.conn)
 	stream, err := client.ConvertPdfToImage(context.Background(), &api.Pdf{Content: b})
+	if err != nil {
+		return nil, err
+	}
 
 	var images []*shared.Image
 	for {

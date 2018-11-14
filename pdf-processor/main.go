@@ -15,6 +15,9 @@ import (
 )
 
 func main() {
+	imagick.Initialize()
+	defer imagick.Terminate()
+
 	processor := imagick.NewProcessor()
 	go startGRPC(processor, processor)
 

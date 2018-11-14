@@ -4,7 +4,7 @@ import "time"
 
 type Patient struct {
 	Id        string     `json:"id"`
-	FirstName string     `json:"fistName"`
+	FirstName string     `json:"firstName"`
 	LastName  string     `json:"lastName"`
 	BirthDate *time.Time `json:"birthDate"`
 	Address   Address    `json:"address"`

@@ -27,6 +27,6 @@ RUN go build -o /processor .
 
 EXPOSE 8181
 
-ENV GIN_MODE=release MAGICK_DISK_LIMIT=0 MAGICK_AREA_LIMIT=4Gb MAGICK_MEMORY_LIMIT=4Gb
+ENV GIN_MODE=release
 
 CMD ["/processor"]

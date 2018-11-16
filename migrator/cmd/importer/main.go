@@ -1,13 +1,17 @@
 package main
 
 import (
+	"fmt"
+	"github.com/dgmann/document-manager/api-client/repository"
+	"github.com/dgmann/document-manager/migrator/categories"
 	"github.com/dgmann/document-manager/migrator/importer"
+	"github.com/dgmann/document-manager/migrator/patients"
+	"github.com/dgmann/document-manager/migrator/shared"
+	"github.com/gosuri/uiprogress"
 	"github.com/sirupsen/logrus"
 	"net/http"
-	"github.com/dgmann/document-manager/migrator/shared"
-	"sync"
-	"github.com/dgmann/document-manager/api-client/repository"
 	"strings"
+	"sync"
 )
 
 func main() {
@@ -27,44 +31,117 @@ func main() {
 		return
 	}
 
+	patientsToImport := importData.Patients
+	categoriesToImport := importData.Categories
+	recordsToImport := importData.Records
+
+	categoryProgressBar := uiprogress.AddBar(len(categoriesToImport)).AppendCompleted().PrependElapsed().PrependFunc(countFunc(len(categoriesToImport)))
+	patientProgressBar := uiprogress.AddBar(len(patientsToImport)).AppendCompleted().PrependElapsed().PrependFunc(countFunc(len(patientsToImport)))
+	recordProgressBar := uiprogress.AddBar(len(recordsToImport)).AppendCompleted().PrependElapsed().PrependFunc(countFunc(len(recordsToImport)))
+	uiprogress.Start()
 	var wg sync.WaitGroup
+
 	wg.Add(1)
 	go func() {
-		logrus.WithField("count", len(importData.Categories)).Info("start importing categories")
-		for _, category := range importData.Categories {
-			i.Import("/categories", category)
+		defer wg.Done()
+
+		if err := importCategories(i, categoriesToImport, categoryProgressBar); err != nil {
+			categoryProgressBar.AppendFunc(logError(err))
+			logrus.WithError(err).Error("error importing categories")
 		}
-		logrus.Info("categories successfully imported")
-		wg.Done()
 	}()
 	wg.Add(1)
 	go func() {
-		logrus.WithField("count", len(importData.Patients)).Info("start importing patients")
-		for _, patient := range importData.Patients {
-			p := repository.Patient{
-				Id: patient.Id,
-			}
-			if patient.Name != nil {
-				splitted := strings.Split(*patient.Name, ",")
-				if len(splitted) == 2 {
-					p.LastName = splitted[0]
-					p.FirstName = splitted[1]
-				}
-			}
-			i.Import("/patients", p)
+		defer wg.Done()
+
+		if err := importPatients(i, patientsToImport, patientProgressBar); err != nil {
+			patientProgressBar.AppendFunc(logError(err))
+			logrus.WithError(err).Error("error importing patients")
 		}
-		logrus.Info("patients successfully imported")
-		wg.Done()
 	}()
 
 	logrus.WithField("count", len(importData.Records)).Info("Start importing")
-	notImported := i.ImportRecords(importData.Records)
+	var recordsNotImported []string
+	recordProgressBar.AppendFunc(func(b *uiprogress.Bar) string {
+		return fmt.Sprintf("Errors: %d", len(recordsNotImported))
+	})
+
+	imported, notImported := i.ImportRecords(importData.Records)
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		for range imported {
+			recordProgressBar.Incr()
+		}
+	}()
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		for err := range notImported {
+			recordProgressBar.Incr()
+			logrus.WithError(err).Error("error importing record")
+			recordsNotImported = append(recordsNotImported, err.Record.Path)
+		}
+	}()
 
 	wg.Wait()
-	logrus.WithField("unsuccessful", len(notImported)).Info("ImportRecords finished")
-	err = shared.WriteLines(notImported, config.ErrorFile)
+	logrus.WithField("errors", len(recordsNotImported)).Info("ImportRecords finished")
+	err = shared.WriteLines(recordsNotImported, config.ErrorFile)
 	if err != nil {
 		logrus.WithError(err).Fatal("error writing output file")
 		return
+	}
+}
+
+func importCategories(i *importer.Importer, categories []*categories.Category, progressbar *uiprogress.Bar) error {
+	logrus.WithField("count", len(categories)).Info("start importing categories")
+	for _, category := range categories {
+		if err := i.Import("/categories", category); err != nil {
+			return err
+		} else {
+			progressbar.Incr()
+		}
+	}
+	logrus.Info("categories successfully imported")
+	return nil
+}
+
+func importPatients(i *importer.Importer, patients []*patients.Patient, progressbar *uiprogress.Bar) error {
+	logrus.WithField("count", len(patients)).Info("start importing patients")
+	for _, patient := range patients {
+		p := repository.Patient{
+			Id: patient.Id,
+		}
+		if patient.Name != nil {
+			splitted := strings.Split(*patient.Name, ",")
+			if len(splitted) == 2 {
+				p.LastName = splitted[0]
+				p.FirstName = splitted[1]
+			}
+		}
+
+		if err := i.Import("/patients", p); err != nil {
+			return err
+		} else {
+			progressbar.Incr()
+		}
+	}
+	logrus.Info("patients successfully imported")
+	return nil
+}
+
+func logError(err error) (func(b *uiprogress.Bar) string) {
+	return func(b *uiprogress.Bar) string {
+		if err != nil {
+			return "Error"
+		} else {
+			return ""
+		}
+	}
+}
+
+func countFunc(total int) (func(b *uiprogress.Bar) string) {
+	return func(b *uiprogress.Bar) string {
+		return fmt.Sprintf("%d/%d", b.Current(), total)
 	}
 }

@@ -11,10 +11,6 @@ func (c *Processor) ToImages(data io.Reader) ([]*api.Image, error) {
 	mw := imagick.NewMagickWand()
 	defer mw.Destroy()
 
-	if err := mw.SetResourceLimit(imagick.RESOURCE_MEMORY, 2048); err != nil {
-		return nil, err
-	}
-
 	b, err := ioutil.ReadAll(data)
 	if err != nil {
 		return nil, err

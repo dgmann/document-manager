@@ -22,7 +22,10 @@ func (g *GRPCServer) ConvertPdfToImage(pdf *Pdf, sender PdfProcessor_ConvertPdfT
 	}
 
 	for _, img := range images {
-		sender.Send(img)
+		err = sender.Send(img)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil

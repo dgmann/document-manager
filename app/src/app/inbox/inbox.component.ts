@@ -55,10 +55,11 @@ export class InboxComponent implements OnInit{
   onDrop(event: DragEvent) {
     if (event.dataTransfer) {
       const files = event.dataTransfer.files;
-      for (let file of files) {
-        this.inboxService.upload(file)
+      for (let i = 0; i < files.length; i++) {
+        this.inboxService.upload(files[i])
       }
       this.preventAll(event);
+      event.dataTransfer.clearData();
     }
   }
 

@@ -4,6 +4,7 @@ import {
   selectFilteredPatientRecords,
   selectPatientRecords,
   selectSelectedCategoryId,
+  selectSelectedId,
   selectSelectedPatient,
   selectSelectedRecord,
   State
@@ -21,6 +22,7 @@ export class PatientService {
   public selectedRecord$: Observable<Record>;
   public selectedCategory$: Observable<string>;
   public filteredPatientRecord$: Observable<Record[]>;
+  public selectedId$: Observable<string>;
 
   constructor(private store: Store<State>) {
     this.selectedPatient$ = this.store.pipe(select(selectSelectedPatient));
@@ -28,6 +30,7 @@ export class PatientService {
     this.selectedRecord$ = this.store.pipe(select(selectSelectedRecord));
     this.selectedCategory$ = this.store.pipe(select(selectSelectedCategoryId));
     this.filteredPatientRecord$ = this.store.pipe(select(selectFilteredPatientRecords));
+    this.selectedId$ = this.store.pipe(select(selectSelectedId));
   }
 
   public selectPatient(id: string) {

@@ -1,11 +1,8 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { flatMap, uniq } from "lodash-es";
 import { Moment } from "moment";
-import { BehaviorSubject, combineLatest, merge, Observable } from "rxjs";
-import { map } from "rxjs/operators";
+import { BehaviorSubject, combineLatest, Observable } from "rxjs";
 import { Patient } from "..";
 import { Category } from "../../core";
-import { Record } from "../../core/store";
 import { Filter } from "../store/patient.reducer";
 
 @Component({
@@ -15,12 +12,11 @@ import { Filter } from "../store/patient.reducer";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RecordFilterComponent implements OnInit {
-  @Input() records: Observable<Record[]>;
   @Input() patient: Observable<Patient>;
+  @Input() categories: Observable<Category[]>;
+  @Input() tags: Observable<string[]>;
   @Output() change = new EventEmitter<Filter>();
 
-  public tags: Observable<string[]>;
-  public categories: Observable<Category[]>;
   private dateRange = new BehaviorSubject<{ from: Moment, until: Moment }>({from: null, until: null});
   private selectedTags = new BehaviorSubject<string[]>([]);
   private selectedCategories = new BehaviorSubject<Category[]>([]);
@@ -29,15 +25,6 @@ export class RecordFilterComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.tags = merge(
-      this.patient.pipe(map(patient => patient && patient.tags || [])),
-      this.records.pipe(map(records => uniq(flatMap(records, r => r.tags))))
-    );
-    this.categories = this.patient.pipe(
-      map(patient => patient && patient.categories || [])
-    );
-
-
     combineLatest(
       this.selectedTags,
       this.selectedCategories,

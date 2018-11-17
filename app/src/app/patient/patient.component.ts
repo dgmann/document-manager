@@ -1,13 +1,13 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from "@angular/router";
 import { Observable } from "rxjs";
-import { map } from "rxjs/operators";
+import { filter, switchMap } from "rxjs/operators";
 import { Record, RecordService } from "../core/store";
 import { PatientService } from "./patient.service";
 import { Patient } from "./store/patient.model";
 import { Filter } from "./store/patient.reducer";
 import { untilDestroyed } from "ngx-take-until-destroy";
-import { Category, CategoryService } from "../core";
+import { Category, CategoryService, TagService } from "../core";
 import { EditResult } from "../shared";
 
 
@@ -25,9 +25,13 @@ export class PatientComponent implements OnInit, OnDestroy {
   public categories: Observable<{ [id: string]: Category }>;
   public selectedCategory: Observable<string>;
 
+  public availableCategories: Observable<Category[]>;
+  public availableTags: Observable<string[]>;
+
   constructor(private recordService: RecordService,
               private patientService: PatientService,
               private categoryService: CategoryService,
+              private tagsService: TagService,
               private router: Router,
               private route: ActivatedRoute) {
   }
@@ -43,11 +47,12 @@ export class PatientComponent implements OnInit, OnDestroy {
 
     this.records = this.patientService.filteredPatientRecord$;
     this.patient = this.patientService.selectedPatient$;
-    this.patientId = this.patient.pipe(
-      map(patient => patient && patient.id || null)
-    );
+    this.patientId = this.patientService.selectedId$;
     this.categoryService.load();
     this.categories = this.categoryService.categoryMap;
+
+    this.availableCategories = this.patientId.pipe(filter(p => !!p), switchMap(id => this.categoryService.getByPatientId(id)));
+    this.availableTags = this.patientId.pipe(filter(p => !!p), switchMap(id => this.tagsService.getByPatientId(id)));
 
     this.selectedRecord = this.patientService.selectedRecord$;
   }

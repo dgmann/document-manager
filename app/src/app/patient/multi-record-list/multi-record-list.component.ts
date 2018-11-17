@@ -15,7 +15,7 @@ import { DocumentEditDialogService, EditResult } from "../../shared";
 export class MultiRecordListComponent implements OnInit {
   @Input() records: Observable<Record[]>;
   @Input() selectedCategory: Observable<string>;
-  @Input() categories: Observable<{ [id: string]: Category }>;
+  @Input() categories: { [id: string]: Category };
   @Output() clickRecord = new EventEmitter<string>();
   @Output() selectedCategoryChange = new EventEmitter<string>();
   @Output() updateRecord = new EventEmitter<EditResult>();

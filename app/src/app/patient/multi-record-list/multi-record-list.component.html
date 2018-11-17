@@ -1,22 +1,24 @@
 <mat-tab-group (selectedIndexChange)="onSelectedIndexChange($event)" [selectedIndex]="selectedIndex | async">
-  <mat-tab *ngFor="let recordGroup of groupedRecords | async; trackBy: recordGroup?.category"
-           [label]="categories[recordGroup.category]?.name">
-    <ng-template matTabContent>
-      <div fxLayout="column" fxLayout.gt-md="row wrap" fxLayoutAlign="center"
-           fxLayoutGap="10px">
-        <mat-card class="page-container" *ngFor="let record of recordGroup.records" fxFlex.gt-md="calc(50% - 10px)">
-          <mat-card-header>
-            <mat-card-title><h2>{{ record.date | date: 'mediumDate' }}</h2></mat-card-title>
-            <mat-card-subtitle>{{ record.tags.join(", ") }}</mat-card-subtitle>
-            <div fxFlex></div>
-            <button mat-icon-button color="primary" (click)="edit(record)">
-              <mat-icon aria-label="Edit">edit</mat-icon>
-            </button>
-          </mat-card-header>
-          <img class="selectable-page" (click)="onRecordClicked(record.id)" mat-card-image
-               [src]="record.pages[0].url">
-        </mat-card>
-      </div>
-    </ng-template>
-  </mat-tab>
+  <ng-container *ngIf="groupedRecords | async as recordGroups">
+    <mat-tab *ngFor="let recordGroup of recordGroups; trackBy: recordGroup?.category"
+             [label]="categories[recordGroup?.category]?.name">
+      <ng-template matTabContent>
+        <div fxLayout="column" fxLayout.gt-md="row wrap" fxLayoutAlign="center"
+             fxLayoutGap="10px">
+          <mat-card class="page-container" *ngFor="let record of recordGroup.records" fxFlex.gt-md="calc(50% - 10px)">
+            <mat-card-header>
+              <mat-card-title><h2>{{ record.date | date: 'mediumDate' }}</h2></mat-card-title>
+              <mat-card-subtitle>{{ record.tags.join(", ") }}</mat-card-subtitle>
+              <div fxFlex></div>
+              <button mat-icon-button color="primary" (click)="edit(record)">
+                <mat-icon aria-label="Edit">edit</mat-icon>
+              </button>
+            </mat-card-header>
+            <img class="selectable-page" (click)="onRecordClicked(record.id)" mat-card-image
+                 [src]="record.pages[0].url">
+          </mat-card>
+        </div>
+      </ng-template>
+    </mat-tab>
+  </ng-container>
 </mat-tab-group>

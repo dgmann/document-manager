@@ -1,9 +1,10 @@
 <app-three-column-panel [(showRightColumn)]="showDetails" [(showLeftColumn)]="!showDetails">
   <div class="left-panel">
-    <app-record-filter [records]="records" [patient]="patient" (change)="setFilter($event)"></app-record-filter>
+    <app-record-filter [tags]="availableTags" [categories]="availableCategories"
+                       (change)="setFilter($event)"></app-record-filter>
   </div>
   <div class="center-panel">
-    <app-multi-record-list [records]="records" [categories]="categories" [selectedCategory]="selectedCategory"
+    <app-multi-record-list [records]="records" [categories]="categories | async" [selectedCategory]="selectedCategory"
                            (selectedCategoryChange)="onSelectedCategoryChange($event)"
                            (updateRecord)="onUpdateRecord($event)"
                            (clickRecord)="onSelectRecord($event)"></app-multi-record-list>

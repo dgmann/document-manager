@@ -5,7 +5,7 @@
 
 export const environment = {
   production: false,
-  api: "http://localhost:8080",
+  api: "http://documentmanager.gassmann.local/api",
   websocket: "ws://localhost:8080/notifications",
   bugsnagKey: "44bd0ddb1369a54aa3cfa44bdf04f21c"
 };

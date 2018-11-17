@@ -10,6 +10,7 @@ export interface Filter {
 }
 
 export interface State {
+  selectedId: string;
   selectedPatient: Patient;
   selectedRecordId: string;
   selectedCategory: string;
@@ -18,6 +19,7 @@ export interface State {
 }
 
 export const initialState: State = {
+  selectedId: null,
   selectedPatient: null,
   selectedRecordId: null,
   selectedCategory: null,
@@ -32,6 +34,12 @@ export const initialState: State = {
 
 export function reducer(state = initialState, action: PatientActions): State {
   switch (action.type) {
+
+    case PatientActionTypes.SelectPatientId:
+      return {
+        ...state,
+        selectedId: action.payload.id
+      };
 
     case PatientActionTypes.SetPatient:
       return Object.assign({}, state, {

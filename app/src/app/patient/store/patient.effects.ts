@@ -6,7 +6,7 @@ import { of } from "rxjs";
 import { catchError, map, switchMap } from "rxjs/operators";
 import { environment } from "../../../environments/environment";
 import { Record } from "../../core/store/index";
-import { LoadRecordsFail, LoadRecordsSuccess } from "../../core/store/record/record.actions";
+import { LoadRecordsFail, LoadRecordsSuccess } from "../../core/store/record";
 import { PatientActionTypes, SelectPatient, SetPatient, SetPatientRecords } from './patient.actions';
 import { Patient } from "./patient.model";
 
@@ -18,7 +18,7 @@ export class PatientEffects {
     ofType(PatientActionTypes.SelectPatientId),
     switchMap((action: SelectPatient) => this.http.get<Patient>(`${environment.api}/patients/${action.payload.id}`)),
     map(data => new SetPatient({patient: data})),
-    catchError(_ => of(new SetPatient({patient: null})))
+    catchError(() => of(new SetPatient({patient: null})))
   );
 
   @Effect()

@@ -10,8 +10,12 @@ import (
 	"github.com/gosuri/uiprogress"
 	"github.com/sirupsen/logrus"
 	"net/http"
+	"os"
+	"os/signal"
+	"path"
 	"strings"
 	"sync"
+	"syscall"
 )
 
 func main() {
@@ -34,6 +38,11 @@ func main() {
 	patientsToImport := importData.Patients
 	categoriesToImport := importData.Categories
 	recordsToImport := importData.Records
+	alreadyImported := make(map[string]importer.ImportableRecord)
+	err = shared.LoadFromFile(path.Join(config.DataDirectory, "importedrecords.gob"), alreadyImported)
+	if err != nil {
+		logrus.WithError(err).Info("no records found which were already imported")
+	}
 
 	categoryProgressBar := uiprogress.AddBar(len(categoriesToImport)).AppendCompleted().PrependElapsed().PrependFunc(countFunc(len(categoriesToImport)))
 	patientProgressBar := uiprogress.AddBar(len(patientsToImport)).AppendCompleted().PrependElapsed().PrependFunc(countFunc(len(patientsToImport)))
@@ -61,36 +70,66 @@ func main() {
 	}()
 
 	logrus.WithField("count", len(importData.Records)).Info("Start importing")
-	var recordsNotImported []string
+	var recordsNotImported []importer.ImportableRecord
 	recordProgressBar.AppendFunc(func(b *uiprogress.Bar) string {
 		return fmt.Sprintf("Errors: %d", len(recordsNotImported))
 	})
 
-	imported, notImported := i.ImportRecords(importData.Records)
+	records := importer.Difference(recordsToImport, alreadyImported)
+	recordProgressBar.Set(len(recordsToImport) - len(records))
+
+	importedRecords := make(map[string]importer.ImportableRecord)
+	registerSignals(importedRecords, path.Join(config.DataDirectory, "importedrecords.gob"))
+	imported, notImported := i.ImportRecords(records)
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		for range imported {
+		for r := range imported {
 			recordProgressBar.Incr()
+			importedRecords[r.Path] = *r
 		}
 	}()
+
+	var errorLines []string
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
 		for err := range notImported {
 			recordProgressBar.Incr()
 			logrus.WithError(err).Error("error importing record")
-			recordsNotImported = append(recordsNotImported, err.Record.Path)
+			recordsNotImported = append(recordsNotImported, *err.Record)
+			errorLines = append(errorLines, fmt.Sprintf("%s: %s", err.Record.Path, err.Error()))
 		}
 	}()
 
 	wg.Wait()
 	logrus.WithField("errors", len(recordsNotImported)).Info("ImportRecords finished")
-	err = shared.WriteLines(recordsNotImported, config.ErrorFile)
+
+	reimportable := importer.Import{Records: recordsNotImported}
+	if err = reimportable.Save(path.Join(config.DataDirectory, "failedrecords.gob")); err != nil {
+		logrus.WithError(err).Info("error saving failedrecords.gob")
+	}
+
+	err = shared.WriteLines(errorLines, path.Join(config.DataDirectory, "errors.log"))
 	if err != nil {
 		logrus.WithError(err).Fatal("error writing output file")
 		return
 	}
+}
+
+func registerSignals(importedRecords map[string]importer.ImportableRecord, path string) {
+	sigs := make(chan os.Signal, 1)
+	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
+	go func() {
+		<-sigs
+		defer os.Exit(0)
+		logrus.Info("save list of imported records")
+		err := shared.SaveToFile(path, importedRecords)
+		if err != nil {
+			logrus.WithError(err).Info("error saving imported records")
+			return
+		}
+	}()
 }
 
 func importCategories(i *importer.Importer, categories []*categories.Category, progressbar *uiprogress.Bar) error {

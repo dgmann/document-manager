@@ -46,3 +46,13 @@ func (i *Importer) uploadFunc() func(r *ImportableRecord) error {
 		return nil
 	}
 }
+
+func Difference(toImport []ImportableRecord, alreadyImported map[string]ImportableRecord) []ImportableRecord {
+	var diff []ImportableRecord
+	for _, record := range toImport {
+		if _, ok := alreadyImported[record.Path]; !ok {
+			diff = append(diff, record)
+		}
+	}
+	return diff
+}

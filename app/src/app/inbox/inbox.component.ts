@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { includes, without } from 'lodash-es';
-import { DropEvent } from "ng-drag-drop";
 import { Observable } from "rxjs";
 import { map, take, withLatestFrom } from "rxjs/operators";
 import { Record, Status } from "../core/store";
@@ -53,9 +52,20 @@ export class InboxComponent implements OnInit{
       });
   }
 
-  onDrop(event: DropEvent) {
-    for (let file of event.nativeEvent.dataTransfer.files) {
-      this.inboxService.upload(file)
+  onDrop(event: DragEvent) {
+    if (event.dataTransfer) {
+      const files = event.dataTransfer.files;
+      for (let file of files) {
+        this.inboxService.upload(file)
+      }
+      this.preventAll(event);
+    }
+  }
+
+  preventAll(event: DragEvent) {
+    if (event.dataTransfer) {
+      event.preventDefault();
+      event.stopPropagation();
     }
   }
 

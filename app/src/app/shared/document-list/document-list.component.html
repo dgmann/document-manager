@@ -34,9 +34,9 @@
     </mat-cell>
   </ng-container>
 
-  <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-  <mat-header-row *matRowDef="let row; columns: displayedColumns;" (click)="selectRow(row)" (dblclick)="editRecord(row)"
-                  [class.selected]="isSelected(selectedRecordIds, row && row.id)" draggable droppable [dragData]="row"
-                  [dragScope]="'record'"
-                  [dropScope]="'record'" (onDrop)="drop(row, $event)" (drop)="$event.preventDefault()"></mat-header-row>
+  <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+  <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="selectRow(row)" (dblclick)="editRecord(row)"
+           [class.selected]="isSelected(selectedRecordIds, row && row.id)" draggable droppable [dragData]="row"
+           [dragScope]="'record'"
+           [dropScope]="'record'" (onDrop)="drop(row, $event)" (drop)="$event.preventDefault()"></mat-row>
 </table>

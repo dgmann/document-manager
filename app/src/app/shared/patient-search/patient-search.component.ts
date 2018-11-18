@@ -35,7 +35,7 @@ export class PatientSearchComponent implements OnInit {
     const parts = query.split(",");
     const result = {
       lastname: parts[0],
-      fistname: parts[1]
+      firstname: parts[1]
     };
     if (!result.firstname) {
       delete result.firstname;

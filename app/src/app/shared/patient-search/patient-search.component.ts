@@ -27,7 +27,7 @@ export class PatientSearchComponent implements OnInit {
         debounceTime(500),
         filter(query => !!query && query.length > 0),
         map(query => this.parseQuery(query)),
-        switchMap(query => this.http.get<Patient[]>(`${environment.api}/patients`, {params: {...query}))
+        switchMap(query => this.http.get<Patient[]>(`${environment.api}/patients`, {params: {...query}}))
       );
   }
       

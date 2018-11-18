@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, OnInit, Output } from
 import { FormControl } from "@angular/forms";
 import { MatAutocompleteSelectedEvent } from "@angular/material";
 import { Observable } from "rxjs";
-import { debounceTime, filter, switchMap } from "rxjs/operators";
+import { debounceTime, filter, switchMap, map } from "rxjs/operators";
 import { environment } from "../../../environments/environment";
 import { Patient } from "../../patient";
 
@@ -26,8 +26,20 @@ export class PatientSearchComponent implements OnInit {
       .pipe(
         debounceTime(500),
         filter(query => !!query && query.length > 0),
-        switchMap(query => this.http.get<Patient[]>(`${environment.api}/patients?name=${query}`))
+        map(query => this.parseQuery(query)),
+        switchMap(query => this.http.get<Patient[]>(`${environment.api}/patients`, {params: {...query}))
       );
+  }
+      
+  parseQuery(query: string) {
+    const parts = query.split(",");
+    const result = {
+      firstname: parts[0]
+    };
+    if (parts[1]) {
+      result.lastname = parts[1];
+    }
+    return result;
   }
 
   displayFn(patient: Patient): string | undefined {

@@ -33,7 +33,7 @@ export class PatientSearchComponent implements OnInit {
       
   parseQuery(query: string) {
     const parts = query.split(",");
-    const result {
+    const result = {
       lastname: parts[0],
       fistname: parts[1]
     };

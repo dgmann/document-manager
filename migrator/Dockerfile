@@ -42,6 +42,7 @@ ENV DB_HOST=localhost \
     SPLITTED_DIR=/splitted \
     DATA_DIR=/data \
     OUTPUT=/data/output.gob \
-    INPUT=/data/output.gob
+    INPUT=/data/output.gob \
+    RETRY_COUNTER=3
 
 CMD ["/importer"]

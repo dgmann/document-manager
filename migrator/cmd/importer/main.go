@@ -25,7 +25,7 @@ func main() {
 
 	logrus.Info("Importer started")
 	config := NewConfig()
-	i := importer.NewImporter(config.ApiURL)
+	i := importer.NewImporter(config.ApiURL, config.RetryCount)
 
 	var importData importer.Import
 	logrus.WithField("file", config.InputFile).Info("Load records")

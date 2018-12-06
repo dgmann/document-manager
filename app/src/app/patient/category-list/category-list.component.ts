@@ -1,9 +1,10 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatTableDataSource } from "@angular/material";
-import { sortBy, uniq } from "lodash-es";
+import { sortBy } from "lodash-es";
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
 import { Category } from "../../core";
+import { MultiSelectService } from "../multi-select.service";
 
 @Component({
   selector: 'app-category-list',
@@ -17,7 +18,7 @@ export class CategoryListComponent implements OnInit {
   dataSource = new MatTableDataSource<Category>();
   selectedCategories: Category[] = [];
 
-  constructor() {
+  constructor(private multiselectService: MultiSelectService<Category>) {
   }
 
   ngOnInit() {
@@ -29,32 +30,7 @@ export class CategoryListComponent implements OnInit {
   onSelect(event: MouseEvent, category: Category) {
     event.preventDefault();
     event.stopPropagation();
-
-    if (event.getModifierState("Control")) {
-      let index = this.selectedCategories.indexOf(category);
-
-      if (index >= 0) {
-        this.selectedCategories.splice(index, 1);
-      } else {
-        this.selectedCategories = uniq([...this.selectedCategories, category]);
-      }
-    } else if (event.getModifierState("Shift")) {
-      if (this.selectedCategories.length == 0) {
-        this.selectedCategories = [category];
-        return;
-      }
-      const firstCategory = this.selectedCategories[0];
-      const selectFrom = this.dataSource.data.indexOf(firstCategory);
-      const selectUntil = this.dataSource.data.indexOf(category);
-      const indices = [selectFrom, selectUntil].sort();
-      this.selectedCategories = this.dataSource.data.slice(indices[0], indices[1] + 1);
-    } else {
-      if (this.selectedCategories.length == 1 && this.selectedCategories[0] && this.selectedCategories[0] == category) {
-        this.selectedCategories = []
-      } else {
-        this.selectedCategories = [category];
-      }
-    }
+    this.selectedCategories = this.multiselectService.select(category, this.dataSource.data, event);
 
     this.select.emit(this.selectedCategories);
     return false;

@@ -51,7 +51,7 @@ export class MultiRecordListComponent implements OnInit {
     this.groupedRecords
       .pipe(
         take(1),
-        map(groups => groups[index].category),
+        map(groups => groups[index] && groups[index].category || null),
         filter(c => !!c)
       ).subscribe(category => this.selectedCategoryChange.emit(category));
   }

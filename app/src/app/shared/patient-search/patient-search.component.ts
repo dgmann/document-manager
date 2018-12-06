@@ -1,11 +1,11 @@
-import { HttpClient } from "@angular/common/http";
-import { ChangeDetectionStrategy, Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { FormControl } from "@angular/forms";
-import { MatAutocompleteSelectedEvent } from "@angular/material";
-import { Observable } from "rxjs";
-import { debounceTime, filter, switchMap } from "rxjs/operators";
-import { environment } from "../../../environments/environment";
-import { Patient } from "../../patient";
+import {HttpClient} from "@angular/common/http";
+import {ChangeDetectionStrategy, Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {FormControl} from "@angular/forms";
+import {MatAutocompleteSelectedEvent} from "@angular/material";
+import {Observable} from "rxjs";
+import {debounceTime, filter, map, switchMap} from "rxjs/operators";
+import {environment} from "../../../environments/environment";
+import {Patient} from "../../patient";
 
 @Component({
   selector: 'app-patient-search',
@@ -26,8 +26,30 @@ export class PatientSearchComponent implements OnInit {
       .pipe(
         debounceTime(500),
         filter(query => !!query && query.length > 0),
-        switchMap(query => this.http.get<Patient[]>(`${environment.api}/patients?name=${query}`))
+        switchMap(query => {
+          const patientId = parseInt(query);
+          if (patientId) {
+            return this.http.get<Patient>(`${environment.api}/patients/${patientId}`).pipe(
+              map(patient => [patient])
+            );
+          } else {
+            const patientQuery = this.parseQuery(query);
+            return this.http.get<Patient[]>(`${environment.api}/patients`, {params: {...patientQuery}});
+          }
+        })
       );
+  }
+      
+  parseQuery(query: string) {
+    const parts = query.split(",");
+    const result = {
+      lastname: parts[0] && parts[0].trim() || undefined,
+      firstname: parts[1] && parts[1].trim() || undefined
+    };
+    if (!result.firstname) {
+      delete result.firstname;
+    }
+    return result;
   }
 
   displayFn(patient: Patient): string | undefined {

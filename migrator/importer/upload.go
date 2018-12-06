@@ -12,10 +12,11 @@ import (
 type Importer struct {
 	repository       *repository.Repository
 	recordRepository *record.Repository
+	retryCount       int
 }
 
-func NewImporter(url string) *Importer {
-	return &Importer{recordRepository: record.NewRepository(url), repository: repository.NewRepository(url)}
+func NewImporter(url string, retryCount int) *Importer {
+	return &Importer{recordRepository: record.NewRepository(url), repository: repository.NewRepository(url), retryCount: retryCount}
 }
 
 func (i *Importer) ImportRecords(records []ImportableRecord) (<-chan *ImportableRecord, <-chan ImportError) {
@@ -35,15 +36,17 @@ func (i *Importer) uploadFunc() func(r *ImportableRecord) error {
 		defer f.Close()
 
 		logrus.WithField("record", r).Debug("upload file")
-		err = i.recordRepository.Create(&record.NewRecord{
-			CreateRecord: r.CreateRecord,
-			File:         f,
-		})
-		if err != nil {
-			logrus.WithError(err).Error("error uploading file")
-			return errors.New(fmt.Sprintf("%s: %s", r.Path, err.Error()))
+		for j := 0; j < i.retryCount; j++ {
+			err = i.recordRepository.Create(&record.NewRecord{
+				CreateRecord: r.CreateRecord,
+				File:         f,
+			})
+			if err == nil {
+				return nil
+			}
+			logrus.WithError(err).Errorf("error uploading file. Retry %d of %d", i, i.retryCount)
 		}
-		return nil
+		return errors.New(fmt.Sprintf("%s: %s", r.Path, err.Error()))
 	}
 }
 

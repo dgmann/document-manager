@@ -1,9 +1,9 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {MatTableDataSource} from "@angular/material";
-import {uniq} from 'lodash-es';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { MatTableDataSource } from "@angular/material";
 import sortBy from "lodash-es/sortBy";
-import {Observable} from "rxjs";
-import {map} from "rxjs/operators";
+import { Observable } from "rxjs";
+import { map } from "rxjs/operators";
+import { MultiSelectService } from "../multi-select.service";
 
 @Component({
   selector: 'app-tag-list',
@@ -17,7 +17,7 @@ export class TagListComponent implements OnInit {
   dataSource = new MatTableDataSource<string>();
   selectedTags: string[] = [];
 
-  constructor() {
+  constructor(private multiselectService: MultiSelectService<string>) {
   }
 
   ngOnInit() {
@@ -26,15 +26,13 @@ export class TagListComponent implements OnInit {
     ).subscribe(data => this.dataSource.data = data);
   }
 
-  onSelect(tag: string) {
-    let index = this.selectedTags.indexOf(tag);
+  onSelect(tag: string, event: MouseEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.selectedTags = this.multiselectService.select(tag, this.dataSource.data, event);
 
-    if (index >= 0) {
-      this.selectedTags.splice(index, 1);
-    } else {
-      this.selectedTags = uniq([...this.selectedTags, tag]);
-    }
     this.select.emit(this.selectedTags);
+    return false;
   }
 
 }

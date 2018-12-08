@@ -44,7 +44,7 @@ func (i *Importer) uploadFunc() func(r *ImportableRecord) error {
 			if err == nil {
 				return nil
 			}
-			logrus.WithError(err).Errorf("error uploading file. Retry %d of %d", i, i.retryCount)
+			logrus.WithError(err).Errorf("error uploading file. Retry %d of %d", j, i.retryCount)
 		}
 		return errors.New(fmt.Sprintf("%s: %s", r.Path, err.Error()))
 	}

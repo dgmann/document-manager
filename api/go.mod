@@ -12,6 +12,7 @@ require (
 	github.com/dgmann/document-manager/shared v0.0.0-20180811155848-da48cdc1e362
 	github.com/gin-contrib/cors v0.0.0-20180514151808-6f0a820f94be
 	github.com/gin-contrib/location v0.0.0-20180301030833-911ef8299476
+	github.com/gin-contrib/pprof v0.0.0-20180827024024-a27513940d36
 	github.com/gin-contrib/sse v0.0.0-20170109093832-22d885f9ecc7 // indirect
 	github.com/gin-gonic/gin v0.0.0-20180810125023-8fc8ce047243
 	github.com/globalsign/mgo v0.0.0-20180615134936-113d3961e731

@@ -8,6 +8,7 @@ import (
 	"github.com/dgmann/document-manager/api/shared"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/location"
+	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 )
@@ -47,6 +48,7 @@ func NewFactory(config *shared.Config) *Factory {
 
 func Run(factory *Factory, c *shared.Config) {
 	router := gin.Default()
+	pprof.Register(router)
 	router.Use(bugsnaggin.AutoNotify(c.GetBugsnagConfig()))
 
 	config := cors.DefaultConfig()

@@ -5,6 +5,7 @@ import (
 	"github.com/dgmann/document-manager/pdf-processor/api"
 	"github.com/dgmann/document-manager/pdf-processor/imagick"
 	"github.com/gin-contrib/cors"
+	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
@@ -22,6 +23,7 @@ func main() {
 	go startGRPC(processor, processor)
 
 	router := gin.Default()
+	pprof.Register(router)
 	router.Use(cors.Default())
 	router.POST("images/convert", func(c *gin.Context) {
 		images, err := processor.ToImages(c.Request.Body)

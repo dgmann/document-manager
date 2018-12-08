@@ -96,7 +96,7 @@ func main() {
 		defer wg.Done()
 		for err := range notImported {
 			recordProgressBar.Incr()
-			logrus.WithError(err).Error("error importing record")
+			logrus.WithError(err).Error("error importing record ", err.Record.Path)
 			recordsNotImported = append(recordsNotImported, *err.Record)
 			errorLines = append(errorLines, fmt.Sprintf("%s: %s", err.Record.Path, err.Error()))
 		}

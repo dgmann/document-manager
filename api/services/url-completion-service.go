@@ -7,15 +7,25 @@ import (
 	"time"
 )
 
-func SetURL(data interface{}, baseUrl string, service FileInfoService) {
+func SetURL(data interface{}, baseUrl string, fileInfoService FileInfoService) interface{} {
 	switch data.(type) {
 	case *models.Record:
-		setURLForRecord(data.(*models.Record), baseUrl, service)
+		return cloneAndSetUrl(data.(*models.Record), baseUrl, fileInfoService)
 	case []*models.Record:
-		for _, m := range data.([]*models.Record) {
-			setURLForRecord(m, baseUrl, service)
+		cloned := make([]*models.Record, len(data.([]*models.Record)))
+		for i, m := range data.([]*models.Record) {
+			cloned[i] = cloneAndSetUrl(m, baseUrl, fileInfoService)
 		}
+		return cloned
 	}
+	return data
+}
+
+func cloneAndSetUrl(record *models.Record, baseUrl string, fileInfoService FileInfoService) *models.Record {
+	clone := record.Clone()
+
+	setURLForRecord(clone, baseUrl, fileInfoService)
+	return clone
 }
 
 func setURLForRecord(r *models.Record, url string, fileInfoService FileInfoService) {

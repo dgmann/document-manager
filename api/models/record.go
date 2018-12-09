@@ -3,6 +3,7 @@ package models
 import (
 	"encoding/json"
 	"github.com/globalsign/mgo/bson"
+	"github.com/jinzhu/copier"
 	"time"
 )
 
@@ -45,6 +46,20 @@ func (r *Record) MarshalJSON() ([]byte, error) {
 		"archivedPDF": r.ArchivedPDF,
 	}
 	return json.Marshal(m)
+}
+
+func (r *Record) Clone() *Record {
+	clone := &Record{}
+	*clone = *r
+	pages := make([]*Page, len(r.Pages))
+	for i, p := range r.Pages {
+		page := &Page{}
+		copier.Copy(page, p)
+		pages[i] = page
+	}
+	clone.Pages = pages
+
+	return clone
 }
 
 func toString(val *string) string {

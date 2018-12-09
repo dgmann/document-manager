@@ -15,8 +15,11 @@ type Processor struct {
 }
 
 func NewPDFProcessor(baseUrl string) (*Processor, error) {
-	insecure := grpc.WithInsecure()
-	conn, err := grpc.Dial(baseUrl, insecure)
+	conn, err := grpc.Dial(
+		baseUrl,
+		grpc.WithInsecure(),
+		grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(1024*1024*100), grpc.MaxCallSendMsgSize(1024*1024*100)),
+	)
 	if err != nil {
 		return nil, err
 	}

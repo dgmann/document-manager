@@ -1,6 +1,6 @@
 module github.com/dgmann/document-manager/api
 
-		replace github.com/gin-contrib/location => github.com/dgmann/location v0.0.0-20181209210007-b43929720440
+        replace github.com/gin-contrib/location => github.com/dgmann/location v0.0.0-20181209210007-b43929720440
 
 require (
 	github.com/Shopify/logrus-bugsnag v0.0.0-20171204204709-577dee27f20d

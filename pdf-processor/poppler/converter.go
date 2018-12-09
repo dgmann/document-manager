@@ -32,7 +32,7 @@ func (c *Processor) ToImages(data io.Reader) ([]*api.Image, error) {
 	for i := 0; i < pageCount; i++ {
 		wg.Add(1)
 		go func(pageNumber int) {
-			img, err := convert(pdf, pageNumber)
+			img, err := convert(pdf, pageNumber+1)
 			if err != nil {
 				message := fmt.Sprintf("error converting page %d. Message %s", pageNumber, err.Error())
 				logrus.WithError(err).Error(message)

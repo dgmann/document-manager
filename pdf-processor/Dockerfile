@@ -1,5 +1,4 @@
-FROM golang:latest as builder
-ENV GO111MODULE=on
+FROM golang:1.11-stretch as builder
 
 RUN apt-get update && \
     apt-get install -q -y wget build-essential pkg-config poppler-utils git g++ libjpeg-dev libpng-dev libtiff-dev libgif-dev ghostscript libgs-dev --no-install-recommends && \
@@ -12,8 +11,15 @@ RUN apt-get update && \
 	wget http://www.imagemagick.org/download/ImageMagick.tar.gz && \
 	tar xvzf ImageMagick.tar.gz && rm ImageMagick.tar.gz && \
 	cd ImageMagick* && \
-	./configure --with-gslib=yes && \
-	make && make install && \
+	./configure \
+	    --with-gslib=yes \
+	    --disable-hdri \
+	    --without-magick-plus-plus \
+	    --without-perl \
+	    --with-gvc=no \
+        --disable-docs \
+	    --with-quantum-depth=8 && \
+	make -j$(nproc) && make install && \
 	cd && rm -rf ImageMagick* && \
 	ldconfig /usr/local/lib && \
 	rm -rf /var/lib/apt/lists/*

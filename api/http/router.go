@@ -53,7 +53,11 @@ func Run(factory *Factory, c *shared.Config) {
 	config.AllowAllOrigins = true
 	config.AddAllowMethods("PATCH", "DELETE")
 	router.Use(cors.New(config))
-	router.Use(location.Default())
+	router.Use(location.New(location.Config{
+		Host:             "localhost:8080",
+		Scheme:           "http",
+		ForwardingHeader: "X-Forwarded-Host",
+	}))
 
 	registerWebsocket(router, factory.GetEventService())
 	registerRecords(router.Group("/records"), factory)

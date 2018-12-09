@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/dgmann/document-manager/pdf-processor/api"
 	"github.com/dgmann/document-manager/pdf-processor/imagick"
+	"github.com/dgmann/document-manager/pdf-processor/poppler"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
@@ -20,13 +21,14 @@ func main() {
 	defer imagick.Terminate()
 
 	processor := imagick.NewProcessor()
-	go startGRPC(processor, processor)
+	converter := poppler.NewProcessor()
+	go startGRPC(converter, processor)
 
 	router := gin.Default()
 	pprof.Register(router)
 	router.Use(cors.Default())
 	router.POST("images/convert", func(c *gin.Context) {
-		images, err := processor.ToImages(c.Request.Body)
+		images, err := converter.ToImages(c.Request.Body)
 		defer c.Request.Body.Close()
 		if err != nil {
 			c.Status(400)

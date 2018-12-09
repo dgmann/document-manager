@@ -50,6 +50,7 @@ func Run(factory *Factory, c *shared.Config) {
 	router := gin.Default()
 	pprof.Register(router)
 	router.Use(bugsnaggin.AutoNotify(c.GetBugsnagConfig()))
+	router.Use(gin.ErrorLogger())
 
 	config := cors.DefaultConfig()
 	config.AllowAllOrigins = true

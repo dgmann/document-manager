@@ -8,26 +8,29 @@ import (
 )
 
 func (c *Processor) ToImages(data io.Reader) ([]*api.Image, error) {
-	mw := imagick.NewMagickWand()
-	defer mw.Destroy()
-
 	b, err := ioutil.ReadAll(data)
 	if err != nil {
 		return nil, err
 	}
 
+	mw := imagick.NewMagickWand()
+	defer mw.Destroy()
 	if err := mw.SetResolution(300, 300); err != nil {
+		return nil, err
+	}
+
+	if err := mw.ReadImageBlob(b); err != nil {
 		return nil, err
 	}
 
 	pw := imagick.NewPixelWand()
 	defer pw.Destroy()
-	pw.SetColor("black")
+	pw.SetColor("white")
 	if err := mw.SetBackgroundColor(pw); err != nil {
 		return nil, err
 	}
 
-	if err := mw.ReadImageBlob(b); err != nil {
+	if err := mw.SetImageAlphaChannel(imagick.ALPHA_CHANNEL_DEACTIVATE); err != nil {
 		return nil, err
 	}
 

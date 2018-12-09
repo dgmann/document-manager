@@ -34,8 +34,8 @@ func registerRecords(g *gin.RouterGroup, factory *Factory) {
 			c.AbortWithError(400, err)
 			return
 		}
-		response := responseService.NewResponse(records)
-		RespondAsJSON(c, response)
+		response := responseService.NewResponse(c, records)
+		response.JSON()
 	})
 
 	g.GET("/:recordId", func(c *gin.Context) {
@@ -46,14 +46,14 @@ func registerRecords(g *gin.RouterGroup, factory *Factory) {
 			return
 		}
 
-		response := responseService.NewResponse(record)
-		RespondAsJSON(c, response)
+		response := responseService.NewResponse(c, record)
+		response.JSON()
 	})
 
 	g.POST("", func(c *gin.Context) {
 		var newRecord models.CreateRecord
 		if err := c.Bind(&newRecord); err != nil {
-			log.WithError(err).Error("error decoding data")
+			log.WithError(err).Error("error decoding Data")
 			c.AbortWithError(400, err)
 			return
 		}
@@ -94,9 +94,9 @@ func registerRecords(g *gin.RouterGroup, factory *Factory) {
 			c.AbortWithError(400, err)
 			return
 		}
-		c.Status(201)
-		response := responseService.NewResponse(record)
-		RespondAsJSON(c, response)
+
+		response := responseService.NewResponseWithStatus(c, record, 201)
+		response.JSON()
 	})
 
 	g.DELETE("/:recordId", func(c *gin.Context) {
@@ -126,8 +126,8 @@ func registerRecords(g *gin.RouterGroup, factory *Factory) {
 
 		}
 
-		response := responseService.NewResponse(r)
-		RespondAsJSON(c, response)
+		response := responseService.NewResponse(c, r)
+		response.JSON()
 	})
 
 	g.PUT("/:recordId/reset", func(c *gin.Context) {
@@ -161,8 +161,8 @@ func registerRecords(g *gin.RouterGroup, factory *Factory) {
 			c.AbortWithError(500, err)
 			return
 		}
-		response := responseService.NewResponse(updated)
-		RespondAsJSON(c, response)
+		response := responseService.NewResponse(c, updated)
+		response.JSON()
 	})
 
 	g.POST("/:recordId/append/:idtoappend", func(c *gin.Context) {
@@ -191,8 +191,8 @@ func registerRecords(g *gin.RouterGroup, factory *Factory) {
 			c.AbortWithError(400, err)
 			return
 		}
-		response := responseService.NewResponse(r)
-		RespondAsJSON(c, response)
+		response := responseService.NewResponse(c, r)
+		response.JSON()
 	})
 
 	g.GET("/:recordId/pages/:imageId", func(c *gin.Context) {
@@ -272,8 +272,8 @@ func registerRecords(g *gin.RouterGroup, factory *Factory) {
 			return
 		}
 
-		response := responseService.NewResponse(r)
-		RespondAsJSON(c, response)
+		response := responseService.NewResponse(c, r)
+		response.JSON()
 	})
 
 	g.POST("/:recordId/pages/:imageId/rotate/:degrees", func(c *gin.Context) {

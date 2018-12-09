@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { Store } from "@ngrx/store";
 import { filter, retry } from "rxjs/operators";
 import { environment } from "../../environments/environment"
-import { DeleteRecordSuccess, LoadRecordsSuccess, State, UpdateRecordSuccess } from "./store";
+import { DeleteRecordSuccess, LoadRecordsSuccess, Record, State, UpdateRecordSuccess } from "./store";
 import { ActionType, GenericEvent, NotificationService, RecordEvent } from "./notification-service";
 import { NotificationMessage, NotificationMessageType, WebsocketService } from "./websocket-service";
 import { Observable } from "rxjs";
@@ -29,7 +29,7 @@ export class AutorefreshService {
       switch (message.type) {
         case NotificationMessageType.Created:
           this.store.dispatch(new LoadRecordsSuccess({
-            records: [message.data]
+            records: [this.relativeUrlToAbsolute(message.data)]
           }));
           this.notificationService.publish(new RecordEvent({
             type: ActionType.ADDED,
@@ -41,7 +41,7 @@ export class AutorefreshService {
         case NotificationMessageType.Updated:
           this.store.dispatch(new UpdateRecordSuccess({
             record: {
-              id: message.data.id as string, changes: message.data
+              id: message.data.id as string, changes: this.relativeUrlToAbsolute(message.data)
             }
           }));
           this.notificationService.publish(new RecordEvent({
@@ -67,5 +67,15 @@ export class AutorefreshService {
         timestamp: new Date()
       }))
     });
+  }
+
+  relativeUrlToAbsolute(record: Record) {
+    return {
+      ...record,
+      pages: record.pages.map(page => ({
+        ...page,
+        url: `${environment.api}${page.url}`
+      }))
+    };
   }
 }

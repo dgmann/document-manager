@@ -16,7 +16,6 @@ import (
 type Factory struct {
 	repositories.Factory
 	pdfProcessorUrl string
-	baseUrl         string
 	eventService    *services.EventService
 }
 
@@ -24,8 +23,8 @@ func (f *Factory) GetPdfProcessor() (*pdf.Processor, error) {
 	return pdf.NewPDFProcessor(f.pdfProcessorUrl)
 }
 
-func (f *Factory) GetResponseService() *services.ResponseService {
-	return services.NewResponseService(f.baseUrl, f.GetImageRepository())
+func (f *Factory) GetResponseService() *ResponseService {
+	return NewResponseService(f.GetImageRepository())
 }
 
 func (f *Factory) GetEventService() *services.EventService {
@@ -34,13 +33,11 @@ func (f *Factory) GetEventService() *services.EventService {
 
 func NewFactory(config *shared.Config) *Factory {
 	fileInfoService := repositories.NewImageRepository(config)
-	responseService := services.NewResponseService(config.GetBaseUrl(), fileInfoService)
-	eventService := services.NewEventService(responseService)
+	eventService := services.NewEventService(fileInfoService)
 	eventService.Log()
 	f := &Factory{
 		Factory:         repositories.NewFactory(config, eventService),
 		pdfProcessorUrl: config.GetPdfProcessorUrl(),
-		baseUrl:         config.GetBaseUrl(),
 		eventService:    eventService,
 	}
 	return f

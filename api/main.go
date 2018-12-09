@@ -45,7 +45,6 @@ func main() {
 	dbHost := envOrDefault("DB_HOST", "localhost")
 	dbname := envOrDefault("DB_NAME", "manager")
 	pdfprocessorUrl := envOrDefault("PDFPROCESSOR_URL", "127.0.0.1:9000")
-	baseUrl := envOrDefault("BASE_URL", "http://localhost:8080")
 
 	session, err := mgo.Dial(dbHost)
 	if err != nil {
@@ -58,7 +57,6 @@ func main() {
 		RecordDir:       recordDir,
 		PDFDir:          archiveDir,
 		PdfProcessorUrl: pdfprocessorUrl,
-		BaseUrl:         baseUrl,
 		Bugsnag:         bugsnagConfig,
 	}
 

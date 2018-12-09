@@ -1,9 +1,9 @@
 package http
 
 import (
-	"github.com/gin-gonic/gin"
 	"encoding/json"
 	"github.com/dgmann/document-manager/api/models"
+	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
@@ -17,21 +17,21 @@ func registerCategories(g *gin.RouterGroup, factory *Factory) {
 			c.AbortWithError(400, err)
 			return
 		}
-		response := responseService.NewResponse(cat)
-		RespondAsJSON(c, response)
+		response := responseService.NewResponse(c, cat)
+		response.JSON()
 	})
 
 	g.POST("", func(c *gin.Context) {
 		var category models.Category
 		if err := json.NewDecoder(c.Request.Body).Decode(&category); err != nil {
-			RespondWithError(c, http.StatusBadRequest, err)
+			responseService.NewErrorResponse(c, http.StatusBadRequest, err)
 			return
 		}
 		if err := categoryRepository.Add(category.Id, category.Name); err != nil {
-			RespondWithError(c, http.StatusConflict, err)
+			responseService.NewErrorResponse(c, http.StatusConflict, err)
 			return
 		}
-		response := responseService.NewResponse(category)
-		RespondAsJSON(c, response)
+		response := responseService.NewResponse(c, category)
+		response.JSON()
 	})
 }

@@ -27,8 +27,8 @@ func registerPatients(g *gin.RouterGroup, factory *Factory) {
 			c.AbortWithError(400, err)
 			return
 		}
-		response := responseService.NewResponse(patient)
-		RespondAsJSON(c, response)
+		response := responseService.NewResponse(c, patient)
+		response.JSON()
 	})
 
 	g.GET("", func(c *gin.Context) {
@@ -50,8 +50,8 @@ func registerPatients(g *gin.RouterGroup, factory *Factory) {
 			c.AbortWithError(400, err)
 			return
 		}
-		response := responseService.NewResponse(patients)
-		RespondAsJSON(c, response)
+		response := responseService.NewResponse(c, patients)
+		response.JSON()
 	})
 
 	g.GET("/:patientId", func(c *gin.Context) {
@@ -74,8 +74,8 @@ func registerPatients(g *gin.RouterGroup, factory *Factory) {
 		}
 		patient.Tags = tags
 		patient.Categories = categories
-		response := responseService.NewResponse(patient)
-		RespondAsJSON(c, response)
+		response := responseService.NewResponse(c, patient)
+		response.JSON()
 	})
 
 	g.GET("/:patientId/tags", func(c *gin.Context) {
@@ -87,8 +87,8 @@ func registerPatients(g *gin.RouterGroup, factory *Factory) {
 			return
 		}
 
-		response := responseService.NewResponse(tags)
-		RespondAsJSON(c, response)
+		response := responseService.NewResponse(c, tags)
+		response.JSON()
 	})
 
 	g.GET("/:patientId/categories", func(c *gin.Context) {
@@ -100,8 +100,8 @@ func registerPatients(g *gin.RouterGroup, factory *Factory) {
 			return
 		}
 
-		response := responseService.NewResponse(categories)
-		RespondAsJSON(c, response)
+		response := responseService.NewResponse(c, categories)
+		response.JSON()
 	})
 
 	g.GET("/:patientId/records", func(c *gin.Context) {
@@ -111,7 +111,7 @@ func registerPatients(g *gin.RouterGroup, factory *Factory) {
 			c.AbortWithError(400, err)
 			return
 		}
-		response := responseService.NewResponse(records)
-		RespondAsJSON(c, response)
+		response := responseService.NewResponse(c, records)
+		response.JSON()
 	})
 }

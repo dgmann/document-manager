@@ -53,16 +53,22 @@ export function reducer(state = initialState,
       };
 
     case RecordActionTypes.UpdateRecordSuccess:
-      let updatedState = adapter.updateOne(action.payload.record, state);
-      updatedState.invalidIds = without(updatedState.invalidIds, action.payload.record.id + '');
+      const updatedState = adapter.updateOne(action.payload.record, state);
+      const updatedStateWithoutInvalidId = {
+        ...updatedState,
+        invalidIds: without(updatedState.invalidIds, action.payload.record.id + '')
+      };
       const statusChanges = recordUpdatesToStatusChanges([action.payload.record]);
-      updatedState = clearIdsFromState(statusChanges, updatedState);
-      return addToStatus(statusChanges, updatedState);
+      const updatedStateWithoutIds = clearIdsFromState(statusChanges, updatedStateWithoutInvalidId);
+      return addToStatus(statusChanges, updatedStateWithoutIds);
 
     case RecordActionTypes.DeleteRecordSuccess:
-      let stateWithoutRecord = adapter.removeOne(action.payload.id, state);
-      stateWithoutRecord.invalidIds = without(stateWithoutRecord.invalidIds, action.payload.id);
-      return clearIdsFromState([{id: action.payload.id}], stateWithoutRecord);
+      const stateWithoutRecord = adapter.removeOne(action.payload.id, state);
+      const newState = {
+        ...stateWithoutRecord,
+        invalidIds: without(stateWithoutRecord.invalidIds, action.payload.id)
+      };
+      return clearIdsFromState([{id: action.payload.id}], newState);
 
     case RecordActionTypes.ClearRecords:
       return initialState;

@@ -1,39 +1,24 @@
 package services
 
 import (
-	"github.com/dgmann/document-manager/api/models"
-	"os"
 	"fmt"
-	"time"
+	"github.com/dgmann/document-manager/api/models"
 	"github.com/sirupsen/logrus"
+	"time"
 )
 
-type ResponseService struct {
-	baseUrl         string
-	fileInfoService FileInfoService
-}
-
-type FileInfoService interface {
-	GetFileInfo(recordId, pageId string, format string) (os.FileInfo, error)
-}
-
-func NewResponseService(baseUrl string, fileInfoService FileInfoService) *ResponseService {
-	return &ResponseService{baseUrl: baseUrl, fileInfoService: fileInfoService}
-}
-
-func (r *ResponseService) NewResponse(data interface{}) interface{} {
+func SetURL(data interface{}, baseUrl string, service FileInfoService) {
 	switch data.(type) {
 	case *models.Record:
-		SetURL(data.(*models.Record), r.baseUrl, r.fileInfoService)
+		setURLForRecord(data.(*models.Record), baseUrl, service)
 	case []*models.Record:
 		for _, m := range data.([]*models.Record) {
-			SetURL(m, r.baseUrl, r.fileInfoService)
+			setURLForRecord(m, baseUrl, service)
 		}
 	}
-	return data
 }
 
-func SetURL(r *models.Record, url string, fileInfoService FileInfoService) {
+func setURLForRecord(r *models.Record, url string, fileInfoService FileInfoService) {
 	if r.Tags == nil {
 		r.Tags = []string{}
 	}

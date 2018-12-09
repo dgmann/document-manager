@@ -16,7 +16,7 @@ const (
 
 type EventService struct {
 	ps              *pubsub.PubSub
-	responseService *ResponseService
+	fileinfoService FileInfoService
 }
 
 type Event struct {
@@ -25,8 +25,8 @@ type Event struct {
 	Data      interface{} `json:"data"`
 }
 
-func NewEventService(responseService *ResponseService) *EventService {
-	return &EventService{ps: pubsub.New(300), responseService: responseService}
+func NewEventService(fileinfoService FileInfoService) *EventService {
+	return &EventService{ps: pubsub.New(300), fileinfoService: fileinfoService}
 }
 
 func (e *EventService) Log() {
@@ -44,10 +44,11 @@ func (e *EventService) Log() {
 }
 
 func (e *EventService) Send(t EventType, data interface{}) {
+	SetURL(data, "", e.fileinfoService)
 	event := Event{
 		Type:      t,
 		Timestamp: time.Now(),
-		Data:      e.responseService.NewResponse(data),
+		Data:      data,
 	}
 	e.ps.Pub(event, string(t))
 }

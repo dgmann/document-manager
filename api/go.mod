@@ -17,6 +17,7 @@ require (
 	github.com/gin-gonic/gin v0.0.0-20180810125023-8fc8ce047243
 	github.com/globalsign/mgo v0.0.0-20180615134936-113d3961e731
 	github.com/gorilla/websocket v1.2.0 // indirect
+	github.com/jinzhu/copier v0.0.0-20180308034124-7e38e58719c3
 	github.com/json-iterator/go v1.1.5 // indirect
 	github.com/kardianos/osext v0.0.0-20170510131534-ae77be60afb1 // indirect
 	github.com/kr/pretty v0.1.0 // indirect

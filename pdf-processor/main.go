@@ -68,7 +68,7 @@ func startGRPC(converter api.PdfToImageConverter, rotator api.Rotator) {
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
-	grpcServer := grpc.NewServer()
+	grpcServer := grpc.NewServer(grpc.MaxRecvMsgSize(1024*1024*300), grpc.MaxSendMsgSize(1024*1024*300))
 	api.RegisterPdfProcessorServer(grpcServer, api.NewGRPCServer(converter, rotator))
 	grpcServer.Serve(lis)
 }

@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fmt"
 	"github.com/cskr/pubsub"
 	log "github.com/sirupsen/logrus"
 	"time"
@@ -37,18 +38,18 @@ func (e *EventService) Log() {
 			log.WithFields(log.Fields{
 				"Type":      e.Type,
 				"Timestamp": e.Timestamp,
-				"data":      e.Data,
+				"data":      fmt.Sprintf("%+v\n", e.Data),
 			}).Info("New Event")
 		}
 	}()
 }
 
 func (e *EventService) Send(t EventType, data interface{}) {
-	SetURL(data, "", e.fileinfoService)
+	payload := SetURL(data, "", e.fileinfoService)
 	event := Event{
 		Type:      t,
 		Timestamp: time.Now(),
-		Data:      data,
+		Data:      payload,
 	}
 	e.ps.Pub(event, string(t))
 }

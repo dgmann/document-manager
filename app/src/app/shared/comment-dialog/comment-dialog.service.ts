@@ -1,22 +1,21 @@
 import { Injectable } from "@angular/core";
 import { MatDialog } from "@angular/material";
-import { DocumentEditDialogComponent } from "./document-edit-dialog.component";
 import { Record } from "../../core/store";
 import { Observable } from "rxjs";
-import { EditResult } from "./edit-result.model";
+import { CommentDialogComponent } from "./comment-dialog.component";
 
 @Injectable({
   providedIn: "root"
 })
-export class DocumentEditDialogService {
+export class CommentDialogService {
   constructor(private dialog: MatDialog) {
   }
 
-  open(record: Record): Observable<EditResult> {
-    return this.dialog.open(DocumentEditDialogComponent, {
+  open(record: Record): Observable<string> {
+    return this.dialog.open(CommentDialogComponent, {
       disableClose: true,
       data: record,
       width: "635px"
-    }).afterClosed();
+    }).afterClosed()
   }
 }

@@ -8,7 +8,7 @@ import {
   Output,
   ViewChild
 } from '@angular/core';
-import { MatDialog, MatSort, MatTableDataSource } from "@angular/material";
+import { MatSort, MatTableDataSource } from "@angular/material";
 import { Router } from "@angular/router";
 import { includes } from 'lodash-es';
 import { DropEvent } from "ng-drag-drop";
@@ -16,8 +16,9 @@ import { Observable } from "rxjs";
 
 
 import { Record, RecordService, Status } from "../../core/store";
-import { CommentDialogComponent } from "../comment-dialog/comment-dialog.component";
-import { DocumentEditDialogComponent } from "../document-edit-dialog/document-edit-dialog.component";
+import { CommentDialogService } from "../comment-dialog/comment-dialog.service";
+import { DocumentEditDialogService } from "../document-edit-dialog/document-edit-dialog.service";
+
 
 @Component({
   selector: 'app-document-list',
@@ -37,7 +38,8 @@ export class DocumentListComponent implements OnInit, AfterViewInit {
 
   constructor(private recordService: RecordService,
               private router: Router,
-              private dialog: MatDialog) {
+              private commmentDialog: CommentDialogService,
+              private editDialog: DocumentEditDialogService) {
   }
 
   ngOnInit() {
@@ -76,11 +78,7 @@ export class DocumentListComponent implements OnInit, AfterViewInit {
   setStatus(event) {
     if (event.status == Status.ESCALATED
       || (event.status == Status.INBOX && event.record.status == Status.ESCALATED)) {
-      this.dialog.open(CommentDialogComponent, {
-        disableClose: true,
-        data: event.record,
-        width: "635px"
-      }).afterClosed().subscribe((comment: string) => {
+      this.commmentDialog.open(event.record).subscribe((comment: string) => {
         this.recordService.update(event.record.id, {status: event.status, comment: comment});
       });
     } else {
@@ -89,19 +87,12 @@ export class DocumentListComponent implements OnInit, AfterViewInit {
   }
 
   editRecord(record: Record) {
-    this.dialog.open(DocumentEditDialogComponent, {
-      disableClose: true,
-      data: record,
-      width: "635px"
-    }).afterClosed().subscribe((result: Record) => {
+    this.editDialog.open(record).subscribe(result => {
       if (!result) {
         return;
       }
       const changes = {
-        patientId: result.patientId,
-        date: result.date,
-        tags: result.tags,
-        category: result.category,
+        ...result.change,
         status: undefined
       };
       if (changes.patientId && changes.date && changes.category) {

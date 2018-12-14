@@ -5,7 +5,7 @@ import { map, startWith, withLatestFrom } from "rxjs/operators";
 import { Category } from "../../core";
 
 @Component({
-  selector: 'app-autocomplete-dropdown',
+  selector: 'app-autocomplete-input',
   templateUrl: './autocomplete-input.component.html',
   styleUrls: ['./autocomplete-input.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

@@ -8,17 +8,18 @@ import {
   OnInit,
   ViewChild
 } from '@angular/core';
-import { FormControl } from "@angular/forms";
+import { FormControl, FormGroup } from "@angular/forms";
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material";
 import * as moment from "moment";
 import { Observable, ReplaySubject } from "rxjs";
-import { shareReplay } from "rxjs/operators";
+import { filter, map, startWith, take } from "rxjs/operators";
 import { Patient } from "../../patient";
 
 
 import { Record } from "../../core/store";
 import { Category, CategoryService, ExternalApiService, TagService } from "../../core";
 import { untilDestroyed } from "ngx-take-until-destroy";
+import { EditResult } from "./edit-result.model";
 
 @Component({
   selector: 'app-document-edit-dialog',
@@ -30,10 +31,19 @@ export class DocumentEditDialogComponent implements AfterViewInit, OnInit, OnDes
   @ViewChild('datepickertoogle', {read: ElementRef}) datepickerToggle;
   public record: Record;
   public tabIndex = new ReplaySubject<number>();
-  public categoryFormControl: FormControl;
   public patient: Patient;
-  public categories: Observable<Category[]>;
+
+  public categories: Category[];
   public tags: Observable<string[]>;
+
+  filteredCategories: Observable<Category[]>;
+
+  editForm = new FormGroup({
+    patientId: new FormControl(''),
+    date: new FormControl(moment()),
+    category: new FormControl(),
+    tags: new FormControl()
+  });
 
   constructor(public dialogRef: MatDialogRef<DocumentEditDialogComponent>,
               @Inject(MAT_DIALOG_DATA) record: Record,
@@ -46,28 +56,48 @@ export class DocumentEditDialogComponent implements AfterViewInit, OnInit, OnDes
 
   ngOnInit() {
     this.categoryService.load();
-    this.categories = this.categoryService.categories;
+    this.categoryService.categories.pipe(untilDestroyed(this)).subscribe(categories => this.categories = categories);
+
+    this.filteredCategories = this.editForm.get('category').valueChanges
+      .pipe(
+        startWith(''),
+        map(value => this._filter(value))
+      );
 
     this.tagService.load();
     this.tags = this.tagService.tags;
 
-    let patientRequest = this.patientService.getSelectedPatient().pipe(untilDestroyed(this), shareReplay());
-    patientRequest.subscribe(p => this.patient = p);
+    this.patientService.getSelectedPatient().subscribe(p => {
+      this.patient = p;
+      if (!this.editForm.get('patientId').value) {
+        this.editForm.patchValue({
+          patientId: this.record.patientId,
+        })
+      }
+    });
 
-    if (!this.record.date) {
-      this.record.date = moment();
+    this.editForm.patchValue({
+      patientId: this.record.patientId,
+      date: this.record.date || moment(),
+      category: this.record.category,
+      tags: this.record.tags
+    });
+
+    if (this.record.category) {
+      this.categoryService.categoryMap.pipe(
+        filter(categories => Object.entries(categories).length > 0),
+        take(1)
+      ).subscribe(categories => this.editForm.patchValue({
+        category: categories[this.record.category],
+      }));
     }
-    if (!this.record.patientId) {
-      patientRequest.subscribe(p => this.record.patientId = p.id);
-    }
+
     if (this.record.patientId && this.record.date) {
       this.tabIndex.next(-1);
     }
     else {
       this.tabIndex.next(0);
     }
-    this.categoryFormControl = new FormControl({name: "Test", id: this.record.category});
-    this.categoryFormControl.valueChanges.pipe(untilDestroyed(this)).subscribe(val => this.record.category = val.id);
   }
 
   ngOnDestroy(): void {
@@ -77,13 +107,32 @@ export class DocumentEditDialogComponent implements AfterViewInit, OnInit, OnDes
     this.datepickerToggle.nativeElement.querySelector('button').setAttribute('tabindex', '-1');
   }
 
-  submit() {
-    if (this.valid()) {
-      this.dialogRef.close(this.record);
+  onSubmit() {
+    if (this.editForm.valid) {
+      const changeSet: EditResult = {
+        id: this.record.id, change: {
+          patientId: this.editForm.get('patientId').value,
+          date: this.editForm.get('date').value,
+          tags: this.editForm.get('tags').value,
+          category: this.editForm.get('category').value.id
+        }
+      };
+      this.dialogRef.close(changeSet);
     }
   }
 
-  valid() {
-    return this.record.date && this.record.patientId && this.record.category;
+  displayFn(category: Category): string | undefined {
+    return category ? category.name : undefined;
+  }
+
+  private _filter(value: any): Category[] {
+    let filterValue = "";
+    if (value.name) {
+      filterValue = value.name.toLowerCase();
+    } else {
+      filterValue = value.toLowerCase();
+    }
+
+    return this.categories.filter(category => category.name.toLowerCase().includes(filterValue));
   }
 }

@@ -23,7 +23,6 @@ import { NgDragDropModule } from "ng-drag-drop";
 import { ActionBarComponent } from './action-bar/action-bar.component';
 import { ActionMenuComponent } from './action-menu/action-menu.component';
 import { AutocompleteChipsComponent } from "./autocomplete-chips/autocomplete-chips.component";
-import { AutocompleteInputComponent } from "./autocomplete-input/autocomplete-input.component";
 import { CommentDialogComponent } from './comment-dialog/comment-dialog.component';
 import { DocumentEditDialogComponent } from "./document-edit-dialog/document-edit-dialog.component";
 import { DocumentListComponent } from "./document-list/document-list.component";
@@ -66,7 +65,6 @@ import { MessageBoxComponent } from './message-box/message-box.component';
     DocumentListComponent,
     PatientSearchComponent,
     SplitPanelComponent,
-    AutocompleteInputComponent,
     AutocompleteChipsComponent,
     ActionMenuComponent,
     ActionBarComponent,

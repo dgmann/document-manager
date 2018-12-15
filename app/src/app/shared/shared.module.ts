@@ -20,7 +20,6 @@ import { MatCardModule } from "@angular/material/card";
 import { MatSortModule } from "@angular/material/sort";
 import { MatTableModule } from "@angular/material/table";
 import { NgDragDropModule } from "ng-drag-drop";
-import { NgxMatSelectSearchModule } from "ngx-mat-select-search";
 import { ActionBarComponent } from './action-bar/action-bar.component';
 import { ActionMenuComponent } from './action-menu/action-menu.component';
 import { AutocompleteChipsComponent } from "./autocomplete-chips/autocomplete-chips.component";
@@ -59,7 +58,6 @@ import { MessageBoxComponent } from './message-box/message-box.component';
     MatDatepickerModule,
     MatChipsModule,
     MatMenuModule,
-    NgxMatSelectSearchModule,
     DragDropModule
   ],
   declarations: [

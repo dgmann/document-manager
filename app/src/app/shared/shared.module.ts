@@ -33,6 +33,7 @@ import { RecordViewerComponent } from "./record-viewer/record-viewer.component";
 import { SplitPanelComponent } from './split-panel/split-panel.component';
 import { HttpClientModule } from "@angular/common/http";
 import { DragDropModule } from "@angular/cdk/drag-drop";
+import { MessageBoxComponent } from './message-box/message-box.component';
 
 
 @NgModule({
@@ -71,11 +72,13 @@ import { DragDropModule } from "@angular/cdk/drag-drop";
     AutocompleteChipsComponent,
     ActionMenuComponent,
     ActionBarComponent,
-    CommentDialogComponent
+    CommentDialogComponent,
+    MessageBoxComponent
   ],
   entryComponents: [
     DocumentEditDialogComponent,
-    CommentDialogComponent
+    CommentDialogComponent,
+    MessageBoxComponent
   ],
   exports: [
     CommonModule,

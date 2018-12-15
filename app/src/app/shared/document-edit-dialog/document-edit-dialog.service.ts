@@ -4,6 +4,7 @@ import { DocumentEditDialogComponent } from "./document-edit-dialog.component";
 import { Record } from "../../core/store";
 import { Observable } from "rxjs";
 import { EditResult } from "./edit-result.model";
+import { filter } from "rxjs/operators";
 
 @Injectable({
   providedIn: "root"
@@ -17,6 +18,8 @@ export class DocumentEditDialogService {
       disableClose: true,
       data: record,
       width: "635px"
-    }).afterClosed();
+    }).afterClosed().pipe(
+      filter(result => !!result)
+    );
   }
 }

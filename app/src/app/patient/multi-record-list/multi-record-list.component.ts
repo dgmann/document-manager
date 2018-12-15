@@ -4,7 +4,7 @@ import { Category } from "../../core";
 import { Record } from "../../core/store";
 import { distinctUntilChanged, filter, map, take } from "rxjs/operators";
 import { findIndex, groupBy, sortBy } from 'lodash-es'
-import { DocumentEditDialogService, EditResult } from "../../shared";
+import { DocumentEditDialogService, EditResult, MessageBoxService } from "../../shared";
 
 @Component({
   selector: 'app-multi-record-list',
@@ -19,11 +19,13 @@ export class MultiRecordListComponent implements OnInit {
   @Output() clickRecord = new EventEmitter<string>();
   @Output() selectedCategoryChange = new EventEmitter<string>();
   @Output() updateRecord = new EventEmitter<EditResult>();
+  @Output() deleteRecord = new EventEmitter<Record>();
+  @Output() openInEditor = new EventEmitter<Record>();
 
   groupedRecords: Observable<{ category: string, records: Record[] }[]>;
   selectedIndex: Observable<number>;
 
-  constructor(private dialog: DocumentEditDialogService) {
+  constructor(private dialog: DocumentEditDialogService, private messageBox: MessageBoxService) {
   }
 
   ngOnInit() {
@@ -45,6 +47,18 @@ export class MultiRecordListComponent implements OnInit {
 
   edit(record: Record) {
     this.dialog.open(record).subscribe(result => this.updateRecord.emit(result));
+  }
+
+  delete(record: Record) {
+    this.messageBox.open("Löschen", "Wollen sie diesen Befund löschen?").subscribe(yes => {
+      if (yes) {
+        this.deleteRecord.emit(record);
+      }
+    });
+  }
+
+  onOpenInEditor(record: Record) {
+    this.openInEditor.emit(record);
   }
 
   onSelectedIndexChange(index: number) {

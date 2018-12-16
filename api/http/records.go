@@ -130,6 +130,47 @@ func registerRecords(g *gin.RouterGroup, factory *Factory) {
 		response.JSON()
 	})
 
+	g.POST("/:recordId/duplicate", func(c *gin.Context) {
+		recordToDuplicate, err := recordRepository.Find(c.Param("recordId"))
+		if err != nil {
+			c.AbortWithError(404, err)
+			return
+		}
+		pdfs := factory.GetPDFRepository()
+		file, err := pdfs.Get(c.Param("recordId"))
+		if err != nil {
+			c.AbortWithError(500, err)
+			return
+		}
+
+		copiedRecord, err := recordRepository.Create(models.CreateRecord{
+			ReceivedAt: recordToDuplicate.ReceivedAt,
+			Sender:     recordToDuplicate.Sender,
+		}, nil, file)
+
+		err = imageRepository.Copy(recordToDuplicate.Id.Hex(), copiedRecord.Id.Hex())
+
+		var pages []*models.Page
+		imgs, err := imageRepository.Get(copiedRecord.Id.Hex())
+		if err != nil {
+			c.AbortWithError(500, err)
+			return
+		}
+
+		for imgId, img := range imgs {
+			page := models.NewPage(imgId, img.Format)
+			pages = append(pages, page)
+		}
+		r, err := recordRepository.Update(copiedRecord.Id.Hex(), models.Record{Pages: pages})
+		if err != nil {
+			c.AbortWithError(500, err)
+			return
+		}
+
+		response := responseService.NewResponse(c, r)
+		response.JSON()
+	})
+
 	g.PUT("/:recordId/reset", func(c *gin.Context) {
 		recordId := c.Param("recordId")
 		pdfs := factory.GetPDFRepository()

@@ -58,7 +58,8 @@ func (f *FileSystemImageRepository) Get(id string) (map[string]*shared.Image, er
 			if err != nil {
 				return err
 			}
-			images[fileName] = shared.NewImage(data, filepath.Ext(info.Name()))
+			ext := filepath.Ext(info.Name())
+			images[fileName] = shared.NewImage(data, strings.Trim(ext, "."))
 		}
 		return nil
 	})

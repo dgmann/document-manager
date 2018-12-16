@@ -1,14 +1,16 @@
 package repositories
 
 import (
+	"bytes"
+	log "github.com/sirupsen/logrus"
 	"io"
+	"io/ioutil"
 	"os"
 	"path"
-	log "github.com/sirupsen/logrus"
 )
 
 type PDFRepository interface {
-	Get(id string) (io.ReadCloser, error)
+	Get(id string) (io.Reader, error)
 	Set(id string, data []byte) error
 	Delete(id string) error
 }
@@ -24,13 +26,19 @@ func newFileSystemPDFRepository(directory string) PDFRepository {
 	return &FileSystemPDFRepository{directory: directory}
 }
 
-func (f *FileSystemPDFRepository) Get(id string) (io.ReadCloser, error) {
+func (f *FileSystemPDFRepository) Get(id string) (io.Reader, error) {
 	fp := path.Join(f.directory, id+".pdf")
 	file, err := os.Open(fp)
 	if err != nil {
 		return nil, err
 	}
-	return file, nil
+	defer file.Close()
+
+	data, err := ioutil.ReadAll(file)
+	if err != nil {
+		return nil, err
+	}
+	return bytes.NewBuffer(data), nil
 }
 
 func (f *FileSystemPDFRepository) Set(id string, data []byte) error {

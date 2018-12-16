@@ -25,7 +25,7 @@ type Record struct {
 	Comment     *string       `bson:"comment,omitempty" json:"comment"`
 	Sender      string        `bson:"sender,omitempty" json:"sender" form:"user" binding:"required"`
 	Category    *string       `bson:"category,omitempty" json:"category"`
-	Tags        []string      `bson:"tags,omitempty" json:"tags"`
+	Tags        *[]string     `bson:"tags,omitempty" json:"tags"`
 	Pages       []*Page       `bson:"pages,omitempty" json:"pages"`
 	Status      *Status       `bson:"status,omitempty" json:"status"`
 	ArchivedPDF string
@@ -95,7 +95,7 @@ func NewRecord(data CreateRecord) *Record {
 		Comment:    data.Comment,
 		PatientId:  data.PatientId,
 		Sender:     data.Sender,
-		Tags:       data.Tags,
+		Tags:       &data.Tags,
 		Pages:      []*Page{},
 		Status:     data.Status,
 		Category:   data.Category,
@@ -107,7 +107,7 @@ func NewRecord(data CreateRecord) *Record {
 		record.ReceivedAt = data.ReceivedAt
 	}
 	if record.Tags == nil {
-		record.Tags = []string{}
+		record.Tags = &[]string{}
 	}
 	if record.Status == nil {
 		status := StatusInbox

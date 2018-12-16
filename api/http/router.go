@@ -1,7 +1,6 @@
 package http
 
 import (
-	"github.com/bugsnag/bugsnag-go/gin"
 	"github.com/dgmann/document-manager/api/pdf"
 	"github.com/dgmann/document-manager/api/repositories"
 	"github.com/dgmann/document-manager/api/services"
@@ -46,7 +45,6 @@ func NewFactory(config *shared.Config) *Factory {
 func Run(factory *Factory, c *shared.Config) {
 	router := gin.Default()
 	pprof.Register(router)
-	router.Use(bugsnaggin.AutoNotify(c.GetBugsnagConfig()))
 	router.Use(gin.ErrorLogger())
 
 	config := cors.DefaultConfig()

@@ -77,26 +77,32 @@ func statusToString(val *Status) string {
 }
 
 type CreateRecord struct {
-	Date       time.Time `form:"date" time_format:"2006-01-02T15:04:05Z07:00"`
-	ReceivedAt time.Time `form:"receivedAt" time_format:"2006-01-02T15:04:05Z07:00"`
-	Sender     string    `form:"sender"`
-	Comment    *string   `form:"comment"`
-	PatientId  *string   `form:"patientId"`
-	Tags       []string  `form:"tags"`
-	Status     *Status   `form:"status"`
-	Category   *string   `form:"category"`
+	Id         *bson.ObjectId `form:"id"`
+	Date       time.Time      `form:"date" time_format:"2006-01-02T15:04:05Z07:00"`
+	ReceivedAt time.Time      `form:"receivedAt" time_format:"2006-01-02T15:04:05Z07:00"`
+	Sender     string         `form:"sender"`
+	Comment    *string        `form:"comment"`
+	PatientId  *string        `form:"patientId"`
+	Tags       []string       `form:"tags"`
+	Status     *Status        `form:"status"`
+	Category   *string        `form:"category"`
+	Pages      []*Page
 }
 
 func NewRecord(data CreateRecord) *Record {
+	id := bson.NewObjectId()
+	if data.Id != nil {
+		id = *data.Id
+	}
 	record := &Record{
-		Id:         bson.NewObjectId(),
+		Id:         id,
 		Date:       nil,
 		ReceivedAt: time.Now(),
 		Comment:    data.Comment,
 		PatientId:  data.PatientId,
 		Sender:     data.Sender,
 		Tags:       &data.Tags,
-		Pages:      []*Page{},
+		Pages:      data.Pages,
 		Status:     data.Status,
 		Category:   data.Category,
 	}
@@ -108,6 +114,9 @@ func NewRecord(data CreateRecord) *Record {
 	}
 	if record.Tags == nil {
 		record.Tags = &[]string{}
+	}
+	if record.Pages == nil {
+		record.Pages = []*Page{}
 	}
 	if record.Status == nil {
 		status := StatusInbox

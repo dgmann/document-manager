@@ -76,6 +76,6 @@ export class AutorefreshService {
         ...page,
         url: `${environment.api}${page.url}`
       }))
-    };
+    } as Record;
   }
 }

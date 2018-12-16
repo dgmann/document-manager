@@ -12,6 +12,7 @@ export class ActionMenuComponent implements OnInit {
   @Output() deleteRecord = new EventEmitter<Record>();
   @Output() changeStatus = new EventEmitter<{ record: Record, status: Status }>();
   @Output() editRecord = new EventEmitter<Record>();
+  @Output() duplicateRecord = new EventEmitter<Record>();
 
   status = Status;
 
@@ -32,5 +33,9 @@ export class ActionMenuComponent implements OnInit {
 
   onEditRecord(record: Record) {
     this.editRecord.emit(record);
+  }
+
+  onDuplicateRecord(record: Record) {
+    this.duplicateRecord.emit(record);
   }
 }

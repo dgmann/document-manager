@@ -89,4 +89,18 @@ export class RecordService {
         record: record
     })));
   }
+
+  public duplicate(id: string) {
+    this.notifications.publish(new GenericEvent({
+      timestamp: new Date(),
+      message: "Befund wird dupliziert..."
+    }));
+    this.http.post<Record>(`${environment.api}/records/${id}/duplicate`, null)
+      .subscribe(record => this.notifications.publish(new RecordEvent({
+        type: ActionType.NONE,
+        timestamp: new Date(),
+        message: "Befund dupliziert",
+        record: record
+      })));
+  }
 }

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/dgmann/document-manager/api/models"
 	"github.com/gin-gonic/gin"
+	"github.com/globalsign/mgo/bson"
 	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"strconv"
@@ -143,31 +144,27 @@ func registerRecords(g *gin.RouterGroup, factory *Factory) {
 			return
 		}
 
+		newId := bson.NewObjectId()
+
+		err = imageRepository.Copy(recordToDuplicate.Id.Hex(), newId.Hex())
+		if err != nil {
+			c.AbortWithError(500, err)
+			return
+		}
+
 		copiedRecord, err := recordRepository.Create(models.CreateRecord{
+			Id:         &newId,
 			ReceivedAt: recordToDuplicate.ReceivedAt,
 			Sender:     recordToDuplicate.Sender,
+			Pages:      recordToDuplicate.Pages,
 		}, nil, file)
 
-		err = imageRepository.Copy(recordToDuplicate.Id.Hex(), copiedRecord.Id.Hex())
-
-		var pages []*models.Page
-		imgs, err := imageRepository.Get(copiedRecord.Id.Hex())
 		if err != nil {
 			c.AbortWithError(500, err)
 			return
 		}
 
-		for imgId, img := range imgs {
-			page := models.NewPage(imgId, img.Format)
-			pages = append(pages, page)
-		}
-		r, err := recordRepository.Update(copiedRecord.Id.Hex(), models.Record{Pages: pages})
-		if err != nil {
-			c.AbortWithError(500, err)
-			return
-		}
-
-		response := responseService.NewResponse(c, r)
+		response := responseService.NewResponse(c, copiedRecord)
 		response.JSON()
 	})
 

@@ -30,7 +30,7 @@ func cloneAndSetUrl(record *models.Record, baseUrl string, fileInfoService FileI
 
 func setURLForRecord(r *models.Record, url string, fileInfoService FileInfoService) {
 	if r.Tags == nil {
-		r.Tags = []string{}
+		r.Tags = &[]string{}
 	}
 	if r.Pages == nil {
 		r.Pages = []*models.Page{}

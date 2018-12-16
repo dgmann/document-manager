@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/Shopify/logrus-bugsnag"
 	"github.com/bugsnag/bugsnag-go"
 	"github.com/dgmann/document-manager/api/http"
 	"github.com/dgmann/document-manager/api/services"
@@ -18,26 +17,6 @@ func init() {
 }
 
 var bugsnagConfig bugsnag.Configuration
-
-func init() {
-	apiKey := envOrDefault("BUGSNAG_API_KEY", "")
-	stage := envOrDefault("RELEASE_STAGE", "production")
-	bugsnagConfig = bugsnag.Configuration{
-		// Your Bugsnag project API key
-		APIKey:       apiKey,
-		ReleaseStage: stage,
-		// The import paths for the Go packages
-		// containing your source files
-		ProjectPackages: []string{"main", "github.com/dgmann/document-manager/api"},
-	}
-	bugsnag.Configure(bugsnagConfig)
-
-	hook, err := logrus_bugsnag.NewBugsnagHook()
-	if err != nil {
-		log.Error("Error registering bugsnag hook")
-	}
-	log.StandardLogger().Hooks.Add(hook)
-}
 
 func main() {
 	recordDir := envOrDefault("RECORD_DIR", "/records")

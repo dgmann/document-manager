@@ -30,7 +30,8 @@
       <app-action-menu [record]="element"
                        (deleteRecord)="deleteRecord($event)"
                        (changeStatus)="setStatus($event)"
-                       (editRecord)="openEditor($event)"></app-action-menu>
+                       (editRecord)="openEditor($event)"
+                       (duplicateRecord)="onDuplicateRecord($event)"></app-action-menu>
     </mat-cell>
   </ng-container>
 

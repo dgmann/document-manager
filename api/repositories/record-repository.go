@@ -76,12 +76,14 @@ func (r *DBRecordRepository) Query(query map[string]interface{}) ([]*models.Reco
 
 func (r *DBRecordRepository) Create(data models.CreateRecord, images []*shared.Image, pdfData io.Reader) (*models.Record, error) {
 	record := models.NewRecord(data)
-	pages, err := r.images.Set(record.Id.Hex(), images)
-	if err != nil {
-		log.Error(err)
-		return nil, err
+	if len(record.Pages) == 0 {
+		pages, err := r.images.Set(record.Id.Hex(), images)
+		if err != nil {
+			log.Error(err)
+			return nil, err
+		}
+		record.Pages = pages
 	}
-	record.Pages = pages
 
 	pdfBytes, err := ioutil.ReadAll(pdfData)
 	if err != nil {

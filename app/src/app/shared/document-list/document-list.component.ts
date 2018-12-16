@@ -112,4 +112,8 @@ export class DocumentListComponent implements OnInit, AfterViewInit {
   openEditor(record: Record) {
     this.router.navigate(['/editor', record.id]);
   }
+
+  onDuplicateRecord(record: Record) {
+    this.recordService.duplicate(record.id);
+  }
 }

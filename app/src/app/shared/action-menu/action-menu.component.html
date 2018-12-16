@@ -7,6 +7,10 @@
       <mat-icon color="warn" aria-label="delete">delete</mat-icon>
       <span>Löschen</span>
     </button>
+    <button mat-menu-item (click)="onDuplicateRecord(record)">
+      <mat-icon aria-label="duplicate">content_copy</mat-icon>
+      <span>Duplizieren</span>
+    </button>
     <button mat-menu-item (click)="onEditRecord(record)">
       <mat-icon aria-label="editor">open_in_new</mat-icon>
       <span>Editor</span>

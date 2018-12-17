@@ -1,29 +1,30 @@
-package repositories
+package filesystem
 
 import (
 	"errors"
+	"github.com/dgmann/document-manager/api/repositories"
 	"github.com/sirupsen/logrus"
 	"os"
-	"path"
 	"path/filepath"
 )
 
-type FileSystemRepository struct {
+type Repository struct {
 	baseDirectory string
+	filesystem    filesystem
 }
 
-func NewFileSystemRepository(baseDirectory string) *FileSystemRepository {
-	return &FileSystemRepository{baseDirectory: baseDirectory}
+func NewRepository(baseDirectory string) *Repository {
+	return &Repository{baseDirectory: baseDirectory, filesystem: diskFileSystem{}}
 }
 
-func (f *FileSystemRepository) Delete(resource KeyedResource) error {
+func (f *Repository) Delete(resource repositories.KeyedResource) error {
 	p := f.buildPath(resource.Key()...)
 	var err error
 	if len(resource.Format()) > 0 {
 		p += "." + normalizeExtension(resource.Format())
-		err = os.Remove(p)
+		err = f.filesystem.Remove(p)
 	} else {
-		err = os.RemoveAll(p)
+		err = f.filesystem.RemoveAll(p)
 	}
 	if !os.IsNotExist(err) {
 		return err
@@ -32,20 +33,21 @@ func (f *FileSystemRepository) Delete(resource KeyedResource) error {
 	return nil
 }
 
-func (f *FileSystemRepository) Write(resource KeyedResource) (err error) {
+func (f *Repository) Write(resource repositories.KeyedResource) (err error) {
 	fp := f.buildResourcePath(resource)
 
 	dir := filepath.Dir(fp)
-	if _, err := os.Stat(dir); os.IsNotExist(err) {
-		os.MkdirAll(dir, os.ModePerm)
+	if _, err := f.filesystem.Stat(dir); os.IsNotExist(err) {
+		err = f.filesystem.MkdirAll(dir, os.ModePerm)
+		logrus.WithError(err).Error("could not create directory")
 	}
 
-	imageFile, err := os.Create(fp)
+	imageFile, err := f.filesystem.Create(fp)
 	defer imageFile.Close()
 	defer func() {
 		if r := recover(); r != nil {
 			logrus.Errorf("Recovering: %v", r)
-			os.Remove(fp)
+			f.filesystem.Remove(fp)
 			err = errors.New("failed to save images")
 		}
 	}()
@@ -62,7 +64,7 @@ func (f *FileSystemRepository) Write(resource KeyedResource) (err error) {
 	return err
 }
 
-func (f *FileSystemRepository) buildResourcePath(resource KeyedResource) string {
+func (f *Repository) buildResourcePath(resource repositories.KeyedResource) string {
 	p := f.buildPath(resource.Key()...)
 	if len(resource.Format()) > 0 {
 		p += "." + normalizeExtension(resource.Format())
@@ -70,9 +72,9 @@ func (f *FileSystemRepository) buildResourcePath(resource KeyedResource) string 
 	return p
 }
 
-func (f *FileSystemRepository) buildPath(keys ...string) string {
+func (f *Repository) buildPath(keys ...string) string {
 	keySlice := append([]string{f.baseDirectory}, keys...)
-	return path.Join(keySlice...)
+	return filepath.Join(keySlice...)
 }
 
 func normalizeExtension(extension string) string {

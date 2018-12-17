@@ -1,7 +1,9 @@
-package repositories
+package pdf
 
 import (
 	"bytes"
+	"github.com/dgmann/document-manager/api/repositories"
+	"github.com/dgmann/document-manager/api/repositories/filesystem"
 	log "github.com/sirupsen/logrus"
 	"io"
 	"io/ioutil"
@@ -9,21 +11,21 @@ import (
 	"path"
 )
 
-type PDFRepository interface {
+type Repository interface {
 	Get(id string) (io.Reader, error)
-	ResourceWriter
+	repositories.ResourceWriter
 }
 
 type FileSystemPDFRepository struct {
-	*FileSystemRepository
+	*filesystem.Repository
 	directory string
 }
 
-func NewFileSystemPDFRepository(directory string) PDFRepository {
+func NewFileSystemPDFRepository(directory string) Repository {
 	if _, err := os.Stat(directory); os.IsNotExist(err) {
 		os.MkdirAll(directory, os.ModePerm)
 	}
-	return &FileSystemPDFRepository{directory: directory, FileSystemRepository: NewFileSystemRepository(directory)}
+	return &FileSystemPDFRepository{directory: directory, Repository: filesystem.NewRepository(directory)}
 }
 
 func (f *FileSystemPDFRepository) Get(id string) (io.Reader, error) {
@@ -41,7 +43,7 @@ func (f *FileSystemPDFRepository) Get(id string) (io.Reader, error) {
 	return bytes.NewBuffer(data), nil
 }
 
-func (f *FileSystemPDFRepository) Set(resource KeyedResource) error {
+func (f *FileSystemPDFRepository) Set(resource repositories.KeyedResource) error {
 	keys := append([]string{f.directory}, resource.Key()...)
 	p := path.Join(keys...)
 
@@ -55,7 +57,7 @@ func (f *FileSystemPDFRepository) Set(resource KeyedResource) error {
 	return err
 }
 
-func (f *FileSystemPDFRepository) Delete(resource KeyedResource) error {
+func (f *FileSystemPDFRepository) Delete(resource repositories.KeyedResource) error {
 	keys := append([]string{f.directory}, resource.Key()...)
 	p := path.Join(keys...)
 

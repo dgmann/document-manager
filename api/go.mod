@@ -1,6 +1,6 @@
 module github.com/dgmann/document-manager/api
 
-        replace github.com/gin-contrib/location => github.com/dgmann/location v0.0.0-20181209210007-b43929720440
+replace github.com/gin-contrib/location => github.com/dgmann/location v0.0.0-20181209210007-b43929720440
 
 require (
 	github.com/Shopify/logrus-bugsnag v0.0.0-20171204204709-577dee27f20d
@@ -29,7 +29,8 @@ require (
 	github.com/onsi/gomega v1.4.2 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/sirupsen/logrus v1.0.6
-	github.com/stretchr/testify v1.2.2 // indirect
+	github.com/stretchr/objx v0.1.1 // indirect
+	github.com/stretchr/testify v1.2.2
 	github.com/ugorji/go v1.1.1 // indirect
 	golang.org/x/crypto v0.0.0-20180808211826-de0752318171 // indirect
 	google.golang.org/grpc v1.15.0

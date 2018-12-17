@@ -18,7 +18,7 @@ type DBPatientRepository struct {
 	patients *mgo.Collection
 }
 
-func newDBPatientRepository(patients *mgo.Collection) *DBPatientRepository {
+func NewDBPatientRepository(patients *mgo.Collection) *DBPatientRepository {
 	return &DBPatientRepository{patients: patients}
 }
 

@@ -14,7 +14,7 @@ type DBTagRepository struct {
 	records *mgo.Collection
 }
 
-func newDBTagRepository(records *mgo.Collection) *DBTagRepository {
+func NewDBTagRepository(records *mgo.Collection) *DBTagRepository {
 	return &DBTagRepository{records: records}
 }
 

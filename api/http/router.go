@@ -1,11 +1,9 @@
 package http
 
 import (
+	"github.com/bugsnag/bugsnag-go"
 	"github.com/bugsnag/bugsnag-go/gin"
-	"github.com/dgmann/document-manager/api/pdf"
-	"github.com/dgmann/document-manager/api/repositories"
 	"github.com/dgmann/document-manager/api/services"
-	"github.com/dgmann/document-manager/api/shared"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/location"
 	"github.com/gin-contrib/pprof"
@@ -13,40 +11,10 @@ import (
 	"io/ioutil"
 )
 
-type Factory struct {
-	repositories.Factory
-	pdfProcessorUrl string
-	eventService    *services.EventService
-}
-
-func (f *Factory) GetPdfProcessor() (*pdf.Processor, error) {
-	return pdf.NewPDFProcessor(f.pdfProcessorUrl)
-}
-
-func (f *Factory) GetResponseService() *ResponseService {
-	return NewResponseService(f.GetImageRepository())
-}
-
-func (f *Factory) GetEventService() *services.EventService {
-	return f.eventService
-}
-
-func NewFactory(config *shared.Config) *Factory {
-	fileInfoService := repositories.NewImageRepository(config)
-	eventService := services.NewEventService(fileInfoService)
-	eventService.Log()
-	f := &Factory{
-		Factory:         repositories.NewFactory(config, eventService),
-		pdfProcessorUrl: config.GetPdfProcessorUrl(),
-		eventService:    eventService,
-	}
-	return f
-}
-
-func Run(factory *Factory, c *shared.Config) {
+func Run(factory Factory, bug bugsnag.Configuration) {
 	router := gin.Default()
 	pprof.Register(router)
-	router.Use(bugsnaggin.AutoNotify(c.GetBugsnagConfig()))
+	router.Use(bugsnaggin.AutoNotify(bug))
 	router.Use(gin.ErrorLogger())
 
 	config := cors.DefaultConfig()

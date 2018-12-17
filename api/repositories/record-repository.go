@@ -24,11 +24,11 @@ type RecordRepository interface {
 type DBRecordRepository struct {
 	records *mgo.Collection
 	events  *services.EventService
-	images  ImageRepository
-	pdfs    PDFRepository
+	images  ResourceWriter
+	pdfs    ResourceWriter
 }
 
-func newDBRecordRepository(records *mgo.Collection, images ImageRepository, pdfs PDFRepository, eventService *services.EventService) *DBRecordRepository {
+func NewDBRecordRepository(records *mgo.Collection, imageWriter ResourceWriter, pdfs ResourceWriter, eventService *services.EventService) *DBRecordRepository {
 	processedIndex := mgo.Index{
 		Key:        []string{"patientId", "-date", "tags", "status"},
 		Unique:     false,
@@ -42,7 +42,7 @@ func newDBRecordRepository(records *mgo.Collection, images ImageRepository, pdfs
 		log.Panicf("Error setting indices %s", err)
 	}
 
-	return &DBRecordRepository{records: records, events: eventService, images: images, pdfs: pdfs}
+	return &DBRecordRepository{records: records, events: eventService, images: imageWriter, pdfs: pdfs}
 }
 
 func (r *DBRecordRepository) All() ([]*models.Record, error) {
@@ -76,11 +76,16 @@ func (r *DBRecordRepository) Query(query map[string]interface{}) ([]*models.Reco
 
 func (r *DBRecordRepository) Create(data models.CreateRecord, images []*shared.Image, pdfData io.Reader) (*models.Record, error) {
 	record := models.NewRecord(data)
+
 	if len(record.Pages) == 0 {
-		pages, err := r.images.Set(record.Id.Hex(), images)
-		if err != nil {
-			log.Error(err)
-			return nil, err
+		var pages []*models.Page
+		for _, img := range images {
+			page := models.NewPage(img.Format)
+
+			if err := r.images.Write(NewKeyedGenericResource(img.Image, img.Format, record.Id.Hex(), page.Id)); err != nil {
+				return nil, err
+			}
+			pages = append(pages, page)
 		}
 		record.Pages = pages
 	}
@@ -89,17 +94,17 @@ func (r *DBRecordRepository) Create(data models.CreateRecord, images []*shared.I
 	if err != nil {
 		return nil, err
 	}
-	err = r.pdfs.Set(record.Id.Hex(), pdfBytes)
-	if err != nil {
-		e := r.images.Delete(record.Id.Hex())
+
+	if err := r.pdfs.Write(NewKeyedGenericResource(pdfBytes, "pdf", record.Id.Hex())); err != nil {
+		e := r.images.Delete(NewDirectoryResource(record.Id.Hex()))
 		log.Error(e)
 		return nil, err
 	}
 
 	if err := r.records.Insert(&record); err != nil {
-		e := r.images.Delete(record.Id.Hex())
+		e := r.images.Delete(NewDirectoryResource(record.Id.Hex()))
 		log.Error(e)
-		e = r.pdfs.Delete(record.Id.Hex())
+		e = r.pdfs.Delete(NewDirectoryResource(record.Id.Hex()))
 		log.Error(e)
 		return nil, err
 	}
@@ -113,12 +118,12 @@ func (r *DBRecordRepository) Create(data models.CreateRecord, images []*shared.I
 }
 
 func (r *DBRecordRepository) Delete(id string) error {
-	err := r.images.Delete(id)
+	err := r.images.Delete(NewDirectoryResource(id))
 	if err != nil {
 		return err
 	}
 
-	err = r.pdfs.Delete(id)
+	err = r.pdfs.Delete(NewDirectoryResource(id))
 	if err != nil {
 		return err
 	}
@@ -132,6 +137,7 @@ func (r *DBRecordRepository) Delete(id string) error {
 
 func (r *DBRecordRepository) Update(id string, record models.Record) (*models.Record, error) {
 	key := bson.ObjectIdHex(id)
+	// TODO: Remove delted pages from the file system
 	if err := r.records.UpdateId(key, bson.M{"$set": record}); err != nil {
 		return nil, err
 	}

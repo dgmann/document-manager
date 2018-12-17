@@ -1,4 +1,4 @@
-package pdf
+package services
 
 import (
 	"context"
@@ -9,12 +9,12 @@ import (
 	"io/ioutil"
 )
 
-type Processor struct {
+type PdfProcessor struct {
 	baseUrl string
 	conn    *grpc.ClientConn
 }
 
-func NewPDFProcessor(baseUrl string) (*Processor, error) {
+func NewPDFProcessor(baseUrl string) (*PdfProcessor, error) {
 	conn, err := grpc.Dial(
 		baseUrl,
 		grpc.WithInsecure(),
@@ -24,14 +24,14 @@ func NewPDFProcessor(baseUrl string) (*Processor, error) {
 		return nil, err
 	}
 
-	return &Processor{conn: conn, baseUrl: baseUrl}, nil
+	return &PdfProcessor{conn: conn, baseUrl: baseUrl}, nil
 }
 
-func (p *Processor) Close() {
+func (p *PdfProcessor) Close() {
 	p.conn.Close()
 }
 
-func (p *Processor) Convert(f io.Reader) ([]*shared.Image, error) {
+func (p *PdfProcessor) Convert(f io.Reader) ([]*shared.Image, error) {
 	b, err := ioutil.ReadAll(f)
 	if err != nil {
 		return nil, err
@@ -57,7 +57,7 @@ func (p *Processor) Convert(f io.Reader) ([]*shared.Image, error) {
 	return images, nil
 }
 
-func (p *Processor) Rotate(image io.Reader, degrees int) (*shared.Image, error) {
+func (p *PdfProcessor) Rotate(image io.Reader, degrees int) (*shared.Image, error) {
 	b, err := ioutil.ReadAll(image)
 	if err != nil {
 		return nil, err

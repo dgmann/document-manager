@@ -1,4 +1,4 @@
-package repositories
+package category
 
 import (
 	"fmt"
@@ -8,23 +8,23 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-type CategoryRepository interface {
+type Repository interface {
 	All() ([]models.Category, error)
 	Find(id string) (*models.Category, error)
 	FindByPatient(id string) ([]models.Category, error)
 	Add(id, category string) error
 }
 
-type DBCategoryRepository struct {
+type DatabaseRepository struct {
 	categories *mgo.Collection
 	records    *mgo.Collection
 }
 
-func NewDBCategoryRepository(categories, records *mgo.Collection) *DBCategoryRepository {
-	return &DBCategoryRepository{categories: categories, records: records}
+func NewDatabaseRepository(categories, records *mgo.Collection) *DatabaseRepository {
+	return &DatabaseRepository{categories: categories, records: records}
 }
 
-func (c *DBCategoryRepository) All() ([]models.Category, error) {
+func (c *DatabaseRepository) All() ([]models.Category, error) {
 	var categories []models.Category
 
 	if err := c.categories.Find(bson.M{}).All(&categories); err != nil {
@@ -37,7 +37,7 @@ func (c *DBCategoryRepository) All() ([]models.Category, error) {
 	return categories, nil
 }
 
-func (c *DBCategoryRepository) Find(id string) (*models.Category, error) {
+func (c *DatabaseRepository) Find(id string) (*models.Category, error) {
 	var category models.Category
 
 	if err := c.categories.Find(bson.M{"_id": id}).One(&category); err != nil {
@@ -47,7 +47,7 @@ func (c *DBCategoryRepository) Find(id string) (*models.Category, error) {
 	return &category, nil
 }
 
-func (c *DBCategoryRepository) FindByPatient(id string) ([]models.Category, error) {
+func (c *DatabaseRepository) FindByPatient(id string) ([]models.Category, error) {
 	categories := make([]models.Category, 0)
 	var ids []string
 	if err := c.records.Find(bson.M{"patientId": id}).Distinct("category", &ids); err != nil {
@@ -62,6 +62,6 @@ func (c *DBCategoryRepository) FindByPatient(id string) ([]models.Category, erro
 	return categories, nil
 }
 
-func (c *DBCategoryRepository) Add(id, category string) error {
+func (c *DatabaseRepository) Add(id, category string) error {
 	return c.categories.Insert(models.NewCategory(id, category))
 }

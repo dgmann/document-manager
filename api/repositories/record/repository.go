@@ -1,7 +1,8 @@
-package repositories
+package record
 
 import (
 	"github.com/dgmann/document-manager/api/models"
+	"github.com/dgmann/document-manager/api/repositories"
 	"github.com/dgmann/document-manager/api/services"
 	"github.com/dgmann/document-manager/shared"
 	"github.com/globalsign/mgo"
@@ -11,7 +12,7 @@ import (
 	"io/ioutil"
 )
 
-type RecordRepository interface {
+type Repository interface {
 	All() ([]*models.Record, error)
 	Find(id string) (*models.Record, error)
 	Query(query map[string]interface{}) ([]*models.Record, error)
@@ -21,14 +22,14 @@ type RecordRepository interface {
 	UpdatePages(id string, updates []*models.PageUpdate) (*models.Record, error)
 }
 
-type DBRecordRepository struct {
+type DatabaseRepository struct {
 	records *mgo.Collection
 	events  *services.EventService
-	images  ResourceWriter
-	pdfs    ResourceWriter
+	images  repositories.ResourceWriter
+	pdfs    repositories.ResourceWriter
 }
 
-func NewDBRecordRepository(records *mgo.Collection, imageWriter ResourceWriter, pdfs ResourceWriter, eventService *services.EventService) *DBRecordRepository {
+func NewDatabaseRepository(records *mgo.Collection, imageWriter repositories.ResourceWriter, pdfs repositories.ResourceWriter, eventService *services.EventService) *DatabaseRepository {
 	processedIndex := mgo.Index{
 		Key:        []string{"patientId", "-date", "tags", "status"},
 		Unique:     false,
@@ -42,18 +43,18 @@ func NewDBRecordRepository(records *mgo.Collection, imageWriter ResourceWriter, 
 		log.Panicf("Error setting indices %s", err)
 	}
 
-	return &DBRecordRepository{records: records, events: eventService, images: imageWriter, pdfs: pdfs}
+	return &DatabaseRepository{records: records, events: eventService, images: imageWriter, pdfs: pdfs}
 }
 
-func (r *DBRecordRepository) All() ([]*models.Record, error) {
+func (r *DatabaseRepository) All() ([]*models.Record, error) {
 	return r.Query(bson.M{})
 }
 
-func (r *DBRecordRepository) Find(id string) (*models.Record, error) {
+func (r *DatabaseRepository) Find(id string) (*models.Record, error) {
 	return r.findByObjectId(bson.ObjectIdHex(id))
 }
 
-func (r *DBRecordRepository) findByObjectId(id bson.ObjectId) (*models.Record, error) {
+func (r *DatabaseRepository) findByObjectId(id bson.ObjectId) (*models.Record, error) {
 	var record models.Record
 
 	if err := r.records.FindId(id).One(&record); err != nil {
@@ -63,7 +64,7 @@ func (r *DBRecordRepository) findByObjectId(id bson.ObjectId) (*models.Record, e
 	return &record, nil
 }
 
-func (r *DBRecordRepository) Query(query map[string]interface{}) ([]*models.Record, error) {
+func (r *DatabaseRepository) Query(query map[string]interface{}) ([]*models.Record, error) {
 	records := make([]*models.Record, 0)
 
 	if err := r.records.Find(query).All(&records); err != nil {
@@ -74,7 +75,7 @@ func (r *DBRecordRepository) Query(query map[string]interface{}) ([]*models.Reco
 	return records, nil
 }
 
-func (r *DBRecordRepository) Create(data models.CreateRecord, images []*shared.Image, pdfData io.Reader) (*models.Record, error) {
+func (r *DatabaseRepository) Create(data models.CreateRecord, images []*shared.Image, pdfData io.Reader) (*models.Record, error) {
 	record := models.NewRecord(data)
 
 	if len(record.Pages) == 0 {
@@ -82,7 +83,7 @@ func (r *DBRecordRepository) Create(data models.CreateRecord, images []*shared.I
 		for _, img := range images {
 			page := models.NewPage(img.Format)
 
-			if err := r.images.Write(NewKeyedGenericResource(img.Image, img.Format, record.Id.Hex(), page.Id)); err != nil {
+			if err := r.images.Write(repositories.NewKeyedGenericResource(img.Image, img.Format, record.Id.Hex(), page.Id)); err != nil {
 				return nil, err
 			}
 			pages = append(pages, page)
@@ -95,16 +96,16 @@ func (r *DBRecordRepository) Create(data models.CreateRecord, images []*shared.I
 		return nil, err
 	}
 
-	if err := r.pdfs.Write(NewKeyedGenericResource(pdfBytes, "pdf", record.Id.Hex())); err != nil {
-		e := r.images.Delete(NewDirectoryResource(record.Id.Hex()))
+	if err := r.pdfs.Write(repositories.NewKeyedGenericResource(pdfBytes, "pdf", record.Id.Hex())); err != nil {
+		e := r.images.Delete(repositories.NewDirectoryResource(record.Id.Hex()))
 		log.Error(e)
 		return nil, err
 	}
 
 	if err := r.records.Insert(&record); err != nil {
-		e := r.images.Delete(NewDirectoryResource(record.Id.Hex()))
+		e := r.images.Delete(repositories.NewDirectoryResource(record.Id.Hex()))
 		log.Error(e)
-		e = r.pdfs.Delete(NewDirectoryResource(record.Id.Hex()))
+		e = r.pdfs.Delete(repositories.NewDirectoryResource(record.Id.Hex()))
 		log.Error(e)
 		return nil, err
 	}
@@ -117,13 +118,13 @@ func (r *DBRecordRepository) Create(data models.CreateRecord, images []*shared.I
 	return created, nil
 }
 
-func (r *DBRecordRepository) Delete(id string) error {
-	err := r.images.Delete(NewDirectoryResource(id))
+func (r *DatabaseRepository) Delete(id string) error {
+	err := r.images.Delete(repositories.NewDirectoryResource(id))
 	if err != nil {
 		return err
 	}
 
-	err = r.pdfs.Delete(NewDirectoryResource(id))
+	err = r.pdfs.Delete(repositories.NewDirectoryResource(id))
 	if err != nil {
 		return err
 	}
@@ -135,9 +136,9 @@ func (r *DBRecordRepository) Delete(id string) error {
 	return err
 }
 
-func (r *DBRecordRepository) Update(id string, record models.Record) (*models.Record, error) {
+func (r *DatabaseRepository) Update(id string, record models.Record) (*models.Record, error) {
 	key := bson.ObjectIdHex(id)
-	// TODO: Remove delted pages from the file system
+	// TODO: Remove deleted pages from the file system
 	if err := r.records.UpdateId(key, bson.M{"$set": record}); err != nil {
 		return nil, err
 	}
@@ -150,7 +151,7 @@ func (r *DBRecordRepository) Update(id string, record models.Record) (*models.Re
 }
 
 // UpdatePages updates the pages specified while keeping the rest of the original pages
-func (r *DBRecordRepository) UpdatePages(id string, updates []*models.PageUpdate) (*models.Record, error) {
+func (r *DatabaseRepository) UpdatePages(id string, updates []*models.PageUpdate) (*models.Record, error) {
 	record, err := r.Find(id)
 	if err != nil {
 		return nil, err

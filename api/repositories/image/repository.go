@@ -1,7 +1,6 @@
 package image
 
 import (
-	"errors"
 	"fmt"
 	"github.com/dgmann/document-manager/api/repositories"
 	"github.com/dgmann/document-manager/api/repositories/filesystem"
@@ -21,21 +20,20 @@ type Repository interface {
 	services.FileInfoService
 	repositories.ResourceWriter
 	Get(id string) (map[string]*shared.Image, error)
-	SetImage(id string, fileName string, image *shared.Image) error
 	Serve(context *gin.Context, recordId string, imageId string, format string)
 	Copy(fromId string, toId string) error
 }
 
-type FileSystemImageRepository struct {
+type FileSystemRepository struct {
 	*filesystem.Repository
 	directory string
 }
 
-func NewFileSystemImageRepository(directory string) *FileSystemImageRepository {
-	return &FileSystemImageRepository{directory: directory, Repository: filesystem.NewRepository(directory)}
+func NewFileSystemRepository(directory string) *FileSystemRepository {
+	return &FileSystemRepository{directory: directory, Repository: filesystem.NewRepository(directory)}
 }
 
-func (f *FileSystemImageRepository) Get(id string) (map[string]*shared.Image, error) {
+func (f *FileSystemRepository) Get(id string) (map[string]*shared.Image, error) {
 	images := make(map[string]*shared.Image, 0)
 	p := path.Join(f.directory, id)
 	err := filepath.Walk(p, func(d string, info os.FileInfo, err error) error {
@@ -69,56 +67,23 @@ func (f *FileSystemImageRepository) Get(id string) (map[string]*shared.Image, er
 	return images, nil
 }
 
-func (f *FileSystemImageRepository) GetFileInfo(recordId, pageId string, format string) (os.FileInfo, error) {
+func (f *FileSystemRepository) GetFileInfo(recordId, pageId string, format string) (os.FileInfo, error) {
 	p := f.getPath(recordId, pageId+"."+format)
 	return os.Stat(p)
 }
 
-func (f *FileSystemImageRepository) Copy(fromId string, toId string) error {
+func (f *FileSystemRepository) Copy(fromId string, toId string) error {
 	sourceFolder := path.Join(f.directory, fromId)
 	destinationFolder := path.Join(f.directory, toId)
 	return copyFolder(sourceFolder, destinationFolder)
 }
 
-func (f *FileSystemImageRepository) SetImage(recordId string, pageId string, image *shared.Image) error {
-	p := f.getPath(recordId, pageId)
-	err := save(p, repositories.NewGenericResource(image.Image, image.Format))
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func save(filePath string, resource repositories.Resource) (err error) {
-	filePath = filePath + "." + normalizeExtension(resource.Format())
-	imageFile, err := os.Create(filePath)
-	defer imageFile.Close()
-	defer func() {
-		if r := recover(); r != nil {
-			log.Errorf("Recovering: %v", r)
-			os.Remove(filePath)
-			err = errors.New("failed to save images")
-		}
-	}()
-
-	if err != nil {
-		log.WithFields(log.Fields{
-			"name":      imageFile.Name(),
-			"directory": filePath,
-			"error":     err,
-		}).Error("Error creating image file")
-		return err
-	}
-	_, err = imageFile.Write(resource.Data())
-	return err
-}
-
-func (f *FileSystemImageRepository) Serve(context *gin.Context, recordId string, imageId string, format string) {
+func (f *FileSystemRepository) Serve(context *gin.Context, recordId string, imageId string, format string) {
 	p := f.getPath(recordId, imageId+"."+format)
 	context.File(p)
 }
 
-func (f *FileSystemImageRepository) getPath(recordId string, imageId string) string {
+func (f *FileSystemRepository) getPath(recordId string, imageId string) string {
 	return path.Join(f.directory, recordId, imageId)
 }
 

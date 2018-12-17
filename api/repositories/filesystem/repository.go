@@ -1,7 +1,6 @@
 package filesystem
 
 import (
-	"errors"
 	"github.com/dgmann/document-manager/api/repositories"
 	"github.com/sirupsen/logrus"
 	"os"
@@ -44,24 +43,21 @@ func (f *Repository) Write(resource repositories.KeyedResource) (err error) {
 
 	imageFile, err := f.filesystem.Create(fp)
 	defer imageFile.Close()
-	defer func() {
-		if r := recover(); r != nil {
-			logrus.Errorf("Recovering: %v", r)
-			f.filesystem.Remove(fp)
-			err = errors.New("failed to save images")
-		}
-	}()
 
 	if err != nil {
 		logrus.WithFields(logrus.Fields{
 			"name":      imageFile.Name(),
 			"directory": dir,
 			"error":     err,
-		}).Error("Error creating image file")
+		}).Error("Error creating file")
 		return err
 	}
 	_, err = imageFile.Write(resource.Data())
-	return err
+	if err != nil {
+		logrus.WithError(err).Error("error writing file. Cleanup leftovers")
+		return f.filesystem.Remove(fp)
+	}
+	return nil
 }
 
 func (f *Repository) buildResourcePath(resource repositories.KeyedResource) string {
@@ -78,8 +74,8 @@ func (f *Repository) buildPath(keys ...string) string {
 }
 
 func normalizeExtension(extension string) string {
-	if extension == "jpeg" {
-		return "jpg"
+	if extension == "jpg" {
+		return "jpeg"
 	}
 	return extension
 }

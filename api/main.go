@@ -28,6 +28,7 @@ func init() {
 		// The import paths for the Go packages
 		// containing your source files
 		ProjectPackages: []string{"main", "github.com/dgmann/document-manager/api"},
+		PanicHandler:    func() {},
 	}
 	bugsnag.Configure(bugsnagConfig)
 

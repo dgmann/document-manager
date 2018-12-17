@@ -1,4 +1,4 @@
-package repositories
+package patient
 
 import (
 	"github.com/dgmann/document-manager/api/models"
@@ -7,22 +7,22 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-type PatientRepository interface {
+type Repository interface {
 	Add(patient *models.Patient) error
 	All() ([]*models.Patient, error)
 	FindByName(firstName, lastName string) ([]*models.Patient, error)
 	Find(id string) (*models.Patient, error)
 }
 
-type DBPatientRepository struct {
+type DatabaseRepository struct {
 	patients *mgo.Collection
 }
 
-func NewDBPatientRepository(patients *mgo.Collection) *DBPatientRepository {
-	return &DBPatientRepository{patients: patients}
+func NewDatabaseRepository(patients *mgo.Collection) *DatabaseRepository {
+	return &DatabaseRepository{patients: patients}
 }
 
-func (p *DBPatientRepository) Add(patient *models.Patient) error {
+func (p *DatabaseRepository) Add(patient *models.Patient) error {
 	if _, err := p.patients.UpsertId(patient.Id, patient); err != nil {
 		log.Error(err)
 		return err
@@ -30,7 +30,7 @@ func (p *DBPatientRepository) Add(patient *models.Patient) error {
 	return nil
 }
 
-func (c *DBPatientRepository) All() ([]*models.Patient, error) {
+func (c *DatabaseRepository) All() ([]*models.Patient, error) {
 	patients := make([]*models.Patient, 0)
 
 	if err := c.patients.Find(bson.M{}).All(&patients); err != nil {
@@ -41,7 +41,7 @@ func (c *DBPatientRepository) All() ([]*models.Patient, error) {
 	return patients, nil
 }
 
-func (c *DBPatientRepository) FindByName(firstName, lastName string) ([]*models.Patient, error) {
+func (c *DatabaseRepository) FindByName(firstName, lastName string) ([]*models.Patient, error) {
 	patients := make([]*models.Patient, 0)
 
 	if err := c.patients.Find(bson.M{
@@ -55,7 +55,7 @@ func (c *DBPatientRepository) FindByName(firstName, lastName string) ([]*models.
 	return patients, nil
 }
 
-func (c *DBPatientRepository) Find(id string) (*models.Patient, error) {
+func (c *DatabaseRepository) Find(id string) (*models.Patient, error) {
 	var patient *models.Patient
 
 	if err := c.patients.Find(bson.M{"_id": id}).One(&patient); err != nil {

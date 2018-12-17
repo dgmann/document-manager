@@ -99,6 +99,18 @@ func TestRepository_Delete_Directory(t *testing.T) {
 	filesystem.AssertExpectations(t)
 }
 
+func TestRepository_Normalize_Extension(t *testing.T) {
+	repository, filesystem := buildTestRepository()
+	resource := repositories.NewKeyedGenericResource([]byte{}, "jpg", "1")
+
+	filesystem.On("Remove", filepath.FromSlash("/root/1.jpeg")).Return(nil)
+
+	err := repository.Delete(resource)
+	assert.Nil(t, err)
+
+	filesystem.AssertExpectations(t)
+}
+
 func TestRepository_Write(t *testing.T) {
 	repository, filesystem := buildTestRepository()
 	resource := repositories.NewKeyedGenericResource([]byte{}, "png", "1", "2")

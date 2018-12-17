@@ -1,8 +1,10 @@
-package repositories
+package image
 
 import (
 	"errors"
 	"fmt"
+	"github.com/dgmann/document-manager/api/repositories"
+	"github.com/dgmann/document-manager/api/repositories/filesystem"
 	"github.com/dgmann/document-manager/api/services"
 	"github.com/dgmann/document-manager/shared"
 	"github.com/gin-gonic/gin"
@@ -15,9 +17,9 @@ import (
 	"strings"
 )
 
-type ImageRepository interface {
+type Repository interface {
 	services.FileInfoService
-	ResourceWriter
+	repositories.ResourceWriter
 	Get(id string) (map[string]*shared.Image, error)
 	SetImage(id string, fileName string, image *shared.Image) error
 	Serve(context *gin.Context, recordId string, imageId string, format string)
@@ -25,12 +27,12 @@ type ImageRepository interface {
 }
 
 type FileSystemImageRepository struct {
-	*FileSystemRepository
+	*filesystem.Repository
 	directory string
 }
 
 func NewFileSystemImageRepository(directory string) *FileSystemImageRepository {
-	return &FileSystemImageRepository{directory: directory, FileSystemRepository: NewFileSystemRepository(directory)}
+	return &FileSystemImageRepository{directory: directory, Repository: filesystem.NewRepository(directory)}
 }
 
 func (f *FileSystemImageRepository) Get(id string) (map[string]*shared.Image, error) {
@@ -80,14 +82,14 @@ func (f *FileSystemImageRepository) Copy(fromId string, toId string) error {
 
 func (f *FileSystemImageRepository) SetImage(recordId string, pageId string, image *shared.Image) error {
 	p := f.getPath(recordId, pageId)
-	err := save(p, NewGenericResource(image.Image, image.Format))
+	err := save(p, repositories.NewGenericResource(image.Image, image.Format))
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func save(filePath string, resource Resource) (err error) {
+func save(filePath string, resource repositories.Resource) (err error) {
 	filePath = filePath + "." + normalizeExtension(resource.Format())
 	imageFile, err := os.Create(filePath)
 	defer imageFile.Close()
@@ -183,4 +185,11 @@ func copyFile(source string, dest string) (err error) {
 	}
 
 	return
+}
+
+func normalizeExtension(extension string) string {
+	if extension == "jpeg" {
+		return "jpg"
+	}
+	return extension
 }

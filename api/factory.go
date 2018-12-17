@@ -3,6 +3,8 @@ package main
 import (
 	"github.com/dgmann/document-manager/api/http"
 	"github.com/dgmann/document-manager/api/repositories"
+	"github.com/dgmann/document-manager/api/repositories/image"
+	"github.com/dgmann/document-manager/api/repositories/pdf"
 	"github.com/dgmann/document-manager/api/services"
 )
 
@@ -30,12 +32,12 @@ func (f *Factory) GetRecordRepository() repositories.RecordRepository {
 	return repositories.NewDBRecordRepository(r, f.GetImageRepository(), f.GetPDFRepository(), f.GetEventService())
 }
 
-func (f *Factory) GetImageRepository() repositories.ImageRepository {
-	return repositories.NewFileSystemImageRepository(f.config.GetRecordDirectory())
+func (f *Factory) GetImageRepository() image.Repository {
+	return image.NewFileSystemImageRepository(f.config.GetRecordDirectory())
 }
 
-func (f *Factory) GetPDFRepository() repositories.PDFRepository {
-	return repositories.NewFileSystemPDFRepository(f.config.GetPDFDirectory())
+func (f *Factory) GetPDFRepository() pdf.Repository {
+	return pdf.NewFileSystemPDFRepository(f.config.GetPDFDirectory())
 }
 
 func (f *Factory) GetTagRepository() repositories.TagRepository {
@@ -55,7 +57,7 @@ func (f *Factory) GetCategoryRepository() repositories.CategoryRepository {
 }
 
 func NewFactory(config *Config) *Factory {
-	fileInfoService := repositories.NewFileSystemImageRepository(config.GetRecordDirectory())
+	fileInfoService := image.NewFileSystemImageRepository(config.GetRecordDirectory())
 	eventService := services.NewEventService(fileInfoService)
 	eventService.Log()
 	f := &Factory{

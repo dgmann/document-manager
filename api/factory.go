@@ -2,9 +2,12 @@ package main
 
 import (
 	"github.com/dgmann/document-manager/api/http"
-	"github.com/dgmann/document-manager/api/repositories"
+	"github.com/dgmann/document-manager/api/repositories/category"
 	"github.com/dgmann/document-manager/api/repositories/image"
+	"github.com/dgmann/document-manager/api/repositories/patient"
 	"github.com/dgmann/document-manager/api/repositories/pdf"
+	"github.com/dgmann/document-manager/api/repositories/record"
+	"github.com/dgmann/document-manager/api/repositories/tag"
 	"github.com/dgmann/document-manager/api/services"
 )
 
@@ -12,7 +15,7 @@ type Factory struct {
 	config           *Config
 	pdfProcessorUrl  string
 	eventService     *services.EventService
-	recordRepository repositories.RecordRepository
+	recordRepository record.Repository
 }
 
 func (f *Factory) GetPdfProcessor() (*services.PdfProcessor, error) {
@@ -27,37 +30,37 @@ func (f *Factory) GetEventService() *services.EventService {
 	return f.eventService
 }
 
-func (f *Factory) GetRecordRepository() repositories.RecordRepository {
+func (f *Factory) GetRecordRepository() record.Repository {
 	r := f.config.Db.C("records")
-	return repositories.NewDBRecordRepository(r, f.GetImageRepository(), f.GetPDFRepository(), f.GetEventService())
+	return record.NewDatabaseRepository(r, f.GetImageRepository(), f.GetPDFRepository(), f.GetEventService())
 }
 
 func (f *Factory) GetImageRepository() image.Repository {
-	return image.NewFileSystemImageRepository(f.config.GetRecordDirectory())
+	return image.NewFileSystemRepository(f.config.GetRecordDirectory())
 }
 
 func (f *Factory) GetPDFRepository() pdf.Repository {
-	return pdf.NewFileSystemPDFRepository(f.config.GetPDFDirectory())
+	return pdf.NewFileSystemRepository(f.config.GetPDFDirectory())
 }
 
-func (f *Factory) GetTagRepository() repositories.TagRepository {
+func (f *Factory) GetTagRepository() tag.Repository {
 	r := f.config.Db.C("records")
-	return repositories.NewDBTagRepository(r)
+	return tag.NewDatabaseRepository(r)
 }
 
-func (f *Factory) GetPatientRepository() repositories.PatientRepository {
+func (f *Factory) GetPatientRepository() patient.Repository {
 	patients := f.config.Db.C("patients")
-	return repositories.NewDBPatientRepository(patients)
+	return patient.NewDatabaseRepository(patients)
 }
 
-func (f *Factory) GetCategoryRepository() repositories.CategoryRepository {
+func (f *Factory) GetCategoryRepository() category.Repository {
 	categories := f.config.Db.C("categories")
 	r := f.config.Db.C("records")
-	return repositories.NewDBCategoryRepository(categories, r)
+	return category.NewDatabaseRepository(categories, r)
 }
 
 func NewFactory(config *Config) *Factory {
-	fileInfoService := image.NewFileSystemImageRepository(config.GetRecordDirectory())
+	fileInfoService := image.NewFileSystemRepository(config.GetRecordDirectory())
 	eventService := services.NewEventService(fileInfoService)
 	eventService.Log()
 	f := &Factory{

@@ -1,30 +1,30 @@
-package repositories
+package tag
 
 import (
 	"github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
 )
 
-type TagRepository interface {
+type Repository interface {
 	All() ([]string, error)
 	ByPatient(id string) ([]string, error)
 }
 
-type DBTagRepository struct {
+type DatabaseRepository struct {
 	records *mgo.Collection
 }
 
-func NewDBTagRepository(records *mgo.Collection) *DBTagRepository {
-	return &DBTagRepository{records: records}
+func NewDatabaseRepository(records *mgo.Collection) *DatabaseRepository {
+	return &DatabaseRepository{records: records}
 }
 
-func (t *DBTagRepository) All() ([]string, error) {
+func (t *DatabaseRepository) All() ([]string, error) {
 	var tags []string
 	err := t.records.Find(nil).Distinct("tags", &tags)
 	return tags, err
 }
 
-func (t *DBTagRepository) ByPatient(id string) ([]string, error) {
+func (t *DatabaseRepository) ByPatient(id string) ([]string, error) {
 	var tags []string
 	err := t.records.Find(bson.M{ "patientId": id }).Distinct("tags", &tags)
 	return tags, err

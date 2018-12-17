@@ -3,11 +3,9 @@ package repositories
 import (
 	"errors"
 	"fmt"
-	"github.com/dgmann/document-manager/api/models"
 	"github.com/dgmann/document-manager/api/services"
 	"github.com/dgmann/document-manager/shared"
 	"github.com/gin-gonic/gin"
-	"github.com/globalsign/mgo/bson"
 	log "github.com/sirupsen/logrus"
 	"io"
 	"io/ioutil"
@@ -19,20 +17,20 @@ import (
 
 type ImageRepository interface {
 	services.FileInfoService
+	ResourceWriter
 	Get(id string) (map[string]*shared.Image, error)
-	Set(id string, images []*shared.Image) ([]*models.Page, error)
 	SetImage(id string, fileName string, image *shared.Image) error
-	Delete(id string) error
 	Serve(context *gin.Context, recordId string, imageId string, format string)
 	Copy(fromId string, toId string) error
 }
 
 type FileSystemImageRepository struct {
+	*FileSystemRepository
 	directory string
 }
 
-func newFileSystemImageRepository(directory string) *FileSystemImageRepository {
-	return &FileSystemImageRepository{directory: directory}
+func NewFileSystemImageRepository(directory string) *FileSystemImageRepository {
+	return &FileSystemImageRepository{directory: directory, FileSystemRepository: NewFileSystemRepository(directory)}
 }
 
 func (f *FileSystemImageRepository) Get(id string) (map[string]*shared.Image, error) {
@@ -80,56 +78,27 @@ func (f *FileSystemImageRepository) Copy(fromId string, toId string) error {
 	return copyFolder(sourceFolder, destinationFolder)
 }
 
-func (f *FileSystemImageRepository) Set(id string, images []*shared.Image) (results []*models.Page, err error) {
-	results = make([]*models.Page, 0)
-	p := path.Join(f.directory, id)
-	if err := os.RemoveAll(p); err != nil {
-		log.WithField("recordId", id).Debug("image folder did not exist yet")
-	}
-	if _, err := os.Stat(p); os.IsNotExist(err) {
-		os.MkdirAll(p, os.ModePerm)
-	}
-
-	defer func() {
-		if r := recover(); r != nil {
-			log.Errorf("Recovering: %v", r)
-			os.RemoveAll(p)
-			err = errors.New("failed to save images")
-			results = make([]*models.Page, 0)
-		}
-	}()
-	for _, img := range images {
-		imgId := bson.NewObjectId().Hex()
-		fp := path.Join(p, imgId)
-		save(fp, img)
-		results = append(results, models.NewPage(imgId, img.Format))
-	}
-	return results, nil
-}
-
 func (f *FileSystemImageRepository) SetImage(recordId string, pageId string, image *shared.Image) error {
 	p := f.getPath(recordId, pageId)
-	err := save(p, image)
+	err := save(p, NewGenericResource(image.Image, image.Format))
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (f *FileSystemImageRepository) Delete(id string) error {
-	p := path.Join(f.directory, id)
-	err := os.RemoveAll(p)
-	if !os.IsNotExist(err) {
-		return err
-	}
-	log.Infof("%s cannot be deleted as it does not exist", p)
-	return nil
-}
-
-func save(filePath string, img *shared.Image) error {
-	filePath = filePath + "." + normalizeExtension(img.Format)
+func save(filePath string, resource Resource) (err error) {
+	filePath = filePath + "." + normalizeExtension(resource.Format())
 	imageFile, err := os.Create(filePath)
 	defer imageFile.Close()
+	defer func() {
+		if r := recover(); r != nil {
+			log.Errorf("Recovering: %v", r)
+			os.Remove(filePath)
+			err = errors.New("failed to save images")
+		}
+	}()
+
 	if err != nil {
 		log.WithFields(log.Fields{
 			"name":      imageFile.Name(),
@@ -138,7 +107,7 @@ func save(filePath string, img *shared.Image) error {
 		}).Error("Error creating image file")
 		return err
 	}
-	_, err = imageFile.Write(img.Image)
+	_, err = imageFile.Write(resource.Data())
 	return err
 }
 
@@ -214,11 +183,4 @@ func copyFile(source string, dest string) (err error) {
 	}
 
 	return
-}
-
-func normalizeExtension(extension string) string {
-	if extension == "jpeg" {
-		return "jpg"
-	}
-	return extension
 }

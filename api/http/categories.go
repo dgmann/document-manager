@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-func registerCategories(g *gin.RouterGroup, factory *Factory) {
+func registerCategories(g *gin.RouterGroup, factory Factory) {
 	categoryRepository := factory.GetCategoryRepository()
 	responseService := factory.GetResponseService()
 

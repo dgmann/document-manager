@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func registerPatients(g *gin.RouterGroup, factory *Factory) {
+func registerPatients(g *gin.RouterGroup, factory Factory) {
 	patientRepository := factory.GetPatientRepository()
 	tagRepository := factory.GetTagRepository()
 	recordRepository := factory.GetRecordRepository()

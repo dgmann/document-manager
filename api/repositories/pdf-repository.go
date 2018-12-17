@@ -11,19 +11,19 @@ import (
 
 type PDFRepository interface {
 	Get(id string) (io.Reader, error)
-	Set(id string, data []byte) error
-	Delete(id string) error
+	ResourceWriter
 }
 
 type FileSystemPDFRepository struct {
+	*FileSystemRepository
 	directory string
 }
 
-func newFileSystemPDFRepository(directory string) PDFRepository {
+func NewFileSystemPDFRepository(directory string) PDFRepository {
 	if _, err := os.Stat(directory); os.IsNotExist(err) {
 		os.MkdirAll(directory, os.ModePerm)
 	}
-	return &FileSystemPDFRepository{directory: directory}
+	return &FileSystemPDFRepository{directory: directory, FileSystemRepository: NewFileSystemRepository(directory)}
 }
 
 func (f *FileSystemPDFRepository) Get(id string) (io.Reader, error) {
@@ -41,19 +41,26 @@ func (f *FileSystemPDFRepository) Get(id string) (io.Reader, error) {
 	return bytes.NewBuffer(data), nil
 }
 
-func (f *FileSystemPDFRepository) Set(id string, data []byte) error {
-	filePath := path.Join(f.directory, id+".pdf")
-	pdfFile, err := os.Create(filePath)
+func (f *FileSystemPDFRepository) Set(resource KeyedResource) error {
+	keys := append([]string{f.directory}, resource.Key()...)
+	p := path.Join(keys...)
+
+	fp := p + "." + resource.Format()
+	pdfFile, err := os.Create(fp)
 	defer pdfFile.Close()
 	if err != nil {
 		return err
 	}
-	_, err = pdfFile.Write(data)
+	_, err = pdfFile.Write(resource.Data())
 	return err
 }
 
-func (f *FileSystemPDFRepository) Delete(id string) error {
-	fp := path.Join(f.directory, id+".pdf")
+func (f *FileSystemPDFRepository) Delete(resource KeyedResource) error {
+	keys := append([]string{f.directory}, resource.Key()...)
+	p := path.Join(keys...)
+
+	fp := p + "." + resource.Format()
+
 	err := os.Remove(fp)
 	if !os.IsNotExist(err) {
 		return err

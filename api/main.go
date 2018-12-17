@@ -5,7 +5,6 @@ import (
 	"github.com/bugsnag/bugsnag-go"
 	"github.com/dgmann/document-manager/api/http"
 	"github.com/dgmann/document-manager/api/services"
-	"github.com/dgmann/document-manager/api/shared"
 	"github.com/globalsign/mgo"
 	log "github.com/sirupsen/logrus"
 	"os"
@@ -49,10 +48,12 @@ func main() {
 	session, err := mgo.Dial(dbHost)
 	if err != nil {
 		log.Errorf("Error connecting to database: %s", err)
+		os.Exit(1)
+		return
 	}
 	defer session.Close()
 
-	config := &shared.Config{
+	config := &Config{
 		Db:              session.DB(dbname),
 		RecordDir:       recordDir,
 		PDFDir:          archiveDir,
@@ -61,8 +62,8 @@ func main() {
 	}
 
 	services.InitHealthService(dbHost, pdfprocessorUrl)
-	factory := http.NewFactory(config)
-	http.Run(factory, config)
+	factory := NewFactory(config)
+	http.Run(factory, bugsnagConfig)
 }
 
 func envOrDefault(key, def string) string {

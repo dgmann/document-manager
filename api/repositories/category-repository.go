@@ -1,11 +1,11 @@
 package repositories
 
 import (
+	"fmt"
+	"github.com/dgmann/document-manager/api/models"
 	"github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
 	log "github.com/sirupsen/logrus"
-	"github.com/dgmann/document-manager/api/models"
-	"fmt"
 )
 
 type CategoryRepository interface {
@@ -20,7 +20,7 @@ type DBCategoryRepository struct {
 	records    *mgo.Collection
 }
 
-func newDBCategoryRepository(categories *mgo.Collection, records *mgo.Collection) *DBCategoryRepository {
+func NewDBCategoryRepository(categories, records *mgo.Collection) *DBCategoryRepository {
 	return &DBCategoryRepository{categories: categories, records: records}
 }
 

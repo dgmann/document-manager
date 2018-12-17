@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/dgmann/document-manager/api/models"
+	"github.com/dgmann/document-manager/api/repositories"
 	"github.com/gin-gonic/gin"
 	"github.com/globalsign/mgo/bson"
 	log "github.com/sirupsen/logrus"
@@ -15,7 +16,7 @@ import (
 	"sync"
 )
 
-func registerRecords(g *gin.RouterGroup, factory *Factory) {
+func registerRecords(g *gin.RouterGroup, factory Factory) {
 	recordRepository := factory.GetRecordRepository()
 	imageRepository := factory.GetImageRepository()
 	pdfProcessor, err := factory.GetPdfProcessor()
@@ -189,7 +190,16 @@ func registerRecords(g *gin.RouterGroup, factory *Factory) {
 			return
 		}
 
-		pages, err := imageRepository.Set(recordId, images)
+		var pages []*models.Page
+		for _, img := range images {
+			page := models.NewPage(img.Format)
+			if err := imageRepository.Write(repositories.NewKeyedGenericResource(img.Image, img.Format, recordId, page.Id)); err != nil {
+				c.AbortWithError(500, err)
+				return
+			}
+			pages = append(pages, page)
+		}
+
 		if err != nil {
 			c.AbortWithError(500, err)
 			return

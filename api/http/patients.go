@@ -3,115 +3,141 @@ package http
 import (
 	"encoding/json"
 	"github.com/dgmann/document-manager/api/models"
+	"github.com/dgmann/document-manager/api/repositories/category"
+	"github.com/dgmann/document-manager/api/repositories/patient"
+	"github.com/dgmann/document-manager/api/repositories/record"
+	"github.com/dgmann/document-manager/api/repositories/tag"
 	"github.com/gin-gonic/gin"
 	"github.com/globalsign/mgo/bson"
 	"strings"
 )
 
 func registerPatients(g *gin.RouterGroup, factory Factory) {
-	patientRepository := factory.GetPatientRepository()
-	tagRepository := factory.GetTagRepository()
-	recordRepository := factory.GetRecordRepository()
-	categoryRepository := factory.GetCategoryRepository()
-	responseService := factory.GetResponseService()
+	patientController := NewPatientController(factory)
 
-	g.POST("", func(c *gin.Context) {
-		var patient models.Patient
-		if err := json.NewDecoder(c.Request.Body).Decode(&patient); err != nil {
-			c.Error(err)
-			c.AbortWithError(400, err)
-			return
+	g.GET("", patientController.All)
+	g.POST("", patientController.Create)
+	g.GET("/:patientId", patientController.One)
+
+	g.GET("/:patientId/tags", patientController.Tags)
+	g.GET("/:patientId/categories", patientController.Categories)
+	g.GET("/:patientId/records", patientController.Records)
+}
+
+type PatientController struct {
+	records         record.Repository
+	tags            tag.Repository
+	patients        patient.Repository
+	categories      category.Repository
+	responseService *ResponseService
+}
+
+func NewPatientController(factory Factory) *PatientController {
+	return &PatientController{
+		records:         factory.GetRecordRepository(),
+		tags:            factory.GetTagRepository(),
+		patients:        factory.GetPatientRepository(),
+		categories:      factory.GetCategoryRepository(),
+		responseService: factory.GetResponseService(),
+	}
+}
+
+func (p *PatientController) All(c *gin.Context) {
+	var patients []*models.Patient
+	var err error
+	name := c.DefaultQuery("name", "")
+	if len(name) > 0 {
+		names := strings.Split(name, ",")
+		lastName, firstName := names[0], ""
+		if len(names) > 1 {
+			firstName = names[1]
 		}
-		if err := patientRepository.Add(&patient); err != nil {
-			c.Error(err)
-			c.AbortWithError(400, err)
-			return
-		}
-		response := responseService.NewResponse(c, patient)
-		response.JSON()
-	})
+		patients, err = p.patients.FindByName(firstName+".*", lastName+".*")
+	} else {
+		patients, err = p.patients.All()
+	}
 
-	g.GET("", func(c *gin.Context) {
-		var patients []*models.Patient
-		var err error
-		name := c.DefaultQuery("name", "")
-		if len(name) > 0 {
-			names := strings.Split(name, ",")
-			lastName, firstName := names[0], ""
-			if len(names) > 1 {
-				firstName = names[1]
-			}
-			patients, err = patientRepository.FindByName(firstName+".*", lastName+".*")
-		} else {
-			patients, err = patientRepository.All()
-		}
+	if err != nil {
+		c.AbortWithError(400, err)
+		return
+	}
+	response := p.responseService.NewResponse(c, patients)
+	response.JSON()
+}
 
-		if err != nil {
-			c.AbortWithError(400, err)
-			return
-		}
-		response := responseService.NewResponse(c, patients)
-		response.JSON()
-	})
+func (p *PatientController) One(c *gin.Context) {
+	patientId := c.Param("patientId")
 
-	g.GET("/:patientId", func(c *gin.Context) {
-		patientId := c.Param("patientId")
+	tags, err := p.tags.ByPatient(patientId)
+	if err != nil {
+		c.AbortWithError(400, err)
+		return
+	}
+	categories, err := p.categories.FindByPatient(patientId)
+	if err != nil {
+		c.AbortWithError(400, err)
+		return
+	}
+	result, err := p.patients.Find(patientId)
+	if err != nil {
+		c.AbortWithError(404, err)
+		return
+	}
+	result.Tags = tags
+	result.Categories = categories
+	response := p.responseService.NewResponse(c, result)
+	response.JSON()
+}
 
-		tags, err := tagRepository.ByPatient(patientId)
-		if err != nil {
-			c.AbortWithError(400, err)
-			return
-		}
-		categories, err := categoryRepository.FindByPatient(patientId)
-		if err != nil {
-			c.AbortWithError(400, err)
-			return
-		}
-		patient, err := patientRepository.Find(patientId)
-		if err != nil {
-			c.AbortWithError(404, err)
-			return
-		}
-		patient.Tags = tags
-		patient.Categories = categories
-		response := responseService.NewResponse(c, patient)
-		response.JSON()
-	})
+func (p *PatientController) Create(c *gin.Context) {
+	var body models.Patient
+	if err := json.NewDecoder(c.Request.Body).Decode(&body); err != nil {
+		c.Error(err)
+		c.AbortWithError(400, err)
+		return
+	}
+	if err := p.patients.Add(&body); err != nil {
+		c.Error(err)
+		c.AbortWithError(400, err)
+		return
+	}
+	response := p.responseService.NewResponse(c, body)
+	response.JSON()
+}
 
-	g.GET("/:patientId/tags", func(c *gin.Context) {
-		patientId := c.Param("patientId")
+func (p *PatientController) Tags(c *gin.Context) {
+	patientId := c.Param("patientId")
 
-		tags, err := tagRepository.ByPatient(patientId)
-		if err != nil {
-			c.AbortWithError(404, err)
-			return
-		}
+	tags, err := p.tags.ByPatient(patientId)
+	if err != nil {
+		c.AbortWithError(404, err)
+		return
+	}
 
-		response := responseService.NewResponse(c, tags)
-		response.JSON()
-	})
+	response := p.responseService.NewResponse(c, tags)
+	response.JSON()
+}
 
-	g.GET("/:patientId/categories", func(c *gin.Context) {
-		patientId := c.Param("patientId")
+func (p *PatientController) Categories(c *gin.Context) {
+	patientId := c.Param("patientId")
 
-		categories, err := categoryRepository.FindByPatient(patientId)
-		if err != nil {
-			c.AbortWithError(404, err)
-			return
-		}
+	categories, err := p.categories.FindByPatient(patientId)
+	if err != nil {
+		c.AbortWithError(404, err)
+		return
+	}
 
-		response := responseService.NewResponse(c, categories)
-		response.JSON()
-	})
+	response := p.responseService.NewResponse(c, categories)
+	response.JSON()
+}
 
-	g.GET("/:patientId/records", func(c *gin.Context) {
-		id := c.Param("patientId")
-		records, err := recordRepository.Query(bson.M{"patientId": id})
-		if err != nil {
-			c.AbortWithError(400, err)
-			return
-		}
-		response := responseService.NewResponse(c, records)
-		response.JSON()
-	})
+func (p *PatientController) Records(c *gin.Context) {
+	id := c.Param("patientId")
+	records, err := p.records.Query(bson.M{"patientId": id})
+	if err != nil {
+		c.AbortWithError(400, err)
+		return
+	}
+	response := p.responseService.NewResponse(c, records)
+	response.JSON()
 }

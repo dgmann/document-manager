@@ -21,7 +21,7 @@ type FileSystemRepository struct {
 	directory string
 }
 
-func NewFileSystemRepository(directory string) Repository {
+func NewFileSystemRepository(directory string) *FileSystemRepository {
 	if _, err := os.Stat(directory); os.IsNotExist(err) {
 		os.MkdirAll(directory, os.ModePerm)
 	}

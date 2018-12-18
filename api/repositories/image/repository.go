@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/dgmann/document-manager/api/repositories"
 	"github.com/dgmann/document-manager/api/repositories/filesystem"
-	"github.com/dgmann/document-manager/api/services"
 	"github.com/dgmann/document-manager/shared"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
@@ -17,7 +16,6 @@ import (
 )
 
 type Repository interface {
-	services.FileInfoService
 	repositories.ResourceWriter
 	Get(id string) (map[string]*shared.Image, error)
 	Serve(context *gin.Context, recordId string, imageId string, format string)
@@ -65,11 +63,6 @@ func (f *FileSystemRepository) Get(id string) (map[string]*shared.Image, error) 
 		return nil, err
 	}
 	return images, nil
-}
-
-func (f *FileSystemRepository) GetFileInfo(recordId, pageId string, format string) (os.FileInfo, error) {
-	p := f.getPath(recordId, pageId+"."+format)
-	return os.Stat(p)
 }
 
 func (f *FileSystemRepository) Copy(fromId string, toId string) error {
@@ -150,11 +143,4 @@ func copyFile(source string, dest string) (err error) {
 	}
 
 	return
-}
-
-func normalizeExtension(extension string) string {
-	if extension == "jpeg" {
-		return "jpg"
-	}
-	return extension
 }

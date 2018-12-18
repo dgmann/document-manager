@@ -1,6 +1,7 @@
 package http
 
 import (
+	"github.com/dgmann/document-manager/api/http/response"
 	"github.com/dgmann/document-manager/api/repositories/category"
 	"github.com/dgmann/document-manager/api/repositories/image"
 	"github.com/dgmann/document-manager/api/repositories/patient"
@@ -11,13 +12,13 @@ import (
 )
 
 type Factory interface {
-	GetRecordRepository() record.Repository
-	GetImageRepository() image.Repository
-	GetTagRepository() tag.Repository
-	GetPatientRepository() patient.Repository
-	GetCategoryRepository() category.Repository
-	GetPDFRepository() pdf.Repository
+	GetRecordRepository() *record.DatabaseRepository
+	GetImageRepository() *image.FileSystemRepository
+	GetTagRepository() *tag.DatabaseRepository
+	GetPatientRepository() *patient.DatabaseRepository
+	GetCategoryRepository() *category.DatabaseRepository
+	GetPDFRepository() *pdf.FileSystemRepository
 	GetEventService() *services.EventService
-	GetResponseService() *ResponseService
+	GetResponseService() *response.Factory
 	GetPdfProcessor() (*services.PdfProcessor, error)
 }

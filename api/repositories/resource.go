@@ -1,5 +1,7 @@
 package repositories
 
+import "os"
+
 type ResourceWriter interface {
 	Deleter
 	Writer
@@ -25,4 +27,8 @@ type Writer interface {
 
 type Deleter interface {
 	Delete(resource KeyedResource) error
+}
+
+type Statter interface {
+	Stat(name string) (os.FileInfo, error)
 }

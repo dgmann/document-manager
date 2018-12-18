@@ -2,6 +2,7 @@ package http
 
 import (
 	"encoding/json"
+	"github.com/dgmann/document-manager/api/http/response"
 	"github.com/dgmann/document-manager/api/models"
 	"github.com/dgmann/document-manager/api/repositories/category"
 	"github.com/dgmann/document-manager/api/repositories/patient"
@@ -29,7 +30,7 @@ type PatientController struct {
 	tags            tag.Repository
 	patients        patient.Repository
 	categories      category.Repository
-	responseService *ResponseService
+	responseService *response.Factory
 }
 
 func NewPatientController(factory Factory) *PatientController {

@@ -3,27 +3,31 @@ package http
 import (
 	"encoding/json"
 	"github.com/dgmann/document-manager/api/models"
-	"github.com/dgmann/document-manager/api/repositories/category"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
 func registerCategories(g *gin.RouterGroup, factory Factory) {
-	categoryController := NewCategoryController(factory)
+	categoryController := NewCategoryController(factory.GetCategoryRepository(), factory.GetResponseService())
 
 	g.GET("", categoryController.All)
 	g.POST("", categoryController.Create)
 }
 
 type CategoryController struct {
-	categories      category.Repository
-	responseService *ResponseService
+	categories      categoryRepository
+	responseService Responder
 }
 
-func NewCategoryController(factory Factory) *CategoryController {
+type categoryRepository interface {
+	All() ([]models.Category, error)
+	Add(id, category string) error
+}
+
+func NewCategoryController(categories categoryRepository, responseService Responder) *CategoryController {
 	return &CategoryController{
-		categories:      factory.GetCategoryRepository(),
-		responseService: factory.GetResponseService(),
+		categories:      categories,
+		responseService: responseService,
 	}
 }
 
@@ -33,8 +37,8 @@ func (cat *CategoryController) All(c *gin.Context) {
 		c.AbortWithError(400, err)
 		return
 	}
-	response := cat.responseService.NewResponse(c, categories)
-	response.JSON()
+	resp := cat.responseService.NewResponse(c, categories)
+	resp.JSON()
 }
 
 func (cat *CategoryController) Create(c *gin.Context) {
@@ -47,6 +51,6 @@ func (cat *CategoryController) Create(c *gin.Context) {
 		cat.responseService.NewErrorResponse(c, http.StatusConflict, err)
 		return
 	}
-	response := cat.responseService.NewResponse(c, body)
-	response.JSON()
+	resp := cat.responseService.NewResponseWithStatus(c, body, 201)
+	resp.JSON()
 }

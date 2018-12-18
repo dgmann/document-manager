@@ -31,8 +31,8 @@ func Run(factory Factory, bug bugsnag.Configuration) {
 	registerCategories(router.Group("/categories"), factory)
 
 	generalController := NewGeneralController()
-	tagController := NewTagController(factory)
-	archiveController := NewArchiveController(factory)
+	tagController := NewTagController(factory.GetTagRepository())
+	archiveController := NewArchiveController(factory.GetPDFRepository())
 
 	router.GET("", generalController.Home)
 	router.GET("status", generalController.Status)

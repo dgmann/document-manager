@@ -21,7 +21,17 @@ import (
 )
 
 func registerRecords(g *gin.RouterGroup, factory Factory) {
-	records := NewRecordController(factory)
+	pdfProcessor, err := factory.GetPdfProcessor()
+	if err != nil {
+		log.WithError(err).Error("error connecting to pdf processor")
+	}
+	records := NewRecordController(
+		factory.GetRecordRepository(),
+		factory.GetImageRepository(),
+		factory.GetPDFRepository(),
+		pdfProcessor,
+		factory.GetResponseService(),
+	)
 
 	g.GET("", records.All)
 	g.GET("/:recordId", records.One)
@@ -43,25 +53,16 @@ type RecordController struct {
 	images          image.Repository
 	pdfs            pdf.Repository
 	pdfProcessor    *services.PdfProcessor
-	responseService *ResponseService
+	responseService Responder
 }
 
-func NewRecordController(factory Factory) *RecordController {
-	recordRepository := factory.GetRecordRepository()
-	imageRepository := factory.GetImageRepository()
-	pdfRepository := factory.GetPDFRepository()
-	pdfProcessor, err := factory.GetPdfProcessor()
-	if err != nil {
-		log.WithError(err).Error("Cannot reach PDF processor")
-	}
-	responseService := factory.GetResponseService()
-
+func NewRecordController(records record.Repository, images image.Repository, pdfs pdf.Repository, processor *services.PdfProcessor, responder Responder) *RecordController {
 	return &RecordController{
-		records:         recordRepository,
-		images:          imageRepository,
-		pdfs:            pdfRepository,
-		pdfProcessor:    pdfProcessor,
-		responseService: responseService,
+		records:         records,
+		images:          images,
+		pdfs:            pdfs,
+		pdfProcessor:    processor,
+		responseService: responder,
 	}
 }
 

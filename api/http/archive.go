@@ -1,21 +1,21 @@
 package http
 
 import (
-	"github.com/dgmann/document-manager/api/repositories/pdf"
 	"github.com/gin-gonic/gin"
+	"io"
 	"io/ioutil"
 )
 
 type ArchiveController struct {
-	pdfs pdf.Repository
+	pdfs getter
 }
 
-type archiveControllerFactory interface {
-	GetPDFRepository() pdf.Repository
+type getter interface {
+	Get(id string) (io.Reader, error)
 }
 
-func NewArchiveController(factory archiveControllerFactory) *ArchiveController {
-	return &ArchiveController{pdfs: factory.GetPDFRepository()}
+func NewArchiveController(pdf getter) *ArchiveController {
+	return &ArchiveController{pdfs: pdf}
 }
 
 func (a *ArchiveController) One(c *gin.Context) {

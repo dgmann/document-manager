@@ -9,12 +9,8 @@ type TagController struct {
 	tags tag.Repository
 }
 
-type tagControllerFactory interface {
-	GetTagRepository() tag.Repository
-}
-
-func NewTagController(factory tagControllerFactory) *TagController {
-	return &TagController{tags: factory.GetTagRepository()}
+func NewTagController(repository tag.Repository) *TagController {
+	return &TagController{tags: repository}
 }
 
 func (t *TagController) All(c *gin.Context) {

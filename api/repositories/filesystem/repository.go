@@ -5,6 +5,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"os"
 	"path/filepath"
+	"time"
 )
 
 type Repository struct {
@@ -58,6 +59,15 @@ func (f *Repository) Write(resource repositories.KeyedResource) (err error) {
 		return f.filesystem.Remove(fp)
 	}
 	return nil
+}
+
+func (f *Repository) ModTime(resource repositories.KeyedResource) (time.Time, error) {
+	fp := f.buildResourcePath(resource)
+	fileInfo, err := os.Stat(fp)
+	if err != nil {
+		return time.Now(), err
+	}
+	return fileInfo.ModTime(), nil
 }
 
 func (f *Repository) buildResourcePath(resource repositories.KeyedResource) string {

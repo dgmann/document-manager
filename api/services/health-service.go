@@ -1,13 +1,19 @@
 package services
 
 import (
-	"sync"
-	"net/http"
-	"time"
-	"errors"
 	"bytes"
+	"errors"
 	"github.com/globalsign/mgo"
+	"net/http"
+	"sync"
+	"time"
 )
+
+type HealthChecker interface {
+	Check() error
+	CheckDb() bool
+	CheckPdfProcessor() bool
+}
 
 type healthService struct {
 	dbHost string

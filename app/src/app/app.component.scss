@@ -8,10 +8,16 @@
   background-color: $primary-lighter;
 }
 
-.myCustomClass md-input-container .md-errors-spacer {
-  min-height: 0px !important;
-}
-
 .body-container {
   height: 100%;
+}
+
+@media print {
+  .main-container {
+    height: 100%;
+  }
+
+  nav {
+    display: none;
+  }
 }

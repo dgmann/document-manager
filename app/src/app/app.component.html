@@ -1,5 +1,5 @@
 <div class="main-container mat-typography" fxLayout="column">
-  <div fxFlex="60px">
+  <nav fxFlex="60px">
     <mat-toolbar color="primary">
       <div fxLayout="row" fxFlex="100%" fxLayoutAlign="center center">
         <button mat-icon-button (click)="sidenav.toggle()">
@@ -13,7 +13,7 @@
         <app-patient-search fxShow fxHide.lt-sm (selectPatient)="onSelectPatient($event)"></app-patient-search>
       </div>
     </mat-toolbar>
-  </div>
+  </nav>
 
   <div class="body-container" fxFlex="1 1 auto" fxLayout="column">
     <mat-sidenav-container fxFill>

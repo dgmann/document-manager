@@ -3,6 +3,7 @@ $material-design-icons-font-path: "../node_modules/material-design-icons/iconfon
 @import '~material-design-icons/iconfont/material-icons.css';
 @import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
 @import "theme.scss";
+@import "print";
 
 html, body {
   margin: 0;
@@ -10,4 +11,16 @@ html, body {
 
 .selected {
   background-color: $accent-light;
+}
+
+@media print {
+  html, body {
+    border: 1px solid white;
+    page-break-after: avoid !important;
+    page-break-before: avoid !important;
+  }
+}
+
+@page {
+  margin-bottom: .1cm;
 }

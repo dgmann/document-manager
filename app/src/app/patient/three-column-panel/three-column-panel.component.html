@@ -1,6 +1,6 @@
-<div class="container" fxLayout="row" fxLayoutGap="10px">
+<div class="container" fxLayout="row" fxLayout.lt-md="column" fxLayoutGap="10px">
 
-  <div [fxShow]="showLeftColumn" fxFlex="300px" class="scroll-column mat-elevation-z8">
+  <div [fxShow]="showLeftColumn" class="left-column scroll-column mat-elevation-z8" fxFlex="300px" fxFlex.lt-md="1">
     <ng-content select=".left-panel"></ng-content>
   </div>
   <div [fxShow]="!showLeftColumn">
@@ -14,7 +14,7 @@
   </div>
 
 
-  <div [fxShow]="showRightColumn" fxFlex="75%" class="scroll-column mat-elevation-z8">
+  <div [fxShow]="showRightColumn" class="scroll-column mat-elevation-z8" fxFlex="75%" fxFlex.lt-md="1">
     <ng-content select=".right-panel"></ng-content>
   </div>
 </div>

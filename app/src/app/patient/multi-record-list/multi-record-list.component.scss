@@ -1,5 +1,6 @@
 @import "../../../theme";
 @import '~@angular/material/theming';
+@import "../../../print";
 
 .sub-heading {
   color: $primary;
@@ -9,15 +10,33 @@
   font-weight: 500;
 }
 
-.selectable-page {
-  cursor: pointer;
-}
-
-.page-container {
+.page {
   @include mat-elevation(8);
   margin-bottom: 10px;
+
+  img {
+    cursor: pointer;
+  }
 }
 
 mat-card-header {
   border-bottom: 1px solid $accent-light;
+}
+
+@media print {
+  ::ng-deep .mat-tab-header, ::ng-deep .mat-card-header {
+    display: none !important;
+  }
+
+  .action-button-bar {
+    display: none;
+  }
+
+  .page-container {
+    @include record-page-container();
+  }
+
+  .page {
+    @include record-page();
+  }
 }

@@ -6,3 +6,13 @@
   overflow-y: auto;
   will-change: transform;
 }
+
+@media print {
+  .left-column {
+    display: none !important;
+  }
+
+  .scroll-column {
+    overflow: visible;
+  }
+}

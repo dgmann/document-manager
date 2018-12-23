@@ -1,13 +1,17 @@
 package main
 
 import (
+	"context"
 	"github.com/Shopify/logrus-bugsnag"
 	"github.com/bugsnag/bugsnag-go"
 	"github.com/dgmann/document-manager/api/http"
+	"github.com/dgmann/document-manager/api/repositories/record"
 	"github.com/dgmann/document-manager/api/services"
-	"github.com/globalsign/mgo"
+	"github.com/mongodb/mongo-go-driver/mongo"
+	"github.com/mongodb/mongo-go-driver/mongo/readpref"
 	log "github.com/sirupsen/logrus"
 	"os"
+	"time"
 )
 
 func init() {
@@ -46,16 +50,27 @@ func main() {
 	dbname := envOrDefault("DB_NAME", "manager")
 	pdfprocessorUrl := envOrDefault("PDFPROCESSOR_URL", "127.0.0.1:9000")
 
-	session, err := mgo.Dial(dbHost)
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
+	client, err := mongo.Connect(ctx, "mongodb://"+dbHost)
 	if err != nil {
-		log.Errorf("Error connecting to database: %s", err)
+		log.WithError(err).Error("error creating database client")
 		os.Exit(1)
 		return
 	}
-	defer session.Close()
 
+	ctx, _ = context.WithTimeout(context.Background(), 2*time.Second)
+	if err := client.Ping(ctx, readpref.Primary()); err != nil {
+		log.WithError(err).Error("error connecting to database")
+		os.Exit(1)
+		return
+	}
+
+	if err := record.CreateIndexes(context.Background(), nil); err != nil {
+		log.WithError(err).Error("error setting indices")
+	}
 	config := &Config{
-		Db:              session.DB(dbname),
+		Db:              client.Database(dbname),
 		RecordDir:       recordDir,
 		PDFDir:          archiveDir,
 		PdfProcessorUrl: pdfprocessorUrl,

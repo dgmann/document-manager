@@ -1,6 +1,7 @@
 package http
 
 import (
+	"context"
 	"encoding/json"
 	"github.com/dgmann/document-manager/api/models"
 	"github.com/gin-gonic/gin"
@@ -20,8 +21,8 @@ type CategoryController struct {
 }
 
 type categoryRepository interface {
-	All() ([]models.Category, error)
-	Add(id, category string) error
+	All(ctx context.Context) ([]models.Category, error)
+	Add(ctx context.Context, id, category string) error
 }
 
 func NewCategoryController(categories categoryRepository, responseService Responder) *CategoryController {
@@ -32,7 +33,7 @@ func NewCategoryController(categories categoryRepository, responseService Respon
 }
 
 func (cat *CategoryController) All(c *gin.Context) {
-	categories, err := cat.categories.All()
+	categories, err := cat.categories.All(c.Request.Context())
 	if err != nil {
 		c.AbortWithError(400, err)
 		return
@@ -47,7 +48,7 @@ func (cat *CategoryController) Create(c *gin.Context) {
 		cat.responseService.NewErrorResponse(c, http.StatusBadRequest, err)
 		return
 	}
-	if err := cat.categories.Add(body.Id, body.Name); err != nil {
+	if err := cat.categories.Add(c.Request.Context(), body.Id, body.Name); err != nil {
 		cat.responseService.NewErrorResponse(c, http.StatusConflict, err)
 		return
 	}

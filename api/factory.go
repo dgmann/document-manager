@@ -4,7 +4,6 @@ import (
 	"github.com/dgmann/document-manager/api/http/response"
 	"github.com/dgmann/document-manager/api/repositories/category"
 	"github.com/dgmann/document-manager/api/repositories/image"
-	"github.com/dgmann/document-manager/api/repositories/patient"
 	"github.com/dgmann/document-manager/api/repositories/pdf"
 	"github.com/dgmann/document-manager/api/repositories/record"
 	"github.com/dgmann/document-manager/api/repositories/tag"
@@ -31,7 +30,7 @@ func (f *Factory) GetEventService() *services.EventService {
 }
 
 func (f *Factory) GetRecordRepository() *record.DatabaseRepository {
-	r := f.config.Db.C("records")
+	r := f.config.Db.Collection("records")
 	return record.NewDatabaseRepository(r, f.GetImageRepository(), f.GetPDFRepository(), f.GetEventService())
 }
 
@@ -44,18 +43,13 @@ func (f *Factory) GetPDFRepository() *pdf.FileSystemRepository {
 }
 
 func (f *Factory) GetTagRepository() *tag.DatabaseRepository {
-	r := f.config.Db.C("records")
+	r := f.config.Db.Collection("records")
 	return tag.NewDatabaseRepository(r)
 }
 
-func (f *Factory) GetPatientRepository() *patient.DatabaseRepository {
-	patients := f.config.Db.C("patients")
-	return patient.NewDatabaseRepository(patients)
-}
-
 func (f *Factory) GetCategoryRepository() *category.DatabaseRepository {
-	categories := f.config.Db.C("categories")
-	r := f.config.Db.C("records")
+	categories := f.config.Db.Collection("categories")
+	r := f.config.Db.Collection("records")
 	return category.NewDatabaseRepository(categories, r)
 }
 

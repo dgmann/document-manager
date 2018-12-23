@@ -1,22 +1,21 @@
 package main
 
 import (
+	"fmt"
+	"github.com/dgmann/document-manager/api-client/record"
+	"github.com/dgmann/document-manager/migrator/categories"
+	"github.com/dgmann/document-manager/migrator/importer"
 	"github.com/dgmann/document-manager/migrator/records/databasereader"
 	"github.com/dgmann/document-manager/migrator/records/filesystem"
 	"github.com/dgmann/document-manager/migrator/shared"
-	"github.com/pkg/errors"
 	"github.com/dgmann/document-manager/migrator/validator"
-	"fmt"
-	"strings"
+	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
-	"path/filepath"
 	"net/http"
 	_ "net/http/pprof"
-	"github.com/dgmann/document-manager/migrator/importer"
-	"github.com/dgmann/document-manager/api-client/record"
+	"path/filepath"
 	"strconv"
-	"github.com/dgmann/document-manager/migrator/patients"
-	"github.com/dgmann/document-manager/migrator/categories"
+	"strings"
 )
 
 func main() {
@@ -73,17 +72,12 @@ func main() {
 			Path:         subrecord.Path,
 		})
 	}
-	pats, err := patients.All(recordManager.Db)
-	if err != nil {
-		logrus.WithError(err).Error("error fetching patients")
-	}
 	cats, err := categories.All(recordManager.Db)
 	if err != nil {
 		logrus.WithError(err).Error("error fetching categories")
 	}
 	importable := importer.Import{
 		Records:    filesToImport,
-		Patients:   pats,
 		Categories: cats,
 	}
 

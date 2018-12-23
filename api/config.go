@@ -2,42 +2,18 @@ package main
 
 import (
 	"github.com/bugsnag/bugsnag-go"
-	"github.com/globalsign/mgo"
+	"github.com/mongodb/mongo-go-driver/mongo"
 )
 
 type Config struct {
-	Db              *mgo.Database
+	Db              *mongo.Database
 	RecordDir       string
 	PDFDir          string
 	PdfProcessorUrl string
 	Bugsnag         bugsnag.Configuration
 }
 
-type DatabaseConfig interface {
-	GetDatabase() *mgo.Database
-}
-
-type RecordDirectoryConfig interface {
-	GetRecordDirectory() string
-}
-
-type PdfProcessorConfig interface {
-	GetPdfProcessorUrl() string
-}
-
-type HttpConfig interface {
-	GetBaseUrl() string
-}
-
-type BugsnagConfig interface {
-	GetBugsnagConfig() bugsnag.Configuration
-}
-
-type PDFDirectoryConfig interface {
-	GetPDFDirectory() string
-}
-
-func (c *Config) GetDatabase() *mgo.Database {
+func (c *Config) GetDatabase() *mongo.Database {
 	return c.Db
 }
 

@@ -1,67 +1,67 @@
 package category
 
 import (
-	"fmt"
+	"context"
 	"github.com/dgmann/document-manager/api/models"
-	"github.com/globalsign/mgo"
-	"github.com/globalsign/mgo/bson"
+	"github.com/mongodb/mongo-go-driver/bson"
+	"github.com/mongodb/mongo-go-driver/mongo"
 	log "github.com/sirupsen/logrus"
 )
 
 type Repository interface {
-	All() ([]models.Category, error)
-	Find(id string) (*models.Category, error)
-	FindByPatient(id string) ([]models.Category, error)
-	Add(id, category string) error
+	All(ctx context.Context) ([]models.Category, error)
+	Find(ctx context.Context, id string) (*models.Category, error)
+	FindByPatient(ctx context.Context, id string) ([]models.Category, error)
+	Add(ctx context.Context, id, category string) error
 }
 
 type DatabaseRepository struct {
-	categories *mgo.Collection
-	records    *mgo.Collection
+	categories *mongo.Collection
+	records    *mongo.Collection
 }
 
-func NewDatabaseRepository(categories, records *mgo.Collection) *DatabaseRepository {
+func NewDatabaseRepository(categories, records *mongo.Collection) *DatabaseRepository {
 	return &DatabaseRepository{categories: categories, records: records}
 }
 
-func (c *DatabaseRepository) All() ([]models.Category, error) {
-	var categories []models.Category
-
-	if err := c.categories.Find(bson.M{}).All(&categories); err != nil {
+func (c *DatabaseRepository) All(ctx context.Context) ([]models.Category, error) {
+	cursor, err := c.categories.Find(ctx, bson.M{})
+	if err != nil {
 		log.Error(err)
 		return nil, err
 	}
-	if categories == nil {
-		categories = []models.Category{}
-	}
-	return categories, nil
+	return castToSlice(ctx, cursor)
 }
 
-func (c *DatabaseRepository) Find(id string) (*models.Category, error) {
+func (c *DatabaseRepository) Find(ctx context.Context, id string) (*models.Category, error) {
 	var category models.Category
 
-	if err := c.categories.Find(bson.M{"_id": id}).One(&category); err != nil {
+	if err := c.categories.FindOne(ctx, bson.M{"_id": id}).Decode(&category); err != nil {
 		log.WithField("error", err).Panic("Cannot find record")
 		return nil, err
 	}
 	return &category, nil
 }
 
-func (c *DatabaseRepository) FindByPatient(id string) ([]models.Category, error) {
-	categories := make([]models.Category, 0)
-	var ids []string
-	if err := c.records.Find(bson.M{"patientId": id}).Distinct("category", &ids); err != nil {
+func (c *DatabaseRepository) FindByPatient(ctx context.Context, id string) ([]models.Category, error) {
+	ids, err := c.records.Distinct(ctx, "category", bson.M{"patientId": id})
+	if err != nil {
 		log.WithField("error", err).Panic("Cannot find categories by patient id")
 		return nil, err
 	}
-	fmt.Printf("ids %v", ids)
-	if err := c.categories.Find(bson.M{"_id": bson.M{"$in": ids}}).All(&categories); err != nil {
+
+	cursor, err := c.categories.Find(ctx, bson.M{"_id": bson.M{"$in": ids}})
+	if err != nil {
 		log.WithField("error", err).Panic("Cannot resolve category ids")
 		return nil, err
 	}
-	return categories, nil
+	return castToSlice(ctx, cursor)
 }
 
-func (c *DatabaseRepository) Add(id, category string) error {
-	return c.categories.Insert(models.NewCategory(id, category))
+func (c *DatabaseRepository) Add(ctx context.Context, id, category string) error {
+	_, err := c.categories.InsertOne(ctx, models.NewCategory(id, category))
+	if err != nil {
+		return err
+	}
+	return nil
 }

@@ -1,5 +1,4 @@
-FROM golang:latest as builder
-ENV GO111MODULE=on
+FROM golang:1.11 as builder
 
 WORKDIR /src
 COPY go.mod go.sum ./

@@ -1,81 +1,87 @@
 package record
 
 import (
+	"context"
 	"github.com/dgmann/document-manager/api/models"
 	"github.com/dgmann/document-manager/api/repositories"
 	"github.com/dgmann/document-manager/api/services"
 	"github.com/dgmann/document-manager/shared"
-	"github.com/globalsign/mgo"
-	"github.com/globalsign/mgo/bson"
+	"github.com/mongodb/mongo-go-driver/bson"
+	"github.com/mongodb/mongo-go-driver/bson/primitive"
+	"github.com/mongodb/mongo-go-driver/mongo"
 	log "github.com/sirupsen/logrus"
 	"io"
 	"io/ioutil"
 )
 
 type Repository interface {
-	All() ([]*models.Record, error)
-	Find(id string) (*models.Record, error)
-	Query(query map[string]interface{}) ([]*models.Record, error)
-	Create(data models.CreateRecord, images []*shared.Image, pdfData io.Reader) (*models.Record, error)
-	Delete(id string) error
-	Update(id string, record models.Record) (*models.Record, error)
-	UpdatePages(id string, updates []*models.PageUpdate) (*models.Record, error)
+	All(ctx context.Context) ([]*models.Record, error)
+	Find(ctx context.Context, id string) (*models.Record, error)
+	Query(ctx context.Context, query map[string]interface{}) ([]*models.Record, error)
+	Create(ctx context.Context, data models.CreateRecord, images []*shared.Image, pdfData io.Reader) (*models.Record, error)
+	Delete(ctx context.Context, id string) error
+	Update(ctx context.Context, id string, record models.Record) (*models.Record, error)
+	UpdatePages(ctx context.Context, id string, updates []*models.PageUpdate) (*models.Record, error)
 }
 
 type DatabaseRepository struct {
-	records *mgo.Collection
+	records *mongo.Collection
 	events  *services.EventService
 	images  repositories.ResourceWriter
 	pdfs    repositories.ResourceWriter
 }
 
-func NewDatabaseRepository(records *mgo.Collection, imageWriter repositories.ResourceWriter, pdfs repositories.ResourceWriter, eventService *services.EventService) *DatabaseRepository {
-	processedIndex := mgo.Index{
-		Key:        []string{"patientId", "-date", "tags", "status"},
-		Unique:     false,
-		DropDups:   false,
-		Background: true,
-		Sparse:     true,
-	}
-
-	err := records.EnsureIndex(processedIndex)
-	if err != nil {
-		log.Panicf("Error setting indices %s", err)
-	}
-
+func NewDatabaseRepository(records *mongo.Collection, imageWriter repositories.ResourceWriter, pdfs repositories.ResourceWriter, eventService *services.EventService) *DatabaseRepository {
 	return &DatabaseRepository{records: records, events: eventService, images: imageWriter, pdfs: pdfs}
 }
 
-func (r *DatabaseRepository) All() ([]*models.Record, error) {
-	return r.Query(bson.M{})
+func CreateIndexes(ctx context.Context, records *mongo.Collection) error {
+	_, err := records.Indexes().CreateOne(ctx, mongo.IndexModel{Keys: bson.D{{"patientId", int32(1)}}})
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
-func (r *DatabaseRepository) Find(id string) (*models.Record, error) {
-	return r.findByObjectId(bson.ObjectIdHex(id))
+func (r *DatabaseRepository) All(ctx context.Context) ([]*models.Record, error) {
+	return r.Query(ctx, bson.M{})
 }
 
-func (r *DatabaseRepository) findByObjectId(id bson.ObjectId) (*models.Record, error) {
+func (r *DatabaseRepository) Find(ctx context.Context, id string) (*models.Record, error) {
+	res, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, err
+	}
+	return r.findByObjectId(ctx, res)
+}
+
+func (r *DatabaseRepository) findByObjectId(ctx context.Context, id primitive.ObjectID) (*models.Record, error) {
 	var record models.Record
 
-	if err := r.records.FindId(id).One(&record); err != nil {
-		log.WithField("error", err).Debug("Cannot find record")
-		return nil, err
+	res := r.records.FindOne(ctx, bson.M{"_id": id})
+	if res.Err() != nil {
+		log.WithField("error", res.Err()).Error("Cannot find record")
+		return nil, res.Err()
+	}
+
+	if err := res.Decode(record); err != nil {
+		log.WithField("error", res.Err()).Error("error decoding record")
+		return nil, res.Err()
 	}
 	return &record, nil
 }
 
-func (r *DatabaseRepository) Query(query map[string]interface{}) ([]*models.Record, error) {
-	records := make([]*models.Record, 0)
-
-	if err := r.records.Find(query).All(&records); err != nil {
+func (r *DatabaseRepository) Query(ctx context.Context, query map[string]interface{}) ([]*models.Record, error) {
+	cursor, err := r.records.Find(ctx, query)
+	if err != nil {
 		log.Error(err)
 		return nil, err
 	}
 
-	return records, nil
+	return castToSlice(ctx, cursor)
 }
 
-func (r *DatabaseRepository) Create(data models.CreateRecord, images []*shared.Image, pdfData io.Reader) (*models.Record, error) {
+func (r *DatabaseRepository) Create(ctx context.Context, data models.CreateRecord, images []*shared.Image, pdfData io.Reader) (*models.Record, error) {
 	record := models.NewRecord(data)
 
 	if len(record.Pages) == 0 {
@@ -102,14 +108,15 @@ func (r *DatabaseRepository) Create(data models.CreateRecord, images []*shared.I
 		return nil, err
 	}
 
-	if err := r.records.Insert(&record); err != nil {
+	res, err := r.records.InsertOne(ctx, record)
+	if err != nil {
 		e := r.images.Delete(repositories.NewDirectoryResource(record.Id.Hex()))
 		log.Error(e)
 		e = r.pdfs.Delete(repositories.NewDirectoryResource(record.Id.Hex()))
 		log.Error(e)
 		return nil, err
 	}
-	created, err := r.findByObjectId(record.Id)
+	created, err := r.findByObjectId(ctx, res.InsertedID.(primitive.ObjectID))
 	if err != nil {
 		return nil, err
 	}
@@ -118,7 +125,7 @@ func (r *DatabaseRepository) Create(data models.CreateRecord, images []*shared.I
 	return created, nil
 }
 
-func (r *DatabaseRepository) Delete(id string) error {
+func (r *DatabaseRepository) Delete(ctx context.Context, id string) error {
 	err := r.images.Delete(repositories.NewDirectoryResource(id))
 	if err != nil {
 		return err
@@ -129,30 +136,39 @@ func (r *DatabaseRepository) Delete(id string) error {
 		return err
 	}
 
-	key := bson.ObjectIdHex(id)
-	err = r.records.RemoveId(key)
+	key, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return err
+	}
+	_, err = r.records.DeleteOne(ctx, bson.M{"_id": key})
 
 	r.events.Send(services.EventDeleted, id)
 	return err
 }
 
-func (r *DatabaseRepository) Update(id string, record models.Record) (*models.Record, error) {
-	key := bson.ObjectIdHex(id)
-	// TODO: Remove deleted pages from the file system
-	if err := r.records.UpdateId(key, bson.M{"$set": record}); err != nil {
-		return nil, err
-	}
-	updated, err := r.findByObjectId(key)
+func (r *DatabaseRepository) Update(ctx context.Context, id string, record models.Record) (*models.Record, error) {
+	key, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return nil, err
 	}
+	// TODO: Remove deleted pages from the file system
+	res := r.records.FindOneAndUpdate(ctx, bson.M{"_id": key}, bson.M{"$set": record})
+	if res.Err() != nil {
+		return nil, err
+	}
+	var updated *models.Record
+
+	if err := res.Decode(updated); err != nil {
+		return nil, err
+	}
+
 	r.events.Send(services.EventUpdated, updated)
 	return updated, nil
 }
 
 // UpdatePages updates the pages specified while keeping the rest of the original pages
-func (r *DatabaseRepository) UpdatePages(id string, updates []*models.PageUpdate) (*models.Record, error) {
-	record, err := r.Find(id)
+func (r *DatabaseRepository) UpdatePages(ctx context.Context, id string, updates []*models.PageUpdate) (*models.Record, error) {
+	record, err := r.Find(ctx, id)
 	if err != nil {
 		return nil, err
 	}
@@ -164,5 +180,5 @@ func (r *DatabaseRepository) UpdatePages(id string, updates []*models.PageUpdate
 	for _, update := range updates {
 		updated = append(updated, pages[update.Id])
 	}
-	return r.Update(id, models.Record{Pages: updated})
+	return r.Update(ctx, id, models.Record{Pages: updated})
 }

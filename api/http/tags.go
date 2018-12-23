@@ -14,7 +14,7 @@ func NewTagController(repository tag.Repository) *TagController {
 }
 
 func (t *TagController) All(c *gin.Context) {
-	tags, err := t.tags.All()
+	tags, err := t.tags.All(c.Request.Context())
 	if err != nil {
 		c.AbortWithError(500, err)
 		return

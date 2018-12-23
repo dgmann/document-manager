@@ -1,31 +1,40 @@
 package tag
 
 import (
-	"github.com/globalsign/mgo"
+	"context"
 	"github.com/globalsign/mgo/bson"
+	"github.com/mongodb/mongo-go-driver/mongo"
 )
 
 type Repository interface {
-	All() ([]string, error)
-	ByPatient(id string) ([]string, error)
+	All(ctx context.Context) ([]string, error)
+	ByPatient(ctx context.Context, id string) ([]string, error)
 }
 
 type DatabaseRepository struct {
-	records *mgo.Collection
+	records *mongo.Collection
 }
 
-func NewDatabaseRepository(records *mgo.Collection) *DatabaseRepository {
+func NewDatabaseRepository(records *mongo.Collection) *DatabaseRepository {
 	return &DatabaseRepository{records: records}
 }
 
-func (t *DatabaseRepository) All() ([]string, error) {
-	var tags []string
-	err := t.records.Find(nil).Distinct("tags", &tags)
-	return tags, err
+func (t *DatabaseRepository) All(ctx context.Context) ([]string, error) {
+	return t.query(ctx, bson.M{})
 }
 
-func (t *DatabaseRepository) ByPatient(id string) ([]string, error) {
+func (t *DatabaseRepository) ByPatient(ctx context.Context, id string) ([]string, error) {
+	return t.query(ctx, bson.M{"patientId": id})
+}
+
+func (t *DatabaseRepository) query(ctx context.Context, query interface{}) ([]string, error) {
 	var tags []string
-	err := t.records.Find(bson.M{ "patientId": id }).Distinct("tags", &tags)
+	res, err := t.records.Distinct(ctx, "tags", bson.M{})
+	if err != nil {
+		return tags, err
+	}
+	for _, tag := range res {
+		tags = append(tags, tag.(string))
+	}
 	return tags, err
 }

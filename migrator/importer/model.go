@@ -1,11 +1,10 @@
 package importer
 
 import (
-	"os"
 	"encoding/gob"
 	"github.com/dgmann/document-manager/api-client/record"
-	"github.com/dgmann/document-manager/migrator/patients"
 	"github.com/dgmann/document-manager/migrator/categories"
+	"os"
 )
 
 type ImportableRecord struct {
@@ -15,7 +14,6 @@ type ImportableRecord struct {
 
 type Import struct {
 	Categories []*categories.Category
-	Patients   []*patients.Patient
 	Records    []ImportableRecord
 }
 

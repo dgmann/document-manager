@@ -15,6 +15,7 @@ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/denisenkom/go-mssqldb v0.0.0-20181014144952-4e0d7dc8888f h1:WH0w/R4Yoey+04HhFxqZ6VX6I0d7RMyw5aXQ9UTvQPs=
 github.com/denisenkom/go-mssqldb v0.0.0-20181014144952-4e0d7dc8888f/go.mod h1:xN/JuLBIz4bjkxNmByTiV1IbhfnYb6oo99phBn4Eqhc=
+github.com/dgmann/document-manager v0.0.0-20181222145657-bf50b050725d h1:5bTZmz7JEFNYdGXYEOdq4ravyYVUYhfiEkDHBpZ9mwk=
 github.com/dgmann/document-manager/api v0.0.0-20180813154541-2a1f6fd003bd/go.mod h1:E7WMeXPHTwjCvdHMIh+wlq/I7G697LQ6eUfp7FMi0kc=
 github.com/dgmann/document-manager/api v0.0.0-20181113164830-0eeea4ba9b30 h1:V+YIxaWhbV9QrQplKBN63GvEPGq/Hl0LiDsKLD7OTyE=
 github.com/dgmann/document-manager/api v0.0.0-20181113164830-0eeea4ba9b30/go.mod h1:+PyODOe3z0e4lYeGePiksKvTj/zB/1GBspziZCb+gC8=

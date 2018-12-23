@@ -2,10 +2,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/dgmann/document-manager/api-client/repository"
 	"github.com/dgmann/document-manager/migrator/categories"
 	"github.com/dgmann/document-manager/migrator/importer"
-	"github.com/dgmann/document-manager/migrator/patients"
 	"github.com/dgmann/document-manager/migrator/shared"
 	"github.com/gosuri/uiprogress"
 	"github.com/sirupsen/logrus"
@@ -13,7 +11,6 @@ import (
 	"os"
 	"os/signal"
 	"path"
-	"strings"
 	"sync"
 	"syscall"
 )
@@ -35,7 +32,6 @@ func main() {
 		return
 	}
 
-	patientsToImport := importData.Patients
 	categoriesToImport := importData.Categories
 	recordsToImport := importData.Records
 	alreadyImported := make(map[string]importer.ImportableRecord)
@@ -45,7 +41,6 @@ func main() {
 	}
 
 	categoryProgressBar := uiprogress.AddBar(len(categoriesToImport)).AppendCompleted().PrependElapsed().PrependFunc(countFunc(len(categoriesToImport)))
-	patientProgressBar := uiprogress.AddBar(len(patientsToImport)).AppendCompleted().PrependElapsed().PrependFunc(countFunc(len(patientsToImport)))
 	recordProgressBar := uiprogress.AddBar(len(recordsToImport)).AppendCompleted().PrependElapsed().PrependFunc(countFunc(len(recordsToImport)))
 	uiprogress.Start()
 	var wg sync.WaitGroup
@@ -59,15 +54,6 @@ func main() {
 			logrus.WithError(err).Error("error importing categories")
 		}
 	}()
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-
-		if err := importPatients(i, patientsToImport, patientProgressBar); err != nil {
-			patientProgressBar.AppendFunc(logError(err))
-			logrus.WithError(err).Error("error importing patients")
-		}
-	}()
 
 	logrus.WithField("count", len(importData.Records)).Info("Start importing")
 	var recordsNotImported []importer.ImportableRecord
@@ -76,7 +62,9 @@ func main() {
 	})
 
 	records := importer.Difference(recordsToImport, alreadyImported)
-	recordProgressBar.Set(len(recordsToImport) - len(records))
+	if err := recordProgressBar.Set(len(recordsToImport) - len(records)); err != nil {
+		logrus.WithError(err).Warn("error setting progressbar")
+	}
 
 	importedRecords := make(map[string]importer.ImportableRecord)
 	registerSignals(importedRecords, path.Join(config.DataDirectory, "importedrecords.gob"))
@@ -145,31 +133,7 @@ func importCategories(i *importer.Importer, categories []*categories.Category, p
 	return nil
 }
 
-func importPatients(i *importer.Importer, patients []*patients.Patient, progressbar *uiprogress.Bar) error {
-	logrus.WithField("count", len(patients)).Info("start importing patients")
-	for _, patient := range patients {
-		p := repository.Patient{
-			Id: patient.Id,
-		}
-		if patient.Name != nil {
-			splitted := strings.Split(*patient.Name, ",")
-			if len(splitted) == 2 {
-				p.LastName = splitted[0]
-				p.FirstName = splitted[1]
-			}
-		}
-
-		if err := i.Import("/patients", p); err != nil {
-			return err
-		} else {
-			progressbar.Incr()
-		}
-	}
-	logrus.Info("patients successfully imported")
-	return nil
-}
-
-func logError(err error) (func(b *uiprogress.Bar) string) {
+func logError(err error) func(b *uiprogress.Bar) string {
 	return func(b *uiprogress.Bar) string {
 		if err != nil {
 			return "Error"
@@ -179,7 +143,7 @@ func logError(err error) (func(b *uiprogress.Bar) string) {
 	}
 }
 
-func countFunc(total int) (func(b *uiprogress.Bar) string) {
+func countFunc(total int) func(b *uiprogress.Bar) string {
 	return func(b *uiprogress.Bar) string {
 		return fmt.Sprintf("%d/%d", b.Current(), total)
 	}

@@ -2,12 +2,13 @@ package http
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"github.com/dgmann/document-manager/api/http/response"
 	"github.com/dgmann/document-manager/api/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"net/http"
+	"net/http/httptest"
 	"strings"
 	"testing"
 )
@@ -16,13 +17,13 @@ type MockCategoryRepository struct {
 	mock.Mock
 }
 
-func (m *MockCategoryRepository) All() ([]models.Category, error) {
-	args := m.Called()
+func (m *MockCategoryRepository) All(ctx context.Context) ([]models.Category, error) {
+	args := m.Called(ctx)
 	return args.Get(0).([]models.Category), args.Error(1)
 }
 
-func (m *MockCategoryRepository) Add(id, category string) error {
-	args := m.Called(id, category)
+func (m *MockCategoryRepository) Add(ctx context.Context, id, category string) error {
+	args := m.Called(ctx, id, category)
 	return args.Error(0)
 }
 
@@ -35,11 +36,11 @@ func createTestController() (*CategoryController, *MockCategoryRepository) {
 func TestCategoryController_All(t *testing.T) {
 	controller, mockCategoryRepository := createTestController()
 
-	context, w := NewTestContext()
+	ctx, w := NewTestContext()
 	categories := []models.Category{{Name: "mock", Id: "mock"}}
-	mockCategoryRepository.On("All").Return(categories, nil)
+	mockCategoryRepository.On("All", ctx.Request.Context()).Return(categories, nil)
 
-	controller.All(context)
+	controller.All(ctx)
 	expected, _ := json.Marshal(categories)
 	assert.Equal(t, string(expected), strings.TrimSpace(w.Body.String()))
 }
@@ -47,16 +48,16 @@ func TestCategoryController_All(t *testing.T) {
 func TestCategoryController_Create(t *testing.T) {
 	controller, mockCategoryRepository := createTestController()
 
-	context, w := NewTestContext()
+	ctx, w := NewTestContext()
 
 	category := models.Category{Id: "cat", Name: "Category"}
 	body, _ := json.Marshal(category)
-	req, _ := http.NewRequest("POST", "", bytes.NewBuffer(body))
-	context.Request = req
+	req := httptest.NewRequest("POST", "/", bytes.NewBuffer(body))
+	ctx.Request = req
 
-	mockCategoryRepository.On("Add", category.Id, category.Name).Return(nil)
+	mockCategoryRepository.On("Add", ctx.Request.Context(), category.Id, category.Name).Return(nil)
 
-	controller.Create(context)
+	controller.Create(ctx)
 	assert.Equal(t, 201, w.Code)
 	assert.Equal(t, string(body), strings.TrimSpace(w.Body.String()))
 }

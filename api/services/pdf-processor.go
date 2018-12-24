@@ -27,8 +27,8 @@ func NewPDFProcessor(baseUrl string) (*PdfProcessor, error) {
 	return &PdfProcessor{conn: conn, baseUrl: baseUrl}, nil
 }
 
-func (p *PdfProcessor) Close() {
-	p.conn.Close()
+func (p *PdfProcessor) Close() error {
+	return p.conn.Close()
 }
 
 func (p *PdfProcessor) Convert(f io.Reader) ([]*shared.Image, error) {

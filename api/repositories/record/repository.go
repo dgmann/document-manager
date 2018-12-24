@@ -25,18 +25,18 @@ type Repository interface {
 }
 
 type DatabaseRepository struct {
-	records *mongo.Collection
+	records collection
 	events  *services.EventService
 	images  repositories.ResourceWriter
 	pdfs    repositories.ResourceWriter
 }
 
-func NewDatabaseRepository(records *mongo.Collection, imageWriter repositories.ResourceWriter, pdfs repositories.ResourceWriter, eventService *services.EventService) *DatabaseRepository {
+func NewDatabaseRepository(records collection, imageWriter repositories.ResourceWriter, pdfs repositories.ResourceWriter, eventService *services.EventService) *DatabaseRepository {
 	return &DatabaseRepository{records: records, events: eventService, images: imageWriter, pdfs: pdfs}
 }
 
-func CreateIndexes(ctx context.Context, records *mongo.Collection) error {
-	_, err := records.Indexes().CreateOne(ctx, mongo.IndexModel{Keys: bson.D{{"patientId", int32(1)}}})
+func CreateIndexes(ctx context.Context, c indexer) error {
+	_, err := c.Indexes().CreateOne(ctx, mongo.IndexModel{Keys: bson.D{{"patientId", int32(1)}}})
 	if err != nil {
 		return err
 	}

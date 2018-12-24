@@ -3,8 +3,9 @@ package category
 import (
 	"context"
 	"github.com/dgmann/document-manager/api/models"
+	"github.com/dgmann/document-manager/api/repositories/database"
 	"github.com/mongodb/mongo-go-driver/bson"
-	"github.com/mongodb/mongo-go-driver/mongo"
+	"github.com/mongodb/mongo-go-driver/bson/primitive"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -16,12 +17,13 @@ type Repository interface {
 }
 
 type DatabaseRepository struct {
-	categories *mongo.Collection
-	records    *mongo.Collection
+	categories collection
+	records    distinctFinder
+	decoder    database.Decoder
 }
 
-func NewDatabaseRepository(categories, records *mongo.Collection) *DatabaseRepository {
-	return &DatabaseRepository{categories: categories, records: records}
+func NewDatabaseRepository(categories collection, records distinctFinder) *DatabaseRepository {
+	return &DatabaseRepository{categories: categories, records: records, decoder: database.NewDefaultDecoder()}
 }
 
 func (c *DatabaseRepository) All(ctx context.Context) ([]models.Category, error) {
@@ -30,13 +32,18 @@ func (c *DatabaseRepository) All(ctx context.Context) ([]models.Category, error)
 		log.Error(err)
 		return nil, err
 	}
+	defer cursor.Close(ctx)
 	return castToSlice(ctx, cursor)
 }
 
 func (c *DatabaseRepository) Find(ctx context.Context, id string) (*models.Category, error) {
 	var category models.Category
 
-	if err := c.categories.FindOne(ctx, bson.M{"_id": id}).Decode(&category); err != nil {
+	key, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, err
+	}
+	if err := c.decoder.Decode(c.categories.FindOne(ctx, bson.M{"_id": key}), &category); err != nil {
 		log.WithField("error", err).Panic("Cannot find record")
 		return nil, err
 	}
@@ -55,6 +62,7 @@ func (c *DatabaseRepository) FindByPatient(ctx context.Context, id string) ([]mo
 		log.WithField("error", err).Panic("Cannot resolve category ids")
 		return nil, err
 	}
+	defer cursor.Close(ctx)
 	return castToSlice(ctx, cursor)
 }
 

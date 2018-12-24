@@ -3,7 +3,6 @@ package tag
 import (
 	"context"
 	"github.com/globalsign/mgo/bson"
-	"github.com/mongodb/mongo-go-driver/mongo"
 )
 
 type Repository interface {
@@ -12,10 +11,10 @@ type Repository interface {
 }
 
 type DatabaseRepository struct {
-	records *mongo.Collection
+	records distinctFinder
 }
 
-func NewDatabaseRepository(records *mongo.Collection) *DatabaseRepository {
+func NewDatabaseRepository(records distinctFinder) *DatabaseRepository {
 	return &DatabaseRepository{records: records}
 }
 

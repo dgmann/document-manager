@@ -1,10 +1,13 @@
-FROM golang:1.11 as builder
+FROM golang:1.11 as dev
 
 WORKDIR /src
 COPY go.mod go.sum ./
 RUN go mod download
 
 COPY . .
+
+
+FROM dev as builder
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o /api .
 
 

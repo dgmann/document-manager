@@ -66,7 +66,7 @@ func main() {
 		return
 	}
 
-	if err := record.CreateIndexes(context.Background(), nil); err != nil {
+	if err := record.CreateIndexes(context.Background(), client.Database(dbname).Collection("records")); err != nil {
 		log.WithError(err).Error("error setting indices")
 	}
 	config := &Config{

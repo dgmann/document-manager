@@ -5,7 +5,8 @@ import (
 	"time"
 )
 
-func Parse(text string) (*Patient, error) {
+func Parse(data []byte) (*Patient, error) {
+	text := toUtf8(data)
 	lines := strings.Split(text, "\n")
 	results := make(map[string]string)
 	for _, line := range lines {
@@ -41,4 +42,12 @@ func toBirthDate(s string) *time.Time {
 		return nil
 	}
 	return &result
+}
+
+func toUtf8(iso88591Buf []byte) string {
+	buf := make([]rune, len(iso88591Buf))
+	for i, b := range iso88591Buf {
+		buf[i] = rune(b)
+	}
+	return string(buf)
 }

@@ -2,6 +2,7 @@ package record
 
 import (
 	"context"
+	"github.com/bugsnag/bugsnag-go/errors"
 	"github.com/dgmann/document-manager/api/models"
 	"github.com/dgmann/document-manager/api/repositories"
 	"github.com/dgmann/document-manager/api/services"
@@ -65,8 +66,8 @@ func (r *DatabaseRepository) findByObjectId(ctx context.Context, id primitive.Ob
 	}
 
 	if err := res.Decode(record); err != nil {
-		log.WithField("error", res.Err()).Error("error decoding record")
-		return nil, res.Err()
+		log.WithField("error", err).Error("error decoding record")
+		return nil, errors.Errorf("record with ID %s not found", id.Hex())
 	}
 	return &record, nil
 }

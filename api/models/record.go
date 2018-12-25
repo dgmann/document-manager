@@ -2,8 +2,9 @@ package models
 
 import (
 	"encoding/json"
-	"github.com/globalsign/mgo/bson"
 	"github.com/jinzhu/copier"
+	"github.com/mongodb/mongo-go-driver/bson/primitive"
+	"github.com/sirupsen/logrus"
 	"time"
 )
 
@@ -18,14 +19,14 @@ const (
 )
 
 type Record struct {
-	Id          bson.ObjectId `bson:"_id,omitempty" json:"id"`
-	Date        *time.Time    `bson:"date,omitempty" json:"date"`
-	ReceivedAt  time.Time     `bson:"receivedAt,omitempty" json:"receivetAt"`
-	PatientId   *string       `bson:"patientId,omitempty" json:"patientId"`
-	Comment     *string       `bson:"comment,omitempty" json:"comment"`
-	Sender      string        `bson:"sender,omitempty" json:"sender" form:"user" binding:"required"`
-	Category    *string       `bson:"category,omitempty" json:"category"`
-	Tags        *[]string     `bson:"tags,omitempty" json:"tags"`
+	Id         primitive.ObjectID `bson:"_id,omitempty" json:"id"`
+	Date       *time.Time         `bson:"date,omitempty" json:"date"`
+	ReceivedAt time.Time          `bson:"receivedAt,omitempty" json:"receivetAt"`
+	PatientId  *string            `bson:"patientId,omitempty" json:"patientId"`
+	Comment    *string            `bson:"comment,omitempty" json:"comment"`
+	Sender     string             `bson:"sender,omitempty" json:"sender" form:"user" binding:"required"`
+	Category   *string            `bson:"category,omitempty" json:"category"`
+	Tags       *[]string          `bson:"tags,omitempty" json:"tags"`
 	Pages       []*Page       `bson:"pages,omitempty" json:"pages"`
 	Status      *Status       `bson:"status,omitempty" json:"status"`
 	ArchivedPDF string
@@ -54,7 +55,9 @@ func (r *Record) Clone() *Record {
 	pages := make([]*Page, len(r.Pages))
 	for i, p := range r.Pages {
 		page := &Page{}
-		copier.Copy(page, p)
+		if err := copier.Copy(page, p); err != nil {
+			logrus.WithError(err).Warn("error cloning page")
+		}
 		pages[i] = page
 	}
 	clone.Pages = pages
@@ -77,20 +80,20 @@ func statusToString(val *Status) string {
 }
 
 type CreateRecord struct {
-	Id         *bson.ObjectId `form:"id"`
-	Date       time.Time      `form:"date" time_format:"2006-01-02T15:04:05Z07:00"`
-	ReceivedAt time.Time      `form:"receivedAt" time_format:"2006-01-02T15:04:05Z07:00"`
-	Sender     string         `form:"sender"`
-	Comment    *string        `form:"comment"`
-	PatientId  *string        `form:"patientId"`
-	Tags       []string       `form:"tags"`
-	Status     *Status        `form:"status"`
-	Category   *string        `form:"category"`
+	Id         *primitive.ObjectID `form:"id"`
+	Date       time.Time           `form:"date" time_format:"2006-01-02T15:04:05Z07:00"`
+	ReceivedAt time.Time           `form:"receivedAt" time_format:"2006-01-02T15:04:05Z07:00"`
+	Sender     string              `form:"sender"`
+	Comment    *string             `form:"comment"`
+	PatientId  *string             `form:"patientId"`
+	Tags       []string            `form:"tags"`
+	Status     *Status             `form:"status"`
+	Category   *string             `form:"category"`
 	Pages      []*Page
 }
 
 func NewRecord(data CreateRecord) *Record {
-	id := bson.NewObjectId()
+	id := primitive.NewObjectID()
 	if data.Id != nil {
 		id = *data.Id
 	}

@@ -17,7 +17,6 @@ require (
 	github.com/gin-contrib/pprof v0.0.0-20180827024024-a27513940d36
 	github.com/gin-contrib/sse v0.0.0-20170109093832-22d885f9ecc7 // indirect
 	github.com/gin-gonic/gin v0.0.0-20180810125023-8fc8ce047243
-	github.com/globalsign/mgo v0.0.0-20180615134936-113d3961e731
 	github.com/go-stack/stack v1.8.0 // indirect
 	github.com/golang/snappy v0.0.0-20180518054509-2e65f85255db // indirect
 	github.com/google/go-cmp v0.2.0 // indirect

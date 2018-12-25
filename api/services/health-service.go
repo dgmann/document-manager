@@ -2,8 +2,10 @@ package services
 
 import (
 	"bytes"
+	"context"
 	"errors"
-	"github.com/globalsign/mgo"
+	"github.com/mongodb/mongo-go-driver/mongo"
+	"github.com/mongodb/mongo-go-driver/mongo/readpref"
 	"net/http"
 	"sync"
 	"time"
@@ -52,11 +54,18 @@ func(hs *healthService) Check() error {
 }
 
 func(hs *healthService) CheckDb() bool {
-	session, err := mgo.DialWithTimeout(hs.dbHost, 2 * time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+	client, err := mongo.Connect(ctx, "mongodb://"+hs.dbHost)
 	if err != nil {
 		return false
 	}
-	defer session.Close()
+
+	ctx, cancel = context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+	if err := client.Ping(ctx, readpref.Primary()); err != nil {
+		return false
+	}
 	return true
 }
 

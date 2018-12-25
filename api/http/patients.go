@@ -6,7 +6,7 @@ import (
 	"github.com/dgmann/document-manager/api/repositories/record"
 	"github.com/dgmann/document-manager/api/repositories/tag"
 	"github.com/gin-gonic/gin"
-	"github.com/globalsign/mgo/bson"
+	"github.com/mongodb/mongo-go-driver/bson"
 )
 
 func registerPatients(g *gin.RouterGroup, factory Factory) {

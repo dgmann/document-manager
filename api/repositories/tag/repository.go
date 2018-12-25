@@ -2,7 +2,7 @@ package tag
 
 import (
 	"context"
-	"github.com/globalsign/mgo/bson"
+	"github.com/mongodb/mongo-go-driver/bson"
 )
 
 type Repository interface {

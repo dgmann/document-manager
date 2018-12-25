@@ -12,7 +12,7 @@ import (
 	"github.com/dgmann/document-manager/api/repositories/record"
 	"github.com/dgmann/document-manager/api/services"
 	"github.com/gin-gonic/gin"
-	"github.com/globalsign/mgo/bson"
+	"github.com/mongodb/mongo-go-driver/bson/primitive"
 	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"strconv"
@@ -182,7 +182,7 @@ func (r *RecordController) Duplicate(c *gin.Context) {
 		return
 	}
 
-	newId := bson.NewObjectId()
+	newId := primitive.NewObjectID()
 
 	err = r.images.Copy(recordToDuplicate.Id.Hex(), newId.Hex())
 	if err != nil {

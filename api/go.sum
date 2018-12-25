@@ -18,7 +18,6 @@ github.com/dgmann/document-manager/pdf-processor/api v0.0.0-20180925160055-a92bb
 github.com/dgmann/document-manager/pdf-processor/api v0.0.0-20180925160055-a92bb23eeb51/go.mod h1:n2xLj9bRDlwONwZIm+NAMWagfnbCQYS7nDoFQEeAP/M=
 github.com/dgmann/document-manager/shared v0.0.0-20180811155848-da48cdc1e362 h1:UzX0cLdfSfn49kCWqsW9PObq4OII/WHaREVjEx0aYt4=
 github.com/dgmann/document-manager/shared v0.0.0-20180811155848-da48cdc1e362/go.mod h1:8a7LOi42xbs0LHITiBNNAb4RTapn4mm4LRcqAf1G654=
-github.com/dgmann/location v0.0.0-20181209210007-b43929720440 h1:hdNVaKHsXldsF4PepwYusM4rIxk34D3lgrAbRsnsxjU=
 github.com/dgmann/location v0.0.0-20181209210007-b43929720440/go.mod h1:9h8H5HbNTmt7J8rAvsqaBi5+HNO8+ErQcVjKE7UH0Zs=
 github.com/fsnotify/fsnotify v1.4.7 h1:IXs+QLmnXW2CcXuY+8Mzv/fWEsPGWxqefPtCP5CnV9I=
 github.com/fsnotify/fsnotify v1.4.7/go.mod h1:jwhsz4b93w/PPRr/qN1Yymfu8t87LnFCMoQvtojpjFo=
@@ -32,8 +31,6 @@ github.com/gin-contrib/sse v0.0.0-20170109093832-22d885f9ecc7 h1:AzN37oI0cOS+cou
 github.com/gin-contrib/sse v0.0.0-20170109093832-22d885f9ecc7/go.mod h1:VJ0WA2NBN22VlZ2dKZQPAPnyWw5XTlK1KymzLKsr59s=
 github.com/gin-gonic/gin v0.0.0-20180810125023-8fc8ce047243 h1:WY2KGTzolpQxmH/+gQsWB/CFtXbRLNbWvOadWAhes5M=
 github.com/gin-gonic/gin v0.0.0-20180810125023-8fc8ce047243/go.mod h1:7cKuhb5qV2ggCFctp2fJQ+ErvciLZrIeoOSOm6mUr7Y=
-github.com/globalsign/mgo v0.0.0-20180615134936-113d3961e731 h1:y7wyeiA6T+TT+HGC9DYypvLkUeg99N4rqHMzn2MmjYk=
-github.com/globalsign/mgo v0.0.0-20180615134936-113d3961e731/go.mod h1:xkRDCp4j0OGD1HRkm4kmhM+pmpv3AKq5SU7GMg4oO/Q=
 github.com/go-stack/stack v1.8.0 h1:5SgMzNM5HxrEjV0ww2lTmX6E2Izsfxas4+YHWRs3Lsk=
 github.com/go-stack/stack v1.8.0/go.mod h1:v0f6uXyyMGvRgIKkXu+yp6POWl0qKG85gN/melR3HDY=
 github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b h1:VKtxabqXZkF25pY9ekfRL6a582T4P37/31XEstQ5p58=
@@ -68,8 +65,6 @@ github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd h1:TRLaZ9cD/w
 github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd/go.mod h1:6dJC0mAP4ikYIbvyc7fijjWJddQyLn8Ig3JB5CqoB9Q=
 github.com/modern-go/reflect2 v1.0.1 h1:9f412s+6RmYXLWZSEzVVgPGK7C2PphHj5RJrvfx9AWI=
 github.com/modern-go/reflect2 v1.0.1/go.mod h1:bx2lNnkwVCuqBIxFjflWJWanXIb3RllmbCylyMrvgv0=
-github.com/mongodb/mongo-go-driver v0.1.0 h1:LcpPFw0tNumIAakvNrkI9S9wdX0iOxvMLw/+hcAdHaU=
-github.com/mongodb/mongo-go-driver v0.1.0/go.mod h1:NK/HWDIIZkaYsnYa0hmtP443T5ELr0KDecmIioVuuyU=
 github.com/mongodb/mongo-go-driver v0.1.1-0.20181220233027-8051092034cf h1:hRF8aeLDdPp9BS+pW1aSbk576CwPftSlm3SJwNE65eM=
 github.com/mongodb/mongo-go-driver v0.1.1-0.20181220233027-8051092034cf/go.mod h1:NK/HWDIIZkaYsnYa0hmtP443T5ELr0KDecmIioVuuyU=
 github.com/onsi/ginkgo v1.6.0 h1:Ix8l273rp3QzYgXSR+c8d1fTG7UPgYkOSELPhiY/YGw=

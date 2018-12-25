@@ -65,7 +65,7 @@ func (r *DatabaseRepository) findByObjectId(ctx context.Context, id primitive.Ob
 		return nil, res.Err()
 	}
 
-	if err := res.Decode(record); err != nil {
+	if err := res.Decode(&record); err != nil {
 		log.WithField("error", err).Error("error decoding record")
 		return nil, errors.Errorf("record with ID %s not found", id.Hex())
 	}

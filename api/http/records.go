@@ -103,8 +103,9 @@ func (r *RecordController) Create(c *gin.Context) {
 
 	file, err := c.FormFile("pdf")
 	if err != nil {
-		log.WithError(err).Error("no file specified in upload")
-		c.AbortWithError(400, err)
+		e := errors.New("no file found. Please specify a pdf file in the field: pdf")
+		log.WithError(err).Error(e.Error())
+		c.AbortWithError(400, e)
 		return
 	}
 

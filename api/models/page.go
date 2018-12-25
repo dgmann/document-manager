@@ -1,6 +1,6 @@
 package models
 
-import "github.com/globalsign/mgo/bson"
+import "github.com/mongodb/mongo-go-driver/bson/primitive"
 
 type Page struct {
 	Id      string `bson:"id" json:"id"`
@@ -10,7 +10,7 @@ type Page struct {
 }
 
 func NewPage(format string) *Page {
-	id := bson.NewObjectId().Hex()
+	id := primitive.NewObjectID().Hex()
 	return &Page{Id: id, Format: format}
 }
 

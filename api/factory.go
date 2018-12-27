@@ -35,11 +35,11 @@ func (f *Factory) GetRecordRepository() *record.DatabaseRepository {
 }
 
 func (f *Factory) GetImageRepository() *image.FileSystemRepository {
-	return image.NewFileSystemRepository(f.config.GetRecordDirectory())
+	return image.NewFileSystemRepository(f.config.RecordDirectory)
 }
 
 func (f *Factory) GetPDFRepository() *pdf.FileSystemRepository {
-	return pdf.NewFileSystemRepository(f.config.GetPDFDirectory())
+	return pdf.NewFileSystemRepository(f.config.ArchiveDirectory)
 }
 
 func (f *Factory) GetTagRepository() *tag.DatabaseRepository {
@@ -54,12 +54,12 @@ func (f *Factory) GetCategoryRepository() *category.DatabaseRepository {
 }
 
 func NewFactory(config *Config) *Factory {
-	fileInfoService := image.NewFileSystemRepository(config.GetRecordDirectory())
+	fileInfoService := image.NewFileSystemRepository(config.RecordDirectory)
 	eventService := services.NewEventService(fileInfoService)
 	eventService.Log()
 	f := &Factory{
 		config:          config,
-		pdfProcessorUrl: config.GetPdfProcessorUrl(),
+		pdfProcessorUrl: config.PdfProcessorUrl,
 		eventService:    eventService,
 	}
 	return f

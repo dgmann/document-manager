@@ -31,14 +31,14 @@ func (p *PdfProcessor) Close() error {
 	return p.conn.Close()
 }
 
-func (p *PdfProcessor) Convert(f io.Reader) ([]*shared.Image, error) {
+func (p *PdfProcessor) Convert(ctx context.Context, f io.Reader) ([]*shared.Image, error) {
 	b, err := ioutil.ReadAll(f)
 	if err != nil {
 		return nil, err
 	}
 
 	client := api.NewPdfProcessorClient(p.conn)
-	stream, err := client.ConvertPdfToImage(context.Background(), &api.Pdf{Content: b})
+	stream, err := client.ConvertPdfToImage(ctx, &api.Pdf{Content: b})
 	if err != nil {
 		return nil, err
 	}
@@ -57,13 +57,13 @@ func (p *PdfProcessor) Convert(f io.Reader) ([]*shared.Image, error) {
 	return images, nil
 }
 
-func (p *PdfProcessor) Rotate(image io.Reader, degrees int) (*shared.Image, error) {
+func (p *PdfProcessor) Rotate(ctx context.Context, image io.Reader, degrees int) (*shared.Image, error) {
 	b, err := ioutil.ReadAll(image)
 	if err != nil {
 		return nil, err
 	}
 
 	client := api.NewPdfProcessorClient(p.conn)
-	result, err := client.RotateImage(context.Background(), &api.Rotate{Content: b, Degree: float64(degrees)})
+	result, err := client.RotateImage(ctx, &api.Rotate{Content: b, Degree: float64(degrees)})
 	return shared.NewImage(result.Content, result.Format), err
 }

@@ -70,11 +70,10 @@ func main() {
 		log.WithError(err).Error("error setting indices")
 	}
 	config := &Config{
-		Db:              client.Database(dbname),
-		RecordDir:       recordDir,
-		PDFDir:          archiveDir,
-		PdfProcessorUrl: pdfprocessorUrl,
-		Bugsnag:         bugsnagConfig,
+		Db:               client.Database(dbname),
+		RecordDirectory:  recordDir,
+		ArchiveDirectory: archiveDir,
+		PdfProcessorUrl:  pdfprocessorUrl,
 	}
 
 	services.InitHealthService(dbHost, pdfprocessorUrl)

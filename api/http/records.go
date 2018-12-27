@@ -127,7 +127,7 @@ func (r *RecordController) Create(c *gin.Context) {
 		return
 	}
 
-	images, err := r.pdfProcessor.Convert(bytes.NewBuffer(fileBytes))
+	images, err := r.pdfProcessor.Convert(c, bytes.NewBuffer(fileBytes))
 	if err != nil {
 		c.AbortWithError(400, err)
 		return
@@ -221,7 +221,7 @@ func (r *RecordController) Reset(c *gin.Context) {
 		return
 	}
 
-	images, err := r.pdfProcessor.Convert(bytes.NewBuffer(fileBytes))
+	images, err := r.pdfProcessor.Convert(c, bytes.NewBuffer(fileBytes))
 	if err != nil {
 		c.AbortWithError(500, err)
 		return
@@ -329,7 +329,7 @@ func (r *RecordController) UpdatePages(c *gin.Context) {
 			defer wg.Done()
 
 			if img, ok := images[update.Id]; ok {
-				img, err := r.pdfProcessor.Rotate(bytes.NewBuffer(img.Image), int(update.Rotate))
+				img, err := r.pdfProcessor.Rotate(c, bytes.NewBuffer(img.Image), int(update.Rotate))
 				if err != nil {
 					mutex.Lock()
 					errorIds = append(errorIds, update.Id)
@@ -373,7 +373,7 @@ func (r *RecordController) RotatePage(c *gin.Context) {
 		return
 	}
 	if img, ok := images[c.Param("imageId")]; ok {
-		img, err := r.pdfProcessor.Rotate(bytes.NewBuffer(img.Image), degrees)
+		img, err := r.pdfProcessor.Rotate(c, bytes.NewBuffer(img.Image), degrees)
 		if err != nil {
 			c.AbortWithError(400, err)
 			return

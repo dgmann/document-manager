@@ -4,11 +4,11 @@ import (
 	"context"
 	"github.com/Shopify/logrus-bugsnag"
 	"github.com/bugsnag/bugsnag-go"
-	"github.com/dgmann/document-manager/api/http"
-	"github.com/dgmann/document-manager/api/repositories/record"
+	"github.com/dgmann/document-manager/api/app/filesystem"
+	"github.com/dgmann/document-manager/api/app/grpc"
+	"github.com/dgmann/document-manager/api/app/http"
+	"github.com/dgmann/document-manager/api/app/mongo"
 	"github.com/dgmann/document-manager/api/services"
-	"github.com/mongodb/mongo-go-driver/mongo"
-	"github.com/mongodb/mongo-go-driver/mongo/readpref"
 	log "github.com/sirupsen/logrus"
 	"os"
 	"time"
@@ -52,33 +52,49 @@ func main() {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
-	client, err := mongo.Connect(ctx, "mongodb://"+dbHost)
-	if err != nil {
-		log.WithError(err).Error("error creating database client")
-		os.Exit(1)
-		return
+	client := mongo.NewClient(dbHost, dbname)
+	if err := client.Connect(ctx); err != nil {
+		log.WithError(err).Error("error connecting to mongodb")
 	}
 
-	ctx, _ = context.WithTimeout(context.Background(), 2*time.Second)
-	if err := client.Ping(ctx, readpref.Primary()); err != nil {
-		log.WithError(err).Error("error connecting to database")
-		os.Exit(1)
-		return
-	}
-
-	if err := record.CreateIndexes(context.Background(), client.Database(dbname).Collection("records")); err != nil {
+	if err := client.CreateIndexes(context.Background()); err != nil {
 		log.WithError(err).Error("error setting indices")
 	}
-	config := &Config{
-		Db:               client.Database(dbname),
-		RecordDirectory:  recordDir,
-		ArchiveDirectory: archiveDir,
-		PdfProcessorUrl:  pdfprocessorUrl,
+
+	imageService, err := filesystem.NewImageService(recordDir)
+	if err != nil {
+		log.WithError(err).Error("error creating image service")
+		return
+	}
+	archiveService, err := filesystem.NewArchiveService(archiveDir)
+	if err != nil {
+		log.WithError(err).Error("error creating archive service")
+		return
+	}
+	pdfProcessor, err := grpc.NewPDFProcessor(pdfprocessorUrl)
+	if err != nil {
+		log.WithError(err).Error("error connecting to pdf processor service")
+		return
+	}
+	eventService := http.NewEventService(imageService)
+	tagService := mongo.NewTagService(client.Records())
+
+	srv := http.Server{
+		EventService:    eventService,
+		ImageService:    imageService,
+		TagService:      tagService,
+		CategoryService: mongo.NewCategoryService(client.Records(), client.Categories()),
+		ArchiveService:  archiveService,
+		Bug:             bugsnagConfig,
+		RecordService: mongo.NewRecordService(mongo.RecordServiceConfig{
+			Records: client.Records(),
+			Events:  eventService,
+		}),
+		PdfProcessor: pdfProcessor,
 	}
 
 	services.InitHealthService(dbHost, pdfprocessorUrl)
-	factory := NewFactory(config)
-	http.Run(factory, bugsnagConfig)
+	srv.Run()
 }
 
 func envOrDefault(key, def string) string {

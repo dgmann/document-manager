@@ -80,7 +80,7 @@ func main() {
 		EventService:    eventService,
 		ImageService:    imageService,
 		TagService:      tagService,
-		CategoryService: mongo.NewCategoryService(client.Records(), client.Categories()),
+		CategoryService: mongo.NewCategoryService(client.Categories(), client.Records()),
 		ArchiveService:  archiveService,
 		Bug:             bugsnagConfig,
 		RecordService: mongo.NewRecordService(mongo.RecordServiceConfig{

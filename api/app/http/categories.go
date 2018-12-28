@@ -24,7 +24,7 @@ type categoryRepository interface {
 }
 
 func (cat *CategoryController) All(c *gin.Context) {
-	categories, err := cat.categories.All(c.Request.Context())
+	categories, err := cat.categories.All(c)
 	if err != nil {
 		c.AbortWithError(400, err)
 		return

@@ -45,7 +45,7 @@ func (r *RecordController) All(c *gin.Context) {
 	for k, v := range params {
 		query[k] = v[0]
 	}
-	records, err := r.records.Query(c.Request.Context(), query)
+	records, err := r.records.Query(c, query)
 	if err != nil {
 		c.AbortWithError(400, err)
 		return
@@ -56,7 +56,7 @@ func (r *RecordController) All(c *gin.Context) {
 
 func (r *RecordController) One(c *gin.Context) {
 	id := c.Param("recordId")
-	result, err := r.records.Find(c.Request.Context(), id)
+	result, err := r.records.Find(c, id)
 	if err != nil {
 		c.AbortWithError(404, err)
 		return
@@ -106,7 +106,7 @@ func (r *RecordController) Create(c *gin.Context) {
 		return
 	}
 
-	res, err := r.records.Create(c.Request.Context(), newRecord, images, bytes.NewBuffer(fileBytes))
+	res, err := r.records.Create(c, newRecord, images, bytes.NewBuffer(fileBytes))
 	if err != nil {
 		c.AbortWithError(400, err)
 		return
@@ -123,7 +123,7 @@ func (r *RecordController) Update(c *gin.Context) {
 		c.Error(err)
 		return
 	}
-	updated, err := r.records.Update(c.Request.Context(), c.Param("recordId"), body)
+	updated, err := r.records.Update(c, c.Param("recordId"), body)
 	if err != nil {
 		c.AbortWithError(400, err)
 		return
@@ -134,7 +134,7 @@ func (r *RecordController) Update(c *gin.Context) {
 }
 
 func (r *RecordController) Delete(c *gin.Context) {
-	err := r.records.Delete(c.Request.Context(), c.Param("recordId"))
+	err := r.records.Delete(c, c.Param("recordId"))
 	c.Header("Content-Type", "application/json; charset=utf-8")
 	if err != nil {
 		c.AbortWithError(400, err)
@@ -144,7 +144,7 @@ func (r *RecordController) Delete(c *gin.Context) {
 }
 
 func (r *RecordController) Duplicate(c *gin.Context) {
-	recordToDuplicate, err := r.records.Find(c.Request.Context(), c.Param("recordId"))
+	recordToDuplicate, err := r.records.Find(c, c.Param("recordId"))
 	if err != nil {
 		c.AbortWithError(404, err)
 		return
@@ -164,7 +164,7 @@ func (r *RecordController) Duplicate(c *gin.Context) {
 		return
 	}
 
-	copiedRecord, err := r.records.Create(c.Request.Context(), app.CreateRecord{
+	copiedRecord, err := r.records.Create(c, app.CreateRecord{
 		Id:         &newId,
 		ReceivedAt: recordToDuplicate.ReceivedAt,
 		Sender:     recordToDuplicate.Sender,
@@ -214,7 +214,7 @@ func (r *RecordController) Reset(c *gin.Context) {
 		c.AbortWithError(500, err)
 		return
 	}
-	updated, err := r.records.Update(c.Request.Context(), recordId, app.Record{Pages: pages})
+	updated, err := r.records.Update(c, recordId, app.Record{Pages: pages})
 	if err != nil {
 		c.AbortWithError(500, err)
 		return
@@ -224,13 +224,13 @@ func (r *RecordController) Reset(c *gin.Context) {
 }
 
 func (r *RecordController) Append(c *gin.Context) {
-	recordToAppend, err := r.records.Find(c.Request.Context(), c.Param("idtoappend"))
+	recordToAppend, err := r.records.Find(c, c.Param("idtoappend"))
 	if err != nil {
 		c.AbortWithError(404, err)
 		return
 	}
 
-	targetRecord, err := r.records.Find(c.Request.Context(), c.Param("recordId"))
+	targetRecord, err := r.records.Find(c, c.Param("recordId"))
 	if err != nil {
 		c.AbortWithError(404, err)
 		return
@@ -244,7 +244,7 @@ func (r *RecordController) Append(c *gin.Context) {
 		return
 	}
 
-	updated, err := r.records.Update(c.Request.Context(), c.Param("recordId"), app.Record{Pages: pages})
+	updated, err := r.records.Update(c, c.Param("recordId"), app.Record{Pages: pages})
 	if err != nil {
 		c.AbortWithError(400, err)
 		return
@@ -254,7 +254,7 @@ func (r *RecordController) Append(c *gin.Context) {
 }
 
 func (r *RecordController) Page(c *gin.Context) {
-	rec, err := r.records.Find(c.Request.Context(), c.Param("recordId"))
+	rec, err := r.records.Find(c, c.Param("recordId"))
 	if err != nil {
 		c.AbortWithError(404, err)
 		return
@@ -276,7 +276,7 @@ func (r *RecordController) UpdatePages(c *gin.Context) {
 		return
 	}
 
-	updated, err := r.records.UpdatePages(c.Request.Context(), c.Param("recordId"), updates)
+	updated, err := r.records.UpdatePages(c, c.Param("recordId"), updates)
 	if err != nil {
 		c.AbortWithError(400, err)
 		return

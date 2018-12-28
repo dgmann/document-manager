@@ -22,7 +22,7 @@ type PatientController struct {
 func (p *PatientController) Tags(c *gin.Context) {
 	patientId := c.Param("patientId")
 
-	tags, err := p.tags.ByPatient(c.Request.Context(), patientId)
+	tags, err := p.tags.ByPatient(c, patientId)
 	if err != nil {
 		c.AbortWithError(404, err)
 		return
@@ -35,7 +35,7 @@ func (p *PatientController) Tags(c *gin.Context) {
 func (p *PatientController) Categories(c *gin.Context) {
 	patientId := c.Param("patientId")
 
-	categories, err := p.categories.FindByPatient(c.Request.Context(), patientId)
+	categories, err := p.categories.FindByPatient(c, patientId)
 	if err != nil {
 		c.AbortWithError(404, err)
 		return
@@ -47,7 +47,7 @@ func (p *PatientController) Categories(c *gin.Context) {
 
 func (p *PatientController) Records(c *gin.Context) {
 	id := c.Param("patientId")
-	records, err := p.records.Query(c.Request.Context(), bson.M{"patientId": id})
+	records, err := p.records.Query(c, bson.M{"patientId": id})
 	if err != nil {
 		c.AbortWithError(400, err)
 		return

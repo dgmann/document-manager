@@ -1,7 +1,7 @@
 package filesystem
 
 import (
-	"github.com/dgmann/document-manager/api/repositories"
+	"github.com/dgmann/document-manager/api/app"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"os"
@@ -57,15 +57,15 @@ func (f fileMock) Close() error {
 	return args.Error(0)
 }
 
-func buildTestRepository() (Repository, *filesystemMock) {
+func buildTestRepository() (Storage, *filesystemMock) {
 	filesystem := new(filesystemMock)
-	repository := Repository{baseDirectory: filepath.FromSlash("/root"), filesystem: filesystem}
+	repository := Storage{baseDirectory: filepath.FromSlash("/root"), filesystem: filesystem}
 	return repository, filesystem
 }
 
 func TestRepository_Delete_File(t *testing.T) {
 	repository, filesystem := buildTestRepository()
-	resource := repositories.NewKeyedGenericResource([]byte{}, "png", "1")
+	resource := app.NewKeyedGenericResource([]byte{}, "png", "1")
 
 	filesystem.On("Remove", filepath.FromSlash("/root/1.png")).Return(nil)
 
@@ -77,7 +77,7 @@ func TestRepository_Delete_File(t *testing.T) {
 
 func TestRepository_Delete_File_Multiple_Keys(t *testing.T) {
 	repository, filesystem := buildTestRepository()
-	resource := repositories.NewKeyedGenericResource([]byte{}, "png", "1", "2")
+	resource := app.NewKeyedGenericResource([]byte{}, "png", "1", "2")
 
 	filesystem.On("Remove", filepath.FromSlash("/root/1/2.png")).Return(nil)
 
@@ -89,7 +89,7 @@ func TestRepository_Delete_File_Multiple_Keys(t *testing.T) {
 
 func TestRepository_Delete_Directory(t *testing.T) {
 	repository, filesystem := buildTestRepository()
-	resource := repositories.NewDirectoryResource("1")
+	resource := app.NewDirectoryResource("1")
 
 	filesystem.On("RemoveAll", filepath.FromSlash("/root/1")).Return(nil)
 
@@ -101,7 +101,7 @@ func TestRepository_Delete_Directory(t *testing.T) {
 
 func TestRepository_Normalize_Extension(t *testing.T) {
 	repository, filesystem := buildTestRepository()
-	resource := repositories.NewKeyedGenericResource([]byte{}, "jpg", "1")
+	resource := app.NewKeyedGenericResource([]byte{}, "jpg", "1")
 
 	filesystem.On("Remove", filepath.FromSlash("/root/1.jpeg")).Return(nil)
 
@@ -113,7 +113,7 @@ func TestRepository_Normalize_Extension(t *testing.T) {
 
 func TestRepository_Write(t *testing.T) {
 	repository, filesystem := buildTestRepository()
-	resource := repositories.NewKeyedGenericResource([]byte{}, "png", "1", "2")
+	resource := app.NewKeyedGenericResource([]byte{}, "png", "1", "2")
 	fileMock := new(fileMock)
 
 	filesystem.On("Stat", filepath.FromSlash("/root/1")).Return(nil, os.ErrNotExist)

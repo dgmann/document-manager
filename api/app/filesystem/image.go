@@ -14,7 +14,7 @@ import (
 )
 
 type ImageService struct {
-	*Repository
+	*Storage
 }
 
 func NewImageService(directory string) (*ImageService, error) {
@@ -22,7 +22,7 @@ func NewImageService(directory string) (*ImageService, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &ImageService{Repository: repository}, nil
+	return &ImageService{Storage: repository}, nil
 }
 
 func (f *ImageService) Get(id string) (map[string]*app.Image, error) {

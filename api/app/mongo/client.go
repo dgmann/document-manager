@@ -48,3 +48,11 @@ func (c *Client) CreateIndexes(ctx context.Context) error {
 	}
 	return nil
 }
+
+func (c *Client) Check(ctx context.Context) (string, error) {
+	err := c.Ping(ctx, readpref.Primary())
+	if err != nil {
+		return "", err
+	}
+	return "connected", nil
+}

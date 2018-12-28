@@ -1,6 +1,7 @@
 package filesystem
 
 import (
+	"context"
 	"github.com/dgmann/document-manager/api/app"
 	"github.com/sirupsen/logrus"
 	"os"
@@ -8,19 +9,21 @@ import (
 	"time"
 )
 
-type Repository struct {
+type Storage struct {
 	baseDirectory string
 	filesystem    filesystem
 }
 
-func New(directory string) (*Repository, error) {
+func New(directory string) (*Storage, error) {
 	if _, err := os.Stat(directory); os.IsNotExist(err) {
-		return nil, os.MkdirAll(directory, os.ModePerm)
+		if e := os.MkdirAll(directory, os.ModePerm); e != nil {
+			logrus.WithError(e).Error("error creating directory")
+		}
 	}
-	return &Repository{baseDirectory: directory, filesystem: diskFileSystem{}}, nil
+	return &Storage{baseDirectory: directory, filesystem: diskFileSystem{}}, nil
 }
 
-func (f *Repository) Delete(resource app.KeyedResource) error {
+func (f *Storage) Delete(resource app.KeyedResource) error {
 	p := f.buildPath(resource.Key()...)
 	var err error
 	if len(resource.Format()) > 0 {
@@ -36,7 +39,7 @@ func (f *Repository) Delete(resource app.KeyedResource) error {
 	return nil
 }
 
-func (f *Repository) Write(resource app.KeyedResource) (err error) {
+func (f *Storage) Write(resource app.KeyedResource) (err error) {
 	fp := f.buildResourcePath(resource)
 
 	dir := filepath.Dir(fp)
@@ -64,7 +67,14 @@ func (f *Repository) Write(resource app.KeyedResource) (err error) {
 	return nil
 }
 
-func (f *Repository) ModTime(resource app.KeyedResource) (time.Time, error) {
+func (f *Storage) Check(ctx context.Context) (string, error) {
+	if _, err := os.Stat(f.baseDirectory); err != nil {
+		return "", err
+	}
+	return "pass", nil
+}
+
+func (f *Storage) ModTime(resource app.KeyedResource) (time.Time, error) {
 	fp := f.buildResourcePath(resource)
 	fileInfo, err := os.Stat(fp)
 	if err != nil {
@@ -73,7 +83,7 @@ func (f *Repository) ModTime(resource app.KeyedResource) (time.Time, error) {
 	return fileInfo.ModTime(), nil
 }
 
-func (f *Repository) buildResourcePath(resource app.KeyedResource) string {
+func (f *Storage) buildResourcePath(resource app.KeyedResource) string {
 	p := f.buildPath(resource.Key()...)
 	if len(resource.Format()) > 0 {
 		p += "." + normalizeExtension(resource.Format())
@@ -81,7 +91,7 @@ func (f *Repository) buildResourcePath(resource app.KeyedResource) string {
 	return p
 }
 
-func (f *Repository) buildPath(keys ...string) string {
+func (f *Storage) buildPath(keys ...string) string {
 	keySlice := append([]string{f.baseDirectory}, keys...)
 	return filepath.Join(keySlice...)
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/Shopify/logrus-bugsnag"
 	"github.com/bugsnag/bugsnag-go"
+	"github.com/dgmann/document-manager/api/app"
 	"github.com/dgmann/document-manager/api/app/filesystem"
 	"github.com/dgmann/document-manager/api/app/grpc"
 	"github.com/dgmann/document-manager/api/app/http"
@@ -50,9 +51,9 @@ func main() {
 	dbname := envOrDefault("DB_NAME", "manager")
 	pdfprocessorUrl := envOrDefault("PDFPROCESSOR_URL", "127.0.0.1:9000")
 
+	client := mongo.NewClient(dbHost, dbname)
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
-	client := mongo.NewClient(dbHost, dbname)
 	if err := client.Connect(ctx); err != nil {
 		log.WithError(err).Error("error connecting to mongodb")
 	}
@@ -64,17 +65,14 @@ func main() {
 	imageService, err := filesystem.NewImageService(recordDir)
 	if err != nil {
 		log.WithError(err).Error("error creating image service")
-		return
 	}
 	archiveService, err := filesystem.NewArchiveService(archiveDir)
 	if err != nil {
 		log.WithError(err).Error("error creating archive service")
-		return
 	}
 	pdfProcessor, err := grpc.NewPDFProcessor(pdfprocessorUrl)
 	if err != nil {
 		log.WithError(err).Error("error connecting to pdf processor service")
-		return
 	}
 	eventService := http.NewEventService(imageService)
 	tagService := mongo.NewTagService(client.Records())
@@ -91,10 +89,18 @@ func main() {
 			Events:  eventService,
 		}),
 		PdfProcessor: pdfProcessor,
+		Healthchecker: map[string]app.HealthChecker{
+			"database":       client,
+			"pdfProcessor":   pdfProcessor,
+			"archiveStorage": archiveService,
+			"recordStorage":  imageService,
+		},
 	}
 
 	services.InitHealthService(dbHost, pdfprocessorUrl)
-	srv.Run()
+	if err := srv.Run(); err != nil {
+		log.WithError(err).Error("error starting http server")
+	}
 }
 
 func envOrDefault(key, def string) string {

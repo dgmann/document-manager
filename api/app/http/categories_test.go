@@ -4,8 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"github.com/dgmann/document-manager/api/http/response"
-	"github.com/dgmann/document-manager/api/models"
+	"github.com/dgmann/document-manager/api/app"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"net/http/httptest"
@@ -17,9 +16,9 @@ type MockCategoryRepository struct {
 	mock.Mock
 }
 
-func (m *MockCategoryRepository) All(ctx context.Context) ([]models.Category, error) {
+func (m *MockCategoryRepository) All(ctx context.Context) ([]app.Category, error) {
 	args := m.Called(ctx)
-	return args.Get(0).([]models.Category), args.Error(1)
+	return args.Get(0).([]app.Category), args.Error(1)
 }
 
 func (m *MockCategoryRepository) Add(ctx context.Context, id, category string) error {
@@ -29,7 +28,7 @@ func (m *MockCategoryRepository) Add(ctx context.Context, id, category string) e
 
 func createTestController() (*CategoryController, *MockCategoryRepository) {
 	mockCategoryRepository := new(MockCategoryRepository)
-	testResponseService, _ := response.NewTestFactory()
+	testResponseService, _ := NewTestResponseFactory()
 	return &CategoryController{categories: mockCategoryRepository, responseService: testResponseService}, mockCategoryRepository
 }
 
@@ -37,7 +36,7 @@ func TestCategoryController_All(t *testing.T) {
 	controller, mockCategoryRepository := createTestController()
 
 	ctx, w := NewTestContext()
-	categories := []models.Category{{Name: "mock", Id: "mock"}}
+	categories := []app.Category{{Name: "mock", Id: "mock"}}
 	mockCategoryRepository.On("All", ctx.Request.Context()).Return(categories, nil)
 
 	controller.All(ctx)
@@ -50,7 +49,7 @@ func TestCategoryController_Create(t *testing.T) {
 
 	ctx, w := NewTestContext()
 
-	category := models.Category{Id: "cat", Name: "Category"}
+	category := app.Category{Id: "cat", Name: "Category"}
 	body, _ := json.Marshal(category)
 	req := httptest.NewRequest("POST", "/", bytes.NewBuffer(body))
 	ctx.Request = req

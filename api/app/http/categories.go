@@ -39,7 +39,7 @@ func (cat *CategoryController) Create(c *gin.Context) {
 		cat.responseService.NewErrorResponse(c, http.StatusBadRequest, err)
 		return
 	}
-	if err := cat.categories.Add(c.Request.Context(), body.Id, body.Name); err != nil {
+	if err := cat.categories.Add(c, body.Id, body.Name); err != nil {
 		cat.responseService.NewErrorResponse(c, http.StatusConflict, err)
 		return
 	}

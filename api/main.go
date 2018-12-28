@@ -9,7 +9,6 @@ import (
 	"github.com/dgmann/document-manager/api/app/grpc"
 	"github.com/dgmann/document-manager/api/app/http"
 	"github.com/dgmann/document-manager/api/app/mongo"
-	"github.com/dgmann/document-manager/api/services"
 	log "github.com/sirupsen/logrus"
 	"os"
 	"time"
@@ -48,10 +47,10 @@ func main() {
 	recordDir := envOrDefault("RECORD_DIR", "/records")
 	archiveDir := envOrDefault("ARCHIVE_DIR", "/archive")
 	dbHost := envOrDefault("DB_HOST", "localhost")
-	dbname := envOrDefault("DB_NAME", "manager")
-	pdfprocessorUrl := envOrDefault("PDFPROCESSOR_URL", "127.0.0.1:9000")
+	dbName := envOrDefault("DB_NAME", "manager")
+	pdfProcessorUrl := envOrDefault("PDFPROCESSOR_URL", "127.0.0.1:9000")
 
-	client := mongo.NewClient(dbHost, dbname)
+	client := mongo.NewClient(dbHost, dbName)
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 	defer cancel()
 	if err := client.Connect(ctx); err != nil {
@@ -70,7 +69,7 @@ func main() {
 	if err != nil {
 		log.WithError(err).Error("error creating archive service")
 	}
-	pdfProcessor, err := grpc.NewPDFProcessor(pdfprocessorUrl)
+	pdfProcessor, err := grpc.NewPDFProcessor(pdfProcessorUrl)
 	if err != nil {
 		log.WithError(err).Error("error connecting to pdf processor service")
 	}
@@ -97,7 +96,6 @@ func main() {
 		},
 	}
 
-	services.InitHealthService(dbHost, pdfprocessorUrl)
 	if err := srv.Run(); err != nil {
 		log.WithError(err).Error("error starting http server")
 	}

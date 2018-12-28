@@ -10,7 +10,7 @@ import (
 )
 
 type ArchiveService struct {
-	*Repository
+	*Storage
 }
 
 func NewArchiveService(directory string) (*ArchiveService, error) {
@@ -18,7 +18,7 @@ func NewArchiveService(directory string) (*ArchiveService, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &ArchiveService{Repository: repository}, nil
+	return &ArchiveService{Storage: repository}, nil
 }
 
 func (f *ArchiveService) Get(id string) (io.Reader, error) {

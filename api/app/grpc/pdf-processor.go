@@ -2,9 +2,12 @@ package grpc
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"github.com/dgmann/document-manager/api/app"
 	"github.com/dgmann/document-manager/pdf-processor/api"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/connectivity"
 	"io"
 	"io/ioutil"
 )
@@ -66,4 +69,12 @@ func (p *PdfProcessor) Rotate(ctx context.Context, image io.Reader, degrees int)
 	client := api.NewPdfProcessorClient(p.conn)
 	result, err := client.RotateImage(ctx, &api.Rotate{Content: b, Degree: float64(degrees)})
 	return app.NewImage(result.Content, result.Format), err
+}
+
+func (p *PdfProcessor) Check(ctx context.Context) (string, error) {
+	state := p.conn.GetState()
+	if state == connectivity.TransientFailure || state == connectivity.Shutdown {
+		return state.String(), errors.New(fmt.Sprintf("grpc error. Connection state: %v", state))
+	}
+	return state.String(), nil
 }

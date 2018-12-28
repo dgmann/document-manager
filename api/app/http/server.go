@@ -11,6 +11,7 @@ import (
 )
 
 type Server struct {
+	Healthchecker   map[string]app.HealthChecker
 	EventService    app.Subscriber
 	RecordService   app.RecordService
 	ImageService    app.ImageService
@@ -21,7 +22,7 @@ type Server struct {
 	Bug             bugsnag.Configuration
 }
 
-func (s *Server) Run() {
+func (s *Server) Run() error {
 	router := gin.Default()
 	pprof.Register(router)
 	router.Use(bugsnaggin.AutoNotify(s.Bug))
@@ -62,16 +63,18 @@ func (s *Server) Run() {
 	registerPatients(router.Group("/patients"), patientController)
 	registerCategories(router.Group("/categories"), categoryController)
 
-	generalController := NewGeneralController()
+	health := HealthController{s.Healthchecker}
 	tagController := NewTagController(s.TagService)
 	archiveController := NewArchiveController(s.ArchiveService)
 
-	router.GET("", generalController.Home)
-	router.GET("status", generalController.Status)
+	router.GET("", func(c *gin.Context) {
+		c.String(200, "Document Storage API")
+	})
+	router.GET("status", health.Status)
 
 	router.GET("tags", tagController.All)
 
 	router.GET("archive/:recordId", archiveController.One)
 
-	router.Run()
+	return router.Run()
 }

@@ -1,4 +1,4 @@
-package record
+package client
 
 import (
 	"bytes"
@@ -21,7 +21,7 @@ func NewHttpUploader(url string) *HttpUploader {
 
 func (u *HttpUploader) Upload(create *NewRecord) error {
 	params := createParamMap(create)
-	req, err := newfileUploadRequest(u.url+"/records", params, create.File)
+	req, err := newfileUploadRequest(u.url+"/records", params, File)
 	if err != nil {
 		return err
 	}

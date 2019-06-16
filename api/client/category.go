@@ -1,4 +1,4 @@
-package repository
+package client
 
 type Category struct {
 	Id   string `json:"Id"`

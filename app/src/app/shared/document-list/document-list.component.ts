@@ -8,7 +8,8 @@ import {
   Output,
   ViewChild
 } from '@angular/core';
-import { MatSort, MatTableDataSource } from "@angular/material";
+import { MatSort } from "@angular/material/sort";
+import { MatTableDataSource } from "@angular/material/table";
 import { Router } from "@angular/router";
 import { includes } from 'lodash-es';
 import { DropEvent } from "ng-drag-drop";
@@ -27,7 +28,7 @@ import { DocumentEditDialogService } from "../document-edit-dialog/document-edit
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DocumentListComponent implements OnInit, AfterViewInit {
-  @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatSort, { static: false }) sort: MatSort;
 
   @Input() selectedIds: Observable<string[]>;
   @Input() records: Observable<Record[]>;

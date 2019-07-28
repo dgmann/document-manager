@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { MatDialog } from "@angular/material";
+import { MatDialog } from "@angular/material/dialog";
 import { MessageBoxComponent } from "./message-box.component";
 import { Observable } from "rxjs";
 

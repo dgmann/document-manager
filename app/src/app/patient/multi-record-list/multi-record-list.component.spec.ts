@@ -1,7 +1,9 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { MultiRecordListComponent } from './multi-record-list.component';
-import { MatCardModule, MatIconModule, MatTabsModule } from "@angular/material";
+import { MatCardModule } from "@angular/material/card";
+import { MatIconModule } from "@angular/material/icon";
+import { MatTabsModule } from "@angular/material/tabs";
 import { DocumentEditDialogService } from "../../shared";
 import { of } from "rxjs";
 import createSpyObj = jasmine.createSpyObj;

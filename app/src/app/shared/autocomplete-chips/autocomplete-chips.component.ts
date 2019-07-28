@@ -1,7 +1,9 @@
 import { COMMA, ENTER } from "@angular/cdk/keycodes";
 import { ChangeDetectionStrategy, Component, forwardRef, Input, OnInit, ViewChild } from '@angular/core';
 import { ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR } from "@angular/forms";
-import { MatAutocomplete, MatChipInputEvent, MatInput } from "@angular/material";
+import { MatAutocomplete } from "@angular/material/autocomplete";
+import { MatChipInputEvent } from "@angular/material/chips";
+import { MatInput } from "@angular/material/input";
 import { difference } from 'lodash-es';
 import { Observable } from "rxjs";
 import { map, startWith } from "rxjs/operators";
@@ -21,8 +23,8 @@ import { map, startWith } from "rxjs/operators";
 })
 export class AutocompleteChipsComponent implements OnInit, ControlValueAccessor {
   @Input('options') options: string[];
-  @ViewChild('chipInput') chipInput: MatInput;
-  @ViewChild('auto') autoComplete: MatAutocomplete;
+  @ViewChild('chipInput', { static: true }) chipInput: MatInput;
+  @ViewChild('auto', { static: true }) autoComplete: MatAutocomplete;
 
   values: string[] = [];
   formControl = new FormControl();

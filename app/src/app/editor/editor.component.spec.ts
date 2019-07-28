@@ -2,7 +2,9 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { EditorComponent } from './editor.component';
 import { PageListComponent } from "./page-list/page-list.component";
-import { MatButtonModule, MatCardModule, MatIconModule } from "@angular/material";
+import { MatButtonModule } from "@angular/material/button";
+import { MatCardModule } from "@angular/material/card";
+import { MatIconModule } from "@angular/material/icon";
 import { RecordService } from "../core/store";
 import { RouterTestingModule } from "@angular/router/testing";
 import { of } from "rxjs";

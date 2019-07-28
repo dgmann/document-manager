@@ -9,7 +9,7 @@ import {
   ViewChild
 } from '@angular/core';
 import { FormControl, FormGroup } from "@angular/forms";
-import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material";
+import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import * as moment from "moment";
 import { Observable, ReplaySubject } from "rxjs";
 import { filter, map, startWith, take } from "rxjs/operators";
@@ -28,7 +28,7 @@ import { EditResult } from "./edit-result.model";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DocumentEditDialogComponent implements AfterViewInit, OnInit, OnDestroy {
-  @ViewChild('datepickertoogle', {read: ElementRef}) datepickerToggle;
+  @ViewChild('datepickertoogle', { read: ElementRef, static: true }) datepickerToggle;
   public record: Record;
   public tabIndex = new ReplaySubject<number>();
   public patient: Patient;

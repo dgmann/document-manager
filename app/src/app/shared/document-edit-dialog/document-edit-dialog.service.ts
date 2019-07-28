@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { MatDialog } from "@angular/material";
+import { MatDialog } from "@angular/material/dialog";
 import { DocumentEditDialogComponent } from "./document-edit-dialog.component";
 import { Record } from "../../core/store";
 import { Observable } from "rxjs";

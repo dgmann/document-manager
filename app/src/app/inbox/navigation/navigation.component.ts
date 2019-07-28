@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { MatSlideToggleChange } from "@angular/material";
+import { MatSlideToggleChange } from "@angular/material/slide-toggle";
 import { Observable } from "rxjs";
 import { InboxService } from "../inbox.service";
 

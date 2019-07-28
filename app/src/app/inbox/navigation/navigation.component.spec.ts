@@ -2,7 +2,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { NavigationComponent } from './navigation.component';
 import { NgDragDropModule } from "ng-drag-drop";
-import { MatSlideToggleModule } from "@angular/material";
+import { MatSlideToggleModule } from "@angular/material/slide-toggle";
 import { InboxService } from "../inbox.service";
 import { of } from "rxjs";
 import createSpy = jasmine.createSpy;

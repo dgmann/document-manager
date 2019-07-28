@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { MatTableDataSource } from "@angular/material";
+import { MatTableDataSource } from "@angular/material/table";
 import { sortBy } from "lodash-es";
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";

@@ -1,7 +1,7 @@
 import {HttpClient} from "@angular/common/http";
 import {ChangeDetectionStrategy, Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {FormControl} from "@angular/forms";
-import {MatAutocompleteSelectedEvent} from "@angular/material";
+import { MatAutocompleteSelectedEvent } from "@angular/material/autocomplete";
 import {Observable} from "rxjs";
 import {debounceTime, filter, map, switchMap} from "rxjs/operators";
 import {environment} from "../../../environments/environment";

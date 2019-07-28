@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
-import { MatProgressSpinnerModule, MatSlideToggleModule } from "@angular/material";
+import { MatProgressSpinnerModule } from "@angular/material/progress-spinner";
+import { MatSlideToggleModule } from "@angular/material/slide-toggle";
 import { EffectsModule } from "@ngrx/effects";
 import { StoreModule } from "@ngrx/store";
 import { NgDragDropModule } from "ng-drag-drop";

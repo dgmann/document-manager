@@ -1,10 +1,10 @@
 package main
 
 import (
-	"github.com/namsral/flag"
-	"github.com/dgmann/document-manager/directory-watcher/watcher"
+	"github.com/dgmann/document-manager/api/client"
 	"github.com/dgmann/document-manager/directory-watcher/parser"
-	"github.com/dgmann/document-manager/api-client/record"
+	"github.com/dgmann/document-manager/directory-watcher/watcher"
+	"github.com/namsral/flag"
 	log "github.com/sirupsen/logrus"
 	"os"
 )
@@ -35,7 +35,7 @@ func init() {
 
 func main() {
 	w := watcher.NewDirectoryWatcher(scanInterval, retryCount)
-	uploader := record.NewHttpUploader(destination)
+	uploader := client.NewHttpUploader(destination)
 	var p parser.Parser
 	if pars == "fax" {
 		p = &parser.Fax{}

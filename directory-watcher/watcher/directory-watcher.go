@@ -1,19 +1,19 @@
 package watcher
 
 import (
-	"github.com/dgmann/document-manager/directory-watcher/parser"
-	"io/ioutil"
-	"os"
-	"time"
-	log "github.com/sirupsen/logrus"
 	"errors"
 	"fmt"
+	"github.com/dgmann/document-manager/api/client"
+	"github.com/dgmann/document-manager/directory-watcher/parser"
+	log "github.com/sirupsen/logrus"
+	"io/ioutil"
+	"os"
 	"path"
-	"github.com/dgmann/document-manager/api-client/record"
+	"time"
 )
 
 type NewRecord struct {
-	*record.NewRecord
+	*client.NewRecord
 	PdfPath string
 }
 

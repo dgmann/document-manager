@@ -1,9 +1,9 @@
-import { Component, Inject } from '@angular/core';
-import { MAT_DIALOG_DATA } from "@angular/material/dialog";
-import { Record } from "../../core/store/index";
+import {Component, Inject} from '@angular/core';
+import {MAT_DIALOG_DATA} from '@angular/material/dialog';
+import {Record} from '@app/core/store';
 
 @Component({
-  selector: 'comment-dialog',
+  selector: 'app-comment-dialog',
   templateUrl: './comment-dialog.component.html',
   styleUrls: ['./comment-dialog.component.css']
 })

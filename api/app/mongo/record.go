@@ -28,8 +28,8 @@ type recordCollection interface {
 type RecordServiceConfig struct {
 	Records recordCollection
 	Events  app.Sender
-	images  app.ResourceWriter
-	pdfs    app.ResourceWriter
+	Images  app.ResourceWriter
+	Pdfs    app.ResourceWriter
 }
 
 func NewRecordService(config RecordServiceConfig) *RecordService {
@@ -82,7 +82,7 @@ func (r *RecordService) Create(ctx context.Context, data app.CreateRecord, image
 		for _, img := range images {
 			page := app.NewPage(img.Format)
 
-			if err := r.images.Write(app.NewKeyedGenericResource(img.Image, img.Format, record.Id.Hex(), page.Id)); err != nil {
+			if err := r.Images.Write(app.NewKeyedGenericResource(img.Image, img.Format, record.Id.Hex(), page.Id)); err != nil {
 				return nil, err
 			}
 			pages = append(pages, *page)
@@ -95,17 +95,17 @@ func (r *RecordService) Create(ctx context.Context, data app.CreateRecord, image
 		return nil, err
 	}
 
-	if err := r.pdfs.Write(app.NewKeyedGenericResource(pdfBytes, "pdf", record.Id.Hex())); err != nil {
-		e := r.images.Delete(app.NewDirectoryResource(record.Id.Hex()))
+	if err := r.Pdfs.Write(app.NewKeyedGenericResource(pdfBytes, "pdf", record.Id.Hex())); err != nil {
+		e := r.Images.Delete(app.NewDirectoryResource(record.Id.Hex()))
 		logrus.Error(e)
 		return nil, err
 	}
 
 	res, err := r.Records.InsertOne(ctx, record)
 	if err != nil {
-		e := r.images.Delete(app.NewDirectoryResource(record.Id.Hex()))
+		e := r.Images.Delete(app.NewDirectoryResource(record.Id.Hex()))
 		logrus.Error(e)
-		e = r.pdfs.Delete(app.NewDirectoryResource(record.Id.Hex()))
+		e = r.Pdfs.Delete(app.NewDirectoryResource(record.Id.Hex()))
 		logrus.Error(e)
 		return nil, err
 	}
@@ -119,12 +119,12 @@ func (r *RecordService) Create(ctx context.Context, data app.CreateRecord, image
 }
 
 func (r *RecordService) Delete(ctx context.Context, id string) error {
-	err := r.images.Delete(app.NewDirectoryResource(id))
+	err := r.Images.Delete(app.NewDirectoryResource(id))
 	if err != nil {
 		return err
 	}
 
-	err = r.pdfs.Delete(app.NewDirectoryResource(id))
+	err = r.Pdfs.Delete(app.NewDirectoryResource(id))
 	if err != nil {
 		return err
 	}

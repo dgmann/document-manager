@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component, Inject, OnInit } from '@angular/core';
-import { MAT_DIALOG_DATA } from "@angular/material/dialog";
+import {ChangeDetectionStrategy, Component, Inject, OnInit} from '@angular/core';
+import {MAT_DIALOG_DATA} from '@angular/material/dialog';
 
 @Component({
   selector: 'app-message-box',
@@ -8,8 +8,8 @@ import { MAT_DIALOG_DATA } from "@angular/material/dialog";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MessageBoxComponent implements OnInit {
-  title = "";
-  text = "";
+  title = '';
+  text = '';
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: MessageBoxData) {
     this.title = data.title;
@@ -23,5 +23,5 @@ export class MessageBoxComponent implements OnInit {
 
 export interface MessageBoxData {
   title: string;
-  text: string
+  text: string;
 }

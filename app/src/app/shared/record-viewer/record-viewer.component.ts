@@ -1,9 +1,9 @@
-import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
-import { Observable } from "rxjs";
+import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
+import {Observable} from 'rxjs';
 
 
-import { PageUpdate, Record, RecordService } from "../../core/store/index";
-import { map } from "rxjs/operators";
+import {PageUpdate, Record, RecordService} from '../../core/store/index';
+import {map} from 'rxjs/operators';
 
 @Component({
   selector: 'app-record-viewer',
@@ -12,7 +12,7 @@ import { map } from "rxjs/operators";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RecordViewerComponent implements OnInit {
-  @Input('record') record: Observable<Record>;
+  @Input() record: Observable<Record>;
 
   pages$: Observable<PageUpdate[]>;
 
@@ -20,11 +20,11 @@ export class RecordViewerComponent implements OnInit {
   }
 
   public ngOnInit() {
-    this.pages$ = this.record.pipe(map(r => r && r.pages.map(p => PageUpdate.FromPage(p)) || []))
+    this.pages$ = this.record.pipe(map(r => r && r.pages.map(p => PageUpdate.FromPage(p)) || []));
   }
 
   public up(recordId: string, pages: PageUpdate[], index: number) {
-    if (index == 0) {
+    if (index === 0) {
       return;
     }
 

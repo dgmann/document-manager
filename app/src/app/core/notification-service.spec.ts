@@ -1,7 +1,7 @@
-import { NotificationService } from "./notification-service";
+import {NotificationService} from './notification-service';
 import createSpyObj = jasmine.createSpyObj;
 
-describe("NotificationService", () => {
+describe('NotificationService', () => {
   let service: NotificationService;
   let snackBarService;
   let ngZone;

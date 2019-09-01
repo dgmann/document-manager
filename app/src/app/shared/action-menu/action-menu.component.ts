@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { Record, Status } from "../../core/store/index";
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Record, Status} from '../../core/store/index';
 
 @Component({
   selector: 'app-action-menu',
@@ -28,7 +28,7 @@ export class ActionMenuComponent implements OnInit {
   }
 
   setStatus(record: Record, action: Status) {
-    this.changeStatus.emit({record: record, status: action});
+    this.changeStatus.emit({record, status: action});
   }
 
   onEditRecord(record: Record) {

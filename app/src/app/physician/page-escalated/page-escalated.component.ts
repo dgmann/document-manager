@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { Observable } from "rxjs";
-import { Record } from "../../core/store/index";
-import { PhysicianService } from "../physician.service";
+import {Component, OnInit} from '@angular/core';
+import {Observable} from 'rxjs';
+import {Record} from '@app/core/store';
+import {PhysicianService} from '../physician.service';
 
 @Component({
   selector: 'app-page-escalated',

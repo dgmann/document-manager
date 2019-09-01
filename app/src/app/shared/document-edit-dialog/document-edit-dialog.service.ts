@@ -1,13 +1,13 @@
-import { Injectable } from "@angular/core";
-import { MatDialog } from "@angular/material/dialog";
-import { DocumentEditDialogComponent } from "./document-edit-dialog.component";
-import { Record } from "../../core/store";
-import { Observable } from "rxjs";
-import { EditResult } from "./edit-result.model";
-import { filter } from "rxjs/operators";
+import {Injectable} from '@angular/core';
+import {MatDialog} from '@angular/material/dialog';
+import {DocumentEditDialogComponent} from './document-edit-dialog.component';
+import {Record} from '@app/core/store';
+import {Observable} from 'rxjs';
+import {EditResult} from './edit-result.model';
+import {filter} from 'rxjs/operators';
 
 @Injectable({
-  providedIn: "root"
+  providedIn: 'root'
 })
 export class DocumentEditDialogService {
   constructor(private dialog: MatDialog) {
@@ -17,7 +17,7 @@ export class DocumentEditDialogService {
     return this.dialog.open(DocumentEditDialogComponent, {
       disableClose: true,
       data: record,
-      width: "635px"
+      width: '635px'
     }).afterClosed().pipe(
       filter(result => !!result)
     );

@@ -1,6 +1,6 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { PageUpdate } from "../../core/store";
-import { CdkDragDrop, moveItemInArray } from "@angular/cdk/drag-drop";
+import {Component, Input, OnInit} from '@angular/core';
+import {PageUpdate} from '@app/core/store';
+import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'app-page-list',

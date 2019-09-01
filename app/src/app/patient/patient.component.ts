@@ -1,14 +1,14 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from "@angular/router";
-import { Observable } from "rxjs";
-import { filter, switchMap } from "rxjs/operators";
-import { Record, RecordService } from "../core/store";
-import { PatientService } from "./patient.service";
-import { Patient } from "./store/patient.model";
-import { Filter } from "./store/patient.reducer";
-import { untilDestroyed } from "ngx-take-until-destroy";
-import { Category, CategoryService, TagService } from "../core";
-import { EditResult } from "../shared";
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
+import {Observable} from 'rxjs';
+import {filter, switchMap} from 'rxjs/operators';
+import {Record, RecordService} from '../core/store';
+import {PatientService} from './patient.service';
+import {Patient} from './store/patient.model';
+import {Filter} from './store/patient.reducer';
+import {untilDestroyed} from 'ngx-take-until-destroy';
+import {Category, CategoryService, TagService} from '../core';
+import {EditResult} from '../shared';
 
 
 @Component({
@@ -39,7 +39,7 @@ export class PatientComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.route.params
       .pipe(untilDestroyed(this))
-      .subscribe(params => this.patientService.selectPatient(params['id']));
+      .subscribe(params => this.patientService.selectPatient(params.id));
     this.selectedCategory = this.patientService.selectedCategory$;
     this.route.queryParamMap
       .pipe(untilDestroyed(this))
@@ -65,12 +65,12 @@ export class PatientComponent implements OnInit, OnDestroy {
     this.showDetails = true;
   }
 
-  setFilter(filter: Filter) {
-    this.patientService.setFilter(filter);
+  setFilter(set: Filter) {
+    this.patientService.setFilter(set);
   }
 
   onSelectedCategoryChange(category: string) {
-    this.router.navigate(["."], {relativeTo: this.route, queryParams: {category}});
+    this.router.navigate(['.'], {relativeTo: this.route, queryParams: {category}});
   }
 
   onUpdateRecord(data: EditResult) {

@@ -1,10 +1,10 @@
-import { Injectable } from "@angular/core";
-import { MatDialog } from "@angular/material/dialog";
-import { MessageBoxComponent } from "./message-box.component";
-import { Observable } from "rxjs";
+import {Injectable} from '@angular/core';
+import {MatDialog} from '@angular/material/dialog';
+import {MessageBoxComponent} from './message-box.component';
+import {Observable} from 'rxjs';
 
 @Injectable({
-  providedIn: "root"
+  providedIn: 'root'
 })
 export class MessageBoxService {
   constructor(private dialog: MatDialog) {

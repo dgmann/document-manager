@@ -1,8 +1,8 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { RecordFilterComponent } from './record-filter.component';
-import { CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
-import { of } from "rxjs";
+import {RecordFilterComponent} from './record-filter.component';
+import {CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
+import {of} from 'rxjs';
 
 describe('RecordFilterComponent', () => {
   let component: RecordFilterComponent;

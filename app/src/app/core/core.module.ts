@@ -1,9 +1,9 @@
-import { NgModule, Optional, SkipSelf } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { throwIfAlreadyLoaded } from "./module-import-guard";
-import { NgDragDropModule } from "ng-drag-drop";
-import { StoreModule } from "./store";
-import { EventSnackbarComponent } from "./event-snackbar/event-snackbar.component";
+import {NgModule, Optional, SkipSelf} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {throwIfAlreadyLoaded} from './module-import-guard';
+import {NgDragDropModule} from 'ng-drag-drop';
+import {StoreModule} from './store';
+import {EventSnackbarComponent} from './event-snackbar/event-snackbar.component';
 
 @NgModule({
   imports: [

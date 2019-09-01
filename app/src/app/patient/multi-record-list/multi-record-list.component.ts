@@ -1,10 +1,10 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {findIndex, groupBy, sortBy} from 'lodash-es'
-import {combineLatest, Observable} from "rxjs";
-import {distinctUntilChanged, filter, map, take, withLatestFrom} from "rxjs/operators";
-import {Category} from "../../core";
-import {Record} from "../../core/store";
-import {DocumentEditDialogService, EditResult, MessageBoxService} from "../../shared";
+import {findIndex, groupBy, sortBy} from 'lodash-es';
+import {combineLatest, Observable} from 'rxjs';
+import {distinctUntilChanged, filter, map, take, withLatestFrom} from 'rxjs/operators';
+import {Category} from '@app/core';
+import {Record} from '@app/core/store';
+import {DocumentEditDialogService, EditResult, MessageBoxService} from '../../shared';
 
 @Component({
   selector: 'app-multi-record-list',
@@ -27,7 +27,7 @@ export class MultiRecordListComponent implements OnInit {
   @Input() set categories(value: { [id: string]: Category }) {
     this.categoryMap = {
       ...value,
-      all: {id: "all", name: "Alle"}
+      all: {id: 'all', name: 'Alle'}
     };
   }
   selectedIndex: Observable<number>;
@@ -63,7 +63,7 @@ export class MultiRecordListComponent implements OnInit {
   }
 
   delete(record: Record) {
-    this.messageBox.open("Löschen", "Wollen sie diesen Befund löschen?").subscribe(yes => {
+    this.messageBox.open('Löschen', 'Wollen sie diesen Befund löschen?').subscribe(yes => {
       if (yes) {
         this.deleteRecord.emit(record);
       }

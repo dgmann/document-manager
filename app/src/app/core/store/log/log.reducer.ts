@@ -1,9 +1,9 @@
-import { LogActions, LogActionTypes } from './log.actions';
-import { Event } from "./event.model";
+import {LogActions, LogActionTypes} from './log.actions';
+import {Event} from './event.model';
 
 export interface State {
-  events: Event[],
-  errors: any[]
+  events: Event[];
+  errors: any[];
 }
 
 export const initialState: State = {

@@ -1,10 +1,10 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { PageReviewComponent } from './page-review.component';
-import { CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
-import { MatTableModule } from "@angular/material/table";
-import { PhysicianService } from "../physician.service";
-import { of } from "rxjs";
+import {PageReviewComponent} from './page-review.component';
+import {CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
+import {MatTableModule} from '@angular/material/table';
+import {PhysicianService} from '../physician.service';
+import {of} from 'rxjs';
 
 describe('PageReviewComponent', () => {
   let component: PageReviewComponent;

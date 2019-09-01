@@ -3,6 +3,7 @@ package filesystem
 import (
 	"context"
 	"github.com/dgmann/document-manager/api/app"
+	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"os"
 	"path/filepath"
@@ -45,7 +46,9 @@ func (f *Storage) Write(resource app.KeyedResource) (err error) {
 	dir := filepath.Dir(fp)
 	if _, err := f.filesystem.Stat(dir); os.IsNotExist(err) {
 		err = f.filesystem.MkdirAll(dir, os.ModePerm)
-		logrus.WithError(err).Error("could not create directory")
+		if err != nil {
+			return errors.Wrap(err, "could not create directory")
+		}
 	}
 
 	imageFile, err := f.filesystem.Create(fp)

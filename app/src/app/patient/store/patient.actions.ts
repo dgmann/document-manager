@@ -1,6 +1,6 @@
-import { Action } from '@ngrx/store';
-import { Patient } from "./patient.model";
-import { Filter } from "./patient.reducer";
+import {Action} from '@ngrx/store';
+import {Patient} from './patient.model';
+import {Filter} from './patient.reducer';
 
 export enum PatientActionTypes {
   SelectPatientId = '[Patient] Select Patient ID',

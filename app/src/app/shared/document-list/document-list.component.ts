@@ -8,17 +8,18 @@ import {
   Output,
   ViewChild
 } from '@angular/core';
-import { MatSort } from "@angular/material/sort";
-import { MatTableDataSource } from "@angular/material/table";
-import { Router } from "@angular/router";
-import { includes } from 'lodash-es';
-import { DropEvent } from "ng-drag-drop";
-import { Observable } from "rxjs";
+import {MatSort} from '@angular/material/sort';
+import {MatTableDataSource} from '@angular/material/table';
+import {Router} from '@angular/router';
+import {includes} from 'lodash-es';
+import {DropEvent} from 'ng-drag-drop';
+import {Observable} from 'rxjs';
 
 
-import { Record, RecordService, Status } from "../../core/store";
-import { CommentDialogService } from "../comment-dialog/comment-dialog.service";
-import { DocumentEditDialogService } from "../document-edit-dialog/document-edit-dialog.service";
+import {Record, RecordService, Status} from '../../core/store';
+import {CommentDialogService} from '../comment-dialog/comment-dialog.service';
+import {DocumentEditDialogService} from '../document-edit-dialog/document-edit-dialog.service';
+import {NotificationService} from '@app/core';
 
 
 @Component({
@@ -40,6 +41,7 @@ export class DocumentListComponent implements OnInit, AfterViewInit {
   constructor(private recordService: RecordService,
               private router: Router,
               private commmentDialog: CommentDialogService,
+              private notificationService: NotificationService,
               private editDialog: DocumentEditDialogService) {
   }
 
@@ -66,8 +68,12 @@ export class DocumentListComponent implements OnInit, AfterViewInit {
 
   drop(source: Record, event: DropEvent) {
     event.nativeEvent.preventDefault();
+    if (source.id === event.dragData.id) {
+      this.notificationService.publishMessage('Anhängen an den Quellbefund nicht möglich');
+      return;
+    }
     this.appendRecord({
-      source: source,
+      source,
       target: event.dragData
     });
   }
@@ -77,10 +83,10 @@ export class DocumentListComponent implements OnInit, AfterViewInit {
   }
 
   setStatus(event) {
-    if (event.status == Status.ESCALATED
-      || (event.status == Status.INBOX && event.record.status == Status.ESCALATED)) {
+    if (event.status === Status.ESCALATED
+      || (event.status === Status.INBOX && event.record.status === Status.ESCALATED)) {
       this.commmentDialog.open(event.record).subscribe((comment: string) => {
-        this.recordService.update(event.record.id, {status: event.status, comment: comment});
+        this.recordService.update(event.record.id, {status: event.status, comment});
       });
     } else {
       this.recordService.update(event.record.id, {status: event.status});

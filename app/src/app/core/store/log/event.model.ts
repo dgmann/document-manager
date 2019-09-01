@@ -1,7 +1,7 @@
-import { Record } from "../record";
+import {Record} from '../record';
 
 export interface Event {
-  payload: { timestamp: Date, message: string }
+  payload: { timestamp: Date, message: string };
 
   toString();
 }
@@ -16,10 +16,10 @@ export class GenericEvent implements Event {
 }
 
 export enum ActionType {
-  UPDATED = "updated",
-  ADDED = "added",
-  DELETED = "deleted",
-  NONE = "none"
+  UPDATED = 'updated',
+  ADDED = 'added',
+  DELETED = 'deleted',
+  NONE = 'none'
 }
 
 export class RecordEvent implements Event {

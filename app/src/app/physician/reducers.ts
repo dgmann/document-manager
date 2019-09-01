@@ -1,6 +1,6 @@
-import { createFeatureSelector, createSelector, MetaReducer } from '@ngrx/store';
-import { environment } from '../../environments/environment';
-import { selectRecordEntities } from "../core/store/record/record.selectors";
+import {createFeatureSelector, createSelector, MetaReducer} from '@ngrx/store';
+import {environment} from '@env/environment';
+import {selectRecordEntities} from '@app/core/store';
 import * as fromPhysician from './store/physician.reducer';
 
 export const reducers = fromPhysician.reducer;

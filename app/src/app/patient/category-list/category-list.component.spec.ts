@@ -1,8 +1,8 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { CategoryListComponent } from './category-list.component';
-import { MatTableModule } from "@angular/material/table";
-import { of } from "rxjs";
+import {CategoryListComponent} from './category-list.component';
+import {MatTableModule} from '@angular/material/table';
+import {of} from 'rxjs';
 
 describe('CategoryListComponent', () => {
   let component: CategoryListComponent;

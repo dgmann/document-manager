@@ -1,11 +1,11 @@
-import { HttpClient } from "@angular/common/http";
-import { Injectable } from "@angular/core";
-import { environment } from "../../environments/environment";
-import { map } from "rxjs/operators";
-import { BehaviorSubject, Observable } from "rxjs";
+import {HttpClient} from '@angular/common/http';
+import {Injectable} from '@angular/core';
+import {environment} from '@env/environment';
+import {map} from 'rxjs/operators';
+import {BehaviorSubject, Observable} from 'rxjs';
 
 @Injectable({
-  providedIn: "root"
+  providedIn: 'root'
 })
 export class CategoryService {
   public categories: Observable<Category[]>;
@@ -22,7 +22,8 @@ export class CategoryService {
   }
 
   public load() {
-    this.http.get<Category[]>(environment.api + "/categories").subscribe(categories => (this.categories as BehaviorSubject<Category[]>).next(categories));
+    this.http.get<Category[]>(environment.api + '/categories')
+      .subscribe(categories => (this.categories as BehaviorSubject<Category[]>).next(categories));
   }
 
   public getByPatientId(id: string) {

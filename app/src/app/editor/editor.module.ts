@@ -1,15 +1,15 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { EditorComponent } from './editor.component';
-import { MatButtonModule } from "@angular/material/button";
-import { MatCardModule } from "@angular/material/card";
-import { MatIconModule } from "@angular/material/icon";
-import { EditorRouterModule } from "./editor.routes";
-import { SharedModule } from "../shared";
-import { EditorGuard } from "./editor.guard";
-import { PageListComponent } from './page-list/page-list.component';
-import { DragDropModule } from "@angular/cdk/drag-drop";
-import { FlexLayoutModule } from "@angular/flex-layout";
+import {NgModule} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {EditorComponent} from './editor.component';
+import {MatButtonModule} from '@angular/material/button';
+import {MatCardModule} from '@angular/material/card';
+import {MatIconModule} from '@angular/material/icon';
+import {EditorRouterModule} from './editor.routes';
+import {SharedModule} from '../shared';
+import {EditorGuard} from './editor.guard';
+import {PageListComponent} from './page-list/page-list.component';
+import {DragDropModule} from '@angular/cdk/drag-drop';
+import {FlexLayoutModule} from '@angular/flex-layout';
 
 @NgModule({
   imports: [

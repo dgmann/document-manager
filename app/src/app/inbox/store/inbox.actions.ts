@@ -5,7 +5,6 @@ export enum InboxActionTypes {
   SelectRecords = '[Inbox] Select Records',
   AddUnreadRecords = '[Inbox] Add unread Records',
   RemoveUnreadRecords = '[Inbox] Remove unread Records',
-  SetMultiSelect = '[Inbox] Set Multiselect'
 }
 
 export class LoadRecords implements Action {
@@ -36,16 +35,8 @@ export class RemoveUnreadRecords implements Action {
   }
 }
 
-export class SetMultiSelect implements Action {
-  readonly type = InboxActionTypes.SetMultiSelect;
-
-  constructor(public payload: { multiselect: boolean }) {
-  }
-}
-
 export type InboxActions =
   LoadRecords
   | SelectRecords
   | AddUnreadRecords
-  | RemoveUnreadRecords
-  | SetMultiSelect;
+  | RemoveUnreadRecords;

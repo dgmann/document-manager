@@ -7,15 +7,13 @@ export interface State {
   loading: boolean;
   synced: boolean;
   unreadIds: string[];
-  multiselect: boolean;
 }
 
 export const initialState: State = {
   selectedIds: [],
   loading: false,
   synced: false,
-  unreadIds: [],
-  multiselect: false
+  unreadIds: []
 };
 
 export function reducer(state = initialState, action: InboxActions): State {
@@ -37,10 +35,6 @@ export function reducer(state = initialState, action: InboxActions): State {
     case InboxActionTypes.RemoveUnreadRecords:
       return Object.assign({}, state, {
         unreadIds: without(state.unreadIds, ...action.payload.ids)
-      });
-    case InboxActionTypes.SetMultiSelect:
-      return Object.assign({}, state, {
-        multiselect: action.payload.multiselect
       });
 
     default:

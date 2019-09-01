@@ -8,7 +8,6 @@ import {SharedModule} from '../shared';
 import {InboxComponent} from './inbox.component';
 import {InboxRouterModule} from './inbox.routes';
 import {InboxService} from './inbox.service';
-import {NavigationComponent} from './navigation/navigation.component';
 import {metaReducers, reducers} from './reducers';
 import {InboxEffects} from './store/inbox.effects';
 
@@ -23,8 +22,7 @@ import {InboxEffects} from './store/inbox.effects';
     SharedModule
   ],
   declarations: [
-    InboxComponent,
-    NavigationComponent
+    InboxComponent
   ],
   exports: [
     InboxComponent

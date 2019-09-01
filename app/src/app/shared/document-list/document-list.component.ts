@@ -11,7 +11,7 @@ import {
 import {MatSort} from '@angular/material/sort';
 import {MatTableDataSource} from '@angular/material/table';
 import {Router} from '@angular/router';
-import {includes} from 'lodash-es';
+import {includes, without} from 'lodash-es';
 import {DropEvent} from 'ng-drag-drop';
 import {Observable} from 'rxjs';
 
@@ -20,6 +20,7 @@ import {Record, RecordService, Status} from '../../core/store';
 import {CommentDialogService} from '../comment-dialog/comment-dialog.service';
 import {DocumentEditDialogService} from '../document-edit-dialog/document-edit-dialog.service';
 import {NotificationService} from '@app/core';
+import {take} from 'rxjs/operators';
 
 
 @Component({
@@ -33,7 +34,9 @@ export class DocumentListComponent implements OnInit, AfterViewInit {
 
   @Input() selectedIds: Observable<string[]>;
   @Input() records: Observable<Record[]>;
+  @Input() allowMultiselect = true;
   @Output() selectRecord = new EventEmitter<Record>();
+  @Output() selectRecords = new EventEmitter<string[]>();
 
   displayedColumns = ['receivedAt', 'sender', 'numpages', 'comment', 'actions'];
   dataSource = new MatTableDataSource<Record>();
@@ -47,7 +50,7 @@ export class DocumentListComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.dataSource.sort = this.sort;
-    this.records.subscribe(data => this.dataSource.data = data);
+    this.records.subscribe(records => this.dataSource.data = records);
   }
 
   /**
@@ -58,8 +61,21 @@ export class DocumentListComponent implements OnInit, AfterViewInit {
     this.dataSource.sort = this.sort;
   }
 
-  selectRow(row: Record) {
-    this.selectRecord.emit(row);
+  selectRow(record: Record, event: MouseEvent) {
+    this.selectedIds.pipe(take(1)).subscribe(ids => {
+      let newSelectedIds = [];
+      if (this.allowMultiselect && event.getModifierState('Control')) {
+        if (includes(ids, record.id)) {
+          newSelectedIds = without(ids, record.id);
+        } else {
+          newSelectedIds = [...ids, record.id];
+        }
+      } else {
+        newSelectedIds = [record.id];
+      }
+      this.selectRecord.emit(record);
+      this.selectRecords.emit(newSelectedIds);
+    });
   }
 
   deleteRecord(record: Record) {

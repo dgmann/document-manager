@@ -1,8 +1,8 @@
 import {Injectable} from '@angular/core';
 import {select, Store} from '@ngrx/store';
 import {Record, RecordService, selectInboxIds, selectInboxRecords, Status} from '../core/store';
-import {selectMultiselect, selectSelectedIds, selectSelectedRecords, State} from './reducers';
-import {SelectRecords, SetMultiSelect} from './store/inbox.actions';
+import {selectSelectedIds, selectSelectedRecords, State} from './reducers';
+import {SelectRecords} from './store/inbox.actions';
 import {Observable} from 'rxjs';
 import {take} from 'rxjs/operators';
 
@@ -12,7 +12,6 @@ export class InboxService {
   public allInboxRecordIds$: Observable<string[]>;
   public selectedIds$: Observable<string[]>;
   public selectedRecords$: Observable<Record[]>;
-  public isMultiSelect$: Observable<boolean>;
   public isLoading$: Observable<boolean>;
 
   constructor(private store: Store<State>,
@@ -21,7 +20,6 @@ export class InboxService {
     this.allInboxRecordIds$ = this.store.pipe(select(selectInboxIds));
     this.selectedIds$ = this.store.pipe(select(selectSelectedIds));
     this.selectedRecords$ = this.store.pipe(select(selectSelectedRecords));
-    this.isMultiSelect$ = this.store.pipe(select(selectMultiselect));
     this.isLoading$ = this.recordService.isLoading$;
   }
 
@@ -35,10 +33,6 @@ export class InboxService {
 
   public selectIds(ids: string[]) {
     this.store.dispatch(new SelectRecords({ids}));
-  }
-
-  public setMultiselect(value: boolean) {
-    this.store.dispatch(new SetMultiSelect({multiselect: value}));
   }
 
   public deleteSelectedRecords() {

@@ -1,7 +1,6 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
-import {includes, without} from 'lodash-es';
 import {Observable} from 'rxjs';
-import {map, take, withLatestFrom} from 'rxjs/operators';
+import {map, take} from 'rxjs/operators';
 import {Record, Status} from '../core/store';
 import {InboxService} from './inbox.service';
 
@@ -28,28 +27,11 @@ export class InboxComponent implements OnInit {
     this.selectedRecord = this.inboxService.selectedRecords$
       .pipe(map(records => records && records[0] || undefined));
     this.selectedIds = this.inboxService.selectedIds$;
-    this.isMultiselect = this.inboxService.isMultiSelect$;
+    this.isMultiselect = this.inboxService.selectedIds$.pipe(map(ids => ids.length > 1));
   }
 
-  onSelectRecord(id: string) {
-    this.inboxService.selectedIds$
-      .pipe(
-        take(1),
-        withLatestFrom(this.inboxService.isMultiSelect$)
-      )
-      .subscribe(([ids, multiselect]) => {
-        let idsToSelect = [];
-        if (multiselect) {
-          if (includes(ids, id)) {
-            idsToSelect = without(ids, id);
-          } else {
-            idsToSelect = [...ids, id];
-          }
-        } else {
-          idsToSelect = [id];
-        }
-        this.inboxService.selectIds(idsToSelect);
-      });
+  onSelectRecords(ids: string[]) {
+    this.inboxService.selectIds(ids);
   }
 
   onDrop(event: DragEvent) {

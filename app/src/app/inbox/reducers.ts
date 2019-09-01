@@ -1,6 +1,6 @@
-import { createFeatureSelector, createSelector, MetaReducer } from '@ngrx/store';
-import { environment } from '../../environments/environment';
-import { selectRecordEntities } from '../core/store';
+import {createFeatureSelector, createSelector, MetaReducer} from '@ngrx/store';
+import {environment} from '@env/environment';
+import {selectRecordEntities} from '../core/store';
 import * as fromInbox from './store/inbox.reducer';
 
 export const reducers = fromInbox.reducer;
@@ -13,4 +13,3 @@ export const selectSelectedIds = createSelector(selectFeature, (state: fromInbox
 export const selectSelectedRecords = createSelector(selectSelectedIds, selectRecordEntities, (ids, records) => ids.map(id => records[id]));
 export const selectUnreadIds = createSelector(selectFeature, (state: fromInbox.State) => state.unreadIds);
 export const selectUnreadRecords = createSelector(selectUnreadIds, selectRecordEntities);
-export const selectMultiselect = createSelector(selectFeature, (state: fromInbox.State) => state.multiselect);

@@ -6,7 +6,7 @@
                     (changeStatus)="onSetStatusOfSelectedRecords($event)"
                     (selectAll)="onSelectAllRecords($event)"></app-action-bar>
     <app-document-list [records]="records" [selectedIds]="selectedIds"
-                       (selectRecord)="onSelectRecord($event.id)"></app-document-list>
+                       (selectRecords)="onSelectRecords($event)"></app-document-list>
   </div>
   <div class="right-panel">
     <app-record-viewer [record]="selectedRecord"></app-record-viewer>

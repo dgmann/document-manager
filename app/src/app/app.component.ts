@@ -1,10 +1,10 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { Title } from "@angular/platform-browser";
-import { ActivatedRoute, NavigationEnd, Router } from "@angular/router";
-import { Observable } from "rxjs";
-import { filter, map, mergeMap } from "rxjs/operators";
-import { Patient } from "./patient";
-import { AutorefreshService, NotificationService } from "./core";
+import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {Title} from '@angular/platform-browser';
+import {ActivatedRoute, NavigationEnd, Router} from '@angular/router';
+import {Observable} from 'rxjs';
+import {filter, map, mergeMap} from 'rxjs/operators';
+import {Patient} from './patient';
+import {AutorefreshService, NotificationService} from './core';
 
 @Component({
   selector: 'app-root',
@@ -29,12 +29,14 @@ export class AppComponent {
       filter((event) => event instanceof NavigationEnd),
       map(() => this.activatedRoute),
       map(route => {
-        while (route.firstChild) route = route.firstChild;
+        while (route.firstChild) {
+          route = route.firstChild;
+        }
         return route;
       }),
       filter(route => route.outlet === 'primary'),
       mergeMap(route => route.data),
-      map(data => data["title"])
+      map(data => data.title)
     );
     this.title.subscribe(title => this.titleService.setTitle(`${title} - Document Manager`));
   }

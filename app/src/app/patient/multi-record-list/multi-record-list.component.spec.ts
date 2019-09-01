@@ -1,11 +1,11 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { MultiRecordListComponent } from './multi-record-list.component';
-import { MatCardModule } from "@angular/material/card";
-import { MatIconModule } from "@angular/material/icon";
-import { MatTabsModule } from "@angular/material/tabs";
-import { DocumentEditDialogService } from "../../shared";
-import { of } from "rxjs";
+import {MultiRecordListComponent} from './multi-record-list.component';
+import {MatCardModule} from '@angular/material/card';
+import {MatIconModule} from '@angular/material/icon';
+import {MatTabsModule} from '@angular/material/tabs';
+import {DocumentEditDialogService} from '@app/shared';
+import {of} from 'rxjs';
 import createSpyObj = jasmine.createSpyObj;
 
 describe('MultiRecordListComponent', () => {
@@ -21,7 +21,7 @@ describe('MultiRecordListComponent', () => {
       ],
       declarations: [MultiRecordListComponent],
       providers: [
-        {provide: DocumentEditDialogService, useValue: createSpyObj(["open"])}
+        {provide: DocumentEditDialogService, useValue: createSpyObj(['open'])}
       ]
     })
       .compileComponents();
@@ -32,7 +32,7 @@ describe('MultiRecordListComponent', () => {
     fixture = TestBed.createComponent(MultiRecordListComponent);
     component = fixture.componentInstance;
     component.records = of([]);
-    component.selectedCategory = of("1");
+    component.selectedCategory = of('1');
     component.categories = of({});
     fixture.detectChanges();
   });

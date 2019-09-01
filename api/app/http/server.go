@@ -1,8 +1,6 @@
 package http
 
 import (
-	"github.com/bugsnag/bugsnag-go"
-	"github.com/bugsnag/bugsnag-go/gin"
 	"github.com/dgmann/document-manager/api/app"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/location"
@@ -19,13 +17,11 @@ type Server struct {
 	ArchiveService  app.ArchiveService
 	TagService      app.TagService
 	PdfProcessor    app.PdfProcessor
-	Bug             bugsnag.Configuration
 }
 
 func (s *Server) Run() error {
 	router := gin.Default()
 	pprof.Register(router)
-	router.Use(bugsnaggin.AutoNotify(s.Bug))
 	router.Use(gin.ErrorLogger())
 
 	corsConfig := cors.DefaultConfig()

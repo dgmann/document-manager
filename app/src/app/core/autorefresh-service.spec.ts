@@ -1,8 +1,8 @@
-import { AutorefreshService } from "./autorefresh-service";
-import { NotificationMessage, NotificationMessageType } from "./websocket-service";
-import { ActionType, RecordEvent } from "./notification-service";
-import { DeleteRecordSuccess, LoadRecordsSuccess, UpdateRecordSuccess } from "./store";
-import { of, throwError } from "rxjs";
+import {AutorefreshService} from './autorefresh-service';
+import {NotificationMessage, NotificationMessageType} from './websocket-service';
+import {ActionType, RecordEvent} from './notification-service';
+import {DeleteRecordSuccess, LoadRecordsSuccess, UpdateRecordSuccess} from './store';
+import {of, throwError} from 'rxjs';
 import createSpyObj = jasmine.createSpyObj;
 
 describe('AutoRefreshService', () => {
@@ -12,10 +12,10 @@ describe('AutoRefreshService', () => {
   let store;
 
   beforeEach(() => {
-    notificationService = createSpyObj(["publish"]);
-    websocketService = createSpyObj(["create"]);
+    notificationService = createSpyObj(['publish']);
+    websocketService = createSpyObj(['create']);
     websocketService.create.and.returnValue(of(null));
-    store = createSpyObj(["pipe", "dispatch"]);
+    store = createSpyObj(['pipe', 'dispatch']);
     service = new AutorefreshService(store, websocketService, notificationService);
   });
 
@@ -35,7 +35,7 @@ describe('AutoRefreshService', () => {
 
     const expectedNotification = new RecordEvent({
       type: ActionType.ADDED,
-      message: "Neues Dokument hinzugefügt",
+      message: 'Neues Dokument hinzugefügt',
       timestamp: createMessage.timestamp,
       record: createMessage.data
     });
@@ -49,7 +49,7 @@ describe('AutoRefreshService', () => {
 
   it('should handle update messages', () => {
     const message: NotificationMessage = {
-      data: {id: "1"},
+      data: {id: '1'},
       timestamp: new Date(),
       type: NotificationMessageType.Updated
     };
@@ -59,7 +59,7 @@ describe('AutoRefreshService', () => {
 
     const expectedNotification = new RecordEvent({
       type: ActionType.UPDATED,
-      message: "Änderungen gespeichert",
+      message: 'Änderungen gespeichert',
       timestamp: message.timestamp,
       record: message.data
     });
@@ -75,7 +75,7 @@ describe('AutoRefreshService', () => {
 
   it('should handle delete messages', () => {
     const message: NotificationMessage = {
-      data: {id: "1"},
+      data: {id: '1'},
       timestamp: new Date(),
       type: NotificationMessageType.Deleted
     };
@@ -85,7 +85,7 @@ describe('AutoRefreshService', () => {
 
     const expectedNotification = new RecordEvent({
       type: ActionType.DELETED,
-      message: "Dokument gelöscht",
+      message: 'Dokument gelöscht',
       timestamp: message.timestamp,
       record: message.data
     });

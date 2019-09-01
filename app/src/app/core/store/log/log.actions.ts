@@ -1,6 +1,6 @@
-import { Action } from '@ngrx/store';
-import { Event } from "./event.model";
-import { Error } from "./error.model";
+import {Action} from '@ngrx/store';
+import {Event} from './event.model';
+import {Error} from './error.model';
 
 export enum LogActionTypes {
   AddError = '[Log] Add Error',

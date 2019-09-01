@@ -1,7 +1,7 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { ActionBarComponent } from './action-bar.component';
-import { MatIconModule } from "@angular/material/icon";
+import {ActionBarComponent} from './action-bar.component';
+import {MatIconModule} from '@angular/material/icon';
 
 describe('EventSnackbarComponent', () => {
   let component: ActionBarComponent;

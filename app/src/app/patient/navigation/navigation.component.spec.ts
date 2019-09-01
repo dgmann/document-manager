@@ -1,8 +1,8 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { NavigationComponent } from './navigation.component';
-import { CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
-import { PatientService } from "../patient.service";
+import {NavigationComponent} from './navigation.component';
+import {CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
+import {PatientService} from '../patient.service';
 import createSpy = jasmine.createSpy;
 
 describe('Patient NavigationComponent', () => {

@@ -1,10 +1,10 @@
-import { Injectable } from "@angular/core";
-import { select, Store } from "@ngrx/store";
-import { Record, RecordService, selectInboxIds, selectInboxRecords, Status } from "../core/store";
-import { selectMultiselect, selectSelectedIds, selectSelectedRecords, State } from "./reducers";
-import { SelectRecords, SetMultiSelect } from "./store/inbox.actions";
-import { Observable } from "rxjs";
-import { take } from "rxjs/operators";
+import {Injectable} from '@angular/core';
+import {select, Store} from '@ngrx/store';
+import {Record, RecordService, selectInboxIds, selectInboxRecords, Status} from '../core/store';
+import {selectMultiselect, selectSelectedIds, selectSelectedRecords, State} from './reducers';
+import {SelectRecords, SetMultiSelect} from './store/inbox.actions';
+import {Observable} from 'rxjs';
+import {take} from 'rxjs/operators';
 
 @Injectable()
 export class InboxService {
@@ -34,7 +34,7 @@ export class InboxService {
   }
 
   public selectIds(ids: string[]) {
-    this.store.dispatch(new SelectRecords({ids: ids}))
+    this.store.dispatch(new SelectRecords({ids}));
   }
 
   public setMultiselect(value: boolean) {
@@ -46,7 +46,7 @@ export class InboxService {
   }
 
   public updateSelectedRecords(changes: any) {
-    let update = (id: string) => this.recordService.update(id, changes);
+    const update = (id: string) => this.recordService.update(id, changes);
     this.doForAllSelectedRecords(update);
   }
 

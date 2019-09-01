@@ -1,9 +1,24 @@
 <div class="main-container mat-typography" fxLayout="column">
-  <nav fxFlex="60px">
+  <mat-menu #appMenu="matMenu">
+    <button mat-menu-item routerLink="/inbox" routerLinkActive="active">
+      <mat-icon>mail_outline</mat-icon>
+      <span>Inbox</span>
+    </button>
+    <button mat-menu-item routerLink="/physician" routerLinkActive="active">
+      <mat-icon>supervisor_account</mat-icon>
+      <span>Arzt</span>
+    </button>
+    <button mat-menu-item routerLink="/patient/3" routerLinkActive="active">
+      <mat-icon>face</mat-icon>
+      <span>Patient</span>
+    </button>
+  </mat-menu>
+
+  <nav fxFlex="64px">
     <mat-toolbar color="primary">
       <div fxLayout="row" fxFlex="100%" fxLayoutAlign="center center">
-        <button mat-icon-button (click)="sidenav.toggle()">
-          <mat-icon>menu</mat-icon>
+        <button [matMenuTriggerFor]="appMenu" mat-icon-button>
+          <mat-icon>more_vert</mat-icon>
         </button>
         <h1 fxHide.lt-md="true">{{ title | async }}</h1>
         <span fxFlex="20px"></span>
@@ -15,28 +30,7 @@
     </mat-toolbar>
   </nav>
 
-  <div class="body-container" fxFlex="1 1 auto" fxLayout="column">
-    <mat-sidenav-container fxFill>
-      <mat-sidenav class="side-nav" #sidenav mode="side" color="primary">
-        <div fxLayout="column">
-          <button mat-button (click)="sidenav.close()" routerLink="/inbox" routerLinkActive="active">
-            <mat-icon>mail_outline</mat-icon>
-            <span>Inbox</span>
-          </button>
-          <button mat-button (click)="sidenav.close()" routerLink="/physician" routerLinkActive="active">
-            <mat-icon>supervisor_account</mat-icon>
-            <span>Arzt</span>
-          </button>
-          <button mat-button (click)="sidenav.close()" routerLink="/patient/3" routerLinkActive="active">
-            <mat-icon>face</mat-icon>
-            <span>Patient</span>
-          </button>
-        </div>
-      </mat-sidenav>
-
-      <mat-sidenav-content>
-        <router-outlet></router-outlet>
-      </mat-sidenav-content>
-    </mat-sidenav-container>
+  <div class="body-container" fxFlex>
+    <router-outlet></router-outlet>
   </div>
 </div>

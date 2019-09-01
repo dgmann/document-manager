@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from "@angular/router";
-import { Observable } from "rxjs";
-import { filter, map } from "rxjs/operators";
-import { Record } from "../core/store/index";
-import { PhysicianService } from "./physician.service";
+import {Component, OnInit} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
+import {Observable} from 'rxjs';
+import {filter, map} from 'rxjs/operators';
+import {Record} from '@app/core/store';
+import {PhysicianService} from './physician.service';
 
 @Component({
   selector: 'app-physician',
@@ -28,7 +28,7 @@ export class PhysicianComponent implements OnInit {
     this.route
       .queryParams
       .subscribe(params => {
-        const id = params['selected'] || null;
+        const id = params.selected || null;
         this.physicianService.selectIds([id]);
       });
 
@@ -38,6 +38,6 @@ export class PhysicianComponent implements OnInit {
         ...this.route.snapshot.queryParams,
         selected: ids.length > 0 ? ids[0] : null,
       }
-    }))
+    }));
   }
 }

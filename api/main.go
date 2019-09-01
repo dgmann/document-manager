@@ -60,6 +60,8 @@ func main() {
 		RecordService: mongo.NewRecordService(mongo.RecordServiceConfig{
 			Records: client.Records(),
 			Events:  eventService,
+			Images:  imageService,
+			Pdfs:    archiveService,
 		}),
 		PdfProcessor: pdfProcessor,
 		Healthchecker: map[string]app.HealthChecker{

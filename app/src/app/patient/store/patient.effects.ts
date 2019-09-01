@@ -1,14 +1,14 @@
-import { HttpClient } from "@angular/common/http";
-import { Injectable } from '@angular/core';
-import { Actions, Effect, ofType } from '@ngrx/effects';
-import { Action } from "@ngrx/store";
-import { of } from "rxjs";
-import { catchError, map, switchMap } from "rxjs/operators";
-import { environment } from "../../../environments/environment";
-import { Record } from "../../core/store/index";
-import { LoadRecordsFail, LoadRecordsSuccess } from "../../core/store/record";
-import { PatientActionTypes, SelectPatient, SetPatient, SetPatientRecords } from './patient.actions';
-import { Patient } from "./patient.model";
+import {HttpClient} from '@angular/common/http';
+import {Injectable} from '@angular/core';
+import {Actions, Effect, ofType} from '@ngrx/effects';
+import {Action} from '@ngrx/store';
+import {of} from 'rxjs';
+import {catchError, map, switchMap} from 'rxjs/operators';
+import {environment} from '@env/environment';
+import {Record} from '@app/core/store';
+import {LoadRecordsFail, LoadRecordsSuccess} from '../../core/store/record';
+import {PatientActionTypes, SelectPatient, SetPatient, SetPatientRecords} from './patient.actions';
+import {Patient} from './patient.model';
 
 @Injectable()
 export class PatientEffects {

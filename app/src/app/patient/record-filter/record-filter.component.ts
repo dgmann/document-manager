@@ -1,9 +1,9 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { Moment } from "moment";
-import { BehaviorSubject, combineLatest, Observable } from "rxjs";
-import { Patient } from "..";
-import { Category } from "../../core";
-import { Filter } from "../store/patient.reducer";
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Moment} from 'moment';
+import {BehaviorSubject, combineLatest, Observable} from 'rxjs';
+import {Patient} from '..';
+import {Category} from '@app/core';
+import {Filter} from '../store/patient.reducer';
 
 @Component({
   selector: 'app-record-filter',
@@ -31,7 +31,7 @@ export class RecordFilterComponent implements OnInit {
       this.dateRange
     ).subscribe(([tags, categories, dateRange]) => this.change.emit({
       categoryIds: categories.map(c => c.id),
-      tags: tags,
+      tags,
       from: dateRange.from,
       until: dateRange.until
     }));

@@ -1,9 +1,9 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { CommentDialogComponent } from './comment-dialog.component';
-import { MAT_DIALOG_DATA, MatDialogModule } from "@angular/material/dialog";
-import { CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
-import { FormsModule } from "@angular/forms";
+import {CommentDialogComponent} from './comment-dialog.component';
+import {MAT_DIALOG_DATA, MatDialogModule} from '@angular/material/dialog';
+import {CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
+import {FormsModule} from '@angular/forms';
 
 describe('CommentDialogComponent', () => {
   let component: CommentDialogComponent;

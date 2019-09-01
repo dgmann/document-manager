@@ -1,13 +1,13 @@
-import { Injectable, NgZone } from "@angular/core";
-import { MatSnackBar } from "@angular/material/snack-bar";
-import { groupBy, map } from "lodash-es";
-import { Subject } from "rxjs";
-import { bufferTime, filter } from "rxjs/operators";
-import { Record } from "./store";
-import { EventSnackbarComponent } from "./event-snackbar/event-snackbar.component";
+import {Injectable, NgZone} from '@angular/core';
+import {MatSnackBar} from '@angular/material/snack-bar';
+import {groupBy, map} from 'lodash-es';
+import {Subject} from 'rxjs';
+import {bufferTime, filter} from 'rxjs/operators';
+import {Record} from './store';
+import {EventSnackbarComponent} from './event-snackbar/event-snackbar.component';
 
 @Injectable({
-  providedIn: "root"
+  providedIn: 'root'
 })
 export class NotificationService {
   private _events$ = new Subject<NotificationEvent>();
@@ -16,15 +16,22 @@ export class NotificationService {
     return this._events$.asObservable();
   }
 
-  constructor(public snackbar: MatSnackBar, private ngZone: NgZone,) {
+  constructor(public snackbar: MatSnackBar, private ngZone: NgZone) {
   }
 
   publish(event: NotificationEvent) {
     this._events$.next(event);
   }
 
+  publishMessage(message: string) {
+    this.publish(new GenericEvent({
+      timestamp: new Date(),
+      message
+    }));
+  }
+
   logToConsole() {
-    this.events$.subscribe(event => console.log(event.toString()))
+    this.events$.subscribe(event => console.log(event.toString()));
   }
 
   logToSnackBar() {
@@ -34,12 +41,12 @@ export class NotificationService {
         .subscribe(events => {
           const grouped = groupBy(events, 'payload.type');
           const messages = map(grouped, (group, key) => {
-            const word = group.length == 1 ? "Befund" : "Befunde";
-            if (key == ActionType.UPDATED) {
+            const word = group.length === 1 ? 'Befund' : 'Befunde';
+            if (key === ActionType.UPDATED) {
               return new GenericEvent({timestamp: new Date(), message: `${group.length} ${word} geändert.`});
-            } else if (key == ActionType.ADDED) {
+            } else if (key === ActionType.ADDED) {
               return new GenericEvent({timestamp: new Date(), message: `${group.length} ${word} hinzugefügt.`});
-            } else if (key == ActionType.DELETED) {
+            } else if (key === ActionType.DELETED) {
               return new GenericEvent({timestamp: new Date(), message: `${group.length} ${word} gelöscht.`});
             } else {
               return new GenericEvent({timestamp: new Date(), message: group.map(g => g.payload.message).join(' ,')});
@@ -57,7 +64,7 @@ export class NotificationService {
 }
 
 export interface NotificationEvent {
-  payload: { timestamp: Date, message: string }
+  payload: { timestamp: Date, message: string };
 
   toString();
 }
@@ -72,10 +79,10 @@ export class GenericEvent implements NotificationEvent {
 }
 
 export enum ActionType {
-  UPDATED = "updated",
-  ADDED = "added",
-  DELETED = "deleted",
-  NONE = "none"
+  UPDATED = 'updated',
+  ADDED = 'added',
+  DELETED = 'deleted',
+  NONE = 'none'
 }
 
 export class RecordEvent implements NotificationEvent {

@@ -1,9 +1,9 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { PageOtherComponent } from './page-other.component';
-import { CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
-import { PhysicianService } from "../physician.service";
-import { of } from "rxjs";
+import {PageOtherComponent} from './page-other.component';
+import {CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
+import {PhysicianService} from '../physician.service';
+import {of} from 'rxjs';
 
 describe('PageOtherComponent', () => {
   let component: PageOtherComponent;

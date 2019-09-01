@@ -1,13 +1,13 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { InboxComponent } from './inbox.component';
-import { InboxService } from "./inbox.service";
-import { of } from "rxjs";
-import { SharedModule } from "../shared";
-import { RecordService, Status } from "../core/store";
-import { RouterTestingModule } from "@angular/router/testing";
-import { CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
-import { NoopAnimationsModule } from "@angular/platform-browser/animations";
+import {InboxComponent} from './inbox.component';
+import {InboxService} from './inbox.service';
+import {of} from 'rxjs';
+import {SharedModule} from '../shared';
+import {RecordService, Status} from '../core/store';
+import {RouterTestingModule} from '@angular/router/testing';
+import {CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
+import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import createSpy = jasmine.createSpy;
 import createSpyObj = jasmine.createSpyObj;
 
@@ -57,7 +57,7 @@ describe('InboxComponent', () => {
 
   describe('Record Selection', () => {
     it('should select single record', () => {
-      let id = '1';
+      const id = '1';
       component.onSelectRecord(id);
       expect(inboxService.selectIds).toHaveBeenCalledWith([id]);
     });
@@ -76,8 +76,8 @@ describe('InboxComponent', () => {
     });
 
     it('should add record in multi-select mode', () => {
-      let id = '3';
-      let selectedIds = ['1', '2'];
+      const id = '3';
+      const selectedIds = ['1', '2'];
 
       inboxService.selectedIds$ = of(selectedIds);
       inboxService.isMultiSelect$ = of(true);
@@ -86,8 +86,8 @@ describe('InboxComponent', () => {
     });
 
     it('should remove record in multi-select mode', () => {
-      let id = '3';
-      let selectedIds = ['1', '2', '3'];
+      const id = '3';
+      const selectedIds = ['1', '2', '3'];
 
       inboxService.selectedIds$ = of(selectedIds);
       inboxService.isMultiSelect$ = of(true);

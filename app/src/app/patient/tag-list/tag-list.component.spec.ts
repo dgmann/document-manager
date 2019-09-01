@@ -1,9 +1,9 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { TagListComponent } from './tag-list.component';
-import { CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
-import { MatTableModule } from "@angular/material/table";
-import { of } from "rxjs";
+import {TagListComponent} from './tag-list.component';
+import {CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
+import {MatTableModule} from '@angular/material/table';
+import {of} from 'rxjs';
 
 describe('TagListComponent', () => {
   let component: TagListComponent;

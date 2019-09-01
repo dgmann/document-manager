@@ -1,11 +1,11 @@
-import { Moment } from "moment";
+import {Moment} from 'moment';
 
 export interface EditResult {
-  id: string,
+  id: string;
   change: {
     patientId: string,
     date: Moment,
     tags: string[],
     category: string
-  }
+  };
 }

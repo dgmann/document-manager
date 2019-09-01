@@ -1,4 +1,4 @@
-import { Moment } from "moment";
+import {Moment} from 'moment';
 
 export interface Record {
   id: string;
@@ -22,22 +22,22 @@ export class Page {
 }
 
 export class PageUpdate {
-  public rotate: number = 0;
+  public rotate = 0;
 
   constructor(public id: string, public url: string) {
   }
 
   public static FromPage(page: Page) {
-    return new PageUpdate(page.id, page.url)
+    return new PageUpdate(page.id, page.url);
   }
 }
 
 
 export enum Status {
-  INBOX = "inbox",
-  REVIEW = "review",
-  ESCALATED = "escalated",
-  OTHER = "other",
-  DONE = "done",
-  NONE = ""
+  INBOX = 'inbox',
+  REVIEW = 'review',
+  ESCALATED = 'escalated',
+  OTHER = 'other',
+  DONE = 'done',
+  NONE = ''
 }

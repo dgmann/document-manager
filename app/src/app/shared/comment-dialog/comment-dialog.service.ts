@@ -1,11 +1,11 @@
-import { Injectable } from "@angular/core";
-import { MatDialog } from "@angular/material/dialog";
-import { Record } from "../../core/store";
-import { Observable } from "rxjs";
-import { CommentDialogComponent } from "./comment-dialog.component";
+import {Injectable} from '@angular/core';
+import {MatDialog} from '@angular/material/dialog';
+import {Record} from '@app/core/store';
+import {Observable} from 'rxjs';
+import {CommentDialogComponent} from './comment-dialog.component';
 
 @Injectable({
-  providedIn: "root"
+  providedIn: 'root'
 })
 export class CommentDialogService {
   constructor(private dialog: MatDialog) {
@@ -15,7 +15,7 @@ export class CommentDialogService {
     return this.dialog.open(CommentDialogComponent, {
       disableClose: true,
       data: record,
-      width: "635px"
-    }).afterClosed()
+      width: '635px'
+    }).afterClosed();
   }
 }

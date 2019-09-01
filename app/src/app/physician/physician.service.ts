@@ -1,5 +1,5 @@
-import { Injectable } from "@angular/core";
-import { select, Store } from "@ngrx/store";
+import {Injectable} from '@angular/core';
+import {select, Store} from '@ngrx/store';
 import {
   Record,
   RecordService,
@@ -7,13 +7,13 @@ import {
   selectOtherRecords,
   selectReviewRecords,
   Status
-} from "../core/store/index";
-import { selectSelectedIds, selectSelectedRecords, State } from "./reducers";
-import { SelectRecords } from "./store/physician.actions";
-import { Observable } from "rxjs";
+} from '../core/store/index';
+import {selectSelectedIds, selectSelectedRecords, State} from './reducers';
+import {SelectRecords} from './store/physician.actions';
+import {Observable} from 'rxjs';
 
 @Injectable({
-  providedIn: "root"
+  providedIn: 'root'
 })
 export class PhysicianService {
   public selectedRecords$: Observable<Record[]>;
@@ -37,6 +37,6 @@ export class PhysicianService {
   }
 
   public selectIds(ids: string[]) {
-    this.store.dispatch(new SelectRecords({ids: ids}))
+    this.store.dispatch(new SelectRecords({ids}));
   }
 }

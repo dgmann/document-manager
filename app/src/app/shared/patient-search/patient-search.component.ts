@@ -1,11 +1,11 @@
-import {HttpClient} from "@angular/common/http";
+import {HttpClient} from '@angular/common/http';
 import {ChangeDetectionStrategy, Component, EventEmitter, OnInit, Output} from '@angular/core';
-import {FormControl} from "@angular/forms";
-import { MatAutocompleteSelectedEvent } from "@angular/material/autocomplete";
-import {Observable} from "rxjs";
-import {debounceTime, filter, map, switchMap} from "rxjs/operators";
-import {environment} from "../../../environments/environment";
-import {Patient} from "../../patient";
+import {FormControl} from '@angular/forms';
+import {MatAutocompleteSelectedEvent} from '@angular/material/autocomplete';
+import {Observable} from 'rxjs';
+import {debounceTime, filter, map, switchMap} from 'rxjs/operators';
+import {environment} from '@env/environment';
+import {Patient} from '@app/patient';
 
 @Component({
   selector: 'app-patient-search',
@@ -14,7 +14,7 @@ import {Patient} from "../../patient";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PatientSearchComponent implements OnInit {
-  @Output('selectPatient') selectPatient = new EventEmitter<Patient>();
+  @Output() selectPatient = new EventEmitter<Patient>();
   public searchResults: Observable<Patient[]>;
   public searchInput = new FormControl();
 
@@ -39,9 +39,9 @@ export class PatientSearchComponent implements OnInit {
         })
       );
   }
-      
+
   parseQuery(query: string) {
-    const parts = query.split(",");
+    const parts = query.split(',');
     const result = {
       lastname: parts[0] && parts[0].trim() || undefined,
       firstname: parts[1] && parts[1].trim() || undefined

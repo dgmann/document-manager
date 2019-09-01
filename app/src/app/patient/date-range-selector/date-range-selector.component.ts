@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, OnInit, Output} from '@angular/core';
-import {Moment} from "moment";
-import {BehaviorSubject, combineLatest} from "rxjs";
-import {Filter} from "../store/patient.reducer";
+import {Moment} from 'moment';
+import {BehaviorSubject, combineLatest} from 'rxjs';
+import {Filter} from '../store/patient.reducer';
 
 @Component({
   selector: 'app-date-range-selector',
@@ -24,8 +24,8 @@ export class DateRangeSelectorComponent implements OnInit {
       this.from,
       this.until
     ).subscribe(([from, until]) => this.change.emit({
-      from: from,
-      until: until
+      from,
+      until
     }));
   }
 

@@ -21,4 +21,4 @@ export class SelectRecords implements Action {
 
 export type PhysicianActions =
   LoadRecords
-  | SelectRecords
+  | SelectRecords;

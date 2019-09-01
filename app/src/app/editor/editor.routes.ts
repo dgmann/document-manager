@@ -1,6 +1,6 @@
-import { RouterModule, Routes } from "@angular/router";
-import { EditorComponent } from "./editor.component";
-import { EditorGuard } from "./editor.guard";
+import {RouterModule, Routes} from '@angular/router';
+import {EditorComponent} from './editor.component';
+import {EditorGuard} from './editor.guard';
 
 const INBOX_ROUTES: Routes = [
   {

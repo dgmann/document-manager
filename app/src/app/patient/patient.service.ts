@@ -1,5 +1,5 @@
-import { Injectable } from "@angular/core";
-import { select, Store } from "@ngrx/store";
+import {Injectable} from '@angular/core';
+import {select, Store} from '@ngrx/store';
 import {
   selectFilteredPatientRecords,
   selectPatientRecords,
@@ -8,12 +8,12 @@ import {
   selectSelectedPatient,
   selectSelectedRecord,
   State
-} from "./reducers";
-import { SelectCategory, SelectPatient, SelectRecord, SetFilter } from "./store/patient.actions";
-import { Filter } from "./store/patient.reducer";
-import { Observable } from "rxjs";
-import { Patient } from "./store/patient.model";
-import { Record } from "../core/store/record";
+} from './reducers';
+import {SelectCategory, SelectPatient, SelectRecord, SetFilter} from './store/patient.actions';
+import {Filter} from './store/patient.reducer';
+import {Observable} from 'rxjs';
+import {Patient} from './store/patient.model';
+import {Record} from '../core/store/record';
 
 @Injectable()
 export class PatientService {
@@ -34,7 +34,7 @@ export class PatientService {
   }
 
   public selectPatient(id: string) {
-    this.store.dispatch(new SelectPatient({id: id}));
+    this.store.dispatch(new SelectPatient({id}));
   }
 
   public setFilter(filter: Filter) {
@@ -42,10 +42,10 @@ export class PatientService {
   }
 
   public selectRecord(id: string) {
-    this.store.dispatch(new SelectRecord({id: id}));
+    this.store.dispatch(new SelectRecord({id}));
   }
 
   public selectCategory(id: string) {
-    this.store.dispatch(new SelectCategory({id}))
+    this.store.dispatch(new SelectCategory({id}));
   }
 }

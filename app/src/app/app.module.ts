@@ -1,30 +1,20 @@
-import { registerLocaleData } from '@angular/common';
+import {BrowserModule} from '@angular/platform-browser';
 import localeDe from '@angular/common/locales/de';
-import { ErrorHandler, LOCALE_ID, NgModule } from '@angular/core';
-import { MatButtonModule } from "@angular/material/button";
-import { MatIconModule } from "@angular/material/icon";
-import { MatSnackBarModule } from "@angular/material/snack-bar";
-import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { BrowserModule } from '@angular/platform-browser';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { ServiceWorkerModule } from '@angular/service-worker'
-import BugsnagErrorHandler from 'bugsnag-angular'
-import bugsnag from 'bugsnag-js';
-import { environment } from "../environments/environment";
+import {LOCALE_ID, NgModule} from '@angular/core';
 
+import {AppComponent} from './app.component';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {SharedModule} from '@app/shared';
+import {CoreModule} from '@app/core/core.module';
+import {MatIconModule} from '@angular/material/icon';
+import {MatButtonModule} from '@angular/material/button';
+import {MatSidenavModule} from '@angular/material/sidenav';
+import {MatToolbarModule} from '@angular/material/toolbar';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
+import {registerLocaleData} from '@angular/common';
+import {AppRoutingModule} from './app-routing.module';
+import {MatMenuModule} from '@angular/material/menu';
 
-import { AppComponent } from './app.component';
-import { AppRoutesModule } from "./app.router";
-import { CoreModule } from "./core/core.module";
-import { SharedModule } from "./shared";
-
-
-const bugsnagClient = bugsnag(environment.bugsnagKey);
-
-export function errorHandlerFactory() {
-  return new BugsnagErrorHandler(bugsnagClient)
-}
 registerLocaleData(localeDe, 'de');
 
 @NgModule({
@@ -35,18 +25,17 @@ registerLocaleData(localeDe, 'de');
     BrowserModule,
     SharedModule,
     BrowserAnimationsModule,
-    AppRoutesModule,
+    AppRoutingModule,
     MatIconModule,
     MatButtonModule,
     MatSidenavModule,
     MatToolbarModule,
     MatSnackBarModule,
     CoreModule,
-    ServiceWorkerModule.register('/ngsw-worker.js', {enabled: environment.production})
+    MatMenuModule,
   ],
   providers: [
-    {provide: LOCALE_ID, useValue: 'de-DE'},
-    {provide: ErrorHandler, useFactory: errorHandlerFactory}
+    {provide: LOCALE_ID, useValue: 'de-DE'}
   ],
   bootstrap: [AppComponent]
 })

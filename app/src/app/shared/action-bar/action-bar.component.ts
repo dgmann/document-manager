@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { Status } from "../../core/store/index";
+import {ChangeDetectionStrategy, Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {Status} from '@app/core/store';
 
 @Component({
   selector: 'app-action-bar',

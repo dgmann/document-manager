@@ -1,12 +1,12 @@
-import { COMMA, ENTER } from "@angular/cdk/keycodes";
-import { ChangeDetectionStrategy, Component, forwardRef, Input, OnInit, ViewChild } from '@angular/core';
-import { ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR } from "@angular/forms";
-import { MatAutocomplete } from "@angular/material/autocomplete";
-import { MatChipInputEvent } from "@angular/material/chips";
-import { MatInput } from "@angular/material/input";
-import { difference } from 'lodash-es';
-import { Observable } from "rxjs";
-import { map, startWith } from "rxjs/operators";
+import {COMMA, ENTER} from '@angular/cdk/keycodes';
+import {ChangeDetectionStrategy, Component, forwardRef, Input, OnInit, ViewChild} from '@angular/core';
+import {ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR} from '@angular/forms';
+import {MatAutocomplete} from '@angular/material/autocomplete';
+import {MatChipInputEvent} from '@angular/material/chips';
+import {MatInput} from '@angular/material/input';
+import {difference} from 'lodash-es';
+import {Observable} from 'rxjs';
+import {map, startWith} from 'rxjs/operators';
 
 @Component({
   selector: 'app-autocomplete-chips',
@@ -63,12 +63,12 @@ export class AutocompleteChipsComponent implements OnInit, ControlValueAccessor 
   }
 
   addChip(event: MatChipInputEvent): void {
-    let value = this.formControl.value;
+    const value = this.formControl.value;
     this.addValue(value);
   }
 
   remove(chip: any): void {
-    let index = this.values.indexOf(chip);
+    const index = this.values.indexOf(chip);
 
     if (index >= 0) {
       this.values.splice(index, 1);
@@ -77,12 +77,12 @@ export class AutocompleteChipsComponent implements OnInit, ControlValueAccessor 
   }
 
   reset() {
-    this.chipInput['nativeElement'].value = '';
+    this.chipInput.value = '';
     this.formControl.reset();
   }
 
   onSubmit(event) {
-    if (this.chipInput['nativeElement'].value == '' && !this.autoComplete.isOpen) {
+    if (this.chipInput.value === '' && !this.autoComplete.isOpen) {
       event.preventDefault();
     }
   }

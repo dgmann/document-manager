@@ -1,14 +1,14 @@
-import { Injectable } from "@angular/core";
-import { Store } from "@ngrx/store";
-import { filter, retry } from "rxjs/operators";
-import { environment } from "../../environments/environment"
-import { DeleteRecordSuccess, LoadRecordsSuccess, Record, State, UpdateRecordSuccess } from "./store";
-import { ActionType, GenericEvent, NotificationService, RecordEvent } from "./notification-service";
-import { NotificationMessage, NotificationMessageType, WebsocketService } from "./websocket-service";
-import { Observable } from "rxjs";
+import {Injectable} from '@angular/core';
+import {Store} from '@ngrx/store';
+import {filter, retry} from 'rxjs/operators';
+import {environment} from '@env/environment';
+import {DeleteRecordSuccess, LoadRecordsSuccess, Record, State, UpdateRecordSuccess} from './store';
+import {ActionType, GenericEvent, NotificationService, RecordEvent} from './notification-service';
+import {NotificationMessage, NotificationMessageType, WebsocketService} from './websocket-service';
+import {Observable} from 'rxjs';
 
 @Injectable({
-  providedIn: "root"
+  providedIn: 'root'
 })
 export class AutorefreshService {
   public webSocket$: Observable<NotificationMessage>;
@@ -18,10 +18,10 @@ export class AutorefreshService {
               private notificationService: NotificationService) {
     const ws = this.websocketService.create(environment.websocket);
     const filterRecordEvents = filter((event: NotificationMessage) =>
-      event.type == NotificationMessageType.Created
-      || event.type == NotificationMessageType.Updated
-      || event.type == NotificationMessageType.Deleted);
-    this.webSocket$ = ws.pipe(filterRecordEvents, retry())
+      event.type === NotificationMessageType.Created
+      || event.type === NotificationMessageType.Updated
+      || event.type === NotificationMessageType.Deleted);
+    this.webSocket$ = ws.pipe(filterRecordEvents, retry());
   }
 
   start() {
@@ -33,7 +33,7 @@ export class AutorefreshService {
           }));
           this.notificationService.publish(new RecordEvent({
             type: ActionType.ADDED,
-            message: "Neues Dokument hinzugefügt",
+            message: 'Neues Dokument hinzugefügt',
             timestamp: message.timestamp,
             record: message.data
           }));
@@ -46,7 +46,7 @@ export class AutorefreshService {
           }));
           this.notificationService.publish(new RecordEvent({
             type: ActionType.UPDATED,
-            message: "Änderungen gespeichert",
+            message: 'Änderungen gespeichert',
             timestamp: message.timestamp,
             record: message.data
           }));
@@ -55,7 +55,7 @@ export class AutorefreshService {
           this.store.dispatch(new DeleteRecordSuccess({id: message.data.id as string}));
           this.notificationService.publish(new RecordEvent({
             type: ActionType.DELETED,
-            message: "Dokument gelöscht",
+            message: 'Dokument gelöscht',
             timestamp: message.timestamp,
             record: message.data
           }));
@@ -63,9 +63,9 @@ export class AutorefreshService {
       }
     }, () => {
       this.notificationService.publish(new GenericEvent({
-        message: "Verbindung zum Server verloren",
+        message: 'Verbindung zum Server verloren',
         timestamp: new Date()
-      }))
+      }));
     });
   }
 

@@ -1,10 +1,10 @@
-import { HttpClient, HttpErrorResponse } from "@angular/common/http";
-import { Injectable } from '@angular/core';
-import { Actions, Effect, ofType } from '@ngrx/effects';
-import { Action } from "@ngrx/store";
-import { Observable, of } from "rxjs";
-import { catchError, map, mergeMap } from "rxjs/operators";
-import { environment } from "../../../../environments/environment"
+import {HttpClient, HttpErrorResponse} from '@angular/common/http';
+import {Injectable} from '@angular/core';
+import {Actions, Effect, ofType} from '@ngrx/effects';
+import {Action} from '@ngrx/store';
+import {Observable, of} from 'rxjs';
+import {catchError, map, mergeMap} from 'rxjs/operators';
+import {environment} from '@env/environment';
 import {
   DeleteRecord,
   DeleteRecordFail,
@@ -18,9 +18,9 @@ import {
   UpdateRecord,
   UpdateRecordFail,
   UpdateRecordSuccess
-} from "./record.actions";
-import { Record } from "./record.model";
-import { AddError } from "../log/log.actions";
+} from './record.actions';
+import {Record} from './record.model';
+import {AddError} from '../log/log.actions';
 
 
 @Injectable()
@@ -33,12 +33,12 @@ export class RecordEffects {
         return this.http.get<Record>(environment.api + '/records/' + action.payload.query.id).pipe(
           map(data => new LoadRecordsSuccess({records: [data]})),
           catchError(err => of(new LoadRecordsFail({error: err})))
-        )
+        );
       } else {
         return this.http.get<Record[]>(environment.api + '/records', {params: action.payload.query}).pipe(
           map(data => new LoadRecordsSuccess({records: data})),
           catchError(err => of(new LoadRecordsFail({error: err})))
-        )
+        );
       }
     })
   );

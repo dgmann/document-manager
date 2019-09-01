@@ -1,12 +1,12 @@
-import { PatientActions, PatientActionTypes } from './patient.actions';
-import { Patient } from "./patient.model";
-import { Moment } from "moment";
+import {PatientActions, PatientActionTypes} from './patient.actions';
+import {Patient} from './patient.model';
+import {Moment} from 'moment';
 
 export interface Filter {
-  categoryIds?: string[],
-  tags?: string[],
-  from?: Moment,
-  until?: Moment
+  categoryIds?: string[];
+  tags?: string[];
+  from?: Moment;
+  until?: Moment;
 }
 
 export interface State {
@@ -15,7 +15,7 @@ export interface State {
   selectedRecordId: string;
   selectedCategory: string;
   patientRecordMap: { [id: string]: string[] };
-  filter: Filter
+  filter: Filter;
 }
 
 export const initialState: State = {
@@ -46,7 +46,7 @@ export function reducer(state = initialState, action: PatientActions): State {
         selectedPatient: action.payload.patient
       });
     case PatientActionTypes.SetPatientRecords:
-      let map = Object.assign({}, state.patientRecordMap);
+      const map = Object.assign({}, state.patientRecordMap);
       map[action.payload.id] = action.payload.recordIds;
       return Object.assign({}, state, {
         patientRecordMap: map
@@ -55,7 +55,7 @@ export function reducer(state = initialState, action: PatientActions): State {
       let filter = state.filter;
       filter = Object.assign({}, filter, action.payload);
       return Object.assign({}, state, {
-        filter: filter
+        filter
       });
     case PatientActionTypes.SelectRecord:
       return Object.assign({}, state, {

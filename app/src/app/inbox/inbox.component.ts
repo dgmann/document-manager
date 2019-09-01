@@ -1,9 +1,9 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { includes, without } from 'lodash-es';
-import { Observable } from "rxjs";
-import { map, take, withLatestFrom } from "rxjs/operators";
-import { Record, Status } from "../core/store";
-import { InboxService } from "./inbox.service";
+import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {includes, without} from 'lodash-es';
+import {Observable} from 'rxjs';
+import {map, take, withLatestFrom} from 'rxjs/operators';
+import {Record, Status} from '../core/store';
+import {InboxService} from './inbox.service';
 
 @Component({
   selector: 'app-inbox',
@@ -11,7 +11,7 @@ import { InboxService } from "./inbox.service";
   styleUrls: ['./inbox.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class InboxComponent implements OnInit{
+export class InboxComponent implements OnInit {
   records: Observable<Record[]>;
   selectedRecord: Observable<Record>;
   selectedIds: Observable<string[]>;
@@ -56,7 +56,7 @@ export class InboxComponent implements OnInit{
     if (event.dataTransfer) {
       const files = event.dataTransfer.files;
       for (let i = 0; i < files.length; i++) {
-        this.inboxService.upload(files[i])
+        this.inboxService.upload(files[i]);
       }
       this.preventAll(event);
       event.dataTransfer.clearData();
@@ -75,8 +75,7 @@ export class InboxComponent implements OnInit{
       this.inboxService.allInboxRecordIds$
         .pipe(take(1))
         .subscribe(ids => this.inboxService.selectIds(ids));
-    }
-    else {
+    } else {
       this.inboxService.selectIds([]);
     }
   }
@@ -86,6 +85,6 @@ export class InboxComponent implements OnInit{
   }
 
   onSetStatusOfSelectedRecords(status: Status) {
-    this.inboxService.updateSelectedRecords({status})
+    this.inboxService.updateSelectedRecords({status});
   }
 }

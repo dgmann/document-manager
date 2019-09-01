@@ -1,8 +1,8 @@
-import { Injectable } from "@angular/core";
-import { webSocket } from "rxjs/webSocket";
+import {Injectable} from '@angular/core';
+import {webSocket} from 'rxjs/webSocket';
 
 @Injectable({
-  providedIn: "root"
+  providedIn: 'root'
 })
 export class WebsocketService {
   public create(url: string) {
@@ -17,7 +17,7 @@ export interface NotificationMessage {
 }
 
 export enum NotificationMessageType {
-  Created = "CREATE",
-  Updated = "UPDATE",
-  Deleted = "DELETE"
+  Created = 'CREATE',
+  Updated = 'UPDATE',
+  Deleted = 'DELETE'
 }

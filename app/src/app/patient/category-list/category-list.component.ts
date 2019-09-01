@@ -1,10 +1,10 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { MatTableDataSource } from "@angular/material/table";
-import { sortBy } from "lodash-es";
-import { Observable } from "rxjs";
-import { map } from "rxjs/operators";
-import { Category } from "../../core";
-import { MultiSelectService } from "../multi-select.service";
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {MatTableDataSource} from '@angular/material/table';
+import {sortBy} from 'lodash-es';
+import {Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
+import {Category} from '@app/core';
+import {MultiSelectService} from '../multi-select.service';
 
 @Component({
   selector: 'app-category-list',

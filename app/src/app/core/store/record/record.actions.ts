@@ -1,7 +1,7 @@
-import { Action } from '@ngrx/store';
-import { Update } from '@ngrx/entity';
-import { PageUpdate, Record } from './record.model';
-import * as moment from "moment";
+import {Action} from '@ngrx/store';
+import {Update} from '@ngrx/entity';
+import {PageUpdate, Record} from './record.model';
+import * as moment from 'moment';
 
 export enum RecordActionTypes {
   LoadRecords = '[Record] Load Records',

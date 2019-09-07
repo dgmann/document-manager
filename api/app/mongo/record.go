@@ -43,7 +43,7 @@ func (r *RecordService) All(ctx context.Context) ([]app.Record, error) {
 func (r *RecordService) Find(ctx context.Context, id string) (*app.Record, error) {
 	res, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		return nil, err
+		return nil, app.NewNotFoundError(id, Records, err)
 	}
 	return r.findByObjectId(ctx, res)
 }
@@ -53,13 +53,14 @@ func (r *RecordService) findByObjectId(ctx context.Context, id primitive.ObjectI
 
 	res := r.Records.FindOne(ctx, bson.M{"_id": id})
 	if res.Err() != nil {
-		logrus.WithField("error", res.Err()).Error("Cannot find record")
 		return nil, res.Err()
 	}
 
 	if err := res.Decode(&record); err != nil {
-		logrus.WithField("error", err).Error("error decoding record")
-		return nil, errors.New(fmt.Sprintf("record with ID %s not found", id.Hex()))
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return nil, app.NewNotFoundError(id.Hex(), Records, err)
+		}
+		return nil, err
 	}
 	return &record, nil
 }
@@ -67,7 +68,6 @@ func (r *RecordService) findByObjectId(ctx context.Context, id primitive.ObjectI
 func (r *RecordService) Query(ctx context.Context, query map[string]interface{}) ([]app.Record, error) {
 	cursor, err := r.Records.Find(ctx, query)
 	if err != nil {
-		logrus.Error(err)
 		return nil, err
 	}
 
@@ -131,9 +131,15 @@ func (r *RecordService) Delete(ctx context.Context, id string) error {
 
 	key, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		return err
+		return app.NewNotFoundError(id, Records, err)
 	}
-	_, err = r.Records.DeleteOne(ctx, bson.M{"_id": key})
+	res, err := r.Records.DeleteOne(ctx, bson.M{"_id": key})
+	if err != nil {
+		return fmt.Errorf("while deleting record %s. %w", id, err)
+	}
+	if res.DeletedCount == 0 {
+		return app.NewNotFoundError(id, Records, err)
+	}
 
 	r.Events.Send(app.EventDeleted, id)
 	return err
@@ -142,21 +148,23 @@ func (r *RecordService) Delete(ctx context.Context, id string) error {
 func (r *RecordService) Update(ctx context.Context, id string, record app.Record) (*app.Record, error) {
 	key, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		return nil, err
+		return nil, app.NewNotFoundError(id, Records, err)
 	}
 	// TODO: Remove deleted pages from the file system
 	res := r.Records.FindOneAndUpdate(ctx, bson.M{"_id": key}, bson.M{"$set": record})
 	if res.Err() != nil {
 		return nil, err
 	}
-	var updated *app.Record
+	var updated app.Record
 
-	if err := res.Decode(updated); err != nil {
-		return nil, err
+	if err := res.Decode(&updated); err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return nil, app.NewNotFoundError(id, Records, err)
+		}
 	}
 
 	r.Events.Send(app.EventUpdated, updated)
-	return updated, nil
+	return &updated, nil
 }
 
 // UpdatePages updates the pages specified while keeping the rest of the original pages
@@ -182,8 +190,7 @@ func castToRecordSlice(ctx context.Context, cursor mongo.Cursor) ([]app.Record, 
 	for cursor.Next(ctx) {
 		r := app.Record{}
 		if err := cursor.Decode(&r); err != nil {
-			logrus.WithError(err).Error("error decoding category from database")
-			return nil, err
+			return nil, fmt.Errorf("decoding records from database: %w", err)
 		}
 		records = append(records, r)
 	}

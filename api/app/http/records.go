@@ -120,11 +120,16 @@ func (r *RecordController) Update(c *gin.Context) {
 	var body app.Record
 
 	if err := json.NewDecoder(c.Request.Body).Decode(&body); err != nil {
-		c.Error(err)
+		c.AbortWithError(400, err)
 		return
 	}
 	updated, err := r.records.Update(c, c.Param("recordId"), body)
 	if err != nil {
+		var e *app.NotFoundError
+		if errors.As(err, &e) {
+			_ = c.AbortWithError(404, err)
+			return
+		}
 		c.AbortWithError(400, err)
 		return
 	}

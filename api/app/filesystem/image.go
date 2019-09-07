@@ -28,16 +28,18 @@ func NewImageService(directory string) (*ImageService, error) {
 func (f *ImageService) Get(id string) (map[string]*app.Image, error) {
 	images := make(map[string]*app.Image, 0)
 	p := path.Join(f.baseDirectory, id)
-	err := filepath.Walk(p, func(d string, info os.FileInfo, err error) error {
+	err := filepath.Walk(p, func(currentPath string, info os.FileInfo, err error) error {
 		if err != nil {
 			logrus.WithError(err).Error("error getting files")
 			return err
 		}
 		if !info.IsDir() {
-			f, err := os.Open(d)
+			f, err := os.Open(currentPath)
+
 			if err != nil {
+				d, filename := filepath.Split(currentPath)
 				logrus.WithFields(logrus.Fields{
-					"name":      f.Name(),
+					"name":      filename,
 					"directory": d,
 					"error":     err,
 				}).Error("Error reading image")
@@ -115,17 +117,22 @@ func copyFolder(source string, dest string) (err error) {
 func copyFile(source string, dest string) (err error) {
 	sourcefile, err := os.Open(source)
 	if err != nil {
-		return err
+		return
 	}
 
 	defer sourcefile.Close()
 
 	destfile, err := os.Create(dest)
 	if err != nil {
-		return err
+		return
 	}
 
-	defer destfile.Close()
+	defer func() {
+		cerr := destfile.Close()
+		if err == nil {
+			err = cerr
+		}
+	}()
 
 	_, err = io.Copy(destfile, sourcefile)
 	if err == nil {
@@ -135,6 +142,5 @@ func copyFile(source string, dest string) (err error) {
 		}
 
 	}
-
 	return
 }

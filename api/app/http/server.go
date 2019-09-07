@@ -9,14 +9,15 @@ import (
 )
 
 type Server struct {
-	Healthchecker   map[string]app.HealthChecker
-	EventService    app.Subscriber
-	RecordService   app.RecordService
-	ImageService    app.ImageService
-	CategoryService app.CategoryService
-	ArchiveService  app.ArchiveService
-	TagService      app.TagService
-	PdfProcessor    app.PdfProcessor
+	Healthchecker      map[string]app.HealthChecker
+	StatisticProviders map[string]app.StatisticProvider
+	EventService       app.Subscriber
+	RecordService      app.RecordService
+	ImageService       app.ImageService
+	CategoryService    app.CategoryService
+	ArchiveService     app.ArchiveService
+	TagService         app.TagService
+	PdfProcessor       app.PdfProcessor
 }
 
 func (s *Server) Run() error {
@@ -60,6 +61,7 @@ func (s *Server) Run() error {
 	registerCategories(router.Group("/categories"), categoryController)
 
 	health := HealthController{s.Healthchecker}
+	statistics := StatisticsController{s.StatisticProviders}
 	tagController := NewTagController(s.TagService)
 	archiveController := NewArchiveController(s.ArchiveService)
 
@@ -67,6 +69,7 @@ func (s *Server) Run() error {
 		c.String(200, "Document Storage API")
 	})
 	router.GET("status", health.Status)
+	router.GET("statistics", statistics.Statistics)
 
 	router.GET("tags", tagController.All)
 

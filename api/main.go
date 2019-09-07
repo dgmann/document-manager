@@ -70,6 +70,9 @@ func main() {
 			"archiveStorage": archiveService,
 			"recordStorage":  imageService,
 		},
+		StatisticProviders: map[string]app.StatisticProvider{
+			"archiveStorage": archiveService,
+		},
 	}
 
 	if err := srv.Run(); err != nil {

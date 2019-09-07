@@ -8,6 +8,11 @@ import (
 	"time"
 )
 
+const (
+	Categories = "categories"
+	Records    = "records"
+)
+
 type Client struct {
 	uri    string
 	dbName string

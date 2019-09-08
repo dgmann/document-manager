@@ -28,18 +28,18 @@ func (m *MockCategoryRepository) Add(ctx context.Context, id, category string) e
 
 func createTestController() (*CategoryController, *MockCategoryRepository) {
 	mockCategoryRepository := new(MockCategoryRepository)
-	testResponseService, _ := NewTestResponseFactory()
-	return &CategoryController{categories: mockCategoryRepository, responseService: testResponseService}, mockCategoryRepository
+	return &CategoryController{categories: mockCategoryRepository}, mockCategoryRepository
 }
 
 func TestCategoryController_All(t *testing.T) {
 	controller, mockCategoryRepository := createTestController()
 
-	ctx, w := NewTestContext()
 	categories := []app.Category{{Name: "mock", Id: "mock"}}
-	mockCategoryRepository.On("All", ctx).Return(categories, nil)
+	mockCategoryRepository.On("All", mock.Anything).Return(categories, nil)
 
-	controller.All(ctx)
+	req := httptest.NewRequest("GET", "http://example.com/foo", nil)
+	w := httptest.NewRecorder()
+	controller.All(w, req)
 	expected, _ := json.Marshal(categories)
 	assert.Equal(t, string(expected), strings.TrimSpace(w.Body.String()))
 }
@@ -47,16 +47,14 @@ func TestCategoryController_All(t *testing.T) {
 func TestCategoryController_Create(t *testing.T) {
 	controller, mockCategoryRepository := createTestController()
 
-	ctx, w := NewTestContext()
-
 	category := app.Category{Id: "cat", Name: "Category"}
+	mockCategoryRepository.On("Add", mock.Anything, category.Id, category.Name).Return(nil)
+
 	body, _ := json.Marshal(category)
 	req := httptest.NewRequest("POST", "/", bytes.NewBuffer(body))
-	ctx.Request = req
+	w := httptest.NewRecorder()
 
-	mockCategoryRepository.On("Add", ctx, category.Id, category.Name).Return(nil)
-
-	controller.Create(ctx)
+	controller.Create(w, req)
 	assert.Equal(t, 201, w.Code)
 	assert.Equal(t, string(body), strings.TrimSpace(w.Body.String()))
 }

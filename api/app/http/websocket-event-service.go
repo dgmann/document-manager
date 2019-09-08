@@ -5,6 +5,7 @@ import (
 	"github.com/cskr/pubsub"
 	"github.com/dgmann/document-manager/api/app"
 	"github.com/sirupsen/logrus"
+	"net/url"
 	"time"
 )
 
@@ -32,7 +33,13 @@ func (e *EventService) Log() {
 }
 
 func (e *EventService) Send(t app.EventType, data interface{}) {
-	payload := SetURL(data, "", e.modTimeReader)
+	payload := data
+	switch data.(type) {
+	case *app.Record:
+		payload = SetURLForRecord(data.(*app.Record), url.URL{}, e.modTimeReader)
+	case []app.Record:
+		payload = SetURLForRecordList(data.([]app.Record), url.URL{}, e.modTimeReader)
+	}
 	event := app.Event{
 		Type:      t,
 		Timestamp: time.Now(),

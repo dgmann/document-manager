@@ -3,7 +3,6 @@ package filesystem
 import (
 	"fmt"
 	"github.com/dgmann/document-manager/api/app"
-	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"io"
 	"io/ioutil"
@@ -67,9 +66,8 @@ func (f *ImageService) Copy(fromId string, toId string) error {
 	return copyFolder(sourceFolder, destinationFolder)
 }
 
-func (f *ImageService) Serve(context *gin.Context, recordId string, imageId string, format string) {
-	p := f.getPath(recordId, imageId+"."+format)
-	context.File(p)
+func (f *ImageService) Path(recordId string, imageId string, format string) string {
+	return f.getPath(recordId, imageId+"."+format)
 }
 
 func (f *ImageService) getPath(recordId string, imageId string) string {

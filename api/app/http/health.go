@@ -3,7 +3,7 @@ package http
 import (
 	"context"
 	"github.com/dgmann/document-manager/api/app"
-	"github.com/gin-gonic/gin"
+	"net/http"
 	"time"
 )
 
@@ -13,10 +13,10 @@ type HealthController struct {
 	checker checker
 }
 
-func (h *HealthController) Status(c *gin.Context) {
+func (h *HealthController) Status(w http.ResponseWriter, req *http.Request) {
 	messages := make(map[string]string)
 	for key, checker := range h.checker {
-		ctx, cancel := context.WithTimeout(c, 2*time.Second)
+		ctx, cancel := context.WithTimeout(req.Context(), 2*time.Second)
 		msg, err := checker.Check(ctx)
 		cancel()
 		if err != nil {
@@ -25,5 +25,5 @@ func (h *HealthController) Status(c *gin.Context) {
 			messages[key] = msg
 		}
 	}
-	c.JSON(200, messages)
+	NewResponseWithStatus(w, messages, http.StatusOK).WriteJSON()
 }

@@ -3,7 +3,7 @@ package http
 import (
 	"fmt"
 	"github.com/dgmann/document-manager/api/app"
-	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 type providers map[string]app.StatisticProvider
@@ -12,7 +12,7 @@ type StatisticsController struct {
 	providers providers
 }
 
-func (h *StatisticsController) Statistics(c *gin.Context) {
+func (h *StatisticsController) Statistics(w http.ResponseWriter, req *http.Request) {
 	messages := make(map[string]string)
 	for key, provider := range h.providers {
 		numberOfElements, err := provider.NumberOfElements()
@@ -22,5 +22,5 @@ func (h *StatisticsController) Statistics(c *gin.Context) {
 			messages[key] = fmt.Sprintf("number of elements: %d", numberOfElements)
 		}
 	}
-	c.JSON(200, messages)
+	NewResponseWithStatus(w, messages, http.StatusOK)
 }

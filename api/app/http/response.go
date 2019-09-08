@@ -2,48 +2,38 @@ package http
 
 import (
 	"encoding/json"
-	"github.com/dgmann/document-manager/api/app"
-	"github.com/gin-contrib/location"
-	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
-type ResponseFactory struct {
-	reader app.ModTimeReader
+func NewResponse(writer http.ResponseWriter, data interface{}) *Response {
+	return NewResponseWithStatus(writer, data, http.StatusOK)
 }
 
-func NewResponseFactory(reader app.ModTimeReader) *ResponseFactory {
-	return &ResponseFactory{reader: reader}
+func NewResponseWithStatus(writer http.ResponseWriter, data interface{}, code int) *Response {
+	return &Response{Data: data, writer: writer, StatusCode: code}
 }
 
-func (r *ResponseFactory) NewResponse(c *gin.Context, data interface{}) *Response {
-	return r.NewResponseWithStatus(c, data, http.StatusOK)
-}
-
-func (r *ResponseFactory) NewResponseWithStatus(c *gin.Context, data interface{}, code int) *Response {
-	baseUrl := ""
-	if c != nil {
-		url := location.Get(c)
-		baseUrl = url.String()
-	}
-	payload := SetURL(data, baseUrl, r.reader)
-	return &Response{Data: payload, context: c, StatusCode: code}
-}
-
-func (r *ResponseFactory) NewErrorResponse(c *gin.Context, code int, err error) *Response {
-	return &Response{Data: gin.H{"error": err.Error()}, context: c, StatusCode: code}
+func NewErrorResponse(writer http.ResponseWriter, err error, code int) *Response {
+	return &Response{Data: map[string]string{"error": err.Error()}, writer: writer, StatusCode: code}
 }
 
 type Response struct {
 	StatusCode int
 	Data       interface{}
-	context    *gin.Context
+	writer     http.ResponseWriter
 }
 
-func (r *Response) JSON() {
-	r.context.Status(r.StatusCode)
-	r.context.Header("Content-Type", "application/json; charset=utf-8")
-	if err := json.NewEncoder(r.context.Writer).Encode(r.Data); err != nil {
-		r.context.AbortWithError(400, err)
+func (r *Response) WriteJSON() {
+	r.writer.WriteHeader(r.StatusCode)
+	r.writer.Header().Add("Content-Type", "application/json; charset=utf-8")
+	if err := json.NewEncoder(r.writer).Encode(r.Data); err != nil {
+		r.writer.WriteHeader(500)
+	}
+}
+
+func (r *Response) Write() {
+	r.writer.WriteHeader(r.StatusCode)
+	if _, err := r.writer.Write(r.Data.([]byte)); err != nil {
+		r.writer.WriteHeader(500)
 	}
 }

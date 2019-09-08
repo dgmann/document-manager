@@ -2,7 +2,7 @@ package http
 
 import (
 	"github.com/dgmann/document-manager/api/app"
-	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 type TagController struct {
@@ -13,12 +13,12 @@ func NewTagController(repository app.TagService) *TagController {
 	return &TagController{tags: repository}
 }
 
-func (t *TagController) All(c *gin.Context) {
-	tags, err := t.tags.All(c)
+func (t *TagController) All(w http.ResponseWriter, req *http.Request) {
+	tags, err := t.tags.All(req.Context())
 	if err != nil {
-		c.AbortWithError(500, err)
+		NewErrorResponse(w, err, http.StatusInternalServerError)
 		return
 	}
 
-	c.JSON(200, tags)
+	NewResponseWithStatus(w, tags, http.StatusOK)
 }

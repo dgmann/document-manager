@@ -50,6 +50,7 @@ func (s *Server) Run() error {
 		records:    s.RecordService,
 		categories: s.CategoryService,
 		tags:       s.TagService,
+		images:     s.ImageService,
 	}
 	categoryController := &CategoryController{
 		categories: s.CategoryService,
@@ -73,7 +74,7 @@ func (s *Server) Run() error {
 
 	r.Get("/tags", tagController.All)
 
-	r.Get("/archive/:recordId", archiveController.One)
+	r.Get("/archive/{recordId}", archiveController.One)
 
 	return http.ListenAndServe(":8080", r)
 }

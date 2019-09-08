@@ -16,9 +16,9 @@ func NewTagController(repository app.TagService) *TagController {
 func (t *TagController) All(w http.ResponseWriter, req *http.Request) {
 	tags, err := t.tags.All(req.Context())
 	if err != nil {
-		NewErrorResponse(w, err, http.StatusInternalServerError)
+		NewErrorResponse(w, err, http.StatusInternalServerError).WriteJSON()
 		return
 	}
 
-	NewResponseWithStatus(w, tags, http.StatusOK)
+	NewResponseWithStatus(w, tags, http.StatusOK).WriteJSON()
 }

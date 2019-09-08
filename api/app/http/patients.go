@@ -5,19 +5,21 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/mongodb/mongo-go-driver/bson"
 	"net/http"
+	"net/url"
 )
 
 type PatientController struct {
 	records    app.RecordService
 	tags       app.TagService
 	categories app.CategoryService
+	images     app.ImageService
 }
 
 func (controller *PatientController) Router() http.Handler {
 	r := chi.NewRouter()
-	r.Get("/:patientId/tags", controller.Tags)
-	r.Get("/:patientId/categories", controller.Categories)
-	r.Get("/:patientId/records", controller.Records)
+	r.Get("/{patientId}/tags", controller.Tags)
+	r.Get("/{patientId}/categories", controller.Categories)
+	r.Get("/{patientId}/records", controller.Records)
 	return r
 }
 
@@ -52,5 +54,6 @@ func (controller *PatientController) Records(w http.ResponseWriter, req *http.Re
 		NewErrorResponse(w, err, 400).WriteJSON()
 		return
 	}
-	NewResponse(w, records).WriteJSON()
+	withUrl := SetURLForRecordList(records, url.URL{Scheme: req.URL.Scheme, Host: req.Host}, controller.images)
+	NewResponse(w, withUrl).WriteJSON()
 }

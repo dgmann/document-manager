@@ -1,3 +1,5 @@
+@import "../../../print";
+
 .button-group > button {
   margin-bottom: 16px;
 }
@@ -9,3 +11,22 @@
 .page-container:last-of-type {
   margin-right: 10px;
 }
+
+@media print {
+  ::ng-deep .mat-tab-header, ::ng-deep .mat-card-header {
+    display: none !important;
+  }
+
+  .action-button-bar {
+    display: none;
+  }
+
+  .page-container {
+    @include record-page-container();
+  }
+
+  .page {
+    @include record-page();
+  }
+}
+

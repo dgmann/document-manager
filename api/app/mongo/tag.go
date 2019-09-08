@@ -22,11 +22,11 @@ func (t *TagService) ByPatient(ctx context.Context, id string) ([]string, error)
 }
 
 func (t *TagService) query(ctx context.Context, query interface{}) ([]string, error) {
-	var tags []string
 	res, err := t.records.Distinct(ctx, "tags", bson.M{})
 	if err != nil {
-		return tags, err
+		return []string{}, err
 	}
+	tags := make([]string, 0, len(res))
 	for _, tag := range res {
 		tags = append(tags, tag.(string))
 	}

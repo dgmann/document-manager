@@ -13,12 +13,18 @@ import (
 type Status string
 
 const (
+	StatusNone      Status = ""
 	StatusInbox     Status = "inbox"
 	StatusEscalated Status = "escalated"
 	StatusReview    Status = "review"
 	StatusOther     Status = "other"
 	StatusDone      Status = "done"
 )
+
+func (s *Status) IsNone() bool {
+	none := StatusNone
+	return s == &none
+}
 
 type RecordService interface {
 	All(ctx context.Context) ([]Record, error)
@@ -47,8 +53,8 @@ type Record struct {
 func (r *Record) MarshalJSON() ([]byte, error) {
 	m := map[string]interface{}{
 		"id":          r.Id,
-		"date":        r.Date,
-		"receivedAt":  r.ReceivedAt,
+		"date":        formatTime(r.Date),
+		"receivedAt":  formatTime(&r.ReceivedAt),
 		"patientId":   toString(r.PatientId),
 		"comment":     toString(r.Comment),
 		"sender":      r.Sender,
@@ -91,6 +97,14 @@ func statusToString(val *Status) string {
 	return string(*val)
 }
 
+func formatTime(toFormat *time.Time) *string {
+	if toFormat == nil {
+		return nil
+	}
+	res := toFormat.Format(time.RFC3339)
+	return &res
+}
+
 type CreateRecord struct {
 	Id         *primitive.ObjectID `form:"id"`
 	Date       time.Time           `form:"date" time_format:"2006-01-02T15:04:05Z07:00"`
@@ -99,7 +113,7 @@ type CreateRecord struct {
 	Comment    *string             `form:"comment"`
 	PatientId  *string             `form:"patientId"`
 	Tags       []string            `form:"tags"`
-	Status     *Status             `form:"status"`
+	Status     Status              `form:"status"`
 	Category   *string             `form:"category"`
 	Pages      []Page
 }
@@ -118,7 +132,7 @@ func NewRecord(data CreateRecord) *Record {
 		Sender:     data.Sender,
 		Tags:       &data.Tags,
 		Pages:      data.Pages,
-		Status:     data.Status,
+		Status:     &data.Status,
 		Category:   data.Category,
 	}
 	if !data.Date.IsZero() {
@@ -127,13 +141,13 @@ func NewRecord(data CreateRecord) *Record {
 	if !data.ReceivedAt.IsZero() {
 		record.ReceivedAt = data.ReceivedAt
 	}
-	if record.Tags == nil {
+	if len(*record.Tags) == 0 {
 		record.Tags = &[]string{}
 	}
-	if record.Pages == nil {
+	if len(record.Pages) == 0 {
 		record.Pages = []Page{}
 	}
-	if record.Status == nil {
+	if record.Status.IsNone() {
 		status := StatusInbox
 		record.Status = &status
 	}

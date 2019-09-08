@@ -25,11 +25,12 @@ func main() {
 	dbName := envOrDefault("DB_NAME", "manager")
 	pdfProcessorUrl := envOrDefault("PDFPROCESSOR_URL", "127.0.0.1:9000")
 
+	log.WithFields(log.Fields{"host": dbHost, "database": dbName}).Info("connecting to database")
 	client := mongo.NewClient(dbHost, dbName)
-	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 	if err := client.Connect(ctx); err != nil {
-		log.WithError(err).Error("error connecting to mongodb")
+		log.WithError(err).Error("database cannot be reached")
 	}
 
 	if err := client.CreateIndexes(context.Background()); err != nil {
@@ -75,6 +76,7 @@ func main() {
 		},
 	}
 
+	log.Info("server startup completed")
 	if err := srv.Run(); err != nil {
 		log.WithError(err).Error("error starting http server")
 	}

@@ -2,6 +2,7 @@ package http
 
 import (
 	"bytes"
+	"github.com/go-chi/chi"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"golang.org/x/net/context"
@@ -27,8 +28,10 @@ func TestArchiveController_One(t *testing.T) {
 	mockPdfRepository.On("Get", "1").Return(mockFile, nil)
 
 	req := httptest.NewRequest("Get", "/1", nil)
-	ctx := req.Context()
-	req = req.WithContext(context.WithValue(ctx, "recordId", "1"))
+
+	rctx := chi.NewRouteContext()
+	rctx.URLParams.Add("recordId", "1")
+	req = req.WithContext(context.WithValue(req.Context(), chi.RouteCtxKey, rctx))
 	w := httptest.NewRecorder()
 	controller.One(w, req)
 

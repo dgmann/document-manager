@@ -21,9 +21,8 @@ const (
 	StatusDone      Status = "done"
 )
 
-func (s *Status) IsNone() bool {
-	none := StatusNone
-	return s == &none
+func (s Status) IsNone() bool {
+	return s == StatusNone
 }
 
 type RecordService interface {

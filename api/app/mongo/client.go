@@ -5,7 +5,6 @@ import (
 	"github.com/mongodb/mongo-go-driver/bson"
 	"github.com/mongodb/mongo-go-driver/mongo"
 	"github.com/mongodb/mongo-go-driver/mongo/readpref"
-	"time"
 )
 
 const (
@@ -30,7 +29,6 @@ func (c *Client) Connect(ctx context.Context) error {
 	}
 	c.Client = client
 
-	ctx, _ = context.WithTimeout(context.Background(), 2*time.Second)
 	return c.Client.Ping(ctx, readpref.Primary())
 }
 

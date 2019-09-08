@@ -49,7 +49,7 @@ func (controller *RecordController) All(w http.ResponseWriter, req *http.Request
 	}
 	records, err := controller.records.Query(req.Context(), query)
 	if err != nil {
-		NewErrorResponse(w, err, 400).WriteJSON()
+		NewErrorResponse(w, err, http.StatusInternalServerError).WriteJSON()
 		return
 	}
 	withUrl := SetURLForRecordList(records, url.URL{Scheme: req.URL.Scheme, Host: req.Host}, controller.images)
@@ -60,7 +60,13 @@ func (controller *RecordController) One(w http.ResponseWriter, req *http.Request
 	id := URLParamFromContext(req.Context(), "recordId")
 	result, err := controller.records.Find(req.Context(), id)
 	if err != nil {
-		NewErrorResponse(w, err, 404)
+		var notFoundErr *app.NotFoundError
+		if ok := errors.As(err, &notFoundErr); ok {
+			NewErrorResponse(w, notFoundErr, http.StatusNotFound).WriteJSON()
+		} else {
+			NewErrorResponse(w, err, http.StatusInternalServerError).WriteJSON()
+		}
+
 		return
 	}
 

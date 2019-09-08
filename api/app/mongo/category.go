@@ -49,7 +49,7 @@ func (c *CategoryService) Find(ctx context.Context, id string) (*app.Category, e
 	if res.Err() != nil {
 		return nil, res.Err()
 	}
-	if err := c.decoder.Decode(res, &category); err != nil {
+	if err := res.Decode(&category); err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			return nil, app.NewNotFoundError(id, Categories, err)
 		}

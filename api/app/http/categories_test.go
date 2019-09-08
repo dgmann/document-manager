@@ -2,32 +2,17 @@ package http
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"github.com/dgmann/document-manager/api/app"
+	"github.com/dgmann/document-manager/api/app/mock"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"net/http/httptest"
 	"strings"
 	"testing"
 )
 
-type MockCategoryRepository struct {
-	mock.Mock
-}
-
-func (m *MockCategoryRepository) All(ctx context.Context) ([]app.Category, error) {
-	args := m.Called(ctx)
-	return args.Get(0).([]app.Category), args.Error(1)
-}
-
-func (m *MockCategoryRepository) Add(ctx context.Context, id, category string) error {
-	args := m.Called(ctx, id, category)
-	return args.Error(0)
-}
-
-func createTestController() (*CategoryController, *MockCategoryRepository) {
-	mockCategoryRepository := new(MockCategoryRepository)
+func createTestController() (*CategoryController, *mock.CategoryService) {
+	mockCategoryRepository := new(mock.CategoryService)
 	return &CategoryController{categories: mockCategoryRepository}, mockCategoryRepository
 }
 

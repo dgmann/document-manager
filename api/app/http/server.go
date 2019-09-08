@@ -2,10 +2,11 @@ package http
 
 import (
 	"github.com/dgmann/document-manager/api/app"
-	"github.com/gin-contrib/cors"
-	"github.com/gin-contrib/location"
-	"github.com/gin-contrib/pprof"
-	"github.com/gin-gonic/gin"
+	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/middleware"
+	"github.com/go-chi/cors"
+	"github.com/gorilla/handlers"
+	"net/http"
 )
 
 type Server struct {
@@ -21,59 +22,58 @@ type Server struct {
 }
 
 func (s *Server) Run() error {
-	router := gin.Default()
-	pprof.Register(router)
-	router.Use(gin.ErrorLogger())
+	r := chi.NewRouter()
 
-	corsConfig := cors.DefaultConfig()
-	corsConfig.AllowAllOrigins = true
-	corsConfig.AddAllowMethods("PATCH", "DELETE")
-	router.Use(cors.New(corsConfig))
-	router.Use(location.New(location.Config{
-		Host:             "localhost:8080",
-		Scheme:           "http",
-		ForwardingHeader: "X-Forwarded-Host",
-	}))
+	r.Use(middleware.Logger)
+	r.Use(middleware.Recoverer)
+	r.Use(middleware.RedirectSlashes)
+	r.Use(handlers.ProxyHeaders)
 
-	responder := NewResponseFactory(s.ImageService)
+	r.Use(cors.New(cors.Options{
+		AllowedOrigins:   []string{"*"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: true,
+		MaxAge:           300,
+	}).Handler)
+
+	r.Mount("/debug", middleware.Profiler())
 
 	recordController := &RecordController{
-		records:         s.RecordService,
-		images:          s.ImageService,
-		pdfs:            s.ArchiveService,
-		pdfProcessor:    s.PdfProcessor,
-		responseService: responder,
+		records:      s.RecordService,
+		images:       s.ImageService,
+		pdfs:         s.ArchiveService,
+		pdfProcessor: s.PdfProcessor,
 	}
 	patientController := &PatientController{
-		records:         s.RecordService,
-		categories:      s.CategoryService,
-		responseService: responder,
-		tags:            s.TagService,
+		records:    s.RecordService,
+		categories: s.CategoryService,
+		tags:       s.TagService,
 	}
 	categoryController := &CategoryController{
-		responseService: responder,
-		categories:      s.CategoryService,
+		categories: s.CategoryService,
 	}
 
-	registerWebsocket(router, s.EventService)
-	registerRecords(router.Group("/records"), recordController)
-	registerPatients(router.Group("/patients"), patientController)
-	registerCategories(router.Group("/categories"), categoryController)
+	r.Mount("/notifications", getWebsocketHandler(s.EventService))
+	r.Mount("/records", recordController.Router())
+	r.Mount("/patients", patientController.Router())
+	r.Mount("/categories", categoryController.Router())
 
 	health := HealthController{s.Healthchecker}
 	statistics := StatisticsController{s.StatisticProviders}
 	tagController := NewTagController(s.TagService)
 	archiveController := NewArchiveController(s.ArchiveService)
 
-	router.GET("", func(c *gin.Context) {
-		c.String(200, "Document Storage API")
+	r.Get("/", func(w http.ResponseWriter, req *http.Request) {
+		NewResponseWithStatus(w, []byte("Document Storage API"), 200).Write()
 	})
-	router.GET("status", health.Status)
-	router.GET("statistics", statistics.Statistics)
+	r.Get("/status", health.Status)
+	r.Get("/statistics", statistics.Statistics)
 
-	router.GET("tags", tagController.All)
+	r.Get("/tags", tagController.All)
 
-	router.GET("archive/:recordId", archiveController.One)
+	r.Get("/archive/:recordId", archiveController.One)
 
-	return router.Run()
+	return http.ListenAndServe(":8080", r)
 }

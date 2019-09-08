@@ -2,10 +2,11 @@ package http
 
 import (
 	"bytes"
-	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"golang.org/x/net/context"
 	"io"
+	"net/http/httptest"
 	"testing"
 )
 
@@ -22,13 +23,14 @@ func TestArchiveController_One(t *testing.T) {
 	mockPdfRepository := new(MockPdfRepository)
 	controller := ArchiveController{pdfs: mockPdfRepository}
 
-	w := gin.CreateTestResponseRecorder()
-	context, _ := gin.CreateTestContext(w)
-	context.Params = gin.Params{gin.Param{Key: "recordId", Value: "1"}}
 	mockFile := bytes.NewBufferString("mock")
 	mockPdfRepository.On("Get", "1").Return(mockFile, nil)
 
-	controller.One(context)
+	req := httptest.NewRequest("Get", "/1", nil)
+	ctx := req.Context()
+	req = req.WithContext(context.WithValue(ctx, "recordId", "1"))
+	w := httptest.NewRecorder()
+	controller.One(w, req)
 
 	assert.Equal(t, 200, w.Code)
 	assert.Equal(t, "mock", w.Body.String())

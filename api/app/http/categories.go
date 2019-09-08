@@ -4,18 +4,19 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/dgmann/document-manager/api/app"
-	"github.com/gin-gonic/gin"
+	"github.com/go-chi/chi"
 	"net/http"
 )
 
-func registerCategories(g *gin.RouterGroup, controller *CategoryController) {
-	g.GET("", controller.All)
-	g.POST("", controller.Create)
+type CategoryController struct {
+	categories categoryRepository
 }
 
-type CategoryController struct {
-	categories      categoryRepository
-	responseService Responder
+func (controller *CategoryController) Router() http.Handler {
+	r := chi.NewRouter()
+	r.Get("/", controller.All)
+	r.Post("/", controller.Create)
+	return r
 }
 
 type categoryRepository interface {
@@ -23,26 +24,24 @@ type categoryRepository interface {
 	Add(ctx context.Context, id, category string) error
 }
 
-func (cat *CategoryController) All(c *gin.Context) {
-	categories, err := cat.categories.All(c)
+func (controller *CategoryController) All(w http.ResponseWriter, req *http.Request) {
+	categories, err := controller.categories.All(req.Context())
 	if err != nil {
-		c.AbortWithError(400, err)
+		NewErrorResponse(w, err, http.StatusBadRequest).WriteJSON()
 		return
 	}
-	resp := cat.responseService.NewResponse(c, categories)
-	resp.JSON()
+	NewResponse(w, categories).WriteJSON()
 }
 
-func (cat *CategoryController) Create(c *gin.Context) {
+func (controller *CategoryController) Create(w http.ResponseWriter, req *http.Request) {
 	var body app.Category
-	if err := json.NewDecoder(c.Request.Body).Decode(&body); err != nil {
-		cat.responseService.NewErrorResponse(c, http.StatusBadRequest, err)
+	if err := json.NewDecoder(req.Body).Decode(&body); err != nil {
+		NewErrorResponse(w, err, http.StatusBadRequest).WriteJSON()
 		return
 	}
-	if err := cat.categories.Add(c, body.Id, body.Name); err != nil {
-		cat.responseService.NewErrorResponse(c, http.StatusConflict, err)
+	if err := controller.categories.Add(req.Context(), body.Id, body.Name); err != nil {
+		NewErrorResponse(w, err, http.StatusConflict).WriteJSON()
 		return
 	}
-	resp := cat.responseService.NewResponseWithStatus(c, body, 201)
-	resp.JSON()
+	NewResponseWithStatus(w, body, http.StatusCreated).WriteJSON()
 }

@@ -3,17 +3,19 @@ package http
 import (
 	"encoding/json"
 	"github.com/dgmann/document-manager/api/app"
-	"github.com/gin-gonic/gin"
+	"github.com/go-chi/chi"
 	"gopkg.in/olahol/melody.v1"
+	"net/http"
 	"sync"
 )
 
-func registerWebsocket(router *gin.Engine, subscriber app.Subscriber) {
+func getWebsocketHandler(subscriber app.Subscriber) http.Handler {
+	r := chi.NewRouter()
 	m := melody.New()
 	ws := NewWebSocketService()
 
-	router.GET("/notifications", func(c *gin.Context) {
-		m.HandleRequest(c.Writer, c.Request)
+	r.Get("/", func(w http.ResponseWriter, req *http.Request) {
+		m.HandleRequest(w, req)
 	})
 
 	m.HandleConnect(func(s *melody.Session) {
@@ -25,6 +27,7 @@ func registerWebsocket(router *gin.Engine, subscriber app.Subscriber) {
 	})
 
 	go publishEvents(m, subscriber)
+	return r
 }
 
 func publishEvents(m *melody.Melody, subscriber app.Subscriber) {

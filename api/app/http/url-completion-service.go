@@ -4,31 +4,40 @@ import (
 	"fmt"
 	"github.com/dgmann/document-manager/api/app"
 	"github.com/sirupsen/logrus"
+	"net/url"
 	"time"
 )
 
-func SetURL(data interface{}, baseUrl string, reader app.ModTimeReader) interface{} {
-	switch data.(type) {
-	case *app.Record:
-		return cloneAndSetUrl(*data.(*app.Record), baseUrl, reader)
-	case []app.Record:
-		cloned := make([]app.Record, len(data.([]app.Record)))
-		for i, m := range data.([]app.Record) {
-			cloned[i] = *cloneAndSetUrl(m, baseUrl, reader)
-		}
-		return cloned
-	}
-	return data
+func SetURLForRecord(record *app.Record, url url.URL, reader app.ModTimeReader) interface{} {
+	return cloneAndSetUrl(*record, url, reader)
 }
 
-func cloneAndSetUrl(record app.Record, baseUrl string, reader app.ModTimeReader) *app.Record {
+func SetURLForRecordList(records []app.Record, url url.URL, reader app.ModTimeReader) interface{} {
+	cloned := make([]app.Record, len(records))
+	for i, m := range records {
+		cloned[i] = *cloneAndSetUrl(m, url, reader)
+	}
+	return cloned
+}
+
+func cloneAndSetUrl(record app.Record, url url.URL, reader app.ModTimeReader) *app.Record {
 	clone := record.Clone()
 
-	setURLForRecord(&clone, baseUrl, reader)
+	setURLForRecord(&clone, url, reader)
 	return &clone
 }
 
-func setURLForRecord(r *app.Record, url string, reader app.ModTimeReader) {
+func setURLForRecord(r *app.Record, url url.URL, reader app.ModTimeReader) {
+	domain := ""
+	if url.Host != "" {
+		host := url.Host
+		scheme := url.Scheme
+		if scheme == "" {
+			scheme = "http"
+		}
+		domain = fmt.Sprintf("%s://%s", scheme, host)
+	}
+
 	if r.Tags == nil {
 		r.Tags = &[]string{}
 	}
@@ -43,7 +52,7 @@ func setURLForRecord(r *app.Record, url string, reader app.ModTimeReader) {
 			logrus.Error(err)
 		}
 
-		r.Pages[i].Url = fmt.Sprintf("%s/records/%s/pages/%s?modified=%d", url, r.Id.Hex(), r.Pages[i].Id, modified.Unix())
+		r.Pages[i].Url = fmt.Sprintf("%s/records/%s/pages/%s?modified=%d", domain, r.Id.Hex(), r.Pages[i].Id, modified.Unix())
 	}
-	r.ArchivedPDF = fmt.Sprintf("%s/archive/%s", url, r.Id.Hex())
+	r.ArchivedPDF = fmt.Sprintf("%s/archive/%s", domain, r.Id.Hex())
 }

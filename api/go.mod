@@ -6,14 +6,16 @@ require (
 	github.com/cskr/pubsub v1.0.1
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dgmann/document-manager/pdf-processor/api v0.0.0-20180925160055-a92bb23eeb51
-	github.com/gin-contrib/cors v0.0.0-20180514151808-6f0a820f94be
 	github.com/gin-contrib/location v0.0.0-20180301030833-911ef8299476
 	github.com/gin-contrib/pprof v0.0.0-20180827024024-a27513940d36
 	github.com/gin-contrib/sse v0.0.0-20170109093832-22d885f9ecc7 // indirect
 	github.com/gin-gonic/gin v0.0.0-20180810125023-8fc8ce047243
+	github.com/go-chi/chi v4.0.2+incompatible
+	github.com/go-chi/cors v1.0.0
 	github.com/go-stack/stack v1.8.0 // indirect
 	github.com/golang/snappy v0.0.0-20180518054509-2e65f85255db // indirect
 	github.com/google/go-cmp v0.2.0 // indirect
+	github.com/gorilla/handlers v1.4.2
 	github.com/gorilla/websocket v1.2.0 // indirect
 	github.com/jinzhu/copier v0.0.0-20180308034124-7e38e58719c3
 	github.com/json-iterator/go v1.1.5 // indirect
@@ -33,6 +35,7 @@ require (
 	github.com/xdg/scram v0.0.0-20180814205039-7eeb5667e42c // indirect
 	github.com/xdg/stringprep v1.0.0 // indirect
 	golang.org/x/crypto v0.0.0-20180808211826-de0752318171 // indirect
+	golang.org/x/net v0.0.0-20180925072008-f04abc6bdfa7
 	google.golang.org/grpc v1.15.0
 	gopkg.in/airbrake/gobrake.v2 v2.0.9 // indirect
 	gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 // indirect

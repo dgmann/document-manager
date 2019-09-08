@@ -1,9 +1,9 @@
 package http
 
 import (
-	"github.com/gin-gonic/gin"
 	"io"
 	"io/ioutil"
+	"net/http"
 )
 
 type ArchiveController struct {
@@ -18,17 +18,22 @@ func NewArchiveController(pdf getter) *ArchiveController {
 	return &ArchiveController{pdfs: pdf}
 }
 
-func (a *ArchiveController) One(c *gin.Context) {
-	file, err := a.pdfs.Get(c.Param("recordId"))
+func (a *ArchiveController) One(w http.ResponseWriter, req *http.Request) {
+	id := URLParamFromContext(req.Context(), "recordId")
+	file, err := a.pdfs.Get(id)
 	if err != nil {
-		c.AbortWithError(404, err)
+		NewErrorResponse(w, err, http.StatusNotFound)
 		return
 	}
 
 	data, err := ioutil.ReadAll(file)
 	if err != nil {
-		c.AbortWithError(500, err)
+		NewErrorResponse(w, err, http.StatusInternalServerError)
 		return
 	}
-	c.Data(200, "application/pdf", data)
+	w.WriteHeader(200)
+	w.Header().Add("Content-Type", "application/pdf")
+	if _, err := w.Write(data); err != nil {
+		w.WriteHeader(500)
+	}
 }

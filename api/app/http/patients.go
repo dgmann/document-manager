@@ -2,56 +2,55 @@ package http
 
 import (
 	"github.com/dgmann/document-manager/api/app"
-	"github.com/gin-gonic/gin"
+	"github.com/go-chi/chi"
 	"github.com/mongodb/mongo-go-driver/bson"
+	"net/http"
 )
 
-func registerPatients(g *gin.RouterGroup, controller *PatientController) {
-	g.GET("/:patientId/tags", controller.Tags)
-	g.GET("/:patientId/categories", controller.Categories)
-	g.GET("/:patientId/records", controller.Records)
-}
-
 type PatientController struct {
-	records         app.RecordService
-	tags            app.TagService
-	categories      app.CategoryService
-	responseService Responder
+	records    app.RecordService
+	tags       app.TagService
+	categories app.CategoryService
 }
 
-func (p *PatientController) Tags(c *gin.Context) {
-	patientId := c.Param("patientId")
+func (controller *PatientController) Router() http.Handler {
+	r := chi.NewRouter()
+	r.Get("/:patientId/tags", controller.Tags)
+	r.Get("/:patientId/categories", controller.Categories)
+	r.Get("/:patientId/records", controller.Records)
+	return r
+}
 
-	tags, err := p.tags.ByPatient(c, patientId)
+func (controller *PatientController) Tags(w http.ResponseWriter, req *http.Request) {
+	id := URLParamFromContext(req.Context(), "patientId")
+
+	tags, err := controller.tags.ByPatient(req.Context(), id)
 	if err != nil {
-		c.AbortWithError(404, err)
+		NewErrorResponse(w, err, 404).WriteJSON()
 		return
 	}
 
-	res := p.responseService.NewResponse(c, tags)
-	res.JSON()
+	NewResponse(w, tags).WriteJSON()
 }
 
-func (p *PatientController) Categories(c *gin.Context) {
-	patientId := c.Param("patientId")
+func (controller *PatientController) Categories(w http.ResponseWriter, req *http.Request) {
+	id := URLParamFromContext(req.Context(), "patientId")
 
-	categories, err := p.categories.FindByPatient(c, patientId)
+	categories, err := controller.categories.FindByPatient(req.Context(), id)
 	if err != nil {
-		c.AbortWithError(404, err)
+		NewErrorResponse(w, err, 404).WriteJSON()
 		return
 	}
 
-	res := p.responseService.NewResponse(c, categories)
-	res.JSON()
+	NewResponse(w, categories).WriteJSON()
 }
 
-func (p *PatientController) Records(c *gin.Context) {
-	id := c.Param("patientId")
-	records, err := p.records.Query(c, bson.M{"patientId": id})
+func (controller *PatientController) Records(w http.ResponseWriter, req *http.Request) {
+	id := URLParamFromContext(req.Context(), "patientId")
+	records, err := controller.records.Query(req.Context(), bson.M{"patientId": id})
 	if err != nil {
-		c.AbortWithError(400, err)
+		NewErrorResponse(w, err, 400).WriteJSON()
 		return
 	}
-	res := p.responseService.NewResponse(c, records)
-	res.JSON()
+	NewResponse(w, records).WriteJSON()
 }

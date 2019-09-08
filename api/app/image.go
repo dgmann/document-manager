@@ -1,7 +1,6 @@
 package app
 
 import (
-	"github.com/gin-gonic/gin"
 	"time"
 )
 
@@ -17,7 +16,7 @@ func NewImage(img []byte, imageType string) *Image {
 type ImageService interface {
 	ResourceWriter
 	Get(id string) (map[string]*Image, error)
-	Serve(context *gin.Context, recordId string, imageId string, format string)
+	Path(recordId string, imageId string, format string) string
 	Copy(fromId string, toId string) error
 	ModTimeReader
 }

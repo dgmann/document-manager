@@ -5,7 +5,7 @@
                     (delete)="onDeleteSelectedRecords()"
                     (changeStatus)="onSetStatusOfSelectedRecords($event)"
                     (selectAll)="onSelectAllRecords($event)"></app-action-bar>
-    <app-document-list [records]="records" [selectedIds]="selectedIds"
+    <app-document-list [records]="records | async" [selectedIds]="selectedIds | async"
                        (selectRecords)="onSelectRecords($event)"></app-document-list>
   </div>
   <div class="right-panel">

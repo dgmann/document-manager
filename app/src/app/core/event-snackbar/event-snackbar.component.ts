@@ -9,7 +9,7 @@ import {NotificationEvent} from '@app/core';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class EventSnackbarComponent implements OnInit {
-  constructor(@Inject(MAT_SNACK_BAR_DATA) public events: NotificationEvent) {
+  constructor(@Inject(MAT_SNACK_BAR_DATA) public events: NotificationEvent[]) {
   }
 
   ngOnInit() {

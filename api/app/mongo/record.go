@@ -8,6 +8,7 @@ import (
 	"github.com/mongodb/mongo-go-driver/bson"
 	"github.com/mongodb/mongo-go-driver/bson/primitive"
 	"github.com/mongodb/mongo-go-driver/mongo"
+	"github.com/mongodb/mongo-go-driver/mongo/options"
 	"github.com/sirupsen/logrus"
 	"io"
 	"io/ioutil"
@@ -151,7 +152,7 @@ func (r *RecordService) Update(ctx context.Context, id string, record app.Record
 		return nil, app.NewNotFoundError(id, Records, err)
 	}
 	// TODO: Remove deleted pages from the file system
-	res := r.Records.FindOneAndUpdate(ctx, bson.M{"_id": key}, bson.M{"$set": record})
+	res := r.Records.FindOneAndUpdate(ctx, bson.M{"_id": key}, bson.M{"$set": record}, options.FindOneAndUpdate().SetReturnDocument(options.After))
 	if res.Err() != nil {
 		return nil, err
 	}
@@ -161,6 +162,7 @@ func (r *RecordService) Update(ctx context.Context, id string, record app.Record
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			return nil, app.NewNotFoundError(id, Records, err)
 		}
+		return nil, err
 	}
 
 	r.Events.Send(app.EventUpdated, updated)

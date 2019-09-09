@@ -13,14 +13,12 @@ import {MatTableDataSource} from '@angular/material/table';
 import {Router} from '@angular/router';
 import {includes, without} from 'lodash-es';
 import {DropEvent} from 'ng-drag-drop';
-import {Observable} from 'rxjs';
 
 
 import {Record, RecordService, Status} from '../../core/store';
 import {CommentDialogService} from '../comment-dialog/comment-dialog.service';
 import {DocumentEditDialogService} from '../document-edit-dialog/document-edit-dialog.service';
 import {NotificationService} from '@app/core';
-import {take} from 'rxjs/operators';
 
 
 @Component({
@@ -32,9 +30,13 @@ import {take} from 'rxjs/operators';
 export class DocumentListComponent implements OnInit, AfterViewInit {
   @ViewChild(MatSort, { static: false }) sort: MatSort;
 
-  @Input() selectedIds: Observable<string[]>;
-  @Input() records: Observable<Record[]>;
+  @Input() selectedIds: string[];
+
+  @Input() set records(records: Record[]) {
+    this.dataSource.data = records;
+  }
   @Input() allowMultiselect = true;
+
   @Output() selectRecord = new EventEmitter<Record>();
   @Output() selectRecords = new EventEmitter<string[]>();
 
@@ -50,7 +52,6 @@ export class DocumentListComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.dataSource.sort = this.sort;
-    this.records.subscribe(records => this.dataSource.data = records);
   }
 
   /**
@@ -62,20 +63,18 @@ export class DocumentListComponent implements OnInit, AfterViewInit {
   }
 
   selectRow(record: Record, event: MouseEvent) {
-    this.selectedIds.pipe(take(1)).subscribe(ids => {
-      let newSelectedIds = [];
-      if (this.allowMultiselect && event.getModifierState('Control')) {
-        if (includes(ids, record.id)) {
-          newSelectedIds = without(ids, record.id);
-        } else {
-          newSelectedIds = [...ids, record.id];
-        }
+    let newSelectedIds = [];
+    if (this.allowMultiselect && event.getModifierState('Control')) {
+      if (includes(this.selectedIds, record.id)) {
+        newSelectedIds = without(this.selectedIds, record.id);
       } else {
-        newSelectedIds = [record.id];
+        newSelectedIds = [...this.selectedIds, record.id];
       }
-      this.selectRecord.emit(record);
-      this.selectRecords.emit(newSelectedIds);
-    });
+    } else {
+      newSelectedIds = [record.id];
+    }
+    this.selectRecord.emit(record);
+    this.selectRecords.emit(newSelectedIds);
   }
 
   deleteRecord(record: Record) {
@@ -123,13 +122,6 @@ export class DocumentListComponent implements OnInit, AfterViewInit {
       }
       this.recordService.update(result.id, changes);
     });
-  }
-
-  isSelected(selectedIds: string[], id: string) {
-    if (!id) {
-      return false;
-    }
-    return includes(selectedIds, id);
   }
 
   openEditor(record: Record) {

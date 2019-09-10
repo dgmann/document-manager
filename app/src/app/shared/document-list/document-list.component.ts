@@ -12,7 +12,6 @@ import {MatSort} from '@angular/material/sort';
 import {MatTableDataSource} from '@angular/material/table';
 import {Router} from '@angular/router';
 import {includes, without} from 'lodash-es';
-import {DropEvent} from 'ng-drag-drop';
 
 
 import {Record, RecordService, Status} from '../../core/store';
@@ -81,20 +80,25 @@ export class DocumentListComponent implements OnInit, AfterViewInit {
     this.recordService.delete(record.id);
   }
 
-  drop(source: Record, event: DropEvent) {
-    event.nativeEvent.preventDefault();
-    if (source.id === event.dragData.id) {
+  onDragStart(event: DragEvent, record: Record) {
+    event.dataTransfer.setData('recordId', record.id);
+  }
+
+  onDrop(event: DragEvent) {
+    const target = event.currentTarget as HTMLElement;
+    if (!target || (target && target.tagName !== 'MAT-ROW')) {
+      return;
+    }
+
+    event.preventDefault();
+    const sourceRecordId = event.dataTransfer.getData('recordId');
+    const targetRecordId = target.getAttribute('recordid');
+
+    if (sourceRecordId === targetRecordId) {
       this.notificationService.publishMessage('Anhängen an den Quellbefund nicht möglich');
       return;
     }
-    this.appendRecord({
-      source,
-      target: event.dragData
-    });
-  }
-
-  appendRecord(event) {
-    this.recordService.append(event.source.id, event.target.id);
+    this.recordService.append(sourceRecordId, targetRecordId);
   }
 
   setStatus(event) {

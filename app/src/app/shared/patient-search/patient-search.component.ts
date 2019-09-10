@@ -27,7 +27,7 @@ export class PatientSearchComponent implements OnInit {
         debounceTime(500),
         filter(query => !!query && query.length > 0),
         switchMap(query => {
-          const patientId = parseInt(query);
+          const patientId = parseInt(query, 10);
           if (patientId) {
             return this.http.get<Patient>(`${environment.api}/patients/${patientId}`).pipe(
               map(patient => [patient])

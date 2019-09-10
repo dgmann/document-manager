@@ -1,31 +1,28 @@
-<div *ngIf="record | async; let r">
-  <div fxLayout="column" fxLayout.gt-md="row wrap" fxLayoutAlign="center" fxLayoutGap="10px"
-       *ngIf="pages$ | async; let pages">
-    <div class="page-container" fxFlex.gt-md="calc(50% - 10px)"
-         *ngFor="let page of pages; let i = index; trackBy: trackByFn">
-      <mat-card>
-        <mat-card-header>
-          <mat-card-title>Seite {{ i + 1 }}</mat-card-title>
-          <mat-card-subtitle>von {{ pages.length }}</mat-card-subtitle>
-          <div fxFlex></div>
-          <button mat-icon-button color="accent" (click)="up(r.id, pages,i)" [disabled]="i == 0">
-            <mat-icon aria-label="up">arrow_upward</mat-icon>
-          </button>
-          <button mat-icon-button color="accent" (click)="down(r.id, pages,i)" [disabled]="i == pages.length - 1">
-            <mat-icon aria-label="down">arrow_downward</mat-icon>
-          </button>
-          <button mat-icon-button color="accent" (click)="rotate(r.id, pages, i, -90)">
-            <mat-icon aria-label="rotate-left">rotate_left</mat-icon>
-          </button>
-          <button mat-icon-button color="accent" (click)="rotate(r.id, pages, i, 90)">
-            <mat-icon aria-label="rotate-right">rotate_right</mat-icon>
-          </button>
-          <button mat-icon-button color="accent" (click)="delete(r.id, pages, i)" [disabled]="r.pages.length <= 1">
-            <mat-icon aria-label="delete">delete</mat-icon>
-          </button>
-        </mat-card-header>
-        <img [alt]="'Page ' + i" [src]="page.url" mat-card-image>
-      </mat-card>
-    </div>
+<div fxLayout="column" fxLayout.gt-md="row wrap" fxLayoutAlign="center" fxLayoutGap="10px">
+  <div *ngFor="let page of pages; let i = index; trackBy: trackByFn" class="page-container"
+       fxFlex.gt-md="calc(50% - 10px)">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Seite {{ i + 1 }}</mat-card-title>
+        <mat-card-subtitle>von {{ pages.length }}</mat-card-subtitle>
+        <div fxFlex></div>
+        <button (click)="up(record.id, pages,i)" [disabled]="i == 0" color="accent" mat-icon-button>
+          <mat-icon aria-label="up">arrow_upward</mat-icon>
+        </button>
+        <button (click)="down(record.id, pages,i)" [disabled]="i == pages.length - 1" color="accent" mat-icon-button>
+          <mat-icon aria-label="down">arrow_downward</mat-icon>
+        </button>
+        <button (click)="rotate(record.id, pages, i, -90)" color="accent" mat-icon-button>
+          <mat-icon aria-label="rotate-left">rotate_left</mat-icon>
+        </button>
+        <button (click)="rotate(record.id, pages, i, 90)" color="accent" mat-icon-button>
+          <mat-icon aria-label="rotate-right">rotate_right</mat-icon>
+        </button>
+        <button (click)="delete(record.id, pages, i)" [disabled]="pages.length <= 1" color="accent" mat-icon-button>
+          <mat-icon aria-label="delete">delete</mat-icon>
+        </button>
+      </mat-card-header>
+      <img [alt]="'Page ' + i" [src]="page.url" mat-card-image>
+    </mat-card>
   </div>
 </div>

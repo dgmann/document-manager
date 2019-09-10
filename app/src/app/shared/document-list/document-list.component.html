@@ -1,4 +1,4 @@
-<table #table *ngIf="selectedIds.length > 0" [dataSource]="dataSource" class="container" mat-table
+<table #table [dataSource]="dataSource" class="container" mat-table
        matSort matSortActive="receivedAt" matSortDirection="desc" matSortDisableClear>
 
   <ng-container matColumnDef="receivedAt">
@@ -38,7 +38,7 @@
   <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
   <mat-row (click)="selectRow(row, $event)" (dblclick)="editRecord(row)"
            *matRowDef="let row; columns: displayedColumns;"
-           [class.selected]="selectedIds.includes(row?.id)" [dragData]="row" draggable droppable
-           [dragScope]="'record'"
-           [dropScope]="'record'" (onDrop)="drop(row, $event)" (drop)="$event.preventDefault()"></mat-row>
+           (dragstart)="onDragStart($event, row)"
+           (drop)="onDrop($event)" [attr.recordid]="row.id" [class.selected]="selectedIds.includes(row?.id)"
+           draggable="true"></mat-row>
 </table>

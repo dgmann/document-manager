@@ -1,7 +1,7 @@
 <mat-tab-group (selectedIndexChange)="onSelectedIndexChange($event)" [selectedIndex]="selectedIndex | async"
                dynamicHeight="true">
   <ng-container *ngIf="groupedRecords | async as recordGroups">
-    <mat-tab *ngFor="let recordGroup of recordGroups; trackBy: recordGroup?.category"
+    <mat-tab *ngFor="let recordGroup of recordGroups;"
              [label]="categoryMap[recordGroup?.category]?.name">
       <ng-container [ngTemplateOutletContext]="{records: recordGroup.records, category: recordGroup.category}"
                     [ngTemplateOutlet]="page"></ng-container>

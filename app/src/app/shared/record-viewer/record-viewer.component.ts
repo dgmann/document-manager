@@ -1,9 +1,7 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
-import {Observable} from 'rxjs';
 
 
 import {PageUpdate, Record, RecordService} from '../../core/store/index';
-import {map} from 'rxjs/operators';
 
 @Component({
   selector: 'app-record-viewer',
@@ -12,15 +10,18 @@ import {map} from 'rxjs/operators';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RecordViewerComponent implements OnInit {
-  @Input() record: Observable<Record>;
+  record: Record;
+  pages: PageUpdate[];
 
-  pages$: Observable<PageUpdate[]>;
+  @Input('record') set setRecord(record: Record) {
+    this.record = record;
+    this.pages = record && record.pages.map(p => PageUpdate.FromPage(p)) || [];
+  }
 
   constructor(private recordService: RecordService) {
   }
 
   public ngOnInit() {
-    this.pages$ = this.record.pipe(map(r => r && r.pages.map(p => PageUpdate.FromPage(p)) || []));
   }
 
   public up(recordId: string, pages: PageUpdate[], index: number) {

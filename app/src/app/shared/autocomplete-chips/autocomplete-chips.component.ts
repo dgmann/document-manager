@@ -36,21 +36,19 @@ export class AutocompleteChipsComponent implements OnInit, ControlValueAccessor 
   };
 
   ngOnInit() {
-    const filtered = this.formControl.valueChanges
+    this.filteredOptions = this.formControl.valueChanges
       .pipe(
         startWith(''),
         map((val => difference(this.filter(val, this.options), this.values)))
       );
-    this.filteredOptions = filtered;
   }
 
   filter(val: string, options: string[]): string[] {
     if (!val) {
       return options;
     }
-    const result = options.filter(option =>
+    return options.filter(option =>
       option.toLowerCase().indexOf(val.toLowerCase()) === 0);
-    return result;
   }
 
   addValue(value: string) {

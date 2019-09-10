@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 
 
 import {PageUpdate, Record, RecordService} from '../../core/store/index';
@@ -17,6 +17,8 @@ export class RecordViewerComponent implements OnInit {
     this.record = record;
     this.pages = record && record.pages.map(p => PageUpdate.FromPage(p)) || [];
   }
+
+  @Output() clickRecord = new EventEmitter();
 
   constructor(private recordService: RecordService) {
   }

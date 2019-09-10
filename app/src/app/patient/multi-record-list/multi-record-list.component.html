@@ -1,12 +1,10 @@
-<mat-tab-group (selectedIndexChange)="onSelectedIndexChange($event)" [selectedIndex]="selectedIndex | async"
+<mat-tab-group (selectedIndexChange)="onSelectedIndexChange($event)" [selectedIndex]="selectedIndex" fxFlexFill
                dynamicHeight="true">
-  <ng-container *ngIf="groupedRecords | async as recordGroups">
-    <mat-tab *ngFor="let recordGroup of recordGroups;"
-             [label]="categoryMap[recordGroup?.category]?.name">
-      <ng-container [ngTemplateOutletContext]="{records: recordGroup.records, category: recordGroup.category}"
-                    [ngTemplateOutlet]="page"></ng-container>
-    </mat-tab>
-  </ng-container>
+  <mat-tab *ngFor="let recordGroup of groupedRecords;"
+           [label]="categoryMap[recordGroup?.category]?.name">
+    <ng-container [ngTemplateOutletContext]="{records: recordGroup.records, category: recordGroup.category}"
+                  [ngTemplateOutlet]="page"></ng-container>
+  </mat-tab>
 </mat-tab-group>
 
 <ng-template matTabContent #page let-recordsToShow="records" let-category="category">

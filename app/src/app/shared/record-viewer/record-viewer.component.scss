@@ -12,6 +12,10 @@
   margin-right: 10px;
 }
 
+.page {
+  cursor: pointer;
+}
+
 @media print {
   ::ng-deep .mat-tab-header, ::ng-deep .mat-card-header {
     display: none !important;

@@ -19,6 +19,11 @@
   }
 }
 
+.page-container {
+  height: 100%;
+  overflow-y: auto;
+}
+
 mat-card-header {
   border-bottom: 1px solid $accent-light;
 }

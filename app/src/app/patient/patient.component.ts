@@ -9,12 +9,24 @@ import {Filter} from './store/patient.reducer';
 import {untilDestroyed} from 'ngx-take-until-destroy';
 import {Category, CategoryService, TagService} from '../core';
 import {EditResult} from '../shared';
+import {animate, style, transition, trigger} from '@angular/animations';
 
 
 @Component({
   selector: 'app-patient',
   templateUrl: './patient.component.html',
-  styleUrls: ['./patient.component.scss']
+  styleUrls: ['./patient.component.scss'],
+  animations: [
+    trigger('panelInOut', [
+      transition('void => *', [
+        style({transform: 'translateX(100%)'}),
+        animate(200)
+      ]),
+      transition('* => void', [
+        animate(200, style({transform: 'translateX(100%)'}))
+      ])
+    ])
+  ]
 })
 export class PatientComponent implements OnInit, OnDestroy {
   public patientId: Observable<string>;

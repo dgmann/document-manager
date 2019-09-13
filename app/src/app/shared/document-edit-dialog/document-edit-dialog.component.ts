@@ -132,6 +132,10 @@ export class DocumentEditDialogComponent implements AfterViewInit, OnInit, OnDes
       filterValue = value.toLowerCase();
     }
 
+    if (!filterValue) {
+      return this.categories;
+    }
+
     return this.categories.filter(category => category.name.toLowerCase().includes(filterValue));
   }
 }

@@ -1,22 +1,22 @@
 <mat-form-field fxFlexFill>
-  <mat-chip-list #chips required>
+  <mat-chip-list #chipList aria-label="Fruit selection">
     <mat-chip *ngFor="let tag of values" [selectable]="true"
               [removable]="true" (removed)="remove(tag)">
       {{tag}}
       <mat-icon matChipRemove>cancel</mat-icon>
     </mat-chip>
-    <input placeholder="Tag hinzufügen"
-           matInput
-           #chipInput
-           [formControl]="formControl"
-           [matAutocomplete]="auto"
-           [matChipInputFor]="chips"
-           [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-           [matChipInputAddOnBlur]="false"
-           (matChipInputTokenEnd)="addChip($event)" (keydown.enter)="onSubmit($event)">
+    <input
+        #chipInput
+        (matChipInputTokenEnd)="add($event)"
+        [formControl]="formControl"
+        [matAutocomplete]="auto"
+        [matChipInputAddOnBlur]="true"
+        [matChipInputFor]="chipList"
+        [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+        placeholder="New fruit...">
   </mat-chip-list>
-  <mat-autocomplete #auto="matAutocomplete">
-    <mat-option *ngFor="let option of filteredOptions | async" [value]="option" (click)="addValue(option)">
+  <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)" autoActiveFirstOption="true">
+    <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
       {{ option }}
     </mat-option>
   </mat-autocomplete>

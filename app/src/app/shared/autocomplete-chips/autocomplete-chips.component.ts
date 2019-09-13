@@ -1,9 +1,8 @@
 import {COMMA, ENTER} from '@angular/cdk/keycodes';
-import {ChangeDetectionStrategy, Component, forwardRef, Input, OnInit, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, ElementRef, forwardRef, Input, ViewChild} from '@angular/core';
 import {ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR} from '@angular/forms';
-import {MatAutocomplete} from '@angular/material/autocomplete';
-import {MatChipInputEvent} from '@angular/material/chips';
-import {MatInput} from '@angular/material/input';
+import {MatAutocomplete, MatAutocompleteSelectedEvent} from '@angular/material/autocomplete';
+import {MatChipInputEvent, MatChipList} from '@angular/material/chips';
 import {difference} from 'lodash-es';
 import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
@@ -21,9 +20,10 @@ import {map, startWith} from 'rxjs/operators';
     }
   ]
 })
-export class AutocompleteChipsComponent implements OnInit, ControlValueAccessor {
-  @Input('options') options: string[];
-  @ViewChild('chipInput', { static: true }) chipInput: MatInput;
+export class AutocompleteChipsComponent implements ControlValueAccessor {
+  @Input() options: string[];
+  @ViewChild('chipInput', {static: true}) chipInput: ElementRef<HTMLInputElement>;
+  @ViewChild('chips', {static: true}) chips: MatChipList;
   @ViewChild('auto', { static: true }) autoComplete: MatAutocomplete;
 
   values: string[] = [];
@@ -35,38 +35,36 @@ export class AutocompleteChipsComponent implements OnInit, ControlValueAccessor 
   propagateChange = (_: any) => {
   };
 
-  ngOnInit() {
-    this.filteredOptions = this.formControl.valueChanges
-      .pipe(
-        startWith(''),
-        map((val => difference(this.filter(val, this.options), this.values)))
-      );
+  constructor() {
+    this.filteredOptions = this.formControl.valueChanges.pipe(
+      startWith(null),
+      map((v: string | null) => v ? this._filter(v) : difference(this.options.slice(), this.values)));
   }
 
-  filter(val: string, options: string[]): string[] {
-    if (!val) {
-      return options;
+  add(event: MatChipInputEvent): void {
+    // Add fruit only when MatAutocomplete is not open
+    // To make sure this does not conflict with OptionSelected Event
+    if (!this.autoComplete.isOpen) {
+      const input = event.input;
+      const value = event.value;
+
+      // Add our fruit
+      if ((value || '').trim()) {
+        this.values.push(value.trim());
+        this.propagateChange(this.values);
+      }
+
+      // Reset the input value
+      if (input) {
+        input.value = '';
+      }
+
+      this.formControl.setValue(null);
     }
-    return options.filter(option =>
-      option.toLowerCase().indexOf(val.toLowerCase()) === 0);
   }
 
-  addValue(value: string) {
-    if ((value || '').trim()) {
-      this.values.push(value.trim());
-      this.propagateChange(this.values);
-    }
-
-    this.reset();
-  }
-
-  addChip(event: MatChipInputEvent): void {
-    const value = this.formControl.value;
-    this.addValue(value);
-  }
-
-  remove(chip: any): void {
-    const index = this.values.indexOf(chip);
+  remove(fruit: string): void {
+    const index = this.values.indexOf(fruit);
 
     if (index >= 0) {
       this.values.splice(index, 1);
@@ -74,15 +72,17 @@ export class AutocompleteChipsComponent implements OnInit, ControlValueAccessor 
     }
   }
 
-  reset() {
-    this.chipInput.value = '';
-    this.formControl.reset();
+  selected(event: MatAutocompleteSelectedEvent): void {
+    this.values.push(event.option.viewValue);
+    this.chipInput.nativeElement.value = '';
+    this.formControl.setValue(null);
+    this.propagateChange(this.values);
   }
 
-  onSubmit(event) {
-    if (this.chipInput.value === '' && !this.autoComplete.isOpen) {
-      event.preventDefault();
-    }
+  private _filter(value: string): string[] {
+    const filterValue = value.toLowerCase();
+
+    return this.options.filter(v => v.toLowerCase().indexOf(filterValue) === 0 && !this.values.includes(v));
   }
 
   registerOnChange(fn: any): void {

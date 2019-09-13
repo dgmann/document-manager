@@ -24,6 +24,12 @@
   overflow-y: auto;
 }
 
+.action-button-bar {
+  overflow: hidden;
+  display: flex;
+  justify-content: flex-end;
+}
+
 mat-card-header {
   border-bottom: 1px solid $accent-light;
 }

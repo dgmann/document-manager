@@ -1,8 +1,6 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {MatTableDataSource} from '@angular/material/table';
 import {sortBy} from 'lodash-es';
-import {Observable} from 'rxjs';
-import {map} from 'rxjs/operators';
 import {Category} from '@app/core';
 import {MultiSelectService} from '../multi-select.service';
 
@@ -11,9 +9,12 @@ import {MultiSelectService} from '../multi-select.service';
   templateUrl: './category-list.component.html',
   styleUrls: ['./category-list.component.scss']
 })
-export class CategoryListComponent implements OnInit {
-  @Input() categories: Observable<Category[]>;
-  @Output() select = new EventEmitter<Category[]>();
+export class CategoryListComponent {
+  @Output() selectCategories = new EventEmitter<Category[]>();
+
+  @Input() set categories(categories: Category[]) {
+    this.dataSource.data = sortBy(categories, ['name']);
+  }
   displayedColumns = ['main'];
   dataSource = new MatTableDataSource<Category>();
   selectedCategories: Category[] = [];
@@ -21,18 +22,12 @@ export class CategoryListComponent implements OnInit {
   constructor(private multiselectService: MultiSelectService<Category>) {
   }
 
-  ngOnInit() {
-    this.categories.pipe(
-      map(categories => sortBy(categories, ['name']))
-    ).subscribe(data => this.dataSource.data = data);
-  }
-
   onSelect(event: MouseEvent, category: Category) {
     event.preventDefault();
     event.stopPropagation();
     this.selectedCategories = this.multiselectService.select(category, this.dataSource.data, event);
 
-    this.select.emit(this.selectedCategories);
+    this.selectCategories.emit(this.selectedCategories);
     return false;
   }
 }

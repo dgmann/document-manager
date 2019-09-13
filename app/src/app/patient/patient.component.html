@@ -1,6 +1,6 @@
 <mat-sidenav-container fxFlexFill>
   <mat-sidenav #sidenav mode="side">
-    <app-record-filter [tags]="availableTags" [categories]="availableCategories"
+    <app-record-filter [categories]="availableCategories | async" [tags]="availableTags | async"
                        (change)="setFilter($event)"></app-record-filter>
     <div [hidden]="!sidenav.opened" fxFlex="40px">
       <button (click)="sidenav.toggle()" aria-label="Open Filter" color="primary" mat-icon-button>

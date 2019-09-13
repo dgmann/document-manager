@@ -9,14 +9,14 @@
   <mat-card>
     <mat-card-title>Fachrichtungen</mat-card-title>
     <mat-card-content>
-      <app-category-list [categories]="categories" (select)="onSelectCategories($event)"></app-category-list>
+      <app-category-list (selectCategories)="onSelectCategories($event)" [categories]="categories"></app-category-list>
     </mat-card-content>
   </mat-card>
 
   <mat-card>
     <mat-card-title>Tags</mat-card-title>
     <mat-card-content>
-      <app-tag-list [tags]="tags" (select)="onSelectTags($event)"></app-tag-list>
+      <app-tag-list (selectTag)="onSelectTags($event)" [tags]="tags"></app-tag-list>
     </mat-card-content>
   </mat-card>
 </div>

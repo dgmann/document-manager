@@ -28,6 +28,7 @@ import {RecordViewerComponent} from './record-viewer/record-viewer.component';
 import {SplitPanelComponent} from './split-panel/split-panel.component';
 import {HttpClientModule} from '@angular/common/http';
 import {DragDropModule} from '@angular/cdk/drag-drop';
+import {NgSelectModule} from '@ng-select/ng-select';
 import {MessageBoxComponent} from './message-box/message-box.component';
 
 
@@ -36,6 +37,7 @@ import {MessageBoxComponent} from './message-box/message-box.component';
     CommonModule,
     HttpClientModule,
     FormsModule,
+    NgSelectModule,
     ReactiveFormsModule,
     FlexLayoutModule,
     MatSelectModule,

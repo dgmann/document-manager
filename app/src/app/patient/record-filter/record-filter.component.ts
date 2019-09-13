@@ -1,7 +1,6 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Moment} from 'moment';
-import {BehaviorSubject, combineLatest, Observable} from 'rxjs';
-import {Patient} from '..';
+import {BehaviorSubject, combineLatest} from 'rxjs';
 import {Category} from '@app/core';
 import {Filter} from '../store/patient.reducer';
 
@@ -12,9 +11,8 @@ import {Filter} from '../store/patient.reducer';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RecordFilterComponent implements OnInit {
-  @Input() patient: Observable<Patient>;
-  @Input() categories: Observable<Category[]>;
-  @Input() tags: Observable<string[]>;
+  @Input() categories: Category[];
+  @Input() tags: string[];
   @Output() change = new EventEmitter<Filter>();
 
   private dateRange = new BehaviorSubject<{ from: Moment, until: Moment }>({from: null, until: null});

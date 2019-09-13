@@ -19,9 +19,8 @@
           </h2>
         </mat-card-title>
         <mat-card-subtitle>{{ record.tags.join(", ") }}</mat-card-subtitle>
-        <div fxFlex></div>
-
-        <div class="action-button-bar">
+        <div fxFlex="1 0 30%"></div>
+        <div class="action-button-bar" fxFlex="1 0 0%">
           <button mat-icon-button color="primary" (click)="edit(record)">
             <mat-icon aria-label="Edit">edit</mat-icon>
           </button>

@@ -43,11 +43,18 @@ func (controller *RecordController) Router() http.Handler {
 
 func (controller *RecordController) All(w http.ResponseWriter, req *http.Request) {
 	params := req.URL.Query()
-	query := make(map[string]interface{})
-	for k, v := range params {
-		query[k] = v[0]
+	query := app.NewRecordQuery().SetStatus(app.Status(params.Get("status")))
+	skip, err := strconv.ParseInt(params.Get("skip"), 10, 64)
+	if err != nil {
+		skip = 0
 	}
-	records, err := controller.records.Query(req.Context(), query)
+	limit, err := strconv.ParseInt(params.Get("limit"), 10, 64)
+	if err != nil {
+		limit = 0
+	}
+
+	options := app.NewQueryOptions().SetSort(params.Get("sort")).SetSkip(skip).SetLimit(limit)
+	records, err := controller.records.Query(req.Context(), query, options)
 	if err != nil {
 		NewErrorResponse(w, err, http.StatusInternalServerError).WriteJSON()
 		return

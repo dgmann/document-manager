@@ -12,6 +12,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"io"
 	"io/ioutil"
+	"time"
 )
 
 type RecordService struct {
@@ -38,7 +39,7 @@ func NewRecordService(config RecordServiceConfig) *RecordService {
 }
 
 func (r *RecordService) All(ctx context.Context) ([]app.Record, error) {
-	return r.Query(ctx, bson.M{})
+	return r.Query(ctx, app.NewRecordQuery())
 }
 
 func (r *RecordService) Find(ctx context.Context, id string) (*app.Record, error) {
@@ -66,8 +67,18 @@ func (r *RecordService) findByObjectId(ctx context.Context, id primitive.ObjectI
 	return &record, nil
 }
 
-func (r *RecordService) Query(ctx context.Context, query map[string]interface{}) ([]app.Record, error) {
-	cursor, err := r.Records.Find(ctx, query)
+func (r *RecordService) Query(ctx context.Context, recordQuery *app.RecordQuery, queryOptions ...*app.QueryOptions) ([]app.Record, error) {
+	op := make([]*options.FindOptions, len(queryOptions))
+	for index, option := range queryOptions {
+		op[index] = options.Find().SetSkip(option.Skip).SetLimit(option.Limit).SetSort(option.Sort)
+	}
+
+	query := make(map[string]interface{})
+	if !recordQuery.Status.IsNone() {
+		query["status"] = recordQuery.Status
+	}
+
+	cursor, err := r.Records.Find(ctx, query, op...)
 	if err != nil {
 		return nil, err
 	}
@@ -151,6 +162,7 @@ func (r *RecordService) Update(ctx context.Context, id string, record app.Record
 	if err != nil {
 		return nil, app.NewNotFoundError(id, Records, err)
 	}
+	record.UpdatedAt = time.Now()
 	// TODO: Remove deleted pages from the file system
 	res := r.Records.FindOneAndUpdate(ctx, bson.M{"_id": key}, bson.M{"$set": record}, options.FindOneAndUpdate().SetReturnDocument(options.After))
 	if res.Err() != nil {

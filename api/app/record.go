@@ -28,11 +28,64 @@ func (s Status) IsNone() bool {
 type RecordService interface {
 	All(ctx context.Context) ([]Record, error)
 	Find(ctx context.Context, id string) (*Record, error)
-	Query(ctx context.Context, query map[string]interface{}) ([]Record, error)
+	Query(ctx context.Context, query *RecordQuery, queryOption ...*QueryOptions) ([]Record, error)
 	Create(ctx context.Context, data CreateRecord, images []Image, pdfData io.Reader) (*Record, error)
 	Delete(ctx context.Context, id string) error
 	Update(ctx context.Context, id string, record Record) (*Record, error)
 	UpdatePages(ctx context.Context, id string, updates []PageUpdate) (*Record, error)
+}
+
+type RecordQuery struct {
+	Status    Status
+	PatientId *string
+}
+
+func NewRecordQuery() *RecordQuery {
+	return &RecordQuery{}
+}
+
+func (query *RecordQuery) SetStatus(status Status) *RecordQuery {
+	query.Status = status
+	return query
+}
+
+func (query *RecordQuery) SetPatientId(patientId string) *RecordQuery {
+	query.PatientId = &patientId
+	return query
+}
+
+type QueryOptions struct {
+	Sort  map[string]int
+	Skip  int64
+	Limit int64
+}
+
+func NewQueryOptions() *QueryOptions {
+	return &QueryOptions{Sort: map[string]int{}}
+}
+
+func (options *QueryOptions) SetSort(key string) *QueryOptions {
+	if key == "" {
+		return options
+	}
+	direction := 1
+	if key[0] == '-' {
+		direction = -1
+		key = key[1:]
+	}
+
+	options.Sort[key] = direction
+	return options
+}
+
+func (options *QueryOptions) SetSkip(value int64) *QueryOptions {
+	options.Skip = value
+	return options
+}
+
+func (options *QueryOptions) SetLimit(value int64) *QueryOptions {
+	options.Limit = value
+	return options
 }
 
 type Record struct {
@@ -46,6 +99,7 @@ type Record struct {
 	Tags        *[]string          `bson:"tags,omitempty" json:"tags"`
 	Pages       []Page             `bson:"pages,omitempty" json:"pages"`
 	Status      *Status            `bson:"status,omitempty" json:"status"`
+	UpdatedAt   time.Time          `bson:"updateAt"`
 	ArchivedPDF string
 }
 
@@ -62,6 +116,7 @@ func (r *Record) MarshalJSON() ([]byte, error) {
 		"pages":       r.Pages,
 		"status":      statusToString(r.Status),
 		"archivedPDF": r.ArchivedPDF,
+		"updatedAt":   r.UpdatedAt,
 	}
 	return json.Marshal(m)
 }
@@ -133,6 +188,7 @@ func NewRecord(data CreateRecord) *Record {
 		Pages:      data.Pages,
 		Status:     &data.Status,
 		Category:   data.Category,
+		UpdatedAt:  time.Now(),
 	}
 	if !data.Date.IsZero() {
 		record.Date = &data.Date

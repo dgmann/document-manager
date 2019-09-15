@@ -3,7 +3,6 @@ package http
 import (
 	"github.com/dgmann/document-manager/api/app"
 	"github.com/go-chi/chi"
-	"github.com/mongodb/mongo-go-driver/bson"
 	"net/http"
 	"net/url"
 )
@@ -49,7 +48,7 @@ func (controller *PatientController) Categories(w http.ResponseWriter, req *http
 
 func (controller *PatientController) Records(w http.ResponseWriter, req *http.Request) {
 	id := URLParamFromContext(req.Context(), "patientId")
-	records, err := controller.records.Query(req.Context(), bson.M{"patientId": id})
+	records, err := controller.records.Query(req.Context(), app.NewRecordQuery().SetPatientId(id))
 	if err != nil {
 		NewErrorResponse(w, err, 400).WriteJSON()
 		return

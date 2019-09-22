@@ -2,6 +2,6 @@ package app
 
 import "context"
 
-type HealthChecker interface {
+type Checkable interface {
 	Check(context.Context) (string, error)
 }

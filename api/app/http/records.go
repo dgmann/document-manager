@@ -176,12 +176,13 @@ func (controller *RecordController) Duplicate(w http.ResponseWriter, req *http.R
 		return
 	}
 
+	data := bytes.NewBuffer(file.Data())
 	copiedRecord, err := controller.records.Create(req.Context(), app.CreateRecord{
 		Id:         &newId,
 		ReceivedAt: recordToDuplicate.ReceivedAt,
 		Sender:     recordToDuplicate.Sender,
 		Pages:      recordToDuplicate.Pages,
-	}, nil, file)
+	}, nil, data)
 
 	if err != nil {
 		NewErrorResponse(w, err, http.StatusInternalServerError).WriteJSON()
@@ -200,13 +201,7 @@ func (controller *RecordController) Reset(w http.ResponseWriter, req *http.Reque
 		return
 	}
 
-	fileBytes, err := ioutil.ReadAll(f)
-	if err != nil {
-		NewErrorResponse(w, err, http.StatusInternalServerError).WriteJSON()
-		return
-	}
-
-	images, err := controller.pdfProcessor.Convert(req.Context(), bytes.NewBuffer(fileBytes))
+	images, err := controller.pdfProcessor.Convert(req.Context(), bytes.NewBuffer(f.Data()))
 	if err != nil {
 		NewErrorResponse(w, err, http.StatusInternalServerError).WriteJSON()
 		return
@@ -276,7 +271,7 @@ func (controller *RecordController) Page(w http.ResponseWriter, req *http.Reques
 	imageId := URLParamFromContext(req.Context(), "imageId")
 	for _, page := range rec.Pages {
 		if page.Id == imageId {
-			p := controller.images.Path(id, imageId, page.Format)
+			p := controller.images.Locate(app.NewLocator(page.Format, id, imageId))
 			http.ServeFile(w, req, p)
 			return
 		}

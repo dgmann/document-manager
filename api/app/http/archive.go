@@ -1,8 +1,7 @@
 package http
 
 import (
-	"io"
-	"io/ioutil"
+	"github.com/dgmann/document-manager/api/app"
 	"net/http"
 )
 
@@ -11,7 +10,7 @@ type ArchiveController struct {
 }
 
 type getter interface {
-	Get(id string) (io.Reader, error)
+	Get(id string) (app.KeyedResource, error)
 }
 
 func NewArchiveController(pdf getter) *ArchiveController {
@@ -26,14 +25,9 @@ func (a *ArchiveController) One(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	data, err := ioutil.ReadAll(file)
-	if err != nil {
-		NewErrorResponse(w, err, http.StatusInternalServerError)
-		return
-	}
 	w.WriteHeader(200)
 	w.Header().Add("Content-Type", "application/pdf")
-	if _, err := w.Write(data); err != nil {
+	if _, err := w.Write(file.Data()); err != nil {
 		w.WriteHeader(500)
 	}
 }

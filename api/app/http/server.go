@@ -10,7 +10,7 @@ import (
 )
 
 type Server struct {
-	Healthchecker      map[string]app.HealthChecker
+	Healthchecker      map[string]app.Checkable
 	StatisticProviders map[string]app.StatisticProvider
 	EventService       app.Subscriber
 	RecordService      app.RecordService

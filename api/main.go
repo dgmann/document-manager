@@ -65,7 +65,7 @@ func main() {
 			Pdfs:    archiveService,
 		}),
 		PdfProcessor: pdfProcessor,
-		Healthchecker: map[string]app.HealthChecker{
+		Healthchecker: map[string]app.Checkable{
 			"database":       client,
 			"pdfProcessor":   pdfProcessor,
 			"archiveStorage": archiveService,

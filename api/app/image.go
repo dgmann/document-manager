@@ -16,7 +16,7 @@ func NewImage(img []byte, imageType string) *Image {
 type ImageService interface {
 	ResourceWriter
 	Get(id string) (map[string]*Image, error)
-	Path(recordId string, imageId string, format string) string
+	Locate(locatable Locatable) string
 	Copy(fromId string, toId string) error
 	ModTimeReader
 }

@@ -1,76 +1,51 @@
 package filesystem
 
 import (
-	"bytes"
 	"github.com/dgmann/document-manager/api/app"
-	"io"
-	"io/ioutil"
-	"os"
-	"path"
-	"path/filepath"
 )
 
-const PDFFileExtension = ".pdf"
+const PDFFileExtension = "pdf"
 
 type ArchiveService struct {
-	*Storage
+	*DiskStorage
 }
 
 func NewArchiveService(directory string) (*ArchiveService, error) {
-	repository, err := New(directory)
+	repository, err := NewDiskStorage(directory)
 	if err != nil {
 		return nil, err
 	}
-	return &ArchiveService{Storage: repository}, nil
+	return &ArchiveService{DiskStorage: repository}, nil
 }
 
-func (f *ArchiveService) Get(id string) (io.Reader, error) {
-	fp := path.Join(f.baseDirectory, id+PDFFileExtension)
-	file, err := os.Open(fp)
-	if err != nil {
-		return nil, err
-	}
-	defer file.Close()
-
-	data, err := ioutil.ReadAll(file)
-	if err != nil {
-		return nil, err
-	}
-	return bytes.NewBuffer(data), nil
+type RecordDirectory struct {
+	recordId string
 }
 
-func (f *ArchiveService) Set(resource app.KeyedResource) (err error) {
-	keys := append([]string{f.baseDirectory}, resource.Key()...)
-	p := path.Join(keys...)
-
-	fp := p + "." + resource.Format()
-	pdfFile, err := os.Create(fp)
-	if err != nil {
-		return
-	}
-	defer func() {
-		cerr := pdfFile.Close()
-		if err == nil {
-			err = cerr
-		}
-	}()
-
-	_, err = pdfFile.Write(resource.Data())
-	return
+func (dir RecordDirectory) Key() []string {
+	return []string{dir.recordId}
 }
 
-func (f *Storage) NumberOfElements() (int, error) {
+func (f *ArchiveService) Get(id string) (app.KeyedResource, error) {
+	resource := app.NewKeyedGenericResource(nil, PDFFileExtension, id)
+	return f.DiskStorage.Get(resource)
+}
+
+func (f *ArchiveService) Set(resource app.KeyedResource) error {
+	return f.Write(resource)
+}
+
+func (f *DiskStorage) NumberOfElements() (int, error) {
 	count := 0
-	err := filepath.Walk(f.baseDirectory,
-		func(path string, info os.FileInfo, err error) error {
-			if err != nil {
-				return err
-			}
-			if filepath.Ext(path) == PDFFileExtension {
-				count++
-			}
-			return nil
-		})
+	err := f.ForEach(app.NewKey("/"), func(resource app.KeyedResource, err error) error {
+		if err != nil {
+			return err
+		}
+		if resource.Format() == PDFFileExtension {
+			count++
+		}
+		return nil
+	})
 	if err != nil {
 		return count, err
 	}

@@ -1,6 +1,9 @@
 package app
 
-import "os"
+import (
+	"os"
+	"strings"
+)
 
 type ResourceWriter interface {
 	Deleter
@@ -14,11 +17,20 @@ type KeyedResource interface {
 
 type Resource interface {
 	Data() []byte
-	Format() string
+	Formatted
 }
 
 type Keyed interface {
 	Key() []string
+}
+
+type Formatted interface {
+	Format() string
+}
+
+type Locatable interface {
+	Keyed
+	Formatted
 }
 
 type Writer interface {
@@ -26,7 +38,7 @@ type Writer interface {
 }
 
 type Deleter interface {
-	Delete(resource KeyedResource) error
+	Delete(resource Locatable) error
 }
 
 type Statter interface {
@@ -43,12 +55,22 @@ func NewGenericResource(data []byte, format string) *GenericResource {
 	return &GenericResource{[]string{}, data, format}
 }
 
+//NewKeyedGenericResource creates a new GenericResource with the provided data, format and keys
 func NewKeyedGenericResource(data []byte, format string, key ...string) *GenericResource {
+	format = strings.TrimLeft(format, ".")
 	return &GenericResource{key, data, format}
 }
 
-func NewDirectoryResource(key ...string) *GenericResource {
+//NewKey creates a new Locatable only with the provided keys set.
+//Can be used as an identifier
+func NewKey(key ...string) Locatable {
 	return &GenericResource{key: key}
+}
+
+//NewLocator creates a new Locatable only the provided keys and format.
+//Can be used as an identifier
+func NewLocator(format string, key ...string) Locatable {
+	return &GenericResource{key: key, format: format}
 }
 
 func (g *GenericResource) Key() []string {

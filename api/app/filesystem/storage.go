@@ -2,100 +2,164 @@ package filesystem
 
 import (
 	"context"
+	"fmt"
 	"github.com/dgmann/document-manager/api/app"
-	"github.com/pkg/errors"
-	"github.com/sirupsen/logrus"
+	"io"
+	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 )
 
-type Storage struct {
-	baseDirectory string
-	filesystem    filesystem
+type fileSystem interface {
+	Remove(name string) error
+	RemoveAll(name string) error
+	Create(name string) (file, error)
+	Open(name string) (file, error)
+	MkdirAll(path string, perm os.FileMode) error
+	Stat(name string) (os.FileInfo, error)
+	Walk(p string, walkFn filepath.WalkFunc) error
 }
 
-func New(directory string) (*Storage, error) {
-	if _, err := os.Stat(directory); os.IsNotExist(err) {
-		if e := os.MkdirAll(directory, os.ModePerm); e != nil {
-			logrus.WithError(e).Error("error creating directory")
-		}
+type file interface {
+	io.Closer
+	io.Reader
+	io.Writer
+}
+
+type DiskStorage struct {
+	Root    string
+	storage fileSystem
+}
+
+//NewDiskStorage creates and initializes Storage on the local filesystem
+// using the provided directory as the root.
+func NewDiskStorage(directory string) (*DiskStorage, error) {
+	storageEngine := osFileSystem{}
+	storage := &DiskStorage{storage: storageEngine, Root: directory}
+	if err := storage.ensureKeyedLocation(app.NewKey(directory)); err != nil {
+		return nil, fmt.Errorf("error creating disk storage: %w", err)
 	}
-	return &Storage{baseDirectory: directory, filesystem: diskFileSystem{}}, nil
+	return storage, nil
 }
 
-func (f *Storage) Delete(resource app.KeyedResource) error {
-	p := f.buildPath(resource.Key()...)
+//Get retrieves a copy of the specified resource from the file system.
+func (f *DiskStorage) Get(resource app.Locatable) (*app.GenericResource, error) {
+	loc := f.Locate(resource)
+	file, err := f.storage.Open(loc)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	data, err := ioutil.ReadAll(file)
+	if err != nil {
+		return nil, err
+	}
+	resourceWithData := app.NewKeyedGenericResource(data, resource.Format(), resource.Key()...)
+	return resourceWithData, nil
+}
+
+//Delete deletes the specified Locatable from the file system.
+func (f *DiskStorage) Delete(resource app.Locatable) error {
 	var err error
+	loc := f.Locate(resource)
 	if len(resource.Format()) > 0 {
-		p += "." + normalizeExtension(resource.Format())
-		err = f.filesystem.Remove(p)
+		err = f.storage.Remove(loc)
 	} else {
-		err = f.filesystem.RemoveAll(p)
+		err = f.storage.RemoveAll(loc)
 	}
 	if !os.IsNotExist(err) {
 		return err
 	}
-	logrus.Infof("%s cannot be deleted as it does not exist", p)
 	return nil
 }
 
-func (f *Storage) Write(resource app.KeyedResource) (err error) {
-	fp := f.buildResourcePath(resource)
-
-	dir := filepath.Dir(fp)
-	if _, err := f.filesystem.Stat(dir); os.IsNotExist(err) {
-		err = f.filesystem.MkdirAll(dir, os.ModePerm)
-		if err != nil {
-			return errors.Wrap(err, "could not create directory")
-		}
-	}
-
-	imageFile, err := f.filesystem.Create(fp)
-	defer imageFile.Close()
-
-	if err != nil {
-		logrus.WithFields(logrus.Fields{
-			"name":      imageFile.Name(),
-			"directory": dir,
-			"error":     err,
-		}).Error("Error creating file")
+//Write writes the specified resource to the file system.
+//It creates the files if it does not exist yet.
+func (f *DiskStorage) Write(resource app.KeyedResource) (err error) {
+	if err := f.ensureResourceLocation(resource); err != nil {
 		return err
 	}
-	_, err = imageFile.Write(resource.Data())
+
+	loc := f.Locate(resource)
+	file, err := f.storage.Create(loc)
 	if err != nil {
-		logrus.WithError(err).Error("error writing file. Cleanup leftovers")
-		return f.filesystem.Remove(fp)
+		return fmt.Errorf("error creating file %s: %w", loc, err)
 	}
+	defer func() {
+		cerr := file.Close()
+		if err == nil {
+			err = cerr
+		}
+	}()
+
+	if _, err = file.Write(resource.Data()); err != nil {
+		return f.storage.Remove(loc)
+	}
+
 	return nil
 }
 
-func (f *Storage) Check(ctx context.Context) (string, error) {
-	if _, err := os.Stat(f.baseDirectory); err != nil {
+type ForEachFunc func(resource app.KeyedResource, err error) error
+
+//ForEach executes the provided function for each stored element.
+func (f *DiskStorage) ForEach(keyed app.Keyed, forEachFn ForEachFunc) error {
+	p := f.locate(keyed)
+	return f.storage.Walk(p, func(currentPath string, info os.FileInfo, err error) error {
+		if !info.IsDir() {
+			ext := filepath.Ext(info.Name())
+			abs := strings.Trim(currentPath, ext)
+			rel, err := filepath.Rel(f.Root, abs)
+			if err != nil {
+				return err
+			}
+
+			keys := strings.Split(rel, string(filepath.Separator))
+			resource := app.NewKeyedGenericResource(nil, ext, keys...)
+
+			withData, err := f.Get(resource)
+			if err != nil {
+				return fmt.Errorf("error reading resource %s: %w", filepath.Join(resource.Key()...), err)
+			}
+			return forEachFn(withData, err)
+		}
+		return nil
+	})
+}
+
+//Check returns the health status of the file system.
+func (f *DiskStorage) Check(ctx context.Context) (string, error) {
+	if _, err := f.storage.Stat(f.Root); err != nil {
 		return "", err
 	}
 	return "pass", nil
 }
 
-func (f *Storage) ModTime(resource app.KeyedResource) (time.Time, error) {
-	fp := f.buildResourcePath(resource)
-	fileInfo, err := os.Stat(fp)
+//ModTime returns the time at which the element was last changed.
+func (f *DiskStorage) ModTime(resource app.KeyedResource) (time.Time, error) {
+	fp := f.Locate(resource)
+	fileInfo, err := f.storage.Stat(fp)
 	if err != nil {
 		return time.Now(), err
 	}
 	return fileInfo.ModTime(), nil
 }
 
-func (f *Storage) buildResourcePath(resource app.KeyedResource) string {
-	p := f.buildPath(resource.Key()...)
+//LocateResource returns the location of the specified Locatable.
+func (f *DiskStorage) Locate(resource app.Locatable) string {
+	dir := f.locate(resource)
 	if len(resource.Format()) > 0 {
-		p += "." + normalizeExtension(resource.Format())
+		format := normalizeExtension(resource.Format())
+		return fmt.Sprintf("%s.%s", dir, format)
 	}
-	return p
+	return dir
 }
 
-func (f *Storage) buildPath(keys ...string) string {
-	keySlice := append([]string{f.baseDirectory}, keys...)
+//Locate returns the location of the specified Keyed element
+func (f *DiskStorage) locate(keyed app.Keyed) string {
+	keySlice := append([]string{f.Root}, keyed.Key()...)
 	return filepath.Join(keySlice...)
 }
 
@@ -104,4 +168,27 @@ func normalizeExtension(extension string) string {
 		return "jpeg"
 	}
 	return extension
+}
+
+//ensureResourceLocation ensures the the directory structure required to store the KeyedResource is in place.
+func (f *DiskStorage) ensureResourceLocation(keyed app.KeyedResource) error {
+	loc := f.Locate(keyed)
+	dir := filepath.Dir(loc)
+	return f.ensureLocation(dir)
+}
+
+//ensureResourceLocation ensures the the directory structure required to store the Keyed is in place.
+func (f *DiskStorage) ensureKeyedLocation(keyed app.Keyed) error {
+	dir := f.locate(keyed)
+	return f.ensureLocation(dir)
+}
+
+func (f *DiskStorage) ensureLocation(dir string) error {
+	if _, err := f.storage.Stat(dir); os.IsNotExist(err) {
+		err = f.storage.MkdirAll(dir, os.ModePerm)
+		if err != nil {
+			return fmt.Errorf("could not create directory %s: %w", dir, err)
+		}
+	}
+	return nil
 }

@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-type checker map[string]app.HealthChecker
+type checker map[string]app.Checkable
 
 type HealthController struct {
 	checker checker

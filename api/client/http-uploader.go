@@ -52,8 +52,8 @@ func createParamMap(create *NewRecord) map[string]string {
 	if create.PatientId != nil {
 		params["patientId"] = *create.PatientId
 	}
-	if create.Status != nil {
-		params["status"] = string(*create.Status)
+	if !create.Status.IsNone() {
+		params["status"] = string(create.Status)
 	}
 	if create.Comment != nil {
 		params["comment"] = *create.Comment
@@ -82,6 +82,9 @@ func newfileUploadRequest(uri string, params map[string]string, file io.Reader) 
 	}
 
 	req, err := http.NewRequest("POST", uri, body)
+	if err != nil {
+		return nil, err
+	}
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 	return req, err
 }

@@ -4,7 +4,7 @@ import {Record, RecordService, selectInboxIds, selectInboxRecords, Status} from 
 import {selectSelectedIds, selectSelectedRecords, State} from './reducers';
 import {SelectRecords} from './store/inbox.actions';
 import {Observable} from 'rxjs';
-import {take} from 'rxjs/operators';
+import {debounceTime, take} from 'rxjs/operators';
 
 @Injectable()
 export class InboxService {
@@ -20,7 +20,7 @@ export class InboxService {
     this.allInboxRecordIds$ = this.store.pipe(select(selectInboxIds));
     this.selectedIds$ = this.store.pipe(select(selectSelectedIds));
     this.selectedRecords$ = this.store.pipe(select(selectSelectedRecords));
-    this.isLoading$ = this.recordService.isLoading$;
+    this.isLoading$ = this.recordService.isLoading$.pipe(debounceTime(1000));
   }
 
   public loadRecords() {

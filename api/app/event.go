@@ -17,11 +17,25 @@ type Subscriber interface {
 }
 
 type Sender interface {
-	Send(t EventType, data interface{})
+	Send(event Event)
 }
 
 type Event struct {
-	Type      EventType   `json:"type"`
-	Timestamp time.Time   `json:"timestamp"`
-	Data      interface{} `json:"data"`
+	Type      EventType `json:"type"`
+	Topic     Topic     `json:"topic"`
+	Timestamp time.Time `json:"timestamp"`
+	Id        string    `json:"id"`
+}
+
+type Topic string
+
+const RecordTopic = "records"
+
+func NewEvent(topic Topic, eventType EventType, id string) Event {
+	return Event{
+		Type:      eventType,
+		Timestamp: time.Now(),
+		Id:        id,
+		Topic:     topic,
+	}
 }

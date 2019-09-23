@@ -58,7 +58,7 @@ export class RecordService {
         type: ActionType.NONE,
         timestamp: new Date(),
         message: 'PDF hochgeladen',
-        record
+        id: record.id
     })));
   }
 
@@ -67,12 +67,12 @@ export class RecordService {
       timestamp: new Date(),
       message: 'PDF wird angehängt...'
     }));
-    this.http.post<Record>(`${environment.api}/records/${sourceId}/append/${targetId}`, null)
+    this.http.post<Record>(`${environment.api}/records/${targetId}/append/${sourceId}`, null)
       .subscribe(record => this.notifications.publish(new RecordEvent({
         type: ActionType.NONE,
         timestamp: new Date(),
         message: 'PDF angehängt',
-        record
+        id: record.id
       })));
   }
 
@@ -86,7 +86,7 @@ export class RecordService {
         type: ActionType.NONE,
         timestamp: new Date(),
         message: 'Befund zurückgesetzt',
-        record
+        id: record.id
     })));
   }
 
@@ -100,7 +100,7 @@ export class RecordService {
         type: ActionType.NONE,
         timestamp: new Date(),
         message: 'Befund dupliziert',
-        record
+        id: record.id
       })));
   }
 }

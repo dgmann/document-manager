@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/dgmann/document-manager/api/app"
 	"github.com/go-chi/chi"
+	"github.com/sirupsen/logrus"
 	"gopkg.in/olahol/melody.v1"
 	"net/http"
 	"sync"
@@ -15,7 +16,12 @@ func getWebsocketHandler(subscriber app.Subscriber) http.Handler {
 	ws := NewWebSocketService()
 
 	r.Get("/", func(w http.ResponseWriter, req *http.Request) {
-		m.HandleRequest(w, req)
+
+		if err := m.HandleRequest(w, req); err != nil {
+			if _, werr := w.Write([]byte(err.Error())); werr != nil {
+				logrus.Error(werr)
+			}
+		}
 	})
 
 	m.HandleConnect(func(s *melody.Session) {
@@ -34,7 +40,8 @@ func publishEvents(m *melody.Melody, subscriber app.Subscriber) {
 	events := subscriber.Subscribe(app.EventCreated, app.EventDeleted, app.EventUpdated)
 	for event := range events {
 		data, _ := json.Marshal(event)
-		m.Broadcast(data)
+		err := m.Broadcast(data)
+		logrus.Debug(err)
 	}
 }
 

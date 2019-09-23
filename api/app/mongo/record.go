@@ -126,7 +126,7 @@ func (r *RecordService) Create(ctx context.Context, data app.CreateRecord, image
 		return nil, err
 	}
 
-	r.Events.Send(app.EventCreated, created)
+	r.Events.Send(app.NewEvent(app.RecordTopic, app.EventCreated, created.Id.Hex()))
 	return created, nil
 }
 
@@ -153,7 +153,7 @@ func (r *RecordService) Delete(ctx context.Context, id string) error {
 		return app.NewNotFoundError(id, Records, err)
 	}
 
-	r.Events.Send(app.EventDeleted, id)
+	r.Events.Send(app.NewEvent(app.RecordTopic, app.EventDeleted, id))
 	return err
 }
 
@@ -177,7 +177,7 @@ func (r *RecordService) Update(ctx context.Context, id string, record app.Record
 		return nil, err
 	}
 
-	r.Events.Send(app.EventUpdated, updated)
+	r.Events.Send(app.NewEvent(app.RecordTopic, app.EventUpdated, updated.Id.Hex()))
 	return &updated, nil
 }
 

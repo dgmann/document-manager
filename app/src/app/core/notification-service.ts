@@ -3,7 +3,6 @@ import {MatSnackBar} from '@angular/material/snack-bar';
 import {groupBy, map} from 'lodash-es';
 import {Subject} from 'rxjs';
 import {bufferTime, filter} from 'rxjs/operators';
-import {Record} from './store';
 import {EventSnackbarComponent} from './event-snackbar/event-snackbar.component';
 
 @Injectable({
@@ -86,10 +85,10 @@ export enum ActionType {
 }
 
 export class RecordEvent implements NotificationEvent {
-  constructor(public payload: { type: ActionType, message: string, timestamp: Date, record: Record }) {
+  constructor(public payload: { type: ActionType, message: string, timestamp: Date, id: string }) {
   }
 
   public toString() {
-    return `${this.payload.timestamp}, ${this.payload.record.id} ${this.payload.type}: ${this.payload.message}`;
+    return `${this.payload.timestamp}, ${this.payload.id} ${this.payload.type}: ${this.payload.message}`;
   }
 }

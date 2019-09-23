@@ -42,8 +42,6 @@ export class AutocompleteChipsComponent implements ControlValueAccessor {
   }
 
   add(event: MatChipInputEvent): void {
-    // Add fruit only when MatAutocomplete is not open
-    // To make sure this does not conflict with OptionSelected Event
     if (!this.autoComplete.isOpen) {
       const input = event.input;
       const value = event.value;

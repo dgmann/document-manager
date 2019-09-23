@@ -45,7 +45,7 @@ export function reducer(state = initialState,
       };
 
     case RecordActionTypes.LoadRecordsSuccess:
-      let stateWithRecord = adapter.addMany(action.payload.records, state);
+      let stateWithRecord = adapter.upsertMany(action.payload.records, state);
       stateWithRecord = clearIdsFromState(action.payload.records, stateWithRecord);
       return {
         ...addToStatus(action.payload.records, stateWithRecord),

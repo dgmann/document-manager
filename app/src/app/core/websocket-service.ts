@@ -13,11 +13,16 @@ export class WebsocketService {
 export interface NotificationMessage {
   type: NotificationMessageType;
   timestamp: Date;
-  data: any;
+  id: string;
+  topic: NotificationTopic;
 }
 
 export enum NotificationMessageType {
   Created = 'CREATE',
   Updated = 'UPDATE',
   Deleted = 'DELETE'
+}
+
+export enum NotificationTopic {
+  Records = 'records'
 }

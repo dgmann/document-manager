@@ -5,15 +5,17 @@ import (
 	"github.com/dgmann/document-manager/api/app"
 	"github.com/dgmann/document-manager/pdf-processor/pkg/processor"
 	"sort"
+	"strings"
 	"time"
 )
 
-func NewDocument(title string, records []app.Record, images app.ImageService) (*processor.Document, error) {
+func NewDocument(title string, records []app.Record, images app.ImageService, categories []app.Category) (*processor.Document, error) {
 	recordsGroupedByCategory := make(map[string][]app.Record)
+	categoryMap := createCategoryLookupMap(categories)
 	for _, record := range records {
-		category := ""
+		category := strings.Title(string(*record.Status))
 		if record.Category != nil {
-			category = *record.Category
+			category = categoryMap[*record.Category].Name
 		}
 		if _, ok := recordsGroupedByCategory[category]; !ok {
 			recordsGroupedByCategory[category] = make([]app.Record, 0)
@@ -41,7 +43,10 @@ func NewDocument(title string, records []app.Record, images app.ImageService) (*
 		})
 		subdocuments := make([]*processor.Document, 0, len(grouped))
 		for _, record := range grouped {
-			title := record.Id.Hex()
+			title := fmt.Sprintf("Empfangen: %s", record.ReceivedAt.Format("02.01.2006 15:04"))
+			if record.Date != nil {
+				title = record.Date.Format("02.01.2006")
+			}
 			imagesForRecord, err := images.Get(record.Id.Hex())
 			if err != nil {
 				return nil, fmt.Errorf("error fetching images for record %s: %w", record.Id.Hex(), err)
@@ -66,4 +71,12 @@ func NewDocument(title string, records []app.Record, images app.ImageService) (*
 		Documents: documents,
 		Pages:     make([]*processor.Image, 0),
 	}, nil
+}
+
+func createCategoryLookupMap(categories []app.Category) map[string]app.Category {
+	res := make(map[string]app.Category)
+	for _, cat := range categories {
+		res[cat.Id] = cat
+	}
+	return res
 }

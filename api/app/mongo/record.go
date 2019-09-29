@@ -77,6 +77,17 @@ func (r *RecordService) Query(ctx context.Context, recordQuery *app.RecordQuery,
 	if !recordQuery.Status.IsNone() {
 		query["status"] = recordQuery.Status
 	}
+	if recordQuery.Ids != nil {
+		ids := make([]primitive.ObjectID, len(recordQuery.Ids))
+		for i, id := range recordQuery.Ids {
+			oid, err := primitive.ObjectIDFromHex(id)
+			if err != nil {
+				return nil, fmt.Errorf("invalid id %s: %w", id, err)
+			}
+			ids[i] = oid
+		}
+		query["_id"] = bson.M{"$in": ids}
+	}
 
 	cursor, err := r.Records.Find(ctx, query, op...)
 	if err != nil {

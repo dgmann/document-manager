@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/dgmann/document-manager/api/app"
-	"github.com/dgmann/document-manager/pdf-processor/api"
+	"github.com/dgmann/document-manager/pdf-processor/pkg/processor"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/connectivity"
 	"io"
@@ -15,9 +15,10 @@ import (
 type PdfProcessor struct {
 	baseUrl string
 	conn    *grpc.ClientConn
+	images  app.ImageService
 }
 
-func NewPDFProcessor(baseUrl string) (*PdfProcessor, error) {
+func NewPDFProcessor(baseUrl string, images app.ImageService) (*PdfProcessor, error) {
 	conn, err := grpc.Dial(
 		baseUrl,
 		grpc.WithInsecure(),
@@ -27,7 +28,7 @@ func NewPDFProcessor(baseUrl string) (*PdfProcessor, error) {
 		return nil, err
 	}
 
-	return &PdfProcessor{conn: conn, baseUrl: baseUrl}, nil
+	return &PdfProcessor{conn: conn, baseUrl: baseUrl, images: images}, nil
 }
 
 func (p *PdfProcessor) Close() error {
@@ -40,8 +41,8 @@ func (p *PdfProcessor) Convert(ctx context.Context, f io.Reader) ([]app.Image, e
 		return nil, err
 	}
 
-	client := api.NewPdfProcessorClient(p.conn)
-	stream, err := client.ConvertPdfToImage(ctx, &api.Pdf{Content: b})
+	client := processor.NewPdfProcessorClient(p.conn)
+	stream, err := client.ConvertPdfToImage(ctx, &processor.Pdf{Content: b})
 	if err != nil {
 		return nil, err
 	}
@@ -66,9 +67,26 @@ func (p *PdfProcessor) Rotate(ctx context.Context, image io.Reader, degrees int)
 		return nil, err
 	}
 
-	client := api.NewPdfProcessorClient(p.conn)
-	result, err := client.RotateImage(ctx, &api.Rotate{Content: b, Degree: float64(degrees)})
+	client := processor.NewPdfProcessorClient(p.conn)
+	result, err := client.RotateImage(ctx, &processor.Rotate{Content: b, Degree: float64(degrees)})
+	if err != nil {
+		return nil, err
+	}
 	return app.NewImage(result.Content, result.Format), err
+}
+
+func (p *PdfProcessor) CreatePdf(ctx context.Context, title string, records []app.Record) ([]byte, error) {
+	client := processor.NewPdfProcessorClient(p.conn)
+
+	doc, err := NewDocument(title, records, p.images)
+	if err != nil {
+		return nil, err
+	}
+	pdf, err := client.CreatePdf(ctx, doc)
+	if err != nil {
+		return nil, err
+	}
+	return pdf.Content, err
 }
 
 func (p *PdfProcessor) Check(ctx context.Context) (string, error) {

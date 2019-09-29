@@ -16,7 +16,7 @@ type Rotator interface {
 }
 
 type Creator interface {
-	Create() ([]byte, error)
+	Create(document *processor.Document) (*processor.Pdf, error)
 }
 
 type GRPCServer struct {
@@ -25,8 +25,8 @@ type GRPCServer struct {
 	creator   Creator
 }
 
-func NewGRPCServer(c PdfToImageConverter, r Rotator) *GRPCServer {
-	return &GRPCServer{converter: c, rotator: r}
+func NewGRPCServer(c PdfToImageConverter, r Rotator, creator Creator) *GRPCServer {
+	return &GRPCServer{converter: c, rotator: r, creator: creator}
 }
 
 func (g *GRPCServer) ConvertPdfToImage(pdf *processor.Pdf, sender processor.PdfProcessor_ConvertPdfToImageServer) error {
@@ -51,5 +51,5 @@ func (g *GRPCServer) RotateImage(ctx context.Context, rotate *processor.Rotate) 
 }
 
 func (g *GRPCServer) CreatePdf(ctx context.Context, document *processor.Document) (*processor.Pdf, error) {
-	return nil, nil
+	return g.creator.Create(document)
 }

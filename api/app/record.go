@@ -38,6 +38,7 @@ type RecordService interface {
 type RecordQuery struct {
 	Status    Status
 	PatientId *string
+	Ids       []string
 }
 
 func NewRecordQuery() *RecordQuery {
@@ -51,6 +52,11 @@ func (query *RecordQuery) SetStatus(status Status) *RecordQuery {
 
 func (query *RecordQuery) SetPatientId(patientId string) *RecordQuery {
 	query.PatientId = &patientId
+	return query
+}
+
+func (query *RecordQuery) SetIds(ids []string) *RecordQuery {
+	query.Ids = ids
 	return query
 }
 

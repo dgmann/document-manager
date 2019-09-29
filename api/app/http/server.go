@@ -65,6 +65,7 @@ func (s *Server) Run() error {
 	statistics := StatisticsController{s.StatisticProviders}
 	tagController := NewTagController(s.TagService)
 	archiveController := NewArchiveController(s.ArchiveService)
+	exportController := NewExporterController(s.PdfProcessor, s.RecordService)
 
 	r.Get("/", func(w http.ResponseWriter, req *http.Request) {
 		NewResponseWithStatus(w, []byte("Document Storage API"), 200).Write()
@@ -75,6 +76,8 @@ func (s *Server) Run() error {
 	r.Get("/tags", tagController.All)
 
 	r.Get("/archive/{recordId}", archiveController.One)
+
+	r.Get("/export", exportController.Export)
 
 	return http.ListenAndServe(":8080", r)
 }

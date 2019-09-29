@@ -45,7 +45,7 @@ func main() {
 	if err != nil {
 		log.WithError(err).Error("error creating archive service")
 	}
-	pdfProcessor, err := grpc.NewPDFProcessor(pdfProcessorUrl)
+	pdfProcessor, err := grpc.NewPDFProcessor(pdfProcessorUrl, imageService)
 	if err != nil {
 		log.WithError(err).Error("error connecting to pdf processor service")
 	}

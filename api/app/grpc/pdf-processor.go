@@ -13,12 +13,13 @@ import (
 )
 
 type PdfProcessor struct {
-	baseUrl string
-	conn    *grpc.ClientConn
-	images  app.ImageService
+	baseUrl    string
+	conn       *grpc.ClientConn
+	images     app.ImageService
+	categories app.CategoryService
 }
 
-func NewPDFProcessor(baseUrl string, images app.ImageService) (*PdfProcessor, error) {
+func NewPDFProcessor(baseUrl string, images app.ImageService, cateogories app.CategoryService) (*PdfProcessor, error) {
 	conn, err := grpc.Dial(
 		baseUrl,
 		grpc.WithInsecure(),
@@ -28,7 +29,7 @@ func NewPDFProcessor(baseUrl string, images app.ImageService) (*PdfProcessor, er
 		return nil, err
 	}
 
-	return &PdfProcessor{conn: conn, baseUrl: baseUrl, images: images}, nil
+	return &PdfProcessor{conn: conn, baseUrl: baseUrl, images: images, categories: cateogories}, nil
 }
 
 func (p *PdfProcessor) Close() error {
@@ -78,7 +79,8 @@ func (p *PdfProcessor) Rotate(ctx context.Context, image io.Reader, degrees int)
 func (p *PdfProcessor) CreatePdf(ctx context.Context, title string, records []app.Record) ([]byte, error) {
 	client := processor.NewPdfProcessorClient(p.conn)
 
-	doc, err := NewDocument(title, records, p.images)
+	categories, err := p.categories.All(ctx)
+	doc, err := NewDocument(title, records, p.images, categories)
 	if err != nil {
 		return nil, err
 	}

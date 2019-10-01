@@ -37,6 +37,9 @@ func (creator *PdfCreator) Create(document *processor.Document) (*processor.Pdf,
 		opt.ReadDpi = true
 		opt.AllowNegativePosition = true
 
+		content := bytes.NewReader(page.Image.Content)
+		pdf.RegisterImageOptionsReader(pageName, opt, content)
+
 		pdf.AddPage()
 		if page.Bookmarks != nil {
 			for _, bookmark := range page.Bookmarks {
@@ -44,9 +47,8 @@ func (creator *PdfCreator) Create(document *processor.Document) (*processor.Pdf,
 			}
 		}
 
-		content := bytes.NewReader(page.Image.Content)
-		pdf.RegisterImageOptionsReader(pageName, opt, content)
-		pdf.ImageOptions(pageName, -10, 0, -1, -1, false, opt, 0, "")
+		width, _ := pdf.GetPageSize()
+		pdf.ImageOptions(pageName, 5, 0, width-10, 0, false, opt, 0, "")
 	}
 
 	var res bytes.Buffer

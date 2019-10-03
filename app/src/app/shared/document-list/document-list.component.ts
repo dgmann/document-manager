@@ -34,6 +34,11 @@ export class DocumentListComponent implements OnInit, AfterViewInit {
   @Input() set records(records: Record[]) {
     this.dataSource.data = records;
   }
+
+  get records() {
+    return this.dataSource.sortData(this.dataSource.filteredData, this.dataSource.sort);
+  }
+
   @Input() allowMultiselect = true;
 
   @Output() selectRecord = new EventEmitter<Record>();
@@ -63,14 +68,24 @@ export class DocumentListComponent implements OnInit, AfterViewInit {
 
   selectRow(record: Record, event: MouseEvent) {
     let newSelectedIds = [];
+    const selectedRecordId = record.id;
     if (this.allowMultiselect && event.getModifierState('Control')) {
       if (includes(this.selectedIds, record.id)) {
-        newSelectedIds = without(this.selectedIds, record.id);
+        newSelectedIds = without(this.selectedIds, selectedRecordId);
       } else {
-        newSelectedIds = [...this.selectedIds, record.id];
+        newSelectedIds = [...this.selectedIds, selectedRecordId];
+      }
+    } else if (this.allowMultiselect && event.getModifierState('Shift')) {
+      if (this.selectedIds.length > 0) {
+        const startIndex = this.records.findIndex(r => r.id === this.selectedIds[0]);
+        const endIndex = this.records.findIndex(r => r.id === selectedRecordId);
+        const boundaries = [startIndex, endIndex].sort();
+        newSelectedIds = this.records.slice(boundaries[0], boundaries[1] + 1).map(r => r.id);
+      } else {
+        newSelectedIds = [...this.selectedIds, selectedRecordId];
       }
     } else {
-      newSelectedIds = [record.id];
+      newSelectedIds = [selectedRecordId];
     }
     this.selectRecord.emit(record);
     this.selectRecords.emit(newSelectedIds);

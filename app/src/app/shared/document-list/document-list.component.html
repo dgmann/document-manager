@@ -39,8 +39,9 @@
   </ng-container>
 
   <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
-  <mat-row (click)="selectRow(row, $event)" (dblclick)="editRecord(row)"
+  <mat-row (click)="selectRow(row, $event)" (dblclick)="editRecord(row)" (keydown.delete)="deleteRecord(row)"
            *matRowDef="let row; columns: displayedColumns;"
+           tabindex="0"
            (dragstart)="onDragStart($event, row)"
            (drop)="onDrop($event)" [attr.recordid]="row.id" [class.selected]="selectedIds.includes(row?.id)"
            draggable="true"></mat-row>

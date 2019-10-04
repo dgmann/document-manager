@@ -6,7 +6,9 @@ import {SelectRecords} from './store/inbox.actions';
 import {Observable} from 'rxjs';
 import {debounceTime, take} from 'rxjs/operators';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class InboxService {
   public allInboxRecords$: Observable<Record[]>;
   public allInboxRecordIds$: Observable<string[]>;

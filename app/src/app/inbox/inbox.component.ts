@@ -1,8 +1,10 @@
-import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
 import {Observable} from 'rxjs';
-import {map, take} from 'rxjs/operators';
-import {Record, Status} from '../core/store';
+import {map} from 'rxjs/operators';
+import {Record} from '../core/store';
 import {InboxService} from './inbox.service';
+import {ActionBarService} from '@app/inbox/action-bar/action-bar.service';
+import {untilDestroyed} from 'ngx-take-until-destroy';
 
 @Component({
   selector: 'app-inbox',
@@ -10,14 +12,13 @@ import {InboxService} from './inbox.service';
   styleUrls: ['./inbox.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class InboxComponent implements OnInit {
+export class InboxComponent implements OnInit, OnDestroy {
   records: Observable<Record[]>;
   selectedRecord: Observable<Record>;
   selectedIds: Observable<string[]>;
-  isMultiselect: Observable<boolean>;
   isLoading$: Observable<boolean>;
 
-  constructor(private inboxService: InboxService) {
+  constructor(private inboxService: InboxService, private actionBar: ActionBarService) {
     this.isLoading$ = this.inboxService.isLoading$;
   }
 
@@ -27,7 +28,20 @@ export class InboxComponent implements OnInit {
     this.selectedRecord = this.inboxService.selectedRecords$
       .pipe(map(records => records && records[0] || undefined));
     this.selectedIds = this.inboxService.selectedIds$;
-    this.isMultiselect = this.inboxService.selectedIds$.pipe(map(ids => ids.length > 1));
+    this.inboxService.selectedIds$
+      .pipe(map(ids => ids.length > 1), untilDestroyed(this))
+      .subscribe(isMultiselect => {
+        if (isMultiselect) {
+          if (!this.actionBar.isOpen) {
+            this.actionBar.open();
+          }
+        } else {
+          this.actionBar.dismiss();
+        }
+      });
+  }
+
+  ngOnDestroy(): void {
   }
 
   onSelectRecords(ids: string[]) {
@@ -50,23 +64,5 @@ export class InboxComponent implements OnInit {
       event.preventDefault();
       event.stopPropagation();
     }
-  }
-
-  onSelectAllRecords(all: boolean) {
-    if (all) {
-      this.inboxService.allInboxRecordIds$
-        .pipe(take(1))
-        .subscribe(ids => this.inboxService.selectIds(ids));
-    } else {
-      this.inboxService.selectIds([]);
-    }
-  }
-
-  onDeleteSelectedRecords() {
-    this.inboxService.deleteSelectedRecords();
-  }
-
-  onSetStatusOfSelectedRecords(status: Status) {
-    this.inboxService.updateSelectedRecords({status});
   }
 }

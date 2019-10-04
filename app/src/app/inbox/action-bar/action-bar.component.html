@@ -1,0 +1,26 @@
+<mat-action-list fxLayout="row" fxLayout.lt-sm="column" fxLayoutAlign="center center">
+  <mat-list-item fxFlex>
+    <button (click)="selectAll(true)" mat-icon-button>
+      <mat-icon aria-label="select_all">select_all</mat-icon>
+      <span>Alle Auswählen</span>
+    </button>
+  </mat-list-item>
+  <mat-list-item fxFlex>
+    <button (click)="onDeleteRecord($event)" mat-icon-button>
+      <mat-icon aria-label="delete" color="warn">delete</mat-icon>
+      <span>Löschen</span>
+    </button>
+  </mat-list-item>
+  <mat-list-item fxFlex>
+    <button (click)="setStatus(status.ESCALATED)" mat-icon-button>
+      <mat-icon aria-label="escalate">arrow_upward</mat-icon>
+      <span>Eskalieren</span>
+    </button>
+  </mat-list-item>
+  <mat-list-item fxFlex>
+    <button (click)="setStatus(status.OTHER)" mat-icon-button>
+      <mat-icon aria-label="other">shopping_basket</mat-icon>
+      <span>Werbung</span>
+    </button>
+  </mat-list-item>
+</mat-action-list>

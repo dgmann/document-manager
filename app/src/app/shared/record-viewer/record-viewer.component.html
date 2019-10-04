@@ -18,7 +18,7 @@
         <button (click)="rotate(record.id, pages, i, 90)" color="accent" mat-icon-button>
           <mat-icon aria-label="rotate-right">rotate_right</mat-icon>
         </button>
-        <button (click)="delete(record.id, pages, i)" [disabled]="pages.length <= 1" color="accent" mat-icon-button>
+        <button (click)="delete(record.id, pages, i)" [disabled]="pages.length <= 1" color="warn" mat-icon-button>
           <mat-icon aria-label="delete">delete</mat-icon>
         </button>
       </mat-card-header>

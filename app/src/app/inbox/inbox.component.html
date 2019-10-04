@@ -1,10 +1,6 @@
 <app-split-panel>
   <div *ngIf="!(isLoading$ | async); else loading" class="left-panel"
        (dragover)="preventAll($event)" (drop)="onDrop($event)">
-    <app-action-bar *ngIf="isMultiselect | async"
-                    (delete)="onDeleteSelectedRecords()"
-                    (changeStatus)="onSetStatusOfSelectedRecords($event)"
-                    (selectAll)="onSelectAllRecords($event)"></app-action-bar>
     <app-document-list [records]="records | async" [selectedIds]="selectedIds | async"
                        (selectRecords)="onSelectRecords($event)"></app-document-list>
   </div>

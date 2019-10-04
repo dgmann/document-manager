@@ -87,6 +87,8 @@ export class DocumentListComponent implements OnInit, AfterViewInit {
     } else {
       newSelectedIds = [selectedRecordId];
     }
+    const target = event.currentTarget as HTMLElement;
+    target.focus();
     this.selectRecord.emit(record);
     this.selectRecords.emit(newSelectedIds);
   }

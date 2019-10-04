@@ -1,6 +1,12 @@
 <app-split-panel>
-  <div *ngIf="!(isLoading$ | async); else loading" class="left-panel"
-       (dragover)="preventAll($event)" (drop)="onDrop($event)">
+  <div (dragenter)="onDragEnter($event)" (dragleave)="onDragLeave($event)" (dragover)="preventAll($event)"
+       (drop)="onDrop($event)" *ngIf="!(isLoading$ | async); else loading" class="left-panel" id="inbox-document-list">
+    <div [hidden]="!isDragInProgress" class="drag-drop-overlay">
+      <div class="upload-symbol" fxLayout="column" fxLayoutAlign="center center">
+        <mat-icon>publish</mat-icon>
+        <h1>Upload</h1>
+      </div>
+    </div>
     <app-document-list [records]="records | async" [selectedIds]="selectedIds | async"
                        (selectRecords)="onSelectRecords($event)"></app-document-list>
   </div>

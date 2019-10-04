@@ -1,3 +1,27 @@
+@import "~app/../theme";
+
 .left-panel {
   height: 100%;
+}
+
+.drag-drop-overlay {
+  position: absolute;
+  background: $accent-light;
+  border: 5px dashed $accent;
+  box-sizing: border-box;
+  height: 100%;
+  width: 100%;
+  z-index: 101;
+  opacity: 0.6;
+}
+
+.upload-symbol {
+  height: 100%;
+  width: 100%;
+
+  mat-icon {
+    font-size: 4rem;
+    height: 60px;
+    width: 60px;
+  }
 }

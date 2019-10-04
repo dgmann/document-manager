@@ -104,9 +104,9 @@ export class RecordService {
       })));
   }
 
-  public openAsPdf(ids: string[]) {
+  public createPDFLink(ids: string[]) {
     const url = new URL('export/', environment.api);
     ids.forEach(id => url.searchParams.append('id', id));
-    window.open(url.href, '_blank');
+    return url.href;
   }
 }

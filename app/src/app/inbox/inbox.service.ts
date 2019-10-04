@@ -4,7 +4,7 @@ import {Record, RecordService, selectInboxIds, selectInboxRecords, Status} from 
 import {selectSelectedIds, selectSelectedRecords, State} from './reducers';
 import {SelectRecords} from './store/inbox.actions';
 import {Observable} from 'rxjs';
-import {debounceTime, take} from 'rxjs/operators';
+import {debounceTime, map, take} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +15,7 @@ export class InboxService {
   public selectedIds$: Observable<string[]>;
   public selectedRecords$: Observable<Record[]>;
   public isLoading$: Observable<boolean>;
+  public selectedRecordsPDFLink$: Observable<string>;
 
   constructor(private store: Store<State>,
               private recordService: RecordService) {
@@ -23,6 +24,7 @@ export class InboxService {
     this.selectedIds$ = this.store.pipe(select(selectSelectedIds));
     this.selectedRecords$ = this.store.pipe(select(selectSelectedRecords));
     this.isLoading$ = this.recordService.isLoading$.pipe(debounceTime(1000));
+    this.selectedRecordsPDFLink$ = this.selectedIds$.pipe(map(ids => this.recordService.createPDFLink(ids)));
   }
 
   public loadRecords() {
@@ -50,7 +52,7 @@ export class InboxService {
     this.selectedIds$.pipe(take(1)).subscribe(ids => ids.forEach(id => callback(id)));
   }
 
-  public openSelectedRecordsAsPdf() {
-    this.selectedIds$.pipe(take(1)).subscribe(ids => this.recordService.openAsPdf(ids));
+  public openSelectedRecordsAsPdfLink() {
+
   }
 }

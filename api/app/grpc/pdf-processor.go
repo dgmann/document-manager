@@ -23,7 +23,7 @@ func NewPDFProcessor(baseUrl string, images app.ImageService, cateogories app.Ca
 	conn, err := grpc.Dial(
 		baseUrl,
 		grpc.WithInsecure(),
-		grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(1024*1024*100), grpc.MaxCallSendMsgSize(1024*1024*100)),
+		grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(1024*1024*300), grpc.MaxCallSendMsgSize(1024*1024*300)),
 	)
 	if err != nil {
 		return nil, err

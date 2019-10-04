@@ -152,6 +152,6 @@ export class DocumentListComponent implements OnInit, AfterViewInit {
   }
 
   onExportAsPdf(record: Record) {
-    this.recordService.openAsPdf([record.id]);
+    window.open(this.recordService.createPDFLink([record.id]), '_blank');
   }
 }

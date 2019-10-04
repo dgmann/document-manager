@@ -10,6 +10,7 @@ import {PageUpdate, Record, RecordService} from '../../core/store/index';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RecordViewerComponent implements OnInit {
+  @Input() viewMode = RecordViewerViewMode.MultipagePerRow;
   record: Record;
   pages: PageUpdate[];
 
@@ -69,4 +70,9 @@ export class RecordViewerComponent implements OnInit {
   trackByFn(index: number, item: PageUpdate) {
     return item.id;
   }
+}
+
+export enum RecordViewerViewMode {
+  SinglePagePerRow = 'column',
+  MultipagePerRow = 'row wrap'
 }

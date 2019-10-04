@@ -1,4 +1,4 @@
-<div *ngIf="record.status == '' || record.status == 'inbox'">
+<div *ngIf="record.status !== status.REVIEW">
   <button mat-icon-button [matMenuTriggerFor]="menu">
     <mat-icon>more_vert</mat-icon>
   </button>
@@ -7,7 +7,7 @@
       <mat-icon color="warn" aria-label="delete">delete</mat-icon>
       <span>Löschen</span>
     </button>
-    <button mat-menu-item (click)="onDuplicateRecord(record)">
+    <button (click)="onDuplicateRecord(record)" *ngIf="record.status == status.INBOX" mat-menu-item>
       <mat-icon aria-label="duplicate">content_copy</mat-icon>
       <span>Duplizieren</span>
     </button>
@@ -15,34 +15,28 @@
       <mat-icon aria-label="editor">open_in_new</mat-icon>
       <span>Editor</span>
     </button>
-    <button mat-menu-item (click)="setStatus(record, status.ESCALATED)">
-      <mat-icon aria-label="escalate">arrow_upward</mat-icon>
-      <span>Eskalieren</span>
+    <button (click)="onExportAsPdf(record)" mat-menu-item>
+      <mat-icon aria-label="pdf">picture_as_pdf</mat-icon>
+      <span>Pdf</span>
     </button>
-    <button mat-menu-item (click)="setStatus(record, status.OTHER)">
-      <mat-icon aria-label="other">shopping_basket</mat-icon>
-      <span>Werbung</span>
-    </button>
-  </mat-menu>
-</div>
 
-<div *ngIf="record.status == status.ESCALATED">
-  <button mat-icon-button [matMenuTriggerFor]="menu">
-    <mat-icon>more_vert</mat-icon>
-  </button>
-  <mat-menu #menu="matMenu">
-    <button mat-menu-item (click)="onDeleteRecord($event, record)">
-      <mat-icon color="warn" aria-label="delete">delete</mat-icon>
-      <span>Löschen</span>
-    </button>
-    <button mat-menu-item (click)="onEditRecord(record)">
-      <mat-icon aria-label="editor">open_in_new</mat-icon>
-      <span>Editor</span>
-    </button>
-    <button mat-menu-item (click)="setStatus(record, status.INBOX)">
-      <mat-icon aria-label="deescalate">arrow_downward</mat-icon>
-      <span>Deeskalieren</span>
-    </button>
+    <ng-container *ngIf="record.status == status.OTHER || record.status == status.ESCALATED">
+      <button (click)="setStatus(record, status.INBOX)" mat-menu-item>
+        <mat-icon aria-label="deescalate">arrow_downward</mat-icon>
+        <span>Inbox</span>
+      </button>
+    </ng-container>
+
+    <ng-container *ngIf="record.status == '' || record.status == 'inbox'">
+      <button (click)="setStatus(record, status.ESCALATED)" mat-menu-item>
+        <mat-icon aria-label="escalate">arrow_upward</mat-icon>
+        <span>Eskalieren</span>
+      </button>
+      <button (click)="setStatus(record, status.OTHER)" mat-menu-item>
+        <mat-icon aria-label="other">shopping_basket</mat-icon>
+        <span>Werbung</span>
+      </button>
+    </ng-container>
   </mat-menu>
 </div>
 
@@ -50,24 +44,4 @@
   <button mat-icon-button (click)="setStatus(record, status.DONE)">
     <mat-icon aria-label="done" color="green">done</mat-icon>
   </button>
-</div>
-
-<div *ngIf="record.status == status.OTHER">
-  <button mat-icon-button [matMenuTriggerFor]="menu">
-    <mat-icon>more_vert</mat-icon>
-  </button>
-  <mat-menu #menu="matMenu">
-    <button mat-menu-item (click)="onDeleteRecord($event, record)">
-      <mat-icon color="warn" aria-label="delete">delete</mat-icon>
-      <span>Löschen</span>
-    </button>
-    <button mat-menu-item (click)="onEditRecord(record)">
-      <mat-icon aria-label="editor">open_in_new</mat-icon>
-      <span>Editor</span>
-    </button>
-    <button mat-menu-item (click)="setStatus(record, status.INBOX)">
-      <mat-icon aria-label="deescalate">arrow_downward</mat-icon>
-      <span>Inbox</span>
-    </button>
-  </mat-menu>
 </div>

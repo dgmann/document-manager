@@ -150,4 +150,8 @@ export class DocumentListComponent implements OnInit, AfterViewInit {
   onDuplicateRecord(record: Record) {
     this.recordService.duplicate(record.id);
   }
+
+  onExportAsPdf(record: Record) {
+    this.recordService.openAsPdf([record.id]);
+  }
 }

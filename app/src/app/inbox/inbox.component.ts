@@ -5,6 +5,7 @@ import {Record} from '../core/store';
 import {InboxService} from './inbox.service';
 import {ActionBarService} from '@app/inbox/action-bar/action-bar.service';
 import {untilDestroyed} from 'ngx-take-until-destroy';
+import {RecordViewerViewMode} from '@app/shared/record-viewer/record-viewer.component';
 
 @Component({
   selector: 'app-inbox',
@@ -17,6 +18,7 @@ export class InboxComponent implements OnInit, OnDestroy {
   selectedRecord: Observable<Record>;
   selectedIds: Observable<string[]>;
   isLoading$: Observable<boolean>;
+  viewMode = RecordViewerViewMode.MultipagePerRow;
 
   constructor(private inboxService: InboxService, private actionBar: ActionBarService) {
     this.isLoading$ = this.inboxService.isLoading$;
@@ -51,9 +53,7 @@ export class InboxComponent implements OnInit, OnDestroy {
   onDrop(event: DragEvent) {
     if (event.dataTransfer) {
       const files = event.dataTransfer.files;
-      for (let i = 0; i < files.length; i++) {
-        this.inboxService.upload(files[i]);
-      }
+      Array.from(files).forEach(file => this.inboxService.upload(file));
       this.preventAll(event);
       event.dataTransfer.clearData();
     }
@@ -63,6 +63,14 @@ export class InboxComponent implements OnInit, OnDestroy {
     if (event.dataTransfer) {
       event.preventDefault();
       event.stopPropagation();
+    }
+  }
+
+  toogleViewMode() {
+    if (this.viewMode === RecordViewerViewMode.MultipagePerRow) {
+      this.viewMode = RecordViewerViewMode.SinglePagePerRow;
+    } else {
+      this.viewMode = RecordViewerViewMode.MultipagePerRow;
     }
   }
 }

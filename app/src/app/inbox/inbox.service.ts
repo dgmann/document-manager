@@ -49,4 +49,8 @@ export class InboxService {
   private doForAllSelectedRecords(callback: (id: string) => void) {
     this.selectedIds$.pipe(take(1)).subscribe(ids => ids.forEach(id => callback(id)));
   }
+
+  public openSelectedRecordsAsPdf() {
+    this.selectedIds$.pipe(take(1)).subscribe(ids => this.recordService.openAsPdf(ids));
+  }
 }

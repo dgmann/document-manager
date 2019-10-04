@@ -103,4 +103,10 @@ export class RecordService {
         id: record.id
       })));
   }
+
+  public openAsPdf(ids: string[]) {
+    const url = new URL('export/', environment.api);
+    ids.forEach(id => url.searchParams.append('id', id));
+    window.open(url.href, '_blank');
+  }
 }

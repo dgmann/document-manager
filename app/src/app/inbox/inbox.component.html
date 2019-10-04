@@ -5,7 +5,8 @@
                        (selectRecords)="onSelectRecords($event)"></app-document-list>
   </div>
   <div class="right-panel">
-    <app-record-viewer [record]="selectedRecord | async"></app-record-viewer>
+    <app-record-viewer (clickRecord)="toogleViewMode()" [record]="selectedRecord | async"
+                       [viewMode]="viewMode"></app-record-viewer>
   </div>
 </app-split-panel>
 

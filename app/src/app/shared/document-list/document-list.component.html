@@ -27,11 +27,14 @@
   <ng-container matColumnDef="actions">
     <mat-header-cell fxFlex="0 0 50px" *matHeaderCellDef></mat-header-cell>
     <mat-cell fxFlex="0 0 50px" class="action-group" *matCellDef="let element">
-      <app-action-menu [record]="element"
+      <app-action-menu (duplicateRecord)="onDuplicateRecord($event)"
+                       (export)="onExportAsPdf($event)"
                        (deleteRecord)="deleteRecord($event)"
                        (changeStatus)="setStatus($event)"
                        (editRecord)="openEditor($event)"
-                       (duplicateRecord)="onDuplicateRecord($event)"></app-action-menu>
+                       [hidden]="selectedIds.length > 1"
+                       [record]="element"
+      ></app-action-menu>
     </mat-cell>
   </ng-container>
 

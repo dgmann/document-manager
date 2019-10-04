@@ -36,4 +36,8 @@ export class ActionBarComponent implements OnInit {
       this.inboxService.selectIds([]);
     }
   }
+
+  openAsPdf() {
+    this.inboxService.openSelectedRecordsAsPdf();
+  }
 }

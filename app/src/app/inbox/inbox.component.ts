@@ -20,6 +20,8 @@ export class InboxComponent implements OnInit, OnDestroy {
   isLoading$: Observable<boolean>;
   viewMode = RecordViewerViewMode.MultipagePerRow;
 
+  isDragInProgress = false;
+
   constructor(private inboxService: InboxService, private actionBar: ActionBarService) {
     this.isLoading$ = this.inboxService.isLoading$;
   }
@@ -52,10 +54,25 @@ export class InboxComponent implements OnInit, OnDestroy {
 
   onDrop(event: DragEvent) {
     if (event.dataTransfer) {
+      this.isDragInProgress = false;
       const files = event.dataTransfer.files;
       Array.from(files).forEach(file => this.inboxService.upload(file));
       this.preventAll(event);
       event.dataTransfer.clearData();
+    }
+  }
+
+  onDragEnter(event: DragEvent) {
+    const element = event.target as HTMLElement;
+    if (element.id === 'inbox-document-list') {
+      this.isDragInProgress = true;
+    }
+  }
+
+  onDragLeave(event: DragEvent) {
+    const element = event.target as HTMLElement;
+    if (element.className === 'upload-symbol') {
+      this.isDragInProgress = false;
     }
   }
 

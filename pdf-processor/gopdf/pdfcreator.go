@@ -24,8 +24,10 @@ type Bookmark struct {
 	Level int
 }
 
+var pageSize = gofpdf.PageSizeA4
+
 func (creator *PdfCreator) Create(document *processor.Document) (*processor.Pdf, error) {
-	pdf := gofpdf.New(gofpdf.OrientationPortrait, "mm", "A4", "")
+	pdf := gofpdf.New(gofpdf.OrientationPortrait, "mm", pageSize, "")
 	defer pdf.Close()
 	pdf.SetTitle(document.Title, true)
 
@@ -38,9 +40,12 @@ func (creator *PdfCreator) Create(document *processor.Document) (*processor.Pdf,
 		opt.AllowNegativePosition = true
 
 		content := bytes.NewReader(page.Image.Content)
-		pdf.RegisterImageOptionsReader(pageName, opt, content)
-
-		pdf.AddPage()
+		info := pdf.RegisterImageOptionsReader(pageName, opt, content)
+		if info.Width() > info.Height() {
+			pdf.AddPageFormat(gofpdf.OrientationLandscape, pdf.GetPageSizeStr(pageSize))
+		} else {
+			pdf.AddPage()
+		}
 		if page.Bookmarks != nil {
 			for _, bookmark := range page.Bookmarks {
 				pdf.Bookmark(bookmark.Text, bookmark.Level, -1)

@@ -41,7 +41,9 @@ func publishEvents(m *melody.Melody, subscriber app.Subscriber) {
 	for event := range events {
 		data, _ := json.Marshal(event)
 		err := m.Broadcast(data)
-		logrus.Debug(err)
+		if err != nil {
+			logrus.Debug(err)
+		}
 	}
 }
 

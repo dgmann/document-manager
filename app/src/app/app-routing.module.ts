@@ -8,6 +8,10 @@ const routes: Routes = [
     loadChildren: () => import('@app/inbox').then(mod => mod.InboxModule)
   },
   {
+    path: 'history',
+    loadChildren: () => import('@app/history').then(mod => mod.HistoryModule)
+  },
+  {
     path: 'physician',
     loadChildren: () => import('@app/physician').then(mod => mod.PhysicianModule)
   },

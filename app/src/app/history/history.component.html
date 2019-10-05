@@ -1,0 +1,9 @@
+<app-split-panel>
+  <div class="left-panel">
+    <app-document-list (selectRecords)="onSelectRecords($event)" [allowMultiselect]="false" [records]="records$ | async"
+                       [selectedIds]="selectedIds$ | async"></app-document-list>
+  </div>
+  <div class="right-panel">
+    <app-record-viewer [record]="selectedRecord$ | async"></app-record-viewer>
+  </div>
+</app-split-panel>

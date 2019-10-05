@@ -14,7 +14,7 @@ import {Router} from '@angular/router';
 import {includes, without} from 'lodash-es';
 
 
-import {Record, RecordService, Status} from '../../core/store';
+import {Record, RecordService, Status} from '@app/core/store';
 import {CommentDialogService} from '../comment-dialog/comment-dialog.service';
 import {DocumentEditDialogService} from '../document-edit-dialog/document-edit-dialog.service';
 import {NotificationService} from '@app/core';

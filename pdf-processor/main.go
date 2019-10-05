@@ -22,8 +22,9 @@ func main() {
 	port := 9000
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
 	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
+		log.Fatalf("failed to open socket: %v", err)
 	}
+	log.Info("Starting gRPC Server")
 	grpcServer := grpc.NewServer(grpc.MaxRecvMsgSize(1024*1024*300), grpc.MaxSendMsgSize(1024*1024*300))
 	processor.RegisterPdfProcessorServer(grpcServer, NewGRPCServer(converter, rotator, creator))
 	if err := grpcServer.Serve(lis); err != nil {

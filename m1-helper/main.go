@@ -13,13 +13,13 @@ func main() {
 	serverUrl := flag.String("s", "http://localhost", "Document-Manager URL")
 	flag.Parse()
 	if *fileName == "" {
-		panic("no file provided")
+		panic("no BDT file provided")
 	}
 
 	if service.Interactive() {
 		ctx := context.Background()
 		go hotkey.Register(ctx, *fileName, *serverUrl)
-		go server.Run(ctx, *fileName)
+		server.Run(ctx, *fileName)
 	} else {
 		s, logger, err := service.New(*fileName, *serverUrl)
 		if err != nil {

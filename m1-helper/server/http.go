@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/dgmann/document-manager/m1-helper/m1"
+	"github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
 )
@@ -12,7 +13,9 @@ func Run(ctx context.Context, fileName string) {
 	srv := &http.Server{Addr: ":3000"}
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("BDT file path: " + fileName))
+		if _, err := w.Write([]byte("BDT file path: " + fileName)); err != nil {
+			logrus.Error(err)
+		}
 	})
 
 	http.HandleFunc("/patient", func(w http.ResponseWriter, r *http.Request) {

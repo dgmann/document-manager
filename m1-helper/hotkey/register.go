@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"github.com/dgmann/document-manager/m1-helper/m1"
 	"io/ioutil"
-	"log"
 	"os/exec"
 )
 
 func Register(ctx context.Context, fileName, serverUrl string) {
 	manager := NewManager()
+	defer manager.Close()
 	manager.Register(Hotkey{Id: 1, Modifiers: ModAlt + ModCtrl, KeyCode: 'P'})
 	keyPresses := manager.Listen()
 	for {
@@ -23,13 +23,8 @@ func Register(ctx context.Context, fileName, serverUrl string) {
 
 			patient, err := m1.Parse(f)
 
-			cmd := exec.Command(fmt.Sprintf("%s/patient/%s", serverUrl, patient.Id))
-			err = cmd.Run()
-
-			if err != nil {
-				fmt.Printf("an error occurred: %s\n", err)
-				log.Fatal(err)
-			}
+			cmd := exec.Command("explorer", fmt.Sprintf("%s/patient/%s", serverUrl, patient.Id))
+			_ = cmd.Run()
 		case <-ctx.Done():
 			return
 		}

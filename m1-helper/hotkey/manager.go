@@ -1,10 +1,11 @@
 package hotkey
 
 import (
-	"golang.org/x/sys/windows"
 	"fmt"
-	"unsafe"
+	"github.com/sirupsen/logrus"
+	"golang.org/x/sys/windows"
 	"time"
+	"unsafe"
 )
 
 type Manager struct {
@@ -23,7 +24,9 @@ func NewManager() *Manager {
 }
 
 func (m *Manager) Close() {
-	m.user32.Release()
+	if err := m.user32.Release(); err != nil {
+		logrus.Error(err)
+	}
 }
 
 func (m *Manager) Register(hotkey Hotkey) {
@@ -43,7 +46,7 @@ func (m *Manager) Listen() <-chan *Hotkey {
 		peekmsg := m.user32.MustFindProc("PeekMessageW")
 		for {
 			var msg = &MSG{}
-			peekmsg.Call(uintptr(unsafe.Pointer(msg)), 0, 0, 0, 1)
+			_, _, _ = peekmsg.Call(uintptr(unsafe.Pointer(msg)), 0, 0, 0, 1)
 
 			// Registered id is in the WPARAM field:
 			if id := msg.WPARAM; id != 0 {

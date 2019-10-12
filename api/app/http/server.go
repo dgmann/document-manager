@@ -79,5 +79,5 @@ func (s *Server) Run() error {
 
 	r.Get("/export", exportController.Export)
 
-	return http.ListenAndServe(":8080", r)
+	return http.ListenAndServe(":80", r)
 }

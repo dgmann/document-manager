@@ -1,6 +1,7 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {Status} from '@app/core/store';
 import {InboxService} from '@app/inbox/inbox.service';
+import {Observable} from 'rxjs';
 import {take} from 'rxjs/operators';
 
 @Component({
@@ -11,8 +12,10 @@ import {take} from 'rxjs/operators';
 })
 export class ActionBarComponent implements OnInit {
   status = Status;
+  selectedRecordsPDFLink$: Observable<string>;
 
   constructor(private inboxService: InboxService) {
+    this.selectedRecordsPDFLink$ = this.inboxService.selectedRecordsPDFLink$;
   }
 
   ngOnInit() {

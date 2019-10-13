@@ -105,7 +105,7 @@ export class RecordService {
   }
 
   public createPDFLink(ids: string[]) {
-    const url = new URL('export/', environment.api);
+    const url = new URL(`${environment.api}/export`);
     ids.forEach(id => url.searchParams.append('id', id));
     return url.href;
   }

@@ -9,6 +9,10 @@ import (
 	"net/http"
 )
 
+var (
+    PathPrefix = "/api"
+)
+
 type Server struct {
 	Healthchecker      map[string]app.Checkable
 	StatisticProviders map[string]app.StatisticProvider
@@ -38,8 +42,6 @@ func (s *Server) Run() error {
 		MaxAge:           300,
 	}).Handler)
 
-	r.Mount("/debug", middleware.Profiler())
-
 	recordController := &RecordController{
 		records:      s.RecordService,
 		images:       s.ImageService,
@@ -56,11 +58,6 @@ func (s *Server) Run() error {
 		categories: s.CategoryService,
 	}
 
-	r.Mount("/notifications", getWebsocketHandler(s.EventService))
-	r.Mount("/records", recordController.Router())
-	r.Mount("/patients", patientController.Router())
-	r.Mount("/categories", categoryController.Router())
-
 	health := HealthController{s.Healthchecker}
 	statistics := StatisticsController{s.StatisticProviders}
 	tagController := NewTagController(s.TagService)
@@ -68,16 +65,24 @@ func (s *Server) Run() error {
 	exportController := NewExporterController(s.PdfProcessor, s.RecordService)
 
 	r.Get("/", func(w http.ResponseWriter, req *http.Request) {
+		http.Redirect(w, req, req.URL.String() + "api", http.StatusMovedPermanently)
+	})
+
+	r.Get(PathPrefix, func(w http.ResponseWriter, req *http.Request) {
 		NewResponseWithStatus(w, []byte("Document Storage API"), 200).Write()
 	})
-	r.Get("/status", health.Status)
-	r.Get("/statistics", statistics.Statistics)
 
-	r.Get("/tags", tagController.All)
+	r.Mount(PathPrefix + "/notifications", getWebsocketHandler(s.EventService))
+	r.Mount(PathPrefix + "/records", recordController.Router())
+	r.Mount(PathPrefix + "/patients", patientController.Router())
+	r.Mount(PathPrefix + "/categories", categoryController.Router())
+	r.Get(PathPrefix + "/tags", tagController.All)
+	r.Get(PathPrefix + "/archive/{recordId}", archiveController.One)
+	r.Get(PathPrefix + "/export", exportController.Export)
 
-	r.Get("/archive/{recordId}", archiveController.One)
-
-	r.Get("/export", exportController.Export)
+	r.Mount(PathPrefix + "/debug", middleware.Profiler())
+	r.Get(PathPrefix + "/status", health.Status)
+	r.Get(PathPrefix + "/statistics", statistics.Statistics)
 
 	return http.ListenAndServe(":80", r)
 }

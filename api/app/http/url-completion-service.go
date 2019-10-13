@@ -52,7 +52,7 @@ func setURLForRecord(r *app.Record, url url.URL, reader app.ModTimeReader) {
 			logrus.Error(err)
 		}
 
-		r.Pages[i].Url = fmt.Sprintf("%s/records/%s/pages/%s?modified=%d", domain, r.Id.Hex(), r.Pages[i].Id, modified.Unix())
+		r.Pages[i].Url = fmt.Sprintf("%s%s/records/%s/pages/%s?modified=%d", domain, PathPrefix, r.Id.Hex(), r.Pages[i].Id, modified.Unix())
 	}
-	r.ArchivedPDF = fmt.Sprintf("%s/archive/%s", domain, r.Id.Hex())
+	r.ArchivedPDF = fmt.Sprintf("%s%s/archive/%s", domain, PathPrefix, r.Id.Hex())
 }

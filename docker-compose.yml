@@ -12,7 +12,6 @@ services:
     depends_on:
       - api
       - app
-      - m1-adapter
   db:
     image: mongo:latest
     networks:
@@ -31,15 +30,14 @@ services:
   api:
     build: ./api
     volumes:
-      - "E:/mounts/records:/records"
-      - "E:/mounts/archive:/archive"
+      - "./records:/records"
+      - "./archive:/archive"
     environment:
       - DB_HOST=db
       - DB_NAME=manager
       - PDFPROCESSOR_URL=processor:9000
       - BASE_URL=http://localhost/api
       - RELEASE_STAGE=development
-      - BUGSNAG_API_KEY=1199963e39770335f40ec3c3228a7390
     networks:
       - backend
     depends_on:

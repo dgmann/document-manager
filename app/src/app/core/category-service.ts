@@ -29,6 +29,13 @@ export class CategoryService {
   public getByPatientId(id: string) {
     return this.http.get<Category[]>(`${environment.api}/patients/${id}/categories`);
   }
+
+  public add(id: string, category: string) {
+    return this.http.post(`${environment.api}/categories`, {
+      id,
+      name: category
+    });
+  }
 }
 
 export interface Category {

@@ -66,38 +66,16 @@ http {
         listen       80 default_server;
         server_name  _;
 
-        location = /api/patients {
-            proxy_pass http://m1-adapter/patients;
-            proxy_set_header    Host            $host;
-            proxy_set_header    X-Forwarded-Host $host:$server_port;
-            proxy_set_header    X-Real-IP       $remote_addr;
-            proxy_set_header    X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header    X-Forwarded-Proto  $scheme;
-            proxy_http_version 1.1;
-        }
-
-        location ~* ^/api/patients/(\d+)$ {
-            rewrite ^/api/patients/(\d+)$ /patients/$1 break;
-
-            proxy_pass http://m1-adapter;
-            proxy_set_header    Host            $host;
-            proxy_set_header    X-Forwarded-Host $host:$server_port;
-            proxy_set_header    X-Real-IP       $remote_addr;
-            proxy_set_header    X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header    X-Forwarded-Proto  $scheme;
-            proxy_http_version 1.1;
-        }
-
         location = /api/notifications {
             proxy_http_version 1.1;
             proxy_set_header Upgrade $http_upgrade;
             proxy_set_header Connection "upgrade";
 
-            proxy_pass http://api/notifications;
+            proxy_pass http://api/api/notifications;
         }
 
-        location /api/ {
-            proxy_pass http://api/;
+        location /api {
+            proxy_pass http://api;
             proxy_set_header    Host            $host;
             proxy_set_header    X-Forwarded-Host $host:$server_port;
             proxy_set_header    X-Real-IP       $remote_addr;

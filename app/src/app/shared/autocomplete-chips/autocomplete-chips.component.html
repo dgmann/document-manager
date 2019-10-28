@@ -1,5 +1,5 @@
 <mat-form-field fxFlexFill>
-  <mat-chip-list #chipList aria-label="Fruit selection">
+  <mat-chip-list #chipList aria-label="Tag selection">
     <mat-chip *ngFor="let tag of values" [selectable]="true"
               [removable]="true" (removed)="remove(tag)">
       {{tag}}
@@ -13,7 +13,7 @@
         [matChipInputAddOnBlur]="true"
         [matChipInputFor]="chipList"
         [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-        placeholder="New fruit...">
+        placeholder="Tags">
   </mat-chip-list>
   <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)" autoActiveFirstOption="true">
     <mat-option *ngFor="let option of filteredOptions | async" [value]="option">

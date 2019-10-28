@@ -21,3 +21,5 @@ require (
 	gopkg.in/rana/ora.v4 v4.1.15
 	gopkg.in/yaml.v2 v2.2.1 // indirect
 )
+
+go 1.13

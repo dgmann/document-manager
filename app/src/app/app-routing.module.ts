@@ -24,6 +24,10 @@ const routes: Routes = [
     loadChildren: () => import('@app/editor').then(mod => mod.EditorModule)
   },
   {
+    path: 'settings',
+    loadChildren: () => import('@app/settings').then(mod => mod.SettingsModule)
+  },
+  {
     path: '',
     redirectTo: 'inbox',
     pathMatch: 'full'

@@ -9,7 +9,7 @@ import {NgForm} from '@angular/forms';
   styleUrls: ['./settings.component.scss']
 })
 export class SettingsComponent implements OnInit {
-  private categories$: Observable<Category[]>;
+  categories$: Observable<Category[]>;
 
   constructor(private categoryService: CategoryService) {
     this.categories$ = this.categoryService.categories;

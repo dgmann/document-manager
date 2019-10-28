@@ -15,6 +15,7 @@
       </button>
     </div>
     <app-multi-record-list [@panelInOut] [categories]="categories | async" [records]="records | async"
+                           [patient]="patient | async"
                            [selectedCategory]="selectedCategory | async" fxFlex
                            (selectedCategoryChange)="onSelectedCategoryChange($event)"
                            (updateRecord)="onUpdateRecord($event)"

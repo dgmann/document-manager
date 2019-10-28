@@ -15,7 +15,6 @@ export class InboxService {
   public selectedIds$: Observable<string[]>;
   public selectedRecords$: Observable<Record[]>;
   public isLoading$: Observable<boolean>;
-  public selectedRecordsPDFLink$: Observable<string>;
 
   constructor(private store: Store<State>,
               private recordService: RecordService) {
@@ -24,7 +23,6 @@ export class InboxService {
     this.selectedIds$ = this.store.pipe(select(selectSelectedIds));
     this.selectedRecords$ = this.store.pipe(select(selectSelectedRecords));
     this.isLoading$ = this.recordService.isLoading$.pipe(debounceTime(1000));
-    this.selectedRecordsPDFLink$ = this.selectedIds$.pipe(map(ids => this.recordService.createPDFLink(ids)));
   }
 
   public loadRecords() {
@@ -50,9 +48,5 @@ export class InboxService {
 
   private doForAllSelectedRecords(callback: (id: string) => void) {
     this.selectedIds$.pipe(take(1)).subscribe(ids => ids.forEach(id => callback(id)));
-  }
-
-  public openSelectedRecordsAsPdfLink() {
-
   }
 }

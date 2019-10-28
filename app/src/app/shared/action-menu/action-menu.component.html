@@ -15,10 +15,10 @@
       <mat-icon aria-label="editor">open_in_new</mat-icon>
       <span>Editor</span>
     </button>
-    <button (click)="onExportAsPdf(record)" mat-menu-item>
+    <a mat-menu-item [href]="record.id | pdfLink" target="_blank">
       <mat-icon aria-label="pdf">picture_as_pdf</mat-icon>
-      <span>Pdf</span>
-    </button>
+      Pdf
+    </a>
 
     <ng-container *ngIf="record.status == status.OTHER || record.status == status.ESCALATED">
       <button (click)="setStatus(record, status.INBOX)" mat-menu-item>

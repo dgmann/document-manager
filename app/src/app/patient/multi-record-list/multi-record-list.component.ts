@@ -3,6 +3,7 @@ import {findIndex, groupBy, sortBy} from 'lodash-es';
 import {Category} from '@app/core';
 import {Record} from '@app/core/store';
 import {DocumentEditDialogService, EditResult, MessageBoxService} from '../../shared';
+import {Patient} from '@app/patient';
 
 @Component({
   selector: 'app-multi-record-list',
@@ -11,7 +12,7 @@ import {DocumentEditDialogService, EditResult, MessageBoxService} from '../../sh
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MultiRecordListComponent {
-
+  patientName: string;
   categoryMap: { [id: string]: Category } = {};
   groupedRecords: { category: string, records: Record[] }[];
   selectedIndex: number;
@@ -23,6 +24,11 @@ export class MultiRecordListComponent {
   @Output() openInEditor = new EventEmitter<Record>();
   selectedCategory: string;
 
+  @Input() set patient(patient: Patient) {
+    if (patient) {
+      this.patientName = `${patient.lastName}, ${patient.firstName}`;
+    }
+  }
   @Input() set records(records: Record[]) {
     const grouped = groupBy(records, 'category');
     const groupedRecords = Object.entries(grouped)

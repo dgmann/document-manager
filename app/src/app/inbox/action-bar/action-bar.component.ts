@@ -12,10 +12,10 @@ import {take} from 'rxjs/operators';
 })
 export class ActionBarComponent implements OnInit {
   status = Status;
-  selectedRecordsPDFLink$: Observable<string>;
+  selectedIds$: Observable<string[]>;
 
   constructor(private inboxService: InboxService) {
-    this.selectedRecordsPDFLink$ = this.inboxService.selectedRecordsPDFLink$;
+    this.selectedIds$ = this.inboxService.selectedIds$;
   }
 
   ngOnInit() {

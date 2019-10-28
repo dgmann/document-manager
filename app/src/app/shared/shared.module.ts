@@ -28,6 +28,8 @@ import {SplitPanelComponent} from './split-panel/split-panel.component';
 import {HttpClientModule} from '@angular/common/http';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import {MessageBoxComponent} from './message-box/message-box.component';
+import { PdfLinkPipe } from './pdf-link/pdf-link.pipe';
+import { IdsPipe } from './ids/ids.pipe';
 
 
 @NgModule({
@@ -63,7 +65,9 @@ import {MessageBoxComponent} from './message-box/message-box.component';
     AutocompleteChipsComponent,
     ActionMenuComponent,
     CommentDialogComponent,
-    MessageBoxComponent
+    MessageBoxComponent,
+    PdfLinkPipe,
+    IdsPipe
   ],
   entryComponents: [
     DocumentEditDialogComponent,
@@ -77,7 +81,9 @@ import {MessageBoxComponent} from './message-box/message-box.component';
     RecordViewerComponent,
     DocumentListComponent,
     PatientSearchComponent,
-    SplitPanelComponent
+    SplitPanelComponent,
+    PdfLinkPipe,
+    IdsPipe
   ],
   providers: [],
 })

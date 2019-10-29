@@ -1,4 +1,4 @@
-package m1
+package bdt
 
 import "time"
 
@@ -23,5 +23,11 @@ func (p *Patient) Equals(o Patient) bool {
 		p.LastName == o.LastName &&
 		*p.BirthDate == *o.BirthDate &&
 		p.PhoneNumber == o.PhoneNumber &&
-		p.Address == o.Address
+		p.Address.Equals(o.Address)
+}
+
+func (a *Address) Equals(o Address) bool {
+	return a.Street == o.Street &&
+		a.City == o.City &&
+		a.Zip == o.Zip
 }

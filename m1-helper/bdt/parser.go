@@ -1,15 +1,20 @@
-package m1
+package bdt
 
 import (
+	"bufio"
+	"golang.org/x/text/encoding/charmap"
+	"io"
 	"strings"
 	"time"
 )
 
-func Parse(data []byte) (*Patient, error) {
-	text := toUtf8(data)
-	lines := strings.Split(text, "\n")
+func Parse(data io.Reader) (*Patient, error) {
 	results := make(map[string]string)
-	for _, line := range lines {
+
+	tr := charmap.ISO8859_1.NewDecoder().Reader(data)
+	scanner := bufio.NewScanner(tr)
+	for scanner.Scan() {
+		line := scanner.Text()
 		r := []rune(strings.TrimSpace(line))
 		if len(r) < 8 {
 			continue
@@ -42,12 +47,4 @@ func toBirthDate(s string) *time.Time {
 		return nil
 	}
 	return &result
-}
-
-func toUtf8(iso88591Buf []byte) string {
-	buf := make([]rune, len(iso88591Buf))
-	for i, b := range iso88591Buf {
-		buf[i] = rune(b)
-	}
-	return string(buf)
 }

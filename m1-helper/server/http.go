@@ -3,10 +3,10 @@ package server
 import (
 	"context"
 	"encoding/json"
-	"github.com/dgmann/document-manager/m1-helper/m1"
+	"github.com/dgmann/document-manager/m1-helper/bdt"
 	"github.com/sirupsen/logrus"
-	"io/ioutil"
 	"net/http"
+	"os"
 )
 
 func Run(ctx context.Context, fileName string) {
@@ -23,13 +23,14 @@ func Run(ctx context.Context, fileName string) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Content-Type", "application/json;charset=utf-8")
 
-		f, err := ioutil.ReadFile(fileName)
+		f, err := os.Open(fileName)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			j.Encode(err)
 		}
+		defer f.Close()
 
-		patient, err := m1.Parse(f)
+		patient, err := bdt.Parse(f)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			j.Encode(err)

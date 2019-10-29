@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	fileName := flag.String("f", "", "BDT file containing current patient")
+	fileName := flag.String("f", "./aow_pat.bdt", "BDT file containing current patient")
 	serverUrl := flag.String("s", "http://localhost", "Document-Manager URL")
 	flag.Parse()
 	if *fileName == "" {

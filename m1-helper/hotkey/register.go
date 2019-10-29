@@ -3,8 +3,8 @@ package hotkey
 import (
 	"context"
 	"fmt"
-	"github.com/dgmann/document-manager/m1-helper/m1"
-	"io/ioutil"
+	"github.com/dgmann/document-manager/m1-helper/bdt"
+	"os"
 	"os/exec"
 )
 
@@ -16,12 +16,13 @@ func Register(ctx context.Context, fileName, serverUrl string) {
 	for {
 		select {
 		case <-keyPresses:
-			f, err := ioutil.ReadFile(fileName)
+			f, err := os.Open(fileName)
 			if err != nil {
 				println("error reading patient file")
 			}
 
-			patient, err := m1.Parse(f)
+			patient, err := bdt.Parse(f)
+			_ = f.Close()
 
 			cmd := exec.Command("explorer", fmt.Sprintf("%s/patient/%s", serverUrl, patient.Id))
 			_ = cmd.Run()

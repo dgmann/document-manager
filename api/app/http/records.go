@@ -85,24 +85,18 @@ func (controller *RecordController) Create(w http.ResponseWriter, req *http.Requ
 	sender := req.FormValue("sender")
 	newRecord := app.CreateRecord{Sender: sender}
 
-	_, fh, err := req.FormFile("pdf")
+	file, _, err := req.FormFile("pdf")
 	if err != nil {
 		NewErrorResponse(w, fmt.Errorf("no file found. Please specify a pdf file in the field: pdf. %w", err), 400).WriteJSON()
 		return
 	}
 
-	f, err := fh.Open()
-	if err != nil {
-		NewErrorResponse(w, fmt.Errorf("coud not open file: %w", err), 400).WriteJSON()
-		return
-	}
-	defer f.Close()
-
-	fileBytes, err := ioutil.ReadAll(f)
+	fileBytes, err := ioutil.ReadAll(file)
 	if err != nil {
 		NewErrorResponse(w, err, http.StatusBadRequest).WriteJSON()
 		return
 	}
+	_ = file.Close()
 
 	images, err := controller.pdfProcessor.Convert(req.Context(), bytes.NewBuffer(fileBytes))
 	if err != nil {

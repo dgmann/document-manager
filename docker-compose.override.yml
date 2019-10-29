@@ -5,3 +5,10 @@ services:
   api:
     ports:
       - 8080:80
+  app:
+    ports:
+      - 8081:80
+  processor:
+    ports:
+      - 8080:8080
+      - 9000:9000

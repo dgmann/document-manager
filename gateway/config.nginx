@@ -52,6 +52,7 @@ http {
 
     # request timed out -- default 60
     client_body_timeout 10;
+    client_max_body_size 200M;
 
     # if client stop responding, free up memory -- default 60
     send_timeout 2;

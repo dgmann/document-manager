@@ -3,8 +3,8 @@
     <module name="document-manager" />
     <working_directory value="$PROJECT_DIR$/api" />
     <envs>
-      <env name="RECORD_DIR" value="E:\Records" />
-      <env name="ARCHIVE_DIR" value="E:\Archive" />
+      <env name="RECORD_DIR" value="~/records" />
+      <env name="ARCHIVE_DIR" value="~/archive" />
     </envs>
     <kind value="PACKAGE" />
     <filePath value="$PROJECT_DIR$/api/main.go" />

@@ -9,9 +9,15 @@ import (
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"net"
+	"net/http"
+	_ "net/http/pprof"
 )
 
 func main() {
+	go func() {
+		log.Println(http.ListenAndServe(":8080", nil))
+	}()
+
 	imagick.Initialize()
 	defer imagick.Terminate()
 

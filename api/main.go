@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"github.com/dgmann/document-manager/api/app"
 	"github.com/dgmann/document-manager/api/app/filesystem"
 	"github.com/dgmann/document-manager/api/app/grpc"
@@ -24,6 +25,11 @@ func main() {
 	dbHost := envOrDefault("DB_HOST", "localhost")
 	dbName := envOrDefault("DB_NAME", "manager")
 	pdfProcessorUrl := envOrDefault("PDFPROCESSOR_URL", "127.0.0.1:9000")
+
+	if err := ensureTmpDirectory(); err != nil {
+		log.Error(fmt.Errorf("error while creating tmp directory: %w", err))
+		return
+	}
 
 	log.WithFields(log.Fields{"host": dbHost, "database": dbName}).Info("connecting to database")
 	client := mongo.NewClient(dbHost, dbName)
@@ -89,4 +95,13 @@ func envOrDefault(key, def string) string {
 		return value
 	}
 	return def
+}
+
+func ensureTmpDirectory() error {
+	if _, err := os.Stat(os.TempDir()); os.IsNotExist(err) {
+		if err := os.Mkdir(os.TempDir(), os.ModePerm); err != nil {
+			return err
+		}
+	}
+	return nil
 }

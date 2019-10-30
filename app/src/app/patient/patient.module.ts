@@ -23,7 +23,6 @@ import {PatientService} from './patient.service';
 import {metaReducers, reducers} from './reducers';
 import {PatientEffects} from './store/patient.effects';
 import {TagListComponent} from './tag-list/tag-list.component';
-import {ThreeColumnPanelComponent} from './three-column-panel/three-column-panel.component';
 import {RecordFilterComponent} from './record-filter/record-filter.component';
 import {DateRangeSelectorComponent} from './date-range-selector/date-range-selector.component';
 import {FormsModule} from '@angular/forms';
@@ -54,7 +53,6 @@ import {FormsModule} from '@angular/forms';
     TagListComponent,
     MultiRecordListComponent,
     CategoryListComponent,
-    ThreeColumnPanelComponent,
     RecordFilterComponent,
     DateRangeSelectorComponent
   ],

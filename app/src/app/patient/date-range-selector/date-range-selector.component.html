@@ -1,7 +1,7 @@
 <div fxLayout="column">
   <div fxLayout="row">
     <mat-form-field fxFlex>
-      <input matInput [(ngModel)]="fromValue" [matDatepicker]="pickerFrom" placeholder="Älter als"
+      <input matInput [(ngModel)]="fromValue" [matDatepicker]="pickerFrom" placeholder="Von"
              (dateInput)="setFrom($event.value)">
       <mat-datepicker-toggle matSuffix [for]="pickerFrom"></mat-datepicker-toggle>
       <mat-datepicker #pickerFrom></mat-datepicker>
@@ -13,7 +13,7 @@
 
   <div fxLayout="row">
     <mat-form-field fxFlex>
-      <input matInput [(ngModel)]="untilValue" [matDatepicker]="pickerUntil" placeholder="Jünger als"
+      <input matInput [(ngModel)]="untilValue" [matDatepicker]="pickerUntil" placeholder="Bis"
              (dateInput)="setUntil($event.value)">
       <mat-datepicker-toggle matSuffix [for]="pickerUntil"></mat-datepicker-toggle>
       <mat-datepicker #pickerUntil></mat-datepicker>

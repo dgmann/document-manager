@@ -1,6 +1,6 @@
 <h2 mat-dialog-title>Informationen</h2>
 <mat-dialog-content>
-  <form #form [formGroup]="editForm" (ngSubmit)="onSubmit()">
+  <form #form id="document-edit-dialog-form" [formGroup]="editForm" (ngSubmit)="onSubmit()">
 
     <div fxLayout="row" fxLayoutGap="10px">
       <mat-form-field [hintLabel]="patient ? (patient?.lastName + ', ' + patient?.firstName) : ''">
@@ -36,7 +36,7 @@
 </mat-dialog-content>
 <mat-dialog-actions>
   <button mat-button mat-dialog-close>Abbrechen</button>
-  <button mat-button (click)="onSubmit()"
+  <button mat-button type="submit" form="document-edit-dialog-form"
           [disabled]="editForm.invalid">Speichern
   </button>
 </mat-dialog-actions>

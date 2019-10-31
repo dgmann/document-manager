@@ -71,7 +71,7 @@ export class DocumentEditDialogComponent implements AfterViewInit, OnInit, OnDes
       this.patient = p;
       if (!this.editForm.get('patientId').value) {
         this.editForm.patchValue({
-          patientId: this.record.patientId,
+          patientId: this.patient.id,
         });
       }
     });

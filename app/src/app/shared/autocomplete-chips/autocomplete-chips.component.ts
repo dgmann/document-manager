@@ -46,7 +46,6 @@ export class AutocompleteChipsComponent implements ControlValueAccessor {
       const input = event.input;
       const value = event.value;
 
-      // Add our fruit
       if ((value || '').trim()) {
         this.values.push(value.trim());
         this.propagateChange(this.values);

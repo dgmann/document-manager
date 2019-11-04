@@ -2,7 +2,7 @@ package m1
 
 import (
 	"database/sql"
-	_ "gopkg.in/rana/ora.v4"
+	_ "github.com/mattn/go-oci8"
 )
 
 type Adapter interface {
@@ -18,7 +18,7 @@ func NewDatabaseAdapter(connectionString string) *DatabaseAdapter {
 }
 
 func (a *DatabaseAdapter) Connect() error {
-	db, err := sql.Open("ora", a.connectionString)
+	db, err := sql.Open("oci8", a.connectionString)
 	if err != nil {
 		return err
 	}

@@ -7,9 +7,9 @@ require (
 	github.com/golang/protobuf v1.2.0 // indirect
 	github.com/json-iterator/go v1.1.5 // indirect
 	github.com/mattn/go-isatty v0.0.4 // indirect
+	github.com/mattn/go-oci8 v0.0.0-20191029050031-9c5d7cd922fc
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.1 // indirect
-	github.com/pkg/errors v0.8.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/stretchr/testify v1.2.2 // indirect
 	github.com/ugorji/go/codec v0.0.0-20180831062425-e253f1f20942 // indirect
@@ -18,7 +18,6 @@ require (
 	golang.org/x/sys v0.0.0-20180909124046-d0be0721c37e // indirect
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 	gopkg.in/go-playground/validator.v8 v8.18.2 // indirect
-	gopkg.in/rana/ora.v4 v4.1.15
 	gopkg.in/yaml.v2 v2.2.1 // indirect
 )
 

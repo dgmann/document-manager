@@ -3,6 +3,7 @@ package m1
 import (
 	"database/sql"
 	_ "github.com/mattn/go-oci8"
+	"strings"
 )
 
 type Adapter interface {
@@ -131,5 +132,7 @@ func rowToPatient(row Scanable) (*Patient, error) {
 		&address.Street,
 		&address.City)
 	patient.Address = address
+	patient.FirstName = strings.TrimSpace(patient.FirstName)
+	patient.LastName = strings.TrimSpace(patient.LastName)
 	return &patient, err
 }

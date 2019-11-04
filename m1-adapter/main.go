@@ -1,10 +1,13 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/dgmann/document-manager/m1-adapter/m1"
-	"github.com/gin-gonic/gin"
+	"log"
+	"net/http"
 	"os"
+	"path"
 )
 
 var username string
@@ -49,17 +52,16 @@ func main() {
 	}
 	defer adapter.Close()
 
-	r := gin.Default()
-
-	r.GET("/", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "M1-Adapter",
-		})
+	http.HandleFunc("/", func(writer http.ResponseWriter, request *http.Request) {
+		if request.URL.Path != "/" {
+			writeJSON(writer, response{"error": "page not found"}, http.StatusNotFound)
+			return
+		}
+		writeJSON(writer, response{"message": "M1-Adapter"}, 200)
 	})
-
-	r.GET("/patients", func(c *gin.Context) {
-		firstname := c.Query("firstname")
-		lastname := c.Query("lastname")
+	http.HandleFunc("/patients", func(writer http.ResponseWriter, request *http.Request) {
+		firstname := request.URL.Query().Get("firstname")
+		lastname := request.URL.Query().Get("lastname")
 		var pats []*m1.Patient
 		var err error
 
@@ -69,27 +71,25 @@ func main() {
 			pats, err = adapter.GetAllPatients()
 		}
 		if err != nil {
-			c.AbortWithStatusJSON(500, gin.H{
-				"error": err.Error(),
-			})
+			writeJSON(writer, response{"error": err.Error()}, http.StatusInternalServerError)
 			return
 		}
-		c.JSON(200, pats)
+		writeJSON(writer, pats, 200)
 	})
-
-	r.GET("/patients/:id", func(c *gin.Context) {
-		patId := c.Param("id")
+	http.HandleFunc("/patients/", func(writer http.ResponseWriter, request *http.Request) {
+		patId := path.Base(request.URL.Path)
 		pat, err := adapter.GetPatient(patId)
 		if err != nil {
-			c.AbortWithStatusJSON(404, gin.H{
+			writeJSON(writer, response{
 				"error":   err.Error(),
 				"message": "Patient not found",
-			})
+			}, http.StatusNotFound)
 			return
 		}
-		c.JSON(200, pat)
+		writeJSON(writer, pat, 200)
 	})
-	r.Run() // listen and serve on 0.0.0.0:8080
+	log.Println("m1-adapter running...")
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
 func getEnv(key, fallback string) string {
@@ -97,4 +97,14 @@ func getEnv(key, fallback string) string {
 		return value
 	}
 	return fallback
+}
+
+type response map[string]interface{}
+
+func writeJSON(writer http.ResponseWriter, data interface{}, code int) {
+	writer.WriteHeader(code)
+	writer.Header().Add("Content-Type", "application/json; charset=utf-8")
+	if err := json.NewEncoder(writer).Encode(data); err != nil {
+		writer.WriteHeader(500)
+	}
 }

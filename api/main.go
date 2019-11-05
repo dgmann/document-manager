@@ -3,11 +3,12 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/dgmann/document-manager/api/app"
-	"github.com/dgmann/document-manager/api/app/filesystem"
-	"github.com/dgmann/document-manager/api/app/grpc"
-	"github.com/dgmann/document-manager/api/app/http"
-	"github.com/dgmann/document-manager/api/app/mongo"
+	"github.com/dgmann/document-manager/api/datastore/mongo"
+	"github.com/dgmann/document-manager/api/event"
+	"github.com/dgmann/document-manager/api/http"
+	"github.com/dgmann/document-manager/api/pdf/grpc"
+	"github.com/dgmann/document-manager/api/status"
+	"github.com/dgmann/document-manager/api/storage/filesystem"
 	log "github.com/sirupsen/logrus"
 	"os"
 	"time"
@@ -57,7 +58,7 @@ func main() {
 	if err != nil {
 		log.WithError(err).Error("error connecting to pdf processor service")
 	}
-	eventService := http.NewEventService(imageService)
+	eventService := event.NewWebsocketEventService(imageService)
 	tagService := mongo.NewTagService(client.Records())
 
 	srv := http.Server{
@@ -73,15 +74,15 @@ func main() {
 			Pdfs:    archiveService,
 		}),
 		PdfProcessor: pdfProcessor,
-		Healthchecker: map[string]app.Checkable{
+		HealthService: status.NewHealthService(status.HealthCheckables{
 			"database":       client,
 			"pdfProcessor":   pdfProcessor,
 			"archiveStorage": archiveService,
 			"recordStorage":  imageService,
-		},
-		StatisticProviders: map[string]app.StatisticProvider{
+		}),
+		StatisticsService: status.NewStatisticsService(status.Providers{
 			"archiveStorage": archiveService,
-		},
+		}),
 	}
 
 	log.Info("server startup completed")

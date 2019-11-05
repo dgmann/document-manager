@@ -1,7 +1,7 @@
 package client
 
 import (
-	"github.com/dgmann/document-manager/api/app"
+	"github.com/dgmann/document-manager/api/datastore"
 	"io"
 )
 
@@ -14,7 +14,7 @@ func NewRepository(url string) *Repository {
 }
 
 type NewRecord struct {
-	app.CreateRecord
+	datastore.CreateRecord
 	File         io.Reader
 	RetryCounter int
 }

@@ -21,19 +21,14 @@ func init() {
 }
 
 func main() {
-	recordDir := envOrDefault("RECORD_DIR", "/records")
-	archiveDir := envOrDefault("ARCHIVE_DIR", "/archive")
-	dbHost := envOrDefault("DB_HOST", "localhost")
-	dbName := envOrDefault("DB_NAME", "manager")
-	pdfProcessorUrl := envOrDefault("PDFPROCESSOR_URL", "127.0.0.1:9000")
-
+	config := ConfigFromEnv()
 	if err := ensureTmpDirectory(); err != nil {
 		log.Error(fmt.Errorf("error while creating tmp directory: %w", err))
 		return
 	}
 
-	log.WithFields(log.Fields{"host": dbHost, "database": dbName}).Info("connecting to database")
-	client := mongo.NewClient(dbHost, dbName)
+	log.WithFields(log.Fields{"host": config.Database.Host, "database": config.Database.Name}).Info("connecting to database")
+	client := mongo.NewClient(config.Database.Host, config.Database.Name)
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 	if err := client.Connect(ctx); err != nil {
@@ -44,17 +39,17 @@ func main() {
 		log.WithError(err).Error("error setting indices")
 	}
 
-	imageService, err := filesystem.NewImageService(recordDir)
+	imageService, err := filesystem.NewImageService(config.RecordDirectory)
 	if err != nil {
 		log.WithError(err).Error("error creating image service")
 	}
-	archiveService, err := filesystem.NewArchiveService(archiveDir)
+	archiveService, err := filesystem.NewArchiveService(config.ArchiveDirectory)
 	if err != nil {
 		log.WithError(err).Error("error creating archive service")
 	}
 	categoryService := mongo.NewCategoryService(mongo.NewCollection(client.Categories()), mongo.NewCollection(client.Records()))
 
-	pdfProcessor, err := grpc.NewPDFProcessor(pdfProcessorUrl, imageService, categoryService)
+	pdfProcessor, err := grpc.NewPDFProcessor(config.PdfProcessorUrl, imageService, categoryService)
 	if err != nil {
 		log.WithError(err).Error("error connecting to pdf processor service")
 	}
@@ -89,13 +84,6 @@ func main() {
 	if err := srv.Run(); err != nil {
 		log.WithError(err).Error("error starting http server")
 	}
-}
-
-func envOrDefault(key, def string) string {
-	if value, ok := os.LookupEnv(key); ok {
-		return value
-	}
-	return def
 }
 
 func ensureTmpDirectory() error {

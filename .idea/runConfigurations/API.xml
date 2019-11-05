@@ -6,10 +6,10 @@
       <env name="RECORD_DIR" value="~/records" />
       <env name="ARCHIVE_DIR" value="~/archive" />
     </envs>
-    <kind value="PACKAGE" />
+    <kind value="DIRECTORY" />
     <filePath value="$PROJECT_DIR$/api/main.go" />
     <package value="github.com/dgmann/document-manager/api" />
-    <directory value="$PROJECT_DIR$/" />
+    <directory value="$PROJECT_DIR$/api" />
     <method v="2" />
   </configuration>
 </component>

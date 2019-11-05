@@ -24,7 +24,7 @@ func TestArchiveController_One(t *testing.T) {
 	mockPdfRepository := new(MockPdfRepository)
 	controller := ArchiveController{pdfs: mockPdfRepository}
 
-	mockFile := bytes.NewBufferString("mock")
+	mockFile := storage.NewKeyedGenericResource(bytes.NewBufferString("mock").Bytes(), "mock", "1")
 	mockPdfRepository.On("Get", "1").Return(mockFile, nil)
 
 	req := httptest.NewRequest("Get", "/1", nil)

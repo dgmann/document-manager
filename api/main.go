@@ -52,7 +52,7 @@ func main() {
 	if err != nil {
 		log.WithError(err).Error("error creating archive service")
 	}
-	categoryService := mongo.NewCategoryService(client.Categories(), client.Records())
+	categoryService := mongo.NewCategoryService(mongo.NewCollection(client.Categories()), mongo.NewCollection(client.Records()))
 
 	pdfProcessor, err := grpc.NewPDFProcessor(pdfProcessorUrl, imageService, categoryService)
 	if err != nil {
@@ -68,7 +68,7 @@ func main() {
 		CategoryService: categoryService,
 		ArchiveService:  archiveService,
 		RecordService: mongo.NewRecordService(mongo.RecordServiceConfig{
-			Records: client.Records(),
+			Records: mongo.NewCollection(client.Records()),
 			Events:  eventService,
 			Images:  imageService,
 			Pdfs:    archiveService,

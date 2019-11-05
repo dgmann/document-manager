@@ -23,7 +23,6 @@ type RecordService struct {
 
 type recordCollection interface {
 	finder
-	oneFinder
 	oneInserter
 	oneDeleter
 	oneFinderUpdater
@@ -211,7 +210,8 @@ func (r *RecordService) UpdatePages(ctx context.Context, id string, updates []da
 	return r.Update(ctx, id, datastore.Record{Pages: updated})
 }
 
-func castToRecordSlice(ctx context.Context, cursor mongo.Cursor) ([]datastore.Record, error) {
+func castToRecordSlice(ctx context.Context, cursor datastore.Cursor) ([]datastore.Record, error) {
+	defer cursor.Close(ctx)
 	records := make([]datastore.Record, 0)
 
 	for cursor.Next(ctx) {
@@ -220,6 +220,10 @@ func castToRecordSlice(ctx context.Context, cursor mongo.Cursor) ([]datastore.Re
 			return nil, fmt.Errorf("decoding records from database: %w", err)
 		}
 		records = append(records, r)
+	}
+
+	if cursor.Err() != nil {
+		return nil, cursor.Err()
 	}
 
 	return records, nil

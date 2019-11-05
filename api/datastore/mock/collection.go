@@ -2,6 +2,7 @@ package mock
 
 import (
 	"context"
+	"github.com/dgmann/document-manager/api/datastore"
 	"github.com/mongodb/mongo-go-driver/mongo"
 	"github.com/mongodb/mongo-go-driver/mongo/options"
 	"github.com/stretchr/testify/mock"
@@ -15,22 +16,22 @@ func NewCollection() *Collection {
 	return &Collection{}
 }
 
-func (m *Collection) Find(ctx context.Context, filter interface{}, opts ...*options.FindOptions) (mongo.Cursor, error) {
+func (m *Collection) Find(ctx context.Context, filter interface{}, opts ...*options.FindOptions) (datastore.Cursor, error) {
 	params := []interface{}{ctx, filter}
 	for _, opt := range opts {
 		params = append(params, opt)
 	}
 	args := m.Called(params...)
-	return args.Get(0).(mongo.Cursor), args.Error(1)
+	return args.Get(0).(datastore.Cursor), args.Error(1)
 }
 
-func (m *Collection) FindOne(ctx context.Context, filter interface{}, opts ...*options.FindOneOptions) *mongo.SingleResult {
+func (m *Collection) FindOne(ctx context.Context, filter interface{}, opts ...*options.FindOneOptions) datastore.Decodable {
 	params := []interface{}{ctx, filter}
 	for _, opt := range opts {
 		params = append(params, opt)
 	}
 	args := m.Called(params...)
-	return args.Get(0).(*mongo.SingleResult)
+	return args.Get(0).(datastore.Decodable)
 }
 
 func (m *Collection) InsertOne(ctx context.Context, document interface{}, opts ...*options.InsertOneOptions) (*mongo.InsertOneResult, error) {

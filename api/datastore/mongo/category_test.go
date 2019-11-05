@@ -3,6 +3,7 @@ package mongo
 import (
 	"context"
 	"encoding/hex"
+	"errors"
 	"github.com/dgmann/document-manager/api/datastore"
 	"github.com/dgmann/document-manager/api/datastore/mock"
 	"github.com/mongodb/mongo-go-driver/bson/primitive"
@@ -11,24 +12,14 @@ import (
 	"testing"
 )
 
-func buildCategoryService() (*CategoryService, *mock.Collection, *MockDecoder) {
+func buildCategoryService() (*CategoryService, *mock.Collection) {
 	collection := mock.NewCollection()
-	decoder := new(MockDecoder)
-	repository := CategoryService{collection, collection, decoder}
-	return &repository, collection, decoder
-}
-
-type MockDecoder struct {
-	mock.Mock
-}
-
-func (d *MockDecoder) Decode(decodable Decodable, data interface{}) error {
-	args := d.Called(decodable, data)
-	return args.Error(0)
+	repository := CategoryService{collection, collection}
+	return &repository, collection
 }
 
 func TestDatabaseRepository_All(t *testing.T) {
-	repository, collection, _ := buildCategoryService()
+	repository, collection := buildCategoryService()
 
 	ctx := context.Background()
 	cursor := mock.NewCursor()
@@ -47,15 +38,16 @@ func TestDatabaseRepository_All(t *testing.T) {
 }
 
 func TestDatabaseRepository_Find(t *testing.T) {
-	repository, collection, decoder := buildCategoryService()
+	repository, collection := buildCategoryService()
 	id := "4ecc05e55dd98a436ddcc47c"
 	objectID, _ := primitive.ObjectIDFromHex(id)
 
 	ctx := context.Background()
-	result := &mongo.SingleResult{}
+	result := mock.NewDecodable()
 
+	result.On("Err").Return(nil)
+	result.On("Decode", mock.Anything).Once().Return(nil)
 	collection.On("FindOne", ctx, primitive.M{"_id": objectID}).Once().Return(result)
-	decoder.On("Decode", result, mock.Anything).Return(nil)
 
 	cat, err := repository.Find(ctx, id)
 
@@ -65,7 +57,7 @@ func TestDatabaseRepository_Find(t *testing.T) {
 }
 
 func TestDatabaseRepository_Find_InvalidId(t *testing.T) {
-	repository, collection, _ := buildCategoryService()
+	repository, collection := buildCategoryService()
 	id := "1"
 
 	ctx := context.Background()
@@ -73,11 +65,11 @@ func TestDatabaseRepository_Find_InvalidId(t *testing.T) {
 	_, err := repository.Find(ctx, id)
 
 	collection.AssertExpectations(t)
-	assert.Equal(t, err, hex.ErrLength)
+	assert.True(t, errors.Is(err, hex.ErrLength))
 }
 
 func TestDatabaseRepository_FindByPatient(t *testing.T) {
-	repository, collection, _ := buildCategoryService()
+	repository, collection := buildCategoryService()
 	patientID := "1"
 	categoryNames := []interface{}{"cat1", "cat2"}
 
@@ -99,7 +91,7 @@ func TestDatabaseRepository_FindByPatient(t *testing.T) {
 }
 
 func TestDatabaseRepository_Add(t *testing.T) {
-	repository, collection, _ := buildCategoryService()
+	repository, collection := buildCategoryService()
 	id := "cat1"
 	name := "Category 1"
 

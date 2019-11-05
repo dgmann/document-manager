@@ -13,17 +13,15 @@ import (
 type CategoryService struct {
 	categories categoryCollection
 	records    distinctFinder
-	decoder    Decoder
 }
 
 type categoryCollection interface {
 	finder
-	oneFinder
 	oneInserter
 }
 
 func NewCategoryService(categories categoryCollection, records distinctFinder) *CategoryService {
-	return &CategoryService{categories: categories, records: records, decoder: NewDefaultDecoder()}
+	return &CategoryService{categories: categories, records: records}
 }
 
 func (c *CategoryService) All(ctx context.Context) ([]datastore.Category, error) {
@@ -83,7 +81,7 @@ func (c *CategoryService) Add(ctx context.Context, id, category string) error {
 	return nil
 }
 
-func castToCategorySlice(ctx context.Context, cursor mongo.Cursor) ([]datastore.Category, error) {
+func castToCategorySlice(ctx context.Context, cursor datastore.Cursor) ([]datastore.Category, error) {
 	categories := make([]datastore.Category, 0)
 
 	for cursor.Next(ctx) {

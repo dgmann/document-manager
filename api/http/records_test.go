@@ -17,7 +17,7 @@ func TestRecordController_All(t *testing.T) {
 	mockRecordRepository := new(mock.RecordService)
 	controller := RecordController{records: mockRecordRepository}
 	record := datastore.NewRecord(datastore.CreateRecord{Sender: "mock", Status: datastore.StatusInbox})
-	mockRecordRepository.On("Query", mock.Anything, map[string]interface{}{}).Return([]datastore.Record{*record}, nil)
+	mockRecordRepository.On("Query", req.Context(), datastore.NewRecordQuery(), datastore.NewQueryOptions()).Return([]datastore.Record{*record}, nil)
 
 	controller.All(w, req)
 
@@ -28,15 +28,16 @@ func TestRecordController_All(t *testing.T) {
 func buildJSONResponseForRecord(record datastore.Record) string {
 	return fmt.Sprintf(`{
 		"id":"%[1]s",
-		"archivedPDF": "http://example.com/archive/%[1]s", 
+		"archivedPDF": "http://example.com/api/archive/%[1]s", 
 		"category": null, 
 		"comment": "", 
 		"date": null,
 		"pages": [], 
 		"patientId": "", 
-		"receivedAt": "%s", 
+		"receivedAt": "%s",
+		"updatedAt": "%s",
 		"sender": "mock", 
 		"status": "%s", 
 		"tags": []
-	}`, record.Id.Hex(), record.ReceivedAt.Format(time.RFC3339), datastore.StatusInbox)
+	}`, record.Id.Hex(), record.ReceivedAt.Format(time.RFC3339), record.UpdatedAt.Format(time.RFC3339Nano), datastore.StatusInbox)
 }

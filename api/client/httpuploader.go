@@ -12,11 +12,20 @@ import (
 )
 
 type HttpUploader struct {
-	url string
+	url    string
+	client *http.Client
 }
 
 func NewHttpUploader(url string) *HttpUploader {
-	return &HttpUploader{url}
+	return &HttpUploader{url, &http.Client{
+		Timeout: time.Second * 10,
+	}}
+}
+
+type NewRecord struct {
+	File       io.Reader
+	ReceivedAt time.Time
+	Sender     string
 }
 
 func (u *HttpUploader) Upload(create *NewRecord) error {
@@ -25,14 +34,14 @@ func (u *HttpUploader) Upload(create *NewRecord) error {
 	if err != nil {
 		return err
 	}
-	client := &http.Client{}
+	client := u.client
 	resp, err := client.Do(req)
 	if err != nil {
 		return err
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != 201 {
+	if resp.StatusCode != http.StatusCreated {
 		body, _ := ioutil.ReadAll(resp.Body)
 		return errors.New(fmt.Sprintf("bad response. Status: %v, Message: %s", resp.StatusCode, string(body)))
 	}
@@ -43,23 +52,8 @@ func createParamMap(create *NewRecord) map[string]string {
 	params := map[string]string{
 		"sender": create.Sender,
 	}
-	if !create.Date.IsZero() {
-		params["date"] = create.Date.Format(time.RFC3339)
-	}
 	if !create.ReceivedAt.IsZero() {
 		params["receivedAt"] = create.ReceivedAt.Format(time.RFC3339)
-	}
-	if create.PatientId != nil {
-		params["patientId"] = *create.PatientId
-	}
-	if !create.Status.IsNone() {
-		params["status"] = string(create.Status)
-	}
-	if create.Comment != nil {
-		params["comment"] = *create.Comment
-	}
-	if create.Category != nil {
-		params["category"] = *create.Category
 	}
 	return params
 }

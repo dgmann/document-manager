@@ -14,8 +14,8 @@ func TestRecordController_All(t *testing.T) {
 	req := httptest.NewRequest("GET", "http://example.com/foo", nil)
 	w := httptest.NewRecorder()
 
-	mockRecordRepository := new(mock.RecordService)
-	controller := RecordController{records: mockRecordRepository}
+	mockRecordRepository := mock.NewRecordService()
+	controller := RecordController{Records: mockRecordRepository}
 	record := datastore.NewRecord(datastore.CreateRecord{Sender: "mock", Status: datastore.StatusInbox})
 	mockRecordRepository.On("Query", req.Context(), datastore.NewRecordQuery(), datastore.NewQueryOptions()).Return([]datastore.Record{*record}, nil)
 

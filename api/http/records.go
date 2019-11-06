@@ -16,13 +16,14 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 )
 
 type RecordController struct {
-	records      datastore.RecordService
+	Records      datastore.RecordService
 	images       storage.ImageService
 	pdfs         storage.ArchiveService
-	pdfProcessor pdf.Processor
+	PdfProcessor pdf.Processor
 }
 
 func (controller *RecordController) Router() http.Handler {
@@ -72,7 +73,7 @@ func (controller *RecordController) All(w http.ResponseWriter, req *http.Request
 	}
 
 	options := datastore.NewQueryOptions().SetSort(params.Get("sort")).SetSkip(skip).SetLimit(limit)
-	records, err := controller.records.Query(req.Context(), query, options)
+	records, err := controller.Records.Query(req.Context(), query, options)
 	if err != nil {
 		NewErrorResponse(w, err, http.StatusInternalServerError).WriteJSON()
 		return
@@ -83,7 +84,7 @@ func (controller *RecordController) All(w http.ResponseWriter, req *http.Request
 
 func (controller *RecordController) One(w http.ResponseWriter, req *http.Request) {
 	id := URLParamFromContext(req.Context(), "recordId")
-	result, err := controller.records.Find(req.Context(), id)
+	result, err := controller.Records.Find(req.Context(), id)
 	if err != nil {
 		var notFoundErr *datastore.NotFoundError
 		if ok := errors.As(err, &notFoundErr); ok {
@@ -101,7 +102,13 @@ func (controller *RecordController) One(w http.ResponseWriter, req *http.Request
 
 func (controller *RecordController) Create(w http.ResponseWriter, req *http.Request) {
 	sender := req.FormValue("sender")
-	newRecord := datastore.CreateRecord{Sender: sender}
+	receivedAt := time.Now()
+	if r := req.FormValue("receivedAt"); r != "" {
+		if parsed, err := time.Parse(time.RFC3339, r); err != nil {
+			receivedAt = parsed
+		}
+	}
+	newRecord := datastore.CreateRecord{Sender: sender, ReceivedAt: receivedAt}
 
 	file, _, err := req.FormFile("pdf")
 	if err != nil {
@@ -116,13 +123,13 @@ func (controller *RecordController) Create(w http.ResponseWriter, req *http.Requ
 	}
 	_ = file.Close()
 
-	images, err := controller.pdfProcessor.Convert(req.Context(), bytes.NewBuffer(fileBytes))
+	images, err := controller.PdfProcessor.Convert(req.Context(), bytes.NewBuffer(fileBytes))
 	if err != nil {
 		NewErrorResponse(w, err, http.StatusBadRequest).WriteJSON()
 		return
 	}
 
-	res, err := controller.records.Create(req.Context(), newRecord, images, bytes.NewBuffer(fileBytes))
+	res, err := controller.Records.Create(req.Context(), newRecord, images, bytes.NewBuffer(fileBytes))
 	if err != nil {
 		NewErrorResponse(w, err, http.StatusBadRequest).WriteJSON()
 		return
@@ -146,7 +153,7 @@ func (controller *RecordController) Update(w http.ResponseWriter, req *http.Requ
 	}
 
 	id := URLParamFromContext(req.Context(), "recordId")
-	updated, err := controller.records.Update(req.Context(), id, body)
+	updated, err := controller.Records.Update(req.Context(), id, body)
 	if err != nil {
 		var e *datastore.NotFoundError
 		statusCode := http.StatusBadRequest
@@ -163,7 +170,7 @@ func (controller *RecordController) Update(w http.ResponseWriter, req *http.Requ
 
 func (controller *RecordController) Delete(w http.ResponseWriter, req *http.Request) {
 	id := URLParamFromContext(req.Context(), "recordId")
-	err := controller.records.Delete(req.Context(), id)
+	err := controller.Records.Delete(req.Context(), id)
 	if err != nil {
 		NewErrorResponse(w, err, http.StatusBadRequest).WriteJSON()
 		return
@@ -173,7 +180,7 @@ func (controller *RecordController) Delete(w http.ResponseWriter, req *http.Requ
 
 func (controller *RecordController) Duplicate(w http.ResponseWriter, req *http.Request) {
 	id := URLParamFromContext(req.Context(), "recordId")
-	recordToDuplicate, err := controller.records.Find(req.Context(), id)
+	recordToDuplicate, err := controller.Records.Find(req.Context(), id)
 	if err != nil {
 		NewErrorResponse(w, err, http.StatusNotFound).WriteJSON()
 		return
@@ -194,7 +201,7 @@ func (controller *RecordController) Duplicate(w http.ResponseWriter, req *http.R
 	}
 
 	data := bytes.NewBuffer(file.Data())
-	copiedRecord, err := controller.records.Create(req.Context(), datastore.CreateRecord{
+	copiedRecord, err := controller.Records.Create(req.Context(), datastore.CreateRecord{
 		Id:         &newId,
 		ReceivedAt: recordToDuplicate.ReceivedAt,
 		Sender:     recordToDuplicate.Sender,
@@ -218,7 +225,7 @@ func (controller *RecordController) Reset(w http.ResponseWriter, req *http.Reque
 		return
 	}
 
-	images, err := controller.pdfProcessor.Convert(req.Context(), bytes.NewBuffer(f.Data()))
+	images, err := controller.PdfProcessor.Convert(req.Context(), bytes.NewBuffer(f.Data()))
 	if err != nil {
 		NewErrorResponse(w, err, http.StatusInternalServerError).WriteJSON()
 		return
@@ -234,7 +241,7 @@ func (controller *RecordController) Reset(w http.ResponseWriter, req *http.Reque
 		pages = append(pages, *page)
 	}
 
-	updated, err := controller.records.Update(req.Context(), id, datastore.Record{Pages: pages})
+	updated, err := controller.Records.Update(req.Context(), id, datastore.Record{Pages: pages})
 	if err != nil {
 		NewErrorResponse(w, err, http.StatusInternalServerError).WriteJSON()
 		return
@@ -246,14 +253,14 @@ func (controller *RecordController) Reset(w http.ResponseWriter, req *http.Reque
 
 func (controller *RecordController) Append(w http.ResponseWriter, req *http.Request) {
 	idToAppend := URLParamFromContext(req.Context(), "idtoappend")
-	recordToAppend, err := controller.records.Find(req.Context(), idToAppend)
+	recordToAppend, err := controller.Records.Find(req.Context(), idToAppend)
 	if err != nil {
 		NewErrorResponse(w, err, http.StatusNotFound).WriteJSON()
 		return
 	}
 
 	targetId := URLParamFromContext(req.Context(), "recordId")
-	targetRecord, err := controller.records.Find(req.Context(), targetId)
+	targetRecord, err := controller.Records.Find(req.Context(), targetId)
 	if err != nil {
 		NewErrorResponse(w, err, http.StatusNotFound).WriteJSON()
 		return
@@ -267,7 +274,7 @@ func (controller *RecordController) Append(w http.ResponseWriter, req *http.Requ
 		return
 	}
 
-	updated, err := controller.records.Update(req.Context(), targetId, datastore.Record{Pages: pages})
+	updated, err := controller.Records.Update(req.Context(), targetId, datastore.Record{Pages: pages})
 	if err != nil {
 		NewErrorResponse(w, err, http.StatusBadRequest).WriteJSON()
 		return
@@ -279,7 +286,7 @@ func (controller *RecordController) Append(w http.ResponseWriter, req *http.Requ
 
 func (controller *RecordController) Page(w http.ResponseWriter, req *http.Request) {
 	id := URLParamFromContext(req.Context(), "recordId")
-	rec, err := controller.records.Find(req.Context(), id)
+	rec, err := controller.Records.Find(req.Context(), id)
 	if err != nil {
 		NewErrorResponse(w, err, http.StatusNotFound).WriteJSON()
 		return
@@ -304,7 +311,7 @@ func (controller *RecordController) UpdatePages(w http.ResponseWriter, req *http
 	}
 
 	id := URLParamFromContext(req.Context(), "recordId")
-	updated, err := controller.records.UpdatePages(req.Context(), id, updates)
+	updated, err := controller.Records.UpdatePages(req.Context(), id, updates)
 	if err != nil {
 		NewErrorResponse(w, err, http.StatusBadRequest).WriteJSON()
 		return
@@ -330,7 +337,7 @@ func (controller *RecordController) UpdatePages(w http.ResponseWriter, req *http
 			defer wg.Done()
 
 			if img, ok := images[update.Id]; ok {
-				img, err := controller.pdfProcessor.Rotate(req.Context(), bytes.NewBuffer(img.Image), int(update.Rotate))
+				img, err := controller.PdfProcessor.Rotate(req.Context(), bytes.NewBuffer(img.Image), int(update.Rotate))
 				if err != nil {
 					mutex.Lock()
 					errorIds = append(errorIds, update.Id)
@@ -378,7 +385,7 @@ func (controller *RecordController) RotatePage(w http.ResponseWriter, req *http.
 
 	imageId := URLParamFromContext(req.Context(), "imageId")
 	if img, ok := images[imageId]; ok {
-		img, err := controller.pdfProcessor.Rotate(req.Context(), bytes.NewBuffer(img.Image), degrees)
+		img, err := controller.PdfProcessor.Rotate(req.Context(), bytes.NewBuffer(img.Image), degrees)
 		if err != nil {
 			NewErrorResponse(w, err, http.StatusBadRequest).WriteJSON()
 			return

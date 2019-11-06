@@ -12,6 +12,10 @@ type RecordService struct {
 	mock.Mock
 }
 
+func NewRecordService() *RecordService {
+	return &RecordService{}
+}
+
 func (mock *RecordService) All(ctx context.Context) ([]datastore.Record, error) {
 	args := mock.Called(ctx)
 	return args.Get(0).([]datastore.Record), args.Error(1)

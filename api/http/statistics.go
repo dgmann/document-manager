@@ -11,5 +11,5 @@ type StatisticsController struct {
 
 func (h *StatisticsController) Statistics(w http.ResponseWriter, req *http.Request) {
 	messages := h.statisticService.Collect()
-	NewResponseWithStatus(w, messages, http.StatusOK)
+	NewResponseWithStatus(w, messages, http.StatusOK).WriteJSON()
 }

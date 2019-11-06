@@ -43,6 +43,22 @@ func (controller *RecordController) Router() http.Handler {
 	return r
 }
 
+// swagger:route GET /records records
+//
+// Returns all records. Supports filtering by status and pagination
+//
+// This will show you all available records by default.
+// You can filter the records by status and limit the result through pagination.
+//
+//	Consumes:
+//		- application/json
+//
+//  Produces:
+//		- application/json
+//
+//  Responses:
+//		200: DataResponse
+//		500: ErrorResponse
 func (controller *RecordController) All(w http.ResponseWriter, req *http.Request) {
 	params := req.URL.Query()
 	query := datastore.NewRecordQuery().SetStatus(datastore.Status(params.Get("status")))

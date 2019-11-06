@@ -31,5 +31,5 @@ func (t *ExporterController) Export(w http.ResponseWriter, req *http.Request) {
 	res, err := t.creator.Create(req.Context(), title, records)
 
 	w.Header().Add("Content-Type", "application/pdf")
-	NewResponseWithStatus(w, res, http.StatusOK).Write()
+	NewBinaryResponseWithStatus(w, res, http.StatusOK).Write()
 }

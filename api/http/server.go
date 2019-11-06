@@ -1,3 +1,24 @@
+// Package http DocumentManager API.
+//
+// The purpose of this application is to provide an api to store uploaded PDFs as images and serve them to various frontends
+//
+// Terms Of Service:
+//
+// there are no TOS at this moment, use at your own risk we take no responsibility
+//
+//     Schemes: http
+//     Host: localhost
+//     BasePath: /api
+//     Version: 0.0.1
+//
+//     Consumes:
+//     - application/json
+//     - multipart/form-data
+//
+//     Produces:
+//     - application/json
+//
+// swagger:meta
 package http
 
 import (
@@ -73,7 +94,7 @@ func (s *Server) Run() error {
 	})
 
 	r.Get(PathPrefix, func(w http.ResponseWriter, req *http.Request) {
-		NewResponseWithStatus(w, []byte("Document Storage API"), 200).Write()
+		NewBinaryResponseWithStatus(w, []byte("Document Storage API"), 200).Write()
 	})
 
 	r.Mount(PathPrefix+"/notifications", getWebsocketHandler(s.EventService))

@@ -20,12 +20,12 @@ type RecordContainer interface {
 }
 
 type Record struct {
-	Id         int    `db:"Id"`
-	Name       string `db:"Name"`
-	PatId      int    `db:"Pat_Id"`
-	Spez       string `db:"Category"`
-	Pages      int    `db:"Pages"`
-	Path       string
+	Id         int    `db:"Id" json:"id"`
+	Name       string `db:"Name" json:"name"`
+	PatId      int    `db:"Pat_Id" json:"patientId"`
+	Spez       string `db:"Category" json:"category"`
+	Pages      int    `db:"Pages" json:"pages"`
+	Path       string `json:"path"`
 	SubRecords []SubRecordContainer
 }
 

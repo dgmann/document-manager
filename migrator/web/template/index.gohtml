@@ -20,15 +20,18 @@
 </div>
 
 <div>
-    <h1>Ergebnisse der Prüfung</h1>
-    {{ $result := validate }}
+    <h1>Validierung</h1>
+    <button onclick="validate()">Validieren</button>
     <h2>Behebbar</h2>
-    {{template "record-table" index $result "resolvable"}}
+    <table id="record-table">
+        <tr>
+            <th>Patientennummer</th>
+            <th>Fachrichtung</th>
+            <th>Pfad</th>
+        </tr>
+    </table>
     <h2>Fehler</h2>
-    <ul>
-        {{range index $result "validationErrors"}}
-            <li>{{.}}</li>
-        {{end}}
+    <ul id="validation-errors">
     </ul>
 </div>
 
@@ -40,6 +43,7 @@
         {{template "record-table" .ImportManager.ImportedRecords}}
     {{end}}
 </div>
+<script src="./static/script.js"></script>
 </body>
 </html>
 

@@ -94,10 +94,14 @@ func (s *Server) Run() error {
 		}
 		resolvable, validationErrors := validator.Validate(filesystemIndex, databaseIndex, s.DatabaseManager.Manager)
 		s.resolvables = resolvable
+		records := make([]*models.Record, len(resolvable), len(resolvable))
+		for i, res := range resolvable {
+			records[i] = res.Record()
+		}
 		w.Header().Set("Content-Type", "application/json")
 		_ = json.NewEncoder(w).Encode(map[string]interface{}{
-			"resolvableCount": len(resolvable),
-			"errors":          validationErrors.Messages,
+			"resolvables": records,
+			"errors":      validationErrors.Messages,
 		})
 	})
 	http.HandleFunc("/validate/resolve", func(w http.ResponseWriter, r *http.Request) {

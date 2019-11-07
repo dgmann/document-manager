@@ -10,9 +10,9 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func Validate(actual *filesystem.Index, expected *databasereader.Index, manager *shared.Manager) ([]Resolvable, *Error) {
-	var err []string
-	var resolvable []Resolvable
+func Validate(actual *filesystem.Index, expected *databasereader.Index, manager *shared.Manager) ([]ResolvableValidationError, *Error) {
+	err := make([]string, 0)
+	var resolvable []ResolvableValidationError
 
 	logrus.Info("Check is the number of records is equal")
 	if e := isRecordCountEqual(expected, actual); e != nil {
@@ -49,21 +49,21 @@ func Validate(actual *filesystem.Index, expected *databasereader.Index, manager 
 	return resolvable, &Error{err}
 }
 
-func databaseErrorFactory(manager *shared.Manager) func(container models.RecordContainer) Resolvable {
-	return func(container models.RecordContainer) Resolvable {
+func databaseErrorFactory(manager *shared.Manager) func(container models.RecordContainer) ResolvableValidationError {
+	return func(container models.RecordContainer) ResolvableValidationError {
 		return NewDatabaseValidationError(container, manager)
 	}
 }
 
-func filesystemErrorFactory() func(container models.RecordContainer) Resolvable {
-	return func(container models.RecordContainer) Resolvable {
+func filesystemErrorFactory() func(container models.RecordContainer) ResolvableValidationError {
+	return func(container models.RecordContainer) ResolvableValidationError {
 		return NewFilesystemValidationError(container)
 	}
 }
 
-func findMissing(expected models.RecordIndex, actual *models.Index, errorFactory func(container models.RecordContainer) Resolvable) ([]Resolvable, []string) {
+func findMissing(expected models.RecordIndex, actual *models.Index, errorFactory func(container models.RecordContainer) ResolvableValidationError) ([]ResolvableValidationError, []string) {
 	var err []string
-	var resolvable []Resolvable
+	var resolvable []ResolvableValidationError
 	for _, expectedRecord := range expected.Records() {
 		patId := expectedRecord.PatientId()
 		spez := expectedRecord.Spezialization()

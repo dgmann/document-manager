@@ -1,20 +1,28 @@
 package categories
 
-import "github.com/jmoiron/sqlx"
+import (
+	"fmt"
+	"github.com/dgmann/document-manager/api/datastore"
+	"github.com/jmoiron/sqlx"
+)
 
-type Category struct {
-	Id   string `db:"Id"`
-	Name string `db:"Name"`
-}
+func All(db *sqlx.DB) ([]datastore.Category, error) {
+	var categories []datastore.Category
 
-func All(db *sqlx.DB) ([]*Category, error) {
-	var categories []*Category
-
-	query := `select Name as Id, Description as Name 
+	query := `select Name, Description
 			  from Spezialisations`
-	err := db.Select(&categories, query)
+	rows, err := db.Query(query)
+	defer rows.Close()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error execution categories query: %w", err)
+	}
+
+	for rows.Next() {
+		var category datastore.Category
+		if err := rows.Scan(&category.Id, &category.Name); err != nil {
+			return nil, fmt.Errorf("error fetching database row: %w", err)
+		}
+		categories = append(categories, category)
 	}
 	return categories, nil
 }

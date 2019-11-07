@@ -10,6 +10,10 @@ type ParallelExecFunc func(value interface{}) error
 type ParallelRecordExecFunc func(record models.RecordContainer) error
 
 func ParallelRecords(values []models.RecordContainer, action ParallelRecordExecFunc) []string {
+	if len(values) == 0 {
+		return nil
+	}
+
 	var interfaceSlice = make([]interface{}, len(values))
 	for i, d := range values {
 		interfaceSlice[i] = d
@@ -22,6 +26,9 @@ func ParallelRecords(values []models.RecordContainer, action ParallelRecordExecF
 
 func Parallel(values []interface{}, action ParallelExecFunc) []string {
 	workerCount := runtime.NumCPU()
+	if len(values) < workerCount {
+		workerCount = len(values)
+	}
 	runtime.GOMAXPROCS(workerCount + 1)
 	errCh := make(chan error)
 

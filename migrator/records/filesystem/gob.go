@@ -1,11 +1,11 @@
-package shared
+package filesystem
 
 import (
 	"encoding/gob"
 	"os"
 )
 
-func SaveToFile(path string, data interface{}) error {
+func SaveToGob(i interface{}, path string) error {
 	file, err := os.Create(path)
 	if err != nil {
 		return err
@@ -13,16 +13,16 @@ func SaveToFile(path string, data interface{}) error {
 	defer file.Close()
 
 	encoder := gob.NewEncoder(file)
-	return encoder.Encode(data)
+	return encoder.Encode(i)
 }
 
-func LoadFromFile(path string, to interface{}) error {
-	file, err := os.Open(path)
+func LoadFromGob(i interface{}, f string) error {
+	file, err := os.Open(f)
 	if err != nil {
 		return err
 	}
 	defer file.Close()
 
 	decoder := gob.NewDecoder(file)
-	return decoder.Decode(to)
+	return decoder.Decode(i)
 }

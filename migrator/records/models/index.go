@@ -3,8 +3,6 @@ package models
 import (
 	"errors"
 	"fmt"
-	"os"
-	"encoding/gob"
 )
 
 type Index struct {
@@ -50,7 +48,7 @@ func (i *Index) GetPatient(id int) (*Patient, error) {
 }
 
 func (i *Index) Records() []RecordContainer {
-	var records []RecordContainer
+	records := make([]RecordContainer, 0)
 	for _, p := range i.Data {
 		patientRecords := p.Records()
 		records = append(records, patientRecords...)
@@ -64,26 +62,4 @@ func (i *Index) GetTotalPatientCount() int {
 
 func (i *Index) GetTotalRecordCount() int {
 	return len(i.Records())
-}
-
-func (i *Index) Save(path string) error {
-	file, err := os.Create(path)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
-	encoder := gob.NewEncoder(file)
-	return encoder.Encode(i)
-}
-
-func (i *Index) Load(path string) error {
-	file, err := os.Open(path)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
-	decoder := gob.NewDecoder(file)
-	return decoder.Decode(i)
 }

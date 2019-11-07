@@ -1,6 +1,7 @@
 package shared
 
 import (
+	_ "github.com/denisenkom/go-mssqldb"
 	"github.com/jmoiron/sqlx"
 	"net/url"
 )

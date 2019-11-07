@@ -1,40 +1,57 @@
 package importer
 
 import (
-	"encoding/gob"
-	"github.com/dgmann/document-manager/api-client/record"
-	"github.com/dgmann/document-manager/migrator/categories"
-	"os"
+	"github.com/dgmann/document-manager/api/client"
+	"github.com/dgmann/document-manager/api/datastore"
+	"github.com/dgmann/document-manager/migrator/records/filesystem"
+	"github.com/dgmann/document-manager/migrator/records/models"
+	"strconv"
 )
 
+const FileName string = "datatoimport.gob"
+
 type ImportableRecord struct {
-	record.CreateRecord
+	client.NewRecord
 	Path string
 }
 
+func (i *ImportableRecord) Record() *models.Record {
+	return &models.Record{
+		Id:         -1,
+		Name:       "",
+		PatId:      i.PatientId(),
+		Spez:       *i.Category,
+		Pages:      i.PageCount(),
+		Path:       i.Path,
+		SubRecords: nil,
+	}
+}
+
+func (i *ImportableRecord) Spezialization() string {
+	return *i.Category
+}
+
+func (i *ImportableRecord) PatientId() int {
+	if res, err := strconv.Atoi(*i.NewRecord.PatientId); err != nil {
+		return res
+	} else {
+		return 0
+	}
+}
+
+func (i *ImportableRecord) PageCount() int {
+	return 0
+}
+
 type Import struct {
-	Categories []*categories.Category
+	Categories []datastore.Category
 	Records    []ImportableRecord
 }
 
-func (i Import) Save(path string) error {
-	file, err := os.Create(path)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
-	encoder := gob.NewEncoder(file)
-	return encoder.Encode(i)
+func (i *Import) Save(path string) error {
+	return filesystem.SaveToGob(i, path)
 }
 
 func (i *Import) Load(path string) error {
-	file, err := os.Open(path)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
-	decoder := gob.NewDecoder(file)
-	return decoder.Decode(i)
+	return filesystem.LoadFromGob(i, path)
 }

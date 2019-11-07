@@ -52,8 +52,10 @@ func (i *Index) LoadSubRecords(dir string) error {
 	err := shared.ParallelRecords(i.Records(), func(record models.RecordContainer) error {
 		return loadSubRecord(record.(*Record), dir)
 	})
-
-	return errors.New(strings.Join(err, "; "))
+	if len(err) > 0 {
+		return errors.New(strings.Join(err, "; "))
+	}
+	return nil
 }
 
 func loadSubRecord(record *Record, dir string) error {
@@ -89,11 +91,11 @@ func (i *Index) SubRecords() SubRecordList {
 func (i *Index) Save(dir string) error {
 	gob.Register(&Record{})
 	gob.Register(&SubRecord{})
-	return i.Index.Save(dir)
+	return SaveToGob(i, dir)
 }
 
-func (i *Index) Load(path string) error {
+func (i *Index) Load(dir string) error {
 	gob.Register(&Record{})
 	gob.Register(&SubRecord{})
-	return i.Index.Load(path)
+	return LoadFromGob(i, dir)
 }

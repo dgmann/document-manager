@@ -1,24 +1,28 @@
 package databasereader
 
 import (
-	"github.com/pkg/errors"
-	_ "github.com/denisenkom/go-mssqldb"
 	"fmt"
-	log "github.com/sirupsen/logrus"
-	"github.com/dgmann/document-manager/migrator/shared"
+	_ "github.com/denisenkom/go-mssqldb"
 	"github.com/dgmann/document-manager/migrator/records/models"
+	"github.com/dgmann/document-manager/migrator/shared"
+	"github.com/pkg/errors"
+	log "github.com/sirupsen/logrus"
 )
 
 type Manager struct {
 	*shared.Manager
+	index *Index
 }
 
 func NewManager(dbName, username, password, hostname, instance string) *Manager {
-
-	return &Manager{shared.NewManager(dbName, username, password, hostname, instance)}
+	return &Manager{shared.NewManager(dbName, username, password, hostname, instance), nil}
 }
 
-func (m *Manager) Load() (*Index, error) {
+func (m *Manager) Index() (*Index, error) {
+	if m.index != nil {
+		return m.index, nil
+	}
+
 	records, err := m.loadRecords()
 	if err != nil {
 		return nil, err
@@ -32,8 +36,8 @@ func (m *Manager) Load() (*Index, error) {
 		log.WithField("error", err).Warning("There were errors assigning pdfs to records. This may happen for example when there are unprocessed pdfs in the inbox")
 	}
 	slice := toSlice(merged)
-	index := newIndex(slice)
-	return index, nil
+	m.index = newIndex(slice)
+	return m.index, nil
 }
 
 func (m *Manager) loadRecords() ([]models.RecordContainer, error) {

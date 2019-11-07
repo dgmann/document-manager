@@ -1,8 +1,9 @@
 package databasereader
 
 import (
-	"github.com/dgmann/document-manager/migrator/records/models"
 	"encoding/gob"
+	"github.com/dgmann/document-manager/migrator/records/filesystem"
+	"github.com/dgmann/document-manager/migrator/records/models"
 )
 
 type Index struct {
@@ -16,11 +17,11 @@ func newIndex(records []models.RecordContainer) *Index {
 func (i *Index) Save(dir string) error {
 	gob.Register(&models.Record{})
 	gob.Register(&PdfFile{})
-	return i.Index.Save(dir)
+	return filesystem.SaveToGob(i, dir)
 }
 
 func (i *Index) Load(path string) error {
 	gob.Register(&models.Record{})
 	gob.Register(&PdfFile{})
-	return i.Index.Load(path)
+	return filesystem.LoadFromGob(i, path)
 }

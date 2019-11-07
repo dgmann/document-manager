@@ -1,11 +1,12 @@
 package importer
 
 import (
+	"context"
 	"runtime"
 	"sync"
 )
 
-func parallel(values []ImportableRecord, action func(*ImportableRecord) error) (<-chan *ImportableRecord, <-chan ImportError) {
+func parallel(ctx context.Context, values []ImportableRecord, action func(*ImportableRecord) error) (<-chan *ImportableRecord, <-chan ImportError) {
 	workerCount := runtime.NumCPU()
 	runtime.GOMAXPROCS(workerCount + 1)
 	errCh := make(chan ImportError)
@@ -17,6 +18,7 @@ func parallel(values []ImportableRecord, action func(*ImportableRecord) error) (
 	for i := 0; i < workerCount; i++ {
 		wg.Add(1)
 		go func(start int) {
+			defer wg.Done()
 			end := start + chunk
 
 			if end > len(values) {
@@ -24,15 +26,19 @@ func parallel(values []ImportableRecord, action func(*ImportableRecord) error) (
 			}
 
 			for j := start; j < end; j = j + 1 {
-				record := &values[j]
-				err := action(record)
-				if err != nil {
-					errCh <- NewImportError(record, err)
-				} else {
-					successCh <- record
+				select {
+				case <-ctx.Done():
+					return
+				default:
+					record := &values[j]
+					err := action(record)
+					if err != nil {
+						errCh <- NewImportError(record, err)
+					} else {
+						successCh <- record
+					}
 				}
 			}
-			wg.Done()
 		}(i * chunk)
 	}
 	go func() {

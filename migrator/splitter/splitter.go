@@ -12,6 +12,9 @@ import (
 )
 
 func Split(path string, outputDir string) ([]*models.SubRecord, string, error) {
+	if err := os.MkdirAll(outputDir, os.ModePerm); err != nil {
+		return nil, "", err
+	}
 	tmpDir, err := ioutil.TempDir(outputDir, "migration_")
 	if err != nil {
 		return nil, tmpDir, errors.Wrap(err, "error creating tmp dir")

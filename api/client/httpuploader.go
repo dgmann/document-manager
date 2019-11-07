@@ -2,8 +2,10 @@ package client
 
 import (
 	"bytes"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/dgmann/document-manager/api/datastore"
 	"io"
 	"io/ioutil"
 	"mime/multipart"
@@ -28,7 +30,21 @@ type NewRecord struct {
 	Sender     string
 }
 
-func (u *HttpUploader) Upload(create *NewRecord) error {
+func (u *HttpUploader) CreateCategory(category datastore.Category) error {
+	body := new(bytes.Buffer)
+	if err := json.NewEncoder(body).Encode(category); err != nil {
+		return err
+	}
+
+	res, err := http.Post(u.url+"/categories", "application/json", body)
+	if err != nil {
+		return err
+	}
+	defer res.Body.Close()
+	return nil
+}
+
+func (u *HttpUploader) CreateRecord(create *NewRecord) error {
 	params := createParamMap(create)
 	req, err := newfileUploadRequest(u.url+"/records", params, create.File)
 	if err != nil {

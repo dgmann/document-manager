@@ -68,10 +68,10 @@ func (s *Server) Run() error {
 	}).Handler)
 
 	recordController := &RecordController{
-		Records:      s.RecordService,
+		records:      s.RecordService,
 		images:       s.ImageService,
 		pdfs:         s.ArchiveService,
-		PdfProcessor: s.PdfProcessor,
+		pdfProcessor: s.PdfProcessor,
 	}
 	patientController := &PatientController{
 		records:    s.RecordService,

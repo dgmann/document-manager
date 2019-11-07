@@ -28,6 +28,11 @@ type NewRecord struct {
 	File       io.Reader
 	ReceivedAt time.Time
 	Sender     string
+	Date       *time.Time
+	PatientId  *string
+	Status     *datastore.Status
+	Comment    *string
+	Category   *string
 }
 
 func (u *HttpUploader) CreateCategory(category datastore.Category) error {
@@ -68,8 +73,23 @@ func createParamMap(create *NewRecord) map[string]string {
 	params := map[string]string{
 		"sender": create.Sender,
 	}
+	if !create.Date.IsZero() {
+		params["date"] = create.Date.Format(time.RFC3339)
+	}
 	if !create.ReceivedAt.IsZero() {
 		params["receivedAt"] = create.ReceivedAt.Format(time.RFC3339)
+	}
+	if create.PatientId != nil {
+		params["patientId"] = *create.PatientId
+	}
+	if create.Status != nil {
+		params["status"] = string(*create.Status)
+	}
+	if create.Comment != nil {
+		params["comment"] = *create.Comment
+	}
+	if create.Category != nil {
+		params["category"] = *create.Category
 	}
 	return params
 }

@@ -8,16 +8,23 @@ import (
 	"github.com/dgmann/document-manager/migrator/records/filesystem"
 	"github.com/dgmann/document-manager/migrator/records/models"
 	"github.com/dgmann/document-manager/migrator/validator"
+	"golang.org/x/sync/semaphore"
 	"html/template"
 	"net/http"
+	_ "net/http/pprof"
 )
 
 type Server struct {
 	DatabaseManager   *databasereader.Manager
 	FilesystemManager *filesystem.Manager
 	ImportManager     *importer.Manager
-	resolvables       []validator.ResolvableValidationError
+	State             State
 	config            Config
+}
+
+type State struct {
+	ImportRunning *semaphore.Weighted
+	Resolvables   []validator.ResolvableValidationError
 }
 
 func NewServer(conf Config) (*Server, error) {
@@ -28,33 +35,12 @@ func NewServer(conf Config) (*Server, error) {
 	}
 	fileystemManager := filesystem.NewManager(conf.RecordDirectory, conf.DataDirectory)
 	importManager := importer.NewManager(fileystemManager, conf.DataDirectory, recordManager.Db, conf.ApiURL, conf.RetryCount)
-	return &Server{DatabaseManager: recordManager, FilesystemManager: fileystemManager, ImportManager: importManager, config: conf}, nil
-}
-
-type TemplateData struct {
-	DatabaseCounts   models.Countable
-	FilesystemCounts models.Countable
+	return &Server{DatabaseManager: recordManager, FilesystemManager: fileystemManager, ImportManager: importManager, config: conf, State: State{ImportRunning: semaphore.NewWeighted(1)}}, nil
 }
 
 func (s *Server) Run() error {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		t := template.Must(template.New("index.gohtml").Funcs(template.FuncMap{
-			"validate": func() map[string]interface{} {
-				filesystemIndex, err := s.FilesystemManager.Index()
-				if err != nil {
-					fmt.Fprint(w, err.Error())
-				}
-				databaseIndex, err := s.DatabaseManager.Index()
-				if err != nil {
-					fmt.Fprint(w, err.Error())
-				}
-				resolvable, validationErrors := validator.Validate(filesystemIndex, databaseIndex, s.DatabaseManager.Manager)
-				return map[string]interface{}{
-					"resolvable":       resolvable,
-					"validationErrors": validationErrors.Messages,
-				}
-			},
-		}).ParseFiles("web/template/index.gohtml"))
+		t := template.Must(template.New("index.gohtml").ParseFiles("web/template/index.gohtml"))
 		if err := t.Execute(w, s); err != nil {
 			w.WriteHeader(500)
 			w.Write([]byte(err.Error()))
@@ -73,7 +59,7 @@ func (s *Server) Run() error {
 	})
 
 	http.HandleFunc("/filesystem/counts", func(w http.ResponseWriter, r *http.Request) {
-		index, err := s.FilesystemManager.Index()
+		index, err := s.FilesystemManager.Index(r.Context())
 		if err != nil {
 			fmt.Fprint(w, err.Error())
 			return
@@ -82,7 +68,7 @@ func (s *Server) Run() error {
 	})
 
 	http.HandleFunc("/validate", func(w http.ResponseWriter, r *http.Request) {
-		filesystemIndex, err := s.FilesystemManager.Index()
+		filesystemIndex, err := s.FilesystemManager.Index(r.Context())
 		if err != nil {
 			fmt.Fprint(w, err.Error())
 			return
@@ -92,8 +78,8 @@ func (s *Server) Run() error {
 			fmt.Fprint(w, err.Error())
 			return
 		}
-		resolvable, validationErrors := validator.Validate(filesystemIndex, databaseIndex, s.DatabaseManager.Manager)
-		s.resolvables = resolvable
+		resolvable, validationErrors := validator.Validate(r.Context(), filesystemIndex, databaseIndex, s.DatabaseManager.Manager)
+		s.State.Resolvables = resolvable
 		records := make([]*models.Record, len(resolvable), len(resolvable))
 		for i, res := range resolvable {
 			records[i] = res.Record()
@@ -108,25 +94,25 @@ func (s *Server) Run() error {
 		if r.Method == http.MethodGet {
 			w.Header().Set("Content-Type", "application/json")
 			_ = json.NewEncoder(w).Encode(map[string]interface{}{
-				"resolvableCount": len(s.resolvables),
+				"resolvableCount": len(s.State.Resolvables),
 			})
 		} else if r.Method == http.MethodPost {
 			errors := make([]string, 0)
 			var remaining []validator.ResolvableValidationError
-			for _, resolvable := range s.resolvables {
+			for _, resolvable := range s.State.Resolvables {
 				if err := resolvable.Resolve(); err != nil {
 					errors = append(errors, err.Error())
 					remaining = append(remaining, resolvable)
 				}
 			}
-			s.resolvables = remaining
+			s.State.Resolvables = remaining
 		} else {
 			w.WriteHeader(http.StatusMethodNotAllowed)
 		}
 	})
 	http.HandleFunc("/import", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodGet {
-			importable, err := s.ImportManager.DataToImport()
+			importable, err := s.ImportManager.DataToImport(r.Context())
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
 				fmt.Fprint(w, err.Error())
@@ -135,16 +121,24 @@ func (s *Server) Run() error {
 			w.Header().Set("Content-Type", "application/json")
 			_ = json.NewEncoder(w).Encode(map[string]interface{}{
 				"records":    len(importable.Records),
+				"imported":   s.ImportManager.ImportedRecords(),
 				"categories": len(importable.Categories),
 			})
-		} else if r.Method == http.MethodPost {
+		} else if r.Method == http.MethodPut {
+			if ok := s.State.ImportRunning.TryAcquire(1); !ok {
+				fmt.Fprint(w, "import already running")
+				return
+			}
+			defer s.State.ImportRunning.Release(1)
+
+			fileToLoad := importer.FileName
 			if file := r.URL.Query().Get("file"); file != "" {
-				defer s.ImportManager.Load(importer.FileName)
-				if err := s.ImportManager.Load(file); err != nil {
-					w.WriteHeader(http.StatusInternalServerError)
-					fmt.Fprint(w, err.Error())
-					return
-				}
+				fileToLoad = file
+			}
+			if err := s.ImportManager.Load(fileToLoad); err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				fmt.Fprint(w, err.Error())
+				return
 			}
 
 			if err := s.ImportManager.Import(r.Context()); err != nil {

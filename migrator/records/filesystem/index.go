@@ -1,10 +1,13 @@
 package filesystem
 
 import (
+	"bytes"
+	"context"
 	"encoding/gob"
 	"errors"
+	"fmt"
+	"github.com/dgmann/document-manager/migrator/records"
 	"github.com/dgmann/document-manager/migrator/records/models"
-	"github.com/dgmann/document-manager/migrator/shared"
 	"github.com/dgmann/document-manager/migrator/splitter"
 	"io"
 	"path/filepath"
@@ -13,6 +16,7 @@ import (
 
 type Index struct {
 	models.Index
+
 	Path string
 }
 
@@ -48,8 +52,18 @@ func (i *Index) Validate() []string {
 	return keys
 }
 
-func (i *Index) LoadSubRecords(dir string) error {
-	err := shared.ParallelRecords(i.Records(), func(record models.RecordContainer) error {
+func (i *Index) LoadSubRecords(ctx context.Context, dir string) error {
+	recordCh, errCh := ToRecordChannel(ctx, i.Records())
+	parallelCtx, cancel := context.WithCancel(ctx)
+	go func() {
+		for err := range errCh {
+			if err != nil {
+				cancel()
+			}
+		}
+	}()
+
+	err := records.Parallel(parallelCtx, recordCh, func(record models.RecordContainer) error {
 		return loadSubRecord(record.(*Record), dir)
 	})
 	if len(err) > 0 {
@@ -62,9 +76,10 @@ func loadSubRecord(record *Record, dir string) error {
 	if len(record.SubRecords) > 0 { // Already loaded
 		return nil
 	}
-	subrecords, tmpDir, err := splitter.Split(record.Path, dir)
+	data := bytes.NewReader(record.Content)
+	subrecords, tmpDir, err := splitter.Split(data, dir)
 	if err != nil {
-		return err
+		return fmt.Errorf("error splitting record. Path: %s, Error: %w", record.Path, err)
 	}
 	var convertedSubRecords []models.SubRecordContainer
 	for _, subrecord := range subrecords {

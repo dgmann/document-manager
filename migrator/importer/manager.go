@@ -19,21 +19,22 @@ type SubrecordIndex interface {
 }
 
 type Manager struct {
-	dataToImport      *Import
-	dataDirectory     string
-	FilesystemManager *filesystem.Manager
-	ImportedRecords   map[string]ImportableRecord
-	ImportErrors      ImportErrorList
+	dataToImport        *Import
+	dataDirectory       string
+	importedRecordsPath string
+	FilesystemManager   *filesystem.Manager
+	importedRecords     map[string]ImportableRecord
+	ImportErrors        ImportErrorList
 	*Importer
 	db *sqlx.DB
 }
 
 func NewManager(filesystemManager *filesystem.Manager, dataDirectory string, db *sqlx.DB, url string, retryCount int) *Manager {
 	importer := NewImporter(url, retryCount)
-	return &Manager{FilesystemManager: filesystemManager, dataDirectory: dataDirectory, Importer: importer, db: db}
+	return &Manager{FilesystemManager: filesystemManager, dataDirectory: dataDirectory, Importer: importer, db: db, importedRecordsPath: filepath.Join(dataDirectory, "importedrecords.gob")}
 }
 
-func (m *Manager) DataToImport() (*Import, error) {
+func (m *Manager) DataToImport(ctx context.Context) (*Import, error) {
 	if m.dataToImport != nil {
 		return m.dataToImport, nil
 	}
@@ -44,7 +45,7 @@ func (m *Manager) DataToImport() (*Import, error) {
 
 	var filesToImport []ImportableRecord
 	status := datastore.StatusDone
-	index, err := m.FilesystemManager.Index()
+	index, err := m.FilesystemManager.Index(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("error fetching filesystem index: %w", err)
 	}
@@ -88,7 +89,7 @@ func (m *Manager) Load(fileName string) error {
 }
 
 func (m *Manager) Import(ctx context.Context) error {
-	dataToImport, err := m.DataToImport()
+	dataToImport, err := m.DataToImport(ctx)
 	if err != nil {
 		return fmt.Errorf("error getting data to import: %w", err)
 	}
@@ -110,18 +111,22 @@ func (m *Manager) importCategories(cats []datastore.Category) error {
 	return nil
 }
 
-func (m *Manager) importRecords(ctx context.Context, recordsToImport []ImportableRecord) (err error) {
-	alreadyImportedPath := path.Join(m.dataDirectory, "importedrecords.gob")
-	importedRecords := make(map[string]ImportableRecord)
-	if err := filesystem.LoadFromGob(importedRecords, alreadyImportedPath); err != nil {
-		logrus.Info(err)
+func (m *Manager) ImportedRecords() map[string]ImportableRecord {
+	if m.importedRecords == nil {
+		importedRecords := make(map[string]ImportableRecord)
+		_ = filesystem.LoadFromGob(importedRecords, m.importedRecordsPath)
+		m.importedRecords = importedRecords
 	}
-	m.ImportedRecords = importedRecords
+	return m.importedRecords
+}
+
+func (m *Manager) importRecords(ctx context.Context, recordsToImport []ImportableRecord) (err error) {
+	importedRecords := m.ImportedRecords()
 	records := Difference(recordsToImport, importedRecords)
 	importedCh, errCh := m.ImportRecords(ctx, records)
 
 	defer func() {
-		if err := filesystem.SaveToGob(importedRecords, alreadyImportedPath); err != nil {
+		if err := filesystem.SaveToGob(importedRecords, m.importedRecordsPath); err != nil {
 			logrus.Warn(err)
 		}
 	}()

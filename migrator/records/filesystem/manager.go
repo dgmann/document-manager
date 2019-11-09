@@ -1,6 +1,7 @@
 package filesystem
 
 import (
+	"context"
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"path/filepath"
@@ -16,7 +17,7 @@ func NewManager(recordDirectory, dataDirectory string) *Manager {
 	return &Manager{RecordDirectory: recordDirectory, DataDirectory: dataDirectory}
 }
 
-func (m *Manager) Index() (*Index, error) {
+func (m *Manager) Index(ctx context.Context) (*Index, error) {
 	if m.index != nil {
 		return m.index, nil
 	}
@@ -24,19 +25,22 @@ func (m *Manager) Index() (*Index, error) {
 	filePath := filepath.Join(m.DataDirectory, "filesystem.gob")
 	index, err := LoadIndexFromFile(filePath)
 	if err != nil {
-		index, err = CreateIndex(m.RecordDirectory)
+		m.index, err = CreateIndex(ctx, m.RecordDirectory)
+		if err != nil {
+			return nil, fmt.Errorf("error loading from filesystem: %w", err)
+		}
+	} else {
+		m.index = index
 	}
-	if err != nil {
-		return nil, fmt.Errorf("error loading from filesystem: %w", err)
-	}
+	defer func() {
+		if err := m.index.Save(filePath); err != nil {
+			logrus.WithError(err).Error("error saving filesystemindex to disk")
+		}
+	}()
 	logrus.Info("load sub records")
-	if err := index.LoadSubRecords(filepath.Join(m.DataDirectory, "splitted")); err != nil {
+	if err := m.index.LoadSubRecords(ctx, filepath.Join(m.DataDirectory, "splitted")); err != nil {
 		return nil, err
 	}
-	m.index = index
 
-	if err := m.index.Save(filePath); err != nil {
-		logrus.WithError(err).Error("error saving filesystemindex to disk")
-	}
 	return m.index, nil
 }

@@ -18,15 +18,33 @@ function drawRecordTable(records) {
     const table = document.getElementById("record-table");
     records.forEach(record => {
         const row = document.createElement('tr');
-        row.appendChild(createColumn(record.patientId));
-        row.appendChild(createColumn(record.category));
-        row.appendChild(createColumn(record.path));
+        row.appendChild(createElement('td', record.patientId));
+        row.appendChild(createElement('td', record.category));
+        row.appendChild(createElement('td', record.path));
         table.appendChild(row);
     });
 }
 
-function createColumn(value) {
-    const column = document.createElement('td');
+function createElement(tag, value) {
+    const column = document.createElement(tag);
     column.appendChild(document.createTextNode(value));
     return column
 }
+
+async function startImport() {
+    await fetch('./import', {method: 'PUT'});
+}
+
+async function loadCounts(elementId, countType) {
+    const response = await fetch(countType + '/counts');
+    const data = await response.json();
+
+    const container = document.getElementById(elementId);
+    container.appendChild(createElement('p', 'Befunde: ' + data.records));
+    container.appendChild(createElement('p', 'Patienten' + data.patients));
+}
+
+window.onload = function () {
+    loadCounts('database-counts', 'database');
+    loadCounts('database-counts', 'filesystem');
+};

@@ -1,7 +1,9 @@
 package validator
 
 import (
+	"context"
 	"fmt"
+	"github.com/dgmann/document-manager/migrator/records"
 	"github.com/dgmann/document-manager/migrator/records/databasereader"
 	"github.com/dgmann/document-manager/migrator/records/filesystem"
 	"github.com/dgmann/document-manager/migrator/records/models"
@@ -10,7 +12,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func Validate(actual *filesystem.Index, expected *databasereader.Index, manager *shared.Manager) ([]ResolvableValidationError, *Error) {
+func Validate(ctx context.Context, actual *filesystem.Index, expected *databasereader.Index, manager *shared.Manager) ([]ResolvableValidationError, *Error) {
 	err := make([]string, 0)
 	var resolvable []ResolvableValidationError
 
@@ -41,10 +43,10 @@ func Validate(actual *filesystem.Index, expected *databasereader.Index, manager 
 	resolvable = append(resolvable, resolvableInFileSystem...)
 
 	logrus.Info("Find records where the number of pages does not equal the information stored in the database")
-	pagecountMismatch := shared.ParallelRecords(expected.Records(), comparePageCount(actual))
+	pagecountMismatch := records.Parallel(ctx, records.ToRecordChannel(expected.Records()), comparePageCount(actual))
 	err = append(err, pagecountMismatch...)
 
-	invalidSubrecords := shared.ParallelRecords(actual.Records(), compareSubRecordCount())
+	invalidSubrecords := records.Parallel(ctx, records.ToRecordChannel(actual.Records()), compareSubRecordCount())
 	err = append(err, invalidSubrecords...)
 	return resolvable, &Error{err}
 }
@@ -106,7 +108,7 @@ func isPatientCountEqual(expected models.PatientCountable, actual models.Patient
 	return nil
 }
 
-func comparePageCount(actual models.PatientIndex) shared.ParallelRecordExecFunc {
+func comparePageCount(actual models.PatientIndex) records.ParallelExecFunc {
 	return func(record models.RecordContainer) error {
 		patient, e := actual.GetPatient(record.PatientId())
 		if e != nil {
@@ -139,7 +141,7 @@ func getPath(a models.RecordContainer, b models.RecordContainer) string {
 	return ""
 }
 
-func compareSubRecordCount() shared.ParallelRecordExecFunc {
+func compareSubRecordCount() records.ParallelExecFunc {
 	return func(record models.RecordContainer) error {
 		count := 0
 		for _, subrecord := range record.Record().SubRecords {

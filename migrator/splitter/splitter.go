@@ -1,17 +1,19 @@
 package splitter
 
 import (
+	"fmt"
 	"github.com/dgmann/document-manager/migrator/records/models"
 	"github.com/pkg/errors"
 	"github.com/satori/go.uuid"
 	pdfModel "github.com/unidoc/unidoc/pdf/model"
+	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"time"
 )
 
-func Split(path string, outputDir string) ([]*models.SubRecord, string, error) {
+func Split(data io.ReadSeeker, outputDir string) ([]*models.SubRecord, string, error) {
 	if err := os.MkdirAll(outputDir, os.ModePerm); err != nil {
 		return nil, "", err
 	}
@@ -19,9 +21,9 @@ func Split(path string, outputDir string) ([]*models.SubRecord, string, error) {
 	if err != nil {
 		return nil, tmpDir, errors.Wrap(err, "error creating tmp dir")
 	}
-	pages, bookmarks, err := readPagesAndBookmarks(path)
+	pages, bookmarks, err := readPagesAndBookmarks(data)
 	if err != nil {
-		return nil, tmpDir, errors.Wrap(err, "error reading bookmarks")
+		return nil, tmpDir, err
 	}
 	splitted := splitByBookmarks(pages, bookmarks)
 	subrecords, err := save(splitted, tmpDir)
@@ -31,18 +33,15 @@ func Split(path string, outputDir string) ([]*models.SubRecord, string, error) {
 	return subrecords, tmpDir, nil
 }
 
-func readPagesAndBookmarks(input string) ([]*pdfModel.PdfPage, []*Bookmark, error) {
-	f, err := os.Open(input)
-	if err != nil {
-		return nil, nil, err
-	}
-	defer f.Close()
-
-	pdfReader, err := pdfModel.NewPdfReader(f)
+func readPagesAndBookmarks(data io.ReadSeeker) ([]*pdfModel.PdfPage, []*Bookmark, error) {
+	pdfReader, err := pdfModel.NewPdfReader(data)
 	if err != nil {
 		return nil, nil, err
 	}
 	bookmarks, err := getBookmarks(pdfReader)
+	if err != nil {
+		return nil, nil, fmt.Errorf("error reading bookmarks: %w", err)
+	}
 	return pdfReader.PageList, bookmarks, err
 }
 

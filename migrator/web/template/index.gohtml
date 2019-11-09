@@ -7,16 +7,12 @@
 </head>
 <body>
 {{- /*gotype: github.com/dgmann/document-manager/migrator/http.Server*/ -}}
-<div>
+<div id="database-counts">
     <h1>Anzahl Elemente in der Datenbank</h1>
-    <p>Patienten {{ .DatabaseManager.Index.Index.GetTotalPatientCount }}</p>
-    <p>Befunde {{ .DatabaseManager.Index.Index.GetTotalRecordCount }}</p>
 </div>
 
-<div>
+<div id="filesystem-counts">
     <h1>Anzahl Elemente im Dateisystem</h1>
-    <p>Patienten {{ .FilesystemManager.Index.Index.GetTotalPatientCount }}</p>
-    <p>Befunde {{ .FilesystemManager.Index.Index.GetTotalRecordCount }}</p>
 </div>
 
 <div>
@@ -37,6 +33,7 @@
 
 <div>
     <h1>Status</h1>
+    <button onclick="startImport()">Import Starten</button>
     <p>Importierte Befunde {{ len .ImportManager.ImportedRecords }}</p>
     <p>Fehlgeschlagene Befunde {{ len .ImportManager.ImportedRecords }}</p>
     {{if (len .ImportManager.ImportedRecords) gt 0}}

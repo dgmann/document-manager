@@ -1,4 +1,4 @@
-FROM golang:1.11-stretch as builder
+FROM golang:latest as builder
 
 RUN apt-get update && \
     apt-get install -q -y wget build-essential pkg-config poppler-utils git g++ libjpeg-dev libpng-dev libtiff-dev libgif-dev ghostscript libgs-dev --no-install-recommends && \

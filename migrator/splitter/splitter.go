@@ -36,7 +36,7 @@ func Split(data io.ReadSeeker, outputDir string) ([]*models.SubRecord, string, e
 func readPagesAndBookmarks(data io.ReadSeeker) ([]*pdfModel.PdfPage, []*Bookmark, error) {
 	pdfReader, err := pdfModel.NewPdfReader(data)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, fmt.Errorf("error opening pdf: %w", err)
 	}
 	bookmarks, err := getBookmarks(pdfReader)
 	if err != nil {

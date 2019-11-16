@@ -24,7 +24,7 @@ func NewConfig() Config {
 	flag.StringVar(&recordDirectory, "record_dir", "/records", "Record Directory")
 	flag.StringVar(&dataDirectory, "data_dir", "/data", "Data Directory")
 
-	flag.StringVar(&apiURL, "api_url", "http://localhost", "The URL of the API")
+	flag.StringVar(&apiURL, "api_url", "http://api/api", "The URL of the API")
 	flag.IntVar(&retryCount, "retry_counter", 3, "Number of times to retry uploading a file after a failure")
 
 	flag.Parse()

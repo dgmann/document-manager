@@ -12,10 +12,10 @@ func All(db *sqlx.DB) ([]datastore.Category, error) {
 	query := `select Name, Description
 			  from Spezialisations`
 	rows, err := db.Query(query)
-	defer rows.Close()
 	if err != nil {
 		return nil, fmt.Errorf("error execution categories query: %w", err)
 	}
+	defer rows.Close()
 
 	for rows.Next() {
 		var category datastore.Category

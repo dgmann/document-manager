@@ -42,7 +42,6 @@ func (s *Server) Run() error {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		t := template.Must(template.New("index.gohtml").ParseFiles("web/template/index.gohtml"))
 		if err := t.Execute(w, s); err != nil {
-			w.WriteHeader(500)
 			w.Write([]byte(err.Error()))
 		}
 	})
@@ -61,7 +60,11 @@ func (s *Server) Run() error {
 	http.HandleFunc("/filesystem/counts", func(w http.ResponseWriter, r *http.Request) {
 		index, err := s.FilesystemManager.Index(r.Context())
 		if err != nil {
-			fmt.Fprint(w, err.Error())
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(500)
+			_ = json.NewEncoder(w).Encode(map[string]string{
+				"error": err.Error(),
+			})
 			return
 		}
 		returnCounts(w, index)
@@ -120,8 +123,8 @@ func (s *Server) Run() error {
 			}
 			w.Header().Set("Content-Type", "application/json")
 			_ = json.NewEncoder(w).Encode(map[string]interface{}{
-				"records":    len(importable.Records),
-				"imported":   s.ImportManager.ImportedRecords(),
+				"total":      len(importable.Records),
+				"imported":   len(s.ImportManager.ImportedRecords()),
 				"categories": len(importable.Categories),
 			})
 		} else if r.Method == http.MethodPut {
@@ -131,14 +134,12 @@ func (s *Server) Run() error {
 			}
 			defer s.State.ImportRunning.Release(1)
 
-			fileToLoad := importer.FileName
 			if file := r.URL.Query().Get("file"); file != "" {
-				fileToLoad = file
-			}
-			if err := s.ImportManager.Load(fileToLoad); err != nil {
-				w.WriteHeader(http.StatusInternalServerError)
-				fmt.Fprint(w, err.Error())
-				return
+				if err := s.ImportManager.Load(file); err != nil {
+					w.WriteHeader(http.StatusInternalServerError)
+					fmt.Fprint(w, err.Error())
+					return
+				}
 			}
 
 			if err := s.ImportManager.Import(r.Context()); err != nil {

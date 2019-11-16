@@ -1,4 +1,4 @@
-FROM golang:1.11 as builder
+FROM golang:latest as builder
 ARG GITHUB_TOKEN
 
 RUN git config --global url."https:///$GITHUB_TOKEN:x-oauth-basic@github.com/".insteadOf "https://github.com/"
@@ -8,8 +8,7 @@ COPY go.mod go.sum ./
 RUN go mod download
 
 COPY . .
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o /validator ./cmd/validator && \
-    CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o /importer ./cmd/importer
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o /migrator .
 
 
 FROM alpine:latest as alpine
@@ -27,10 +26,10 @@ COPY --from=alpine /zoneinfo.zip /
 # the tls certificates:
 COPY --from=alpine /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 
-COPY --from=builder /validator /validator
-COPY --from=builder /importer /importer
+COPY --from=builder /migrator /
+COPY --from=builder /src/web /web
 
-VOLUME ["/data", "/records", "/splitted"]
+VOLUME ["/data", "/records"]
 
 ENV DB_HOST=localhost \
     DB_USER=sa \
@@ -43,6 +42,7 @@ ENV DB_HOST=localhost \
     DATA_DIR=/data \
     OUTPUT=/data/output.gob \
     INPUT=/data/output.gob \
-    RETRY_COUNTER=3
+    RETRY_COUNTER=3 \
+    API_URL=http://api/api
 
-CMD ["/importer"]
+CMD ["/migrator"]

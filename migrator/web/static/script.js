@@ -36,15 +36,24 @@ async function startImport() {
 }
 
 async function loadCounts(elementId, countType) {
+    const container = document.getElementById(elementId);
+    const loading = createElement('p', 'Laden...');
+    container.appendChild(loading);
+
     const response = await fetch(countType + '/counts');
     const data = await response.json();
 
-    const container = document.getElementById(elementId);
-    container.appendChild(createElement('p', 'Befunde: ' + data.records));
-    container.appendChild(createElement('p', 'Patienten' + data.patients));
+    container.removeChild(loading);
+    if (response.ok) {
+        container.appendChild(createElement('p', 'Befunde: ' + data.records));
+        container.appendChild(createElement('p', 'Patienten: ' + data.patients));
+    } else {
+        container.appendChild(createElement('p', 'Fehler: ' + data.error))
+    }
+
 }
 
 window.onload = function () {
     loadCounts('database-counts', 'database');
-    loadCounts('database-counts', 'filesystem');
+    loadCounts('filesystem-counts', 'filesystem');
 };

@@ -7,6 +7,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"io"
 	"os"
+	"time"
 )
 
 type Importer struct {
@@ -14,8 +15,8 @@ type Importer struct {
 	retryCount int
 }
 
-func NewImporter(url string, retryCount int) *Importer {
-	return &Importer{Api: client.NewHttpUploader(url), retryCount: retryCount}
+func NewImporter(url string, retryCount int, timeout time.Duration) *Importer {
+	return &Importer{Api: client.NewHttpUploader(url, timeout), retryCount: retryCount}
 }
 
 func (i *Importer) ImportRecords(ctx context.Context, records []ImportableRecord) (<-chan *ImportableRecord, <-chan ImportError) {

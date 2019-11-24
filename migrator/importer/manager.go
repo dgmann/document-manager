@@ -12,6 +12,7 @@ import (
 	"path"
 	"path/filepath"
 	"strconv"
+	"time"
 )
 
 type SubrecordIndex interface {
@@ -30,7 +31,7 @@ type Manager struct {
 }
 
 func NewManager(filesystemManager *filesystem.Manager, dataDirectory string, db *sqlx.DB, url string, retryCount int) *Manager {
-	importer := NewImporter(url, retryCount)
+	importer := NewImporter(url, retryCount, 1*time.Minute)
 	return &Manager{FilesystemManager: filesystemManager, dataDirectory: dataDirectory, Importer: importer, db: db, importedRecordsPath: filepath.Join(dataDirectory, "importedrecords.gob")}
 }
 

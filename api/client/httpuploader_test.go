@@ -23,8 +23,8 @@ func TestHttpUploader_Upload(t *testing.T) {
 	defer server.Close()
 
 	record := NewRecord{File: bytes.NewBufferString(""), ReceivedAt: receivedAt, Sender: sender}
-	client := NewHttpUploader(server.URL)
-	err := client.Upload(&record)
+	client := NewHttpUploader(server.URL, 10*time.Second)
+	err := client.CreateRecord(&record)
 	assert.NoError(t, err)
 }
 
@@ -35,7 +35,7 @@ func TestHttpUploader_Upload_Failed(t *testing.T) {
 	defer server.Close()
 
 	record := NewRecord{File: bytes.NewBufferString(""), ReceivedAt: time.Now(), Sender: "Test"}
-	client := NewHttpUploader(server.URL)
-	err := client.Upload(&record)
+	client := NewHttpUploader(server.URL, 10*time.Second)
+	err := client.CreateRecord(&record)
 	assert.Error(t, err)
 }

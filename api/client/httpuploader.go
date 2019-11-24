@@ -18,9 +18,9 @@ type HttpUploader struct {
 	client *http.Client
 }
 
-func NewHttpUploader(url string) *HttpUploader {
+func NewHttpUploader(url string, timeout time.Duration) *HttpUploader {
 	return &HttpUploader{url, &http.Client{
-		Timeout: time.Second * 10,
+		Timeout: timeout,
 	}}
 }
 

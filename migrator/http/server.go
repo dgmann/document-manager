@@ -125,6 +125,7 @@ func (s *Server) Run() error {
 			_ = json.NewEncoder(w).Encode(map[string]interface{}{
 				"total":      len(importable.Records),
 				"imported":   len(s.ImportManager.ImportedRecords()),
+				"errors":     s.ImportManager.ImportErrors,
 				"categories": len(importable.Categories),
 			})
 		} else if r.Method == http.MethodPut {

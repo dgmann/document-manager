@@ -114,7 +114,9 @@ func (m *Manager) importCategories(cats []datastore.Category) error {
 func (m *Manager) ImportedRecords() map[string]ImportableRecord {
 	if m.importedRecords == nil {
 		importedRecords := make(map[string]ImportableRecord)
-		_ = filesystem.LoadFromGob(importedRecords, m.importedRecordsPath)
+		if err := filesystem.LoadFromGob(&importedRecords, m.importedRecordsPath); err != nil {
+			logrus.Error(err)
+		}
 		m.importedRecords = importedRecords
 	}
 	return m.importedRecords
@@ -126,16 +128,18 @@ func (m *Manager) importRecords(ctx context.Context, recordsToImport []Importabl
 	importedCh, errCh := m.ImportRecords(ctx, records)
 
 	defer func() {
+		for key, record := range importedRecords {
+			record.File = nil
+			importedRecords[key] = record
+		}
 		if err := filesystem.SaveToGob(importedRecords, m.importedRecordsPath); err != nil {
 			logrus.Warn(err)
 		}
 	}()
-	var importErrors ImportErrorList
-	m.ImportErrors = importErrors
 	defer func() {
-		if len(importErrors) != 0 {
-			recordsToReimport := make([]ImportableRecord, 0, len(importErrors))
-			for i, r := range importErrors {
+		if len(m.ImportErrors) != 0 {
+			recordsToReimport := make([]ImportableRecord, 0, len(m.ImportErrors))
+			for i, r := range m.ImportErrors {
 				recordsToImport[i] = *r.Record
 			}
 			reimportable := Import{Records: recordsToReimport}
@@ -143,7 +147,7 @@ func (m *Manager) importRecords(ctx context.Context, recordsToImport []Importabl
 				logrus.WithError(err).Warn("error saving failedrecords.gob")
 			}
 			if err == nil {
-				err = importErrors
+				err = m.ImportErrors
 			}
 		}
 	}()
@@ -160,7 +164,8 @@ func (m *Manager) importRecords(ctx context.Context, recordsToImport []Importabl
 				errCh = nil
 				break
 			}
-			importErrors = append(importErrors, e)
+			m.ImportErrors = append(m.ImportErrors, e)
+			logrus.Errorf(e.Error())
 		case <-ctx.Done():
 			return nil
 		}
@@ -172,10 +177,12 @@ func (m *Manager) importRecords(ctx context.Context, recordsToImport []Importabl
 }
 
 func Difference(toImport []ImportableRecord, alreadyImported map[string]ImportableRecord) []ImportableRecord {
-	var diff []ImportableRecord
+	diff := make([]ImportableRecord, 0, len(toImport)-len(alreadyImported))
 	for _, record := range toImport {
 		if _, ok := alreadyImported[record.Path]; !ok {
 			diff = append(diff, record)
+		} else {
+			logrus.Debugf("%s already imported. Skipping...", record.Path)
 		}
 	}
 	return diff

@@ -32,7 +32,22 @@ function createElement(tag, value) {
 }
 
 async function startImport() {
+    const interval = setInterval(getImportStatus, 1000);
     await fetch('./import', {method: 'PUT'});
+    clearInterval(interval);
+}
+
+async function getImportStatus() {
+    const response = await fetch('./import');
+    const data = await response.json();
+
+    const total = document.getElementById("total-records");
+    const imported = document.getElementById("imported-records");
+    const percent = document.getElementById("percent-done");
+
+    total.innerText = data.total;
+    imported.innerText = data.imported;
+    percent.innerText = ((parseInt(data.imported) / parseInt(data.total)) * 100).toFixed(2);
 }
 
 async function loadCounts(elementId, countType) {
@@ -56,4 +71,5 @@ async function loadCounts(elementId, countType) {
 window.onload = function () {
     loadCounts('database-counts', 'database');
     loadCounts('filesystem-counts', 'filesystem');
+    getImportStatus();
 };

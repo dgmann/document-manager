@@ -2,10 +2,10 @@ package importer
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"github.com/dgmann/document-manager/api/client"
 	"github.com/sirupsen/logrus"
+	"io"
 	"os"
 )
 
@@ -29,17 +29,20 @@ func (i *Importer) uploadFunc() func(r *ImportableRecord) error {
 			return err
 		}
 		defer f.Close()
-
 		r.File = f
 
 		logrus.WithField("record", r).Debug("upload file")
-		for j := 0; j < i.retryCount; j++ {
+		for j := 1; j <= i.retryCount; j++ {
+
 			err = i.Api.CreateRecord(&r.NewRecord)
 			if err == nil {
 				return nil
 			}
-			logrus.WithError(err).Errorf("error uploading file. Retry %d of %d", j, i.retryCount)
+			logrus.Warnf("error uploading file. Retry %d of %d, %s", j, i.retryCount, err.Error())
+			if _, err := f.Seek(0, io.SeekStart); err != nil {
+				return fmt.Errorf("error resetting PDF file stream: %w", err)
+			}
 		}
-		return errors.New(fmt.Sprintf("%s: %s", r.Path, err.Error()))
+		return fmt.Errorf("error uploading file. %s: %w", r.Path, err)
 	}
 }

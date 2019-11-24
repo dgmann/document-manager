@@ -102,13 +102,16 @@ func (controller *RecordController) One(w http.ResponseWriter, req *http.Request
 
 func (controller *RecordController) Create(w http.ResponseWriter, req *http.Request) {
 	sender := req.FormValue("sender")
+	patientId := req.FormValue("patientId")
+	status := req.FormValue("status")
+	category := req.FormValue("category")
 	receivedAt := time.Now()
 	if r := req.FormValue("receivedAt"); r != "" {
 		if parsed, err := time.Parse(time.RFC3339, r); err != nil {
 			receivedAt = parsed
 		}
 	}
-	newRecord := datastore.CreateRecord{Sender: sender, ReceivedAt: receivedAt}
+	newRecord := datastore.CreateRecord{Sender: sender, ReceivedAt: receivedAt, PatientId: &patientId, Status: datastore.Status(status), Category: &category}
 
 	file, _, err := req.FormFile("pdf")
 	if err != nil {

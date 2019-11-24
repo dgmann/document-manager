@@ -55,8 +55,7 @@ func (u *HttpUploader) CreateRecord(create *NewRecord) error {
 	if err != nil {
 		return err
 	}
-	client := u.client
-	resp, err := client.Do(req)
+	resp, err := u.client.Do(req)
 	if err != nil {
 		return err
 	}

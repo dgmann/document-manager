@@ -34,11 +34,9 @@
 <div>
     <h1>Status</h1>
     <button onclick="startImport()">Import Starten</button>
-    <p>Importierte Befunde {{ len .ImportManager.ImportedRecords }}</p>
-    <p>Fehlgeschlagene Befunde {{ len .ImportManager.ImportedRecords }}</p>
-    {{if (len .ImportManager.ImportedRecords) gt 0}}
-        {{template "record-table" .ImportManager.ImportedRecords}}
-    {{end}}
+    <p>Fortschritt <span id="percent-done">0</span>%</p>
+    <p>Gesamt Anzahl <span id="total-records">0</span></p>
+    <p>Bereits Importiert <span id="imported-records">0</span></p>
 </div>
 <script src="./static/script.js"></script>
 </body>

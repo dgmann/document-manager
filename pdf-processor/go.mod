@@ -3,6 +3,7 @@ module github.com/dgmann/document-manager/pdf-processor
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dgmann/document-manager/pdf-processor/pkg/processor v0.0.0-20190929105418-0408c3fc5544
+	github.com/gen2brain/go-fitz v0.0.0-20190716092309-62357ab3d4a9
 	github.com/h2non/filetype v1.0.5
 	github.com/jung-kurt/gofpdf v1.12.4
 	github.com/onsi/gomega v1.4.2 // indirect

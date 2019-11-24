@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/dgmann/document-manager/pdf-processor/gopdf"
 	"github.com/dgmann/document-manager/pdf-processor/imagick"
+	"github.com/dgmann/document-manager/pdf-processor/mupdf"
 	"github.com/dgmann/document-manager/pdf-processor/pkg/processor"
-	"github.com/dgmann/document-manager/pdf-processor/poppler"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"net"
@@ -22,7 +22,7 @@ func main() {
 	defer imagick.Terminate()
 
 	rotator := imagick.NewProcessor()
-	converter := poppler.NewProcessor()
+	converter := mupdf.NewProcessor()
 
 	creator := gopdf.NewPdfCreator()
 	port := 9000

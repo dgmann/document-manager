@@ -7,6 +7,7 @@ require (
 	github.com/h2non/filetype v1.0.5
 	github.com/jung-kurt/gofpdf v1.12.4
 	github.com/onsi/gomega v1.4.2 // indirect
+	github.com/pdfcpu/pdfcpu v0.2.6-0.20191115001021-1e3294bc5ab2
 	github.com/sirupsen/logrus v1.0.6
 	google.golang.org/genproto v0.0.0-20180918203901-c3f76f3b92d1 // indirect
 	google.golang.org/grpc v1.24.0

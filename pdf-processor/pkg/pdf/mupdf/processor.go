@@ -38,3 +38,13 @@ func (m *Processor) ToImages(data io.Reader) ([]*processor.Image, error) {
 	}
 	return images, nil
 }
+
+func (m *Processor) Count(data io.Reader) (int, error) {
+	pdf, err := fitz.NewFromReader(data)
+	if err != nil {
+		return 0, err
+	}
+	defer pdf.Close()
+
+	return pdf.NumPage(), nil
+}

@@ -3,29 +3,17 @@ package main
 import (
 	"bytes"
 	"context"
+	"github.com/dgmann/document-manager/pdf-processor/pkg/pdf"
 	"github.com/dgmann/document-manager/pdf-processor/pkg/processor"
-	"io"
 )
 
-type PdfToImageConverter interface {
-	ToImages(data io.Reader) ([]*processor.Image, error)
-}
-
-type Rotator interface {
-	Rotate(img []byte, degrees float64) (*processor.Image, error)
-}
-
-type Creator interface {
-	Create(document *processor.Document) (*processor.Pdf, error)
-}
-
 type GRPCServer struct {
-	converter PdfToImageConverter
-	rotator   Rotator
-	creator   Creator
+	converter pdf.ImageConverter
+	rotator   pdf.Rotator
+	creator   pdf.Creator
 }
 
-func NewGRPCServer(c PdfToImageConverter, r Rotator, creator Creator) *GRPCServer {
+func NewGRPCServer(c pdf.ImageConverter, r pdf.Rotator, creator pdf.Creator) *GRPCServer {
 	return &GRPCServer{converter: c, rotator: r, creator: creator}
 }
 

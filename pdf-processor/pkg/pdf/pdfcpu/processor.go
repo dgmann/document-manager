@@ -3,6 +3,7 @@ package pdfcpu
 import (
 	"bytes"
 	"fmt"
+	"github.com/dgmann/document-manager/pdf-processor/filesystem"
 	"github.com/dgmann/document-manager/pdf-processor/pkg/processor"
 	"github.com/pdfcpu/pdfcpu/pkg/api"
 	"github.com/pdfcpu/pdfcpu/pkg/log"
@@ -10,8 +11,6 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
-	"path"
-	"strings"
 )
 
 type Processor struct {
@@ -37,23 +36,14 @@ func (m *Processor) ToImages(data io.Reader) (images []*processor.Image, err err
 	if err := api.ExtractImages(seeker, outdir, nil, &pdfcpu.Configuration{ValidationMode: pdfcpu.ValidationNone}); err != nil {
 		return nil, fmt.Errorf("error extracting images: %w", err)
 	}
-	return readImagesFromDirectory(outdir)
+	return filesystem.ReadImagesFromDirectory(outdir)
 }
 
-func readImagesFromDirectory(dirname string) ([]*processor.Image, error) {
-	files, err := ioutil.ReadDir(dirname)
+func (m *Processor) Count(data io.Reader) (int, error) {
+	b, err := ioutil.ReadAll(data)
 	if err != nil {
-		return nil, err
+		return 0, nil
 	}
-	var images []*processor.Image
-	for _, f := range files {
-		p := path.Join(dirname, f.Name())
-		extension := path.Ext(f.Name())
-		content, err := ioutil.ReadFile(p)
-		if err != nil {
-			return nil, err
-		}
-		images = append(images, &processor.Image{Content: content, Format: strings.Trim(extension, ".")})
-	}
-	return images, nil
+	seeker := bytes.NewReader(b)
+	return api.PageCount(seeker, &pdfcpu.Configuration{ValidationMode: pdfcpu.ValidationNone})
 }

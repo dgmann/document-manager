@@ -11,7 +11,7 @@ type Config struct {
 }
 
 func NewConfig() Config {
-	var username, password, hostname, instance, recordDirectory, dbName, validationFile, dataDirectory, apiURL string
+	var username, password, hostname, instance, recordDirectory, dbName, dataDirectory, apiURL string
 	var retryCount int
 
 	flag.StringVar(&username, "db_user", "", "Database Username")
@@ -19,7 +19,6 @@ func NewConfig() Config {
 	flag.StringVar(&hostname, "db_host", "", "Database Hostname")
 	flag.StringVar(&instance, "db_instance", "", "Database Instance name")
 	flag.StringVar(&dbName, "db_name", "", "Database name")
-	flag.StringVar(&validationFile, "validation_file", "/data/error.log", "Validation File")
 
 	flag.StringVar(&recordDirectory, "record_dir", "/records", "Record Directory")
 	flag.StringVar(&dataDirectory, "data_dir", "/data", "Data Directory")

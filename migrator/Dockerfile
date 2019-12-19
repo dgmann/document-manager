@@ -37,11 +37,7 @@ ENV DB_HOST=localhost \
     DB_NAME=PdfDatabase \
     DB_INSTANCE="" \
     RECORD_DIR=/records \
-    VALIDATION_FILE=/data/validation.log \
-    SPLITTED_DIR=/splitted \
     DATA_DIR=/data \
-    OUTPUT=/data/output.gob \
-    INPUT=/data/output.gob \
     RETRY_COUNTER=3 \
     API_URL=http://api/api
 

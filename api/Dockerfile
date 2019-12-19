@@ -28,7 +28,7 @@ COPY --from=alpine /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 
 EXPOSE 80
 
-ENV GIN_MODE=release DB_HOST=localhost DB_NAME=manager PORT=80 RECORD_DIR=/records
+ENV DB_HOST=localhost DB_NAME=manager PORT=80 RECORD_DIR=/records
 
 VOLUME ["/records", "/archive"]
 

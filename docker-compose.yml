@@ -1,0 +1,100 @@
+version: "3"
+services:
+
+  gateway:
+    image: nginx:alpine
+    volumes:
+      - ./gateway/config.nginx:/etc/nginx/nginx.conf
+    ports:
+      - 80:80
+    networks:
+      - backend
+    depends_on:
+      - api
+      - app
+  db:
+    image: mongo:latest
+    networks:
+      - backend
+    volumes:
+      - "mongo:/data/db"
+  processor:
+    build: ./pdf-processor
+    networks:
+      - backend
+  api:
+    build: ./api
+    volumes:
+      - "records:/records"
+      - "archive:/archive"
+    environment:
+      - DB_HOST=db
+      - DB_NAME=manager
+      - PDFPROCESSOR_URL=processor:9000
+    networks:
+      - backend
+    depends_on:
+      - db
+      - processor
+  app:
+    build: ./app
+    environment:
+      - API_URL=$PROTO://$BASE_URL/api
+      - WS_URL=$WEBSOCKET_PROTO://$BASE_URL/api/notifications
+    networks:
+      - backend
+  fax_watcher:
+    build: ./directory-watcher
+    environment:
+      - DESTINATION=$PROTO://$BASE_URL/api
+      - PARSER=fax
+    depends_on:
+      - api
+    networks:
+      - backend
+    volumes:
+      - "fax:/records"
+  scan_watcher:
+    build: ./directory-watcher
+    environment:
+      - DESTINATION=$PROTO://$BASE_URL/api
+      - PARSER=generic
+      - SENDER=Scan
+    depends_on:
+      - api
+    networks:
+      - backend
+    volumes:
+      - "scans:/records"
+  m1-adapter:
+    build: ./m1-adapter
+    networks:
+      - backend
+  migrator:
+    build:
+      context: ./migrator
+    volumes:
+      - "migrator-records:/records"
+      - "migrator-data:/data"
+    depends_on:
+      - api
+    networks:
+      - backend
+    ports:
+      - 8080:8080
+    environment:
+      - DB_HOST=mssql
+      - DB_USER=
+      - DB_PASSWORD=
+      - DB_NAME=
+      - API_URL=$PROTO://$BASE_URL/api
+networks:
+  backend:
+volumes:
+  mongo:
+  records:
+  archive:
+  fax:
+  scans:
+  migrator-data:
+  migrator-records:

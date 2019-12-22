@@ -12,6 +12,7 @@ services:
     depends_on:
       - api
       - app
+      - m1-adapter
   db:
     image: mongo:latest
     networks:

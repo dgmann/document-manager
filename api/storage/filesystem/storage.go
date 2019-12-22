@@ -115,9 +115,11 @@ func (f *DiskStorage) ForEach(keyed storage.Keyed, forEachFn ForEachFunc) error 
 			abs := strings.Trim(currentPath, ext)
 			rel, err := filepath.Rel(f.Root, abs)
 			if err != nil {
+				logrus.WithError(err).Error(err.Error())
 				return err
 			}
 
+			logrus.Infof("Rel: %v, Abs: %v", rel, abs)
 			keys := strings.Split(rel, string(filepath.Separator))
 			resource := storage.NewKeyedGenericResource(nil, ext, keys...)
 			logrus.Infof("Keys: %v", keys)

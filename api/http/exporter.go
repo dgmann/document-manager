@@ -30,7 +30,8 @@ func (t *ExporterController) Export(w http.ResponseWriter, req *http.Request) {
 	}
 	res, err := t.creator.Create(req.Context(), title, records)
 	if err != nil {
-		NewErrorResponse(w, err, http.StatusInternalServerError)
+		NewErrorResponse(w, err, http.StatusInternalServerError).WriteJSON()
+		return
 	}
 
 	w.Header().Add("Content-Type", "application/pdf")

@@ -35,6 +35,10 @@ func NewManager(filesystemManager *filesystem.Manager, dataDirectory string, db 
 	return &Manager{FilesystemManager: filesystemManager, dataDirectory: dataDirectory, Importer: importer, db: db, importedRecordsPath: filepath.Join(dataDirectory, "importedrecords.gob")}
 }
 
+func (m *Manager) IsLoaded() bool {
+	return m.dataToImport != nil
+}
+
 func (m *Manager) DataToImport(ctx context.Context) (*Import, error) {
 	if m.dataToImport != nil {
 		return m.dataToImport, nil

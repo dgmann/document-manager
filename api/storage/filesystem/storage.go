@@ -113,6 +113,7 @@ func (f *DiskStorage) ForEach(keyed storage.Keyed, forEachFn ForEachFunc) error 
 			logrus.Infof("Filename: %s", info.Name())
 			ext := filepath.Ext(info.Name())
 			abs := strings.Trim(currentPath, ext)
+			logrus.Infof("Ext: %v, CurrentPath: %v, Info: %v", ext, currentPath, info)
 			rel, err := filepath.Rel(f.Root, abs)
 			if err != nil {
 				logrus.WithError(err).Error(err.Error())

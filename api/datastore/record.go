@@ -3,8 +3,10 @@ package datastore
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"github.com/dgmann/document-manager/api/storage"
 	"github.com/jinzhu/copier"
+	"github.com/mongodb/mongo-go-driver/bson"
 	"github.com/mongodb/mongo-go-driver/bson/primitive"
 	"github.com/sirupsen/logrus"
 	"io"
@@ -65,6 +67,28 @@ func (query *RecordQuery) SetPatientId(patientId string) *RecordQuery {
 func (query *RecordQuery) SetIds(ids []string) *RecordQuery {
 	query.Ids = ids
 	return query
+}
+
+func (query *RecordQuery) ToMap() (map[string]interface{}, error) {
+	result := make(map[string]interface{})
+	if !query.Status.IsNone() {
+		result["status"] = query.Status
+	}
+	if query.Ids != nil {
+		ids := make([]primitive.ObjectID, len(query.Ids))
+		for i, id := range query.Ids {
+			oid, err := primitive.ObjectIDFromHex(id)
+			if err != nil {
+				return nil, fmt.Errorf("invalid id %s: %w", id, err)
+			}
+			ids[i] = oid
+		}
+		result["_id"] = bson.M{"$in": ids}
+	}
+	if query.PatientId != nil {
+		result["patientId"] = *query.PatientId
+	}
+	return result, nil
 }
 
 type QueryOptions struct {

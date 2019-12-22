@@ -32,14 +32,14 @@ func (m *Manager) Index(ctx context.Context) (*Index, error) {
 	} else {
 		m.index = index
 	}
-	defer func() {
-		if err := m.index.Save(filePath); err != nil {
-			logrus.WithError(err).Error("error saving filesystemindex to disk")
-		}
-	}()
+
 	logrus.Info("load sub records")
 	if err := m.index.LoadSubRecords(ctx, filepath.Join(m.DataDirectory, "splitted")); err != nil {
 		return nil, err
+	}
+
+	if err := m.index.Save(filePath); err != nil {
+		logrus.WithError(err).Error("error saving filesystemindex to disk")
 	}
 
 	return m.index, nil

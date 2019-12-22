@@ -24,6 +24,7 @@ type Server struct {
 
 type State struct {
 	ImportRunning *semaphore.Weighted
+	ImportDone    bool
 	Resolvables   []validator.ResolvableValidationError
 }
 
@@ -115,6 +116,18 @@ func (s *Server) Run() error {
 	})
 	http.HandleFunc("/import", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodGet {
+			if ok := s.State.ImportRunning.TryAcquire(1); ok && !s.State.ImportDone {
+				s.State.ImportRunning.Release(1)
+				w.Header().Set("Content-Type", "application/json")
+				_ = json.NewEncoder(w).Encode(map[string]interface{}{
+					"total":      0,
+					"imported":   0,
+					"errors":     nil,
+					"categories": 0,
+				})
+				return
+			}
+
 			importable, err := s.ImportManager.DataToImport(r.Context())
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
@@ -148,6 +161,7 @@ func (s *Server) Run() error {
 				fmt.Fprint(w, err.Error())
 				return
 			}
+			s.State.ImportDone = true
 		}
 	})
 	return http.ListenAndServe(":8080", nil)

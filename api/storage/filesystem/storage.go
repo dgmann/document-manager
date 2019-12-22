@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"github.com/dgmann/document-manager/api/storage"
-	"github.com/sirupsen/logrus"
 	"io"
 	"io/ioutil"
 	"os"
@@ -110,21 +109,15 @@ func (f *DiskStorage) ForEach(keyed storage.Keyed, forEachFn ForEachFunc) error 
 	p := f.locate(keyed)
 	return f.storage.Walk(p, func(currentPath string, info os.FileInfo, err error) error {
 		if !info.IsDir() {
-			logrus.Infof("Filename: %s", info.Name())
 			ext := filepath.Ext(info.Name())
-			abs := strings.TrimRight(currentPath, ext)
-			logrus.Infof("Ext: %v, CurrentPath: %v", ext, currentPath)
+			abs := strings.TrimSuffix(currentPath, ext)
 			rel, err := filepath.Rel(f.Root, abs)
 			if err != nil {
-				logrus.WithError(err).Error(err.Error())
 				return err
 			}
 
-			logrus.Infof("Rel: %v, Abs: %v", rel, abs)
 			keys := strings.Split(rel, string(filepath.Separator))
 			resource := storage.NewKeyedGenericResource(nil, ext, keys...)
-			logrus.Infof("Keys: %v", keys)
-
 			withData, err := f.Get(resource)
 			if err != nil {
 				return fmt.Errorf("error reading resource %s: %w", filepath.Join(resource.Key()...), err)

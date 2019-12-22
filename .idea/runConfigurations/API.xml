@@ -5,6 +5,8 @@
     <envs>
       <env name="RECORD_DIR" value="~/records" />
       <env name="ARCHIVE_DIR" value="~/archive" />
+      <env name="DB_HOST" value="192.168.255.126" />
+      <env name="PDFPROCESSOR_URL" value="192.168.255.126:9000" />
     </envs>
     <kind value="DIRECTORY" />
     <filePath value="$PROJECT_DIR$/api/main.go" />

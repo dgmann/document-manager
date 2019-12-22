@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/dgmann/document-manager/api/storage"
+	"github.com/sirupsen/logrus"
 	"io"
 	"io/ioutil"
 	"os"
@@ -109,6 +110,7 @@ func (f *DiskStorage) ForEach(keyed storage.Keyed, forEachFn ForEachFunc) error 
 	p := f.locate(keyed)
 	return f.storage.Walk(p, func(currentPath string, info os.FileInfo, err error) error {
 		if !info.IsDir() {
+			logrus.Infof("Filename: %s", info.Name())
 			ext := filepath.Ext(info.Name())
 			abs := strings.Trim(currentPath, ext)
 			rel, err := filepath.Rel(f.Root, abs)

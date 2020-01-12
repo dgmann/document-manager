@@ -14,11 +14,10 @@ import {RecordViewerViewMode} from '@app/shared/record-viewer/record-viewer.comp
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InboxComponent implements OnInit, OnDestroy {
-  records: Observable<Record[]>;
-  selectedRecord: Observable<Record>;
+  records$: Observable<Record[]>;
+  selectedRecord$: Observable<Record>;
   selectedIds: Observable<string[]>;
   isLoading$: Observable<boolean>;
-  viewMode = RecordViewerViewMode.MultipagePerRow;
 
   isDragInProgress = false;
 
@@ -28,8 +27,8 @@ export class InboxComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.inboxService.loadRecords();
-    this.records = this.inboxService.allInboxRecords$;
-    this.selectedRecord = this.inboxService.selectedRecords$
+    this.records$ = this.inboxService.allInboxRecords$;
+    this.selectedRecord$ = this.inboxService.selectedRecords$
       .pipe(map(records => records && records[0] || undefined));
     this.selectedIds = this.inboxService.selectedIds$;
     this.inboxService.selectedIds$
@@ -80,14 +79,6 @@ export class InboxComponent implements OnInit, OnDestroy {
     if (event.dataTransfer) {
       event.preventDefault();
       event.stopPropagation();
-    }
-  }
-
-  toogleViewMode() {
-    if (this.viewMode === RecordViewerViewMode.MultipagePerRow) {
-      this.viewMode = RecordViewerViewMode.SinglePagePerRow;
-    } else {
-      this.viewMode = RecordViewerViewMode.MultipagePerRow;
     }
   }
 }

@@ -10,7 +10,8 @@ import {PageUpdate, Record, RecordService} from '../../core/store/index';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RecordViewerComponent implements OnInit {
-  @Input() viewMode = RecordViewerViewMode.MultipagePerRow;
+  @Input() showQuickEdit = true;
+  viewMode = RecordViewerViewMode.MultipagePerRow;
   record: Record;
   pages: PageUpdate[];
 
@@ -18,8 +19,6 @@ export class RecordViewerComponent implements OnInit {
     this.record = record;
     this.pages = record && record.pages.map(p => PageUpdate.FromPage(p)) || [];
   }
-
-  @Output() clickRecord = new EventEmitter();
 
   constructor(private recordService: RecordService) {
   }
@@ -61,6 +60,14 @@ export class RecordViewerComponent implements OnInit {
     pages = pages.slice(0);
     pages.splice(index, 1);
     this.recordService.updatePages(recordId, pages);
+  }
+
+  toogleViewMode() {
+    if (this.viewMode === RecordViewerViewMode.MultipagePerRow) {
+      this.viewMode = RecordViewerViewMode.SinglePagePerRow;
+    } else {
+      this.viewMode = RecordViewerViewMode.MultipagePerRow;
+    }
   }
 
   mod(n, m) {

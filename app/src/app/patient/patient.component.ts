@@ -7,9 +7,9 @@ import {PatientService} from './patient.service';
 import {Patient} from './store/patient.model';
 import {Filter} from './store/patient.reducer';
 import {untilDestroyed} from 'ngx-take-until-destroy';
-import {Category, CategoryService, TagService} from '../core';
+import {Category, CategoryService, TagService} from '@app/core';
 import {EditResult} from '../shared';
-import {animate, style, transition, trigger} from '@angular/animations';
+import {animate, AnimationEvent, style, transition, trigger} from '@angular/animations';
 
 
 @Component({
@@ -29,16 +29,16 @@ import {animate, style, transition, trigger} from '@angular/animations';
   ]
 })
 export class PatientComponent implements OnInit, OnDestroy {
-  public patientId: Observable<string>;
-  public records: Observable<Record[]>;
-  public patient: Observable<Patient>;
-  public selectedRecord: Observable<Record>;
+  public patientId$: Observable<string>;
+  public records$: Observable<Record[]>;
+  public patient$: Observable<Patient>;
+  public selectedRecord$: Observable<Record>;
   public showDetails = false;
-  public categories: Observable<{ [id: string]: Category }>;
-  public selectedCategory: Observable<string>;
+  public categories$: Observable<{ [id: string]: Category }>;
+  public selectedCategory$: Observable<string>;
 
-  public availableCategories: Observable<Category[]>;
-  public availableTags: Observable<string[]>;
+  public availableCategories$: Observable<Category[]>;
+  public availableTags$: Observable<string[]>;
 
   constructor(private recordService: RecordService,
               private patientService: PatientService,
@@ -50,23 +50,23 @@ export class PatientComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.route.params
-      .pipe(untilDestroyed(this))
-      .subscribe(params => this.patientService.selectPatient(params.id));
-    this.selectedCategory = this.patientService.selectedCategory$;
+        .pipe(untilDestroyed(this))
+        .subscribe(params => this.patientService.selectPatient(params.id));
+    this.selectedCategory$ = this.patientService.selectedCategory$;
     this.route.queryParamMap
-      .pipe(untilDestroyed(this))
-      .subscribe(params => this.patientService.selectCategory(params.get('category')));
+        .pipe(untilDestroyed(this))
+        .subscribe(params => this.patientService.selectCategory(params.get('category')));
 
-    this.records = this.patientService.filteredPatientRecord$;
-    this.patient = this.patientService.selectedPatient$;
-    this.patientId = this.patientService.selectedId$;
+    this.records$ = this.patientService.filteredPatientRecord$;
+    this.patient$ = this.patientService.selectedPatient$;
+    this.patientId$ = this.patientService.selectedId$;
     this.categoryService.load();
-    this.categories = this.categoryService.categoryMap;
+    this.categories$ = this.categoryService.categoryMap;
 
-    this.availableCategories = this.patientId.pipe(filter(p => !!p), switchMap(id => this.categoryService.getByPatientId(id)));
-    this.availableTags = this.patientId.pipe(filter(p => !!p), switchMap(id => this.tagsService.getByPatientId(id)));
+    this.availableCategories$ = this.patientId$.pipe(filter(p => !!p), switchMap(id => this.categoryService.getByPatientId(id)));
+    this.availableTags$ = this.patientId$.pipe(filter(p => !!p), switchMap(id => this.tagsService.getByPatientId(id)));
 
-    this.selectedRecord = this.patientService.selectedRecord$;
+    this.selectedRecord$ = this.patientService.selectedRecord$;
   }
 
   ngOnDestroy() {
@@ -86,18 +86,22 @@ export class PatientComponent implements OnInit, OnDestroy {
   }
 
   onUpdateRecord(data: EditResult) {
-      this.recordService.update(data.id, data.change);
+    this.recordService.update(data.id, data.change);
   }
 
-    onDeleteRecord(record: Record) {
-        this.recordService.delete(record.id);
-    }
+  onDeleteRecord(record: Record) {
+    this.recordService.delete(record.id);
+  }
 
-    onOpenInEditor(record: Record) {
-        this.router.navigate(['/editor', record.id]);
-    }
+  onOpenInEditor(record: Record) {
+    this.router.navigate(['/editor', record.id]);
+  }
 
-    onDuplicateRecord(record: Record) {
-        this.recordService.duplicate(record.id);
-    }
+  onDuplicateRecord(record: Record) {
+    this.recordService.duplicate(record.id);
+  }
+
+  onAnimationEvent(event: AnimationEvent) {
+    event.element.focus();
+  }
 }

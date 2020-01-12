@@ -28,8 +28,9 @@ import {SplitPanelComponent} from './split-panel/split-panel.component';
 import {HttpClientModule} from '@angular/common/http';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import {MessageBoxComponent} from './message-box/message-box.component';
-import { PdfLinkPipe } from './pdf-link/pdf-link.pipe';
-import { IdsPipe } from './ids/ids.pipe';
+import {PdfLinkPipe} from './pdf-link/pdf-link.pipe';
+import {IdsPipe} from './pipes/ids/ids.pipe';
+import {CategoryPipe} from './pipes/category/category.pipe';
 
 
 @NgModule({
@@ -67,7 +68,8 @@ import { IdsPipe } from './ids/ids.pipe';
     CommentDialogComponent,
     MessageBoxComponent,
     PdfLinkPipe,
-    IdsPipe
+    IdsPipe,
+    CategoryPipe
   ],
   entryComponents: [
     DocumentEditDialogComponent,
@@ -83,7 +85,8 @@ import { IdsPipe } from './ids/ids.pipe';
     PatientSearchComponent,
     SplitPanelComponent,
     PdfLinkPipe,
-    IdsPipe
+    IdsPipe,
+    CategoryPipe
   ],
   providers: [],
 })

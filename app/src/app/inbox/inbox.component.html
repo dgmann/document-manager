@@ -7,12 +7,11 @@
         <h1>Upload</h1>
       </div>
     </div>
-    <app-document-list [records]="records | async" [selectedIds]="selectedIds | async"
+    <app-document-list [records]="records$ | async" [selectedIds]="selectedIds | async"
                        (selectRecords)="onSelectRecords($event)"></app-document-list>
   </div>
   <div class="right-panel">
-    <app-record-viewer (clickRecord)="toogleViewMode()" [record]="selectedRecord | async"
-                       [viewMode]="viewMode"></app-record-viewer>
+    <app-record-viewer [record]="selectedRecord$ | async"></app-record-viewer>
   </div>
 </app-split-panel>
 

@@ -26,6 +26,7 @@ import {TagListComponent} from './tag-list/tag-list.component';
 import {RecordFilterComponent} from './record-filter/record-filter.component';
 import {DateRangeSelectorComponent} from './date-range-selector/date-range-selector.component';
 import {FormsModule} from '@angular/forms';
+import {MatMenuModule} from '@angular/material/menu';
 
 @NgModule({
   imports: [
@@ -46,6 +47,7 @@ import {FormsModule} from '@angular/forms';
     MatTabsModule,
     StoreModule.forFeature('patient', reducers, {metaReducers}),
     EffectsModule.forFeature([PatientEffects]),
+    MatMenuModule,
   ],
   declarations: [
     PatientComponent,

@@ -86,14 +86,18 @@ export class PatientComponent implements OnInit, OnDestroy {
   }
 
   onUpdateRecord(data: EditResult) {
-    this.recordService.update(data.id, data.change);
+      this.recordService.update(data.id, data.change);
   }
 
-  onDeleteRecord(record: Record) {
-    this.recordService.delete(record.id);
-  }
+    onDeleteRecord(record: Record) {
+        this.recordService.delete(record.id);
+    }
 
-  onOpenInEditor(record: Record) {
-    this.router.navigate(['/editor', record.id]);
-  }
+    onOpenInEditor(record: Record) {
+        this.router.navigate(['/editor', record.id]);
+    }
+
+    onDuplicateRecord(record: Record) {
+        this.recordService.duplicate(record.id);
+    }
 }

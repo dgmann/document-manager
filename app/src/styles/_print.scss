@@ -1,9 +1,9 @@
-@mixin record-page-container() {
+@mixin print-record-page-container() {
   position: relative !important;
   display: block !important;
 }
 
-@mixin record-page() {
+@mixin print-record-page() {
   border: 2px solid white;
   flex: none !important;
   box-sizing: initial !important;

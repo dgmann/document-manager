@@ -5,13 +5,13 @@
 
     <mat-card>
       <mat-card-header>
-        <button mat-icon-button color="accent" (click)="rotate(page, -90)">
+        <button (click)="rotate(page, -90)" color="primary" mat-icon-button>
           <mat-icon aria-label="rotate-left">rotate_left</mat-icon>
         </button>
-        <button mat-icon-button color="accent" (click)="rotate(page, 90)">
+        <button (click)="rotate(page, 90)" color="primary" mat-icon-button>
           <mat-icon aria-label="rotate-right">rotate_right</mat-icon>
         </button>
-        <button mat-icon-button color="accent" (click)="delete(page)">
+        <button (click)="delete(page)" color="primary" mat-icon-button>
           <mat-icon aria-label="delete">delete</mat-icon>
         </button>
       </mat-card-header>

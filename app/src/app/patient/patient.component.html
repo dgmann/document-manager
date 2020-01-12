@@ -14,15 +14,19 @@
         <mat-icon>menu</mat-icon>
       </button>
     </div>
-    <app-multi-record-list [@panelInOut] [categories]="categories | async" [records]="records | async"
+    <app-multi-record-list (clickRecord)="onSelectRecord($event)" (duplicate)="onDuplicateRecord($event)" [@panelInOut]
+                           [categories]="categories | async" [records]="records | async"
                            [patient]="patient | async"
-                           [selectedCategory]="selectedCategory | async" fxFlex
+                           [selectedCategory]="selectedCategory | async"
                            (selectedCategoryChange)="onSelectedCategoryChange($event)"
                            (updateRecord)="onUpdateRecord($event)"
                            (deleteRecord)="onDeleteRecord($event)"
                            (openInEditor)="onOpenInEditor($event)"
-                           (clickRecord)="onSelectRecord($event)"></app-multi-record-list>
+                           class="record-overview"
+                           fxFlex>
+    </app-multi-record-list>
+
     <app-record-viewer (clickRecord)="showDetails = false" *ngIf="showDetails" [@panelInOut]
-                       [record]="selectedRecord | async" fxFlex="75%"></app-record-viewer>
+                       [record]="selectedRecord | async" fxFlex="65%"></app-record-viewer>
   </mat-sidenav-content>
 </mat-sidenav-container>

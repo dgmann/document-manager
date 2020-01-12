@@ -1,4 +1,5 @@
-@import "../../../print";
+@import "print";
+@import "global";
 
 .button-group > button {
   margin-bottom: 16px;
@@ -13,7 +14,7 @@
 }
 
 .page {
-  cursor: pointer;
+  @include record-page();
 }
 
 @media print {
@@ -26,11 +27,11 @@
   }
 
   .page-container {
-    @include record-page-container();
+    @include print-record-page-container();
   }
 
   .page {
-    @include record-page();
+    @include print-record-page();
   }
 }
 

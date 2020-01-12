@@ -4,9 +4,8 @@
 
 export const environment = {
   production: false,
-  api: 'http://localhost/api',
-  websocket: 'ws://localhost/api/notifications',
-  bugsnagKey: '44bd0ddb1369a54aa3cfa44bdf04f21c'
+  api: 'http://192.168.255.126/api',
+  websocket: 'ws://192.168.255.126/api/notifications'
 };
 
 /*

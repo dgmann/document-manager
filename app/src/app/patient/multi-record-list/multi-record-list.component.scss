@@ -1,6 +1,7 @@
-@import "../../../theme";
+@import "theme";
 @import '~@angular/material/theming';
-@import "../../../print";
+@import "print";
+@import "global";
 
 .sub-heading {
   color: $primary;
@@ -12,22 +13,19 @@
 
 .page {
   @include mat-elevation(8);
+  @include record-page();
   margin-bottom: 10px;
-
-  img {
-    cursor: pointer;
-  }
-}
-
-.page-container {
-  height: 100%;
-  overflow-y: auto;
+  min-width: 300px;
 }
 
 .action-button-bar {
   overflow: hidden;
   display: flex;
   justify-content: flex-end;
+}
+
+mat-tab-group {
+  height: 100%;
 }
 
 mat-card-header {
@@ -44,10 +42,10 @@ mat-card-header {
   }
 
   .page-container {
-    @include record-page-container();
+    @include print-record-page-container();
   }
 
   .page {
-    @include record-page();
+    @include print-record-page();
   }
 }

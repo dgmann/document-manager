@@ -1,4 +1,4 @@
-@import "../theme";
+@import "../styles/theme";
 
 .main-container {
   height: 100vh;
@@ -9,7 +9,6 @@
 }
 
 .body-container {
-  height: 100%;
 }
 
 @media print {

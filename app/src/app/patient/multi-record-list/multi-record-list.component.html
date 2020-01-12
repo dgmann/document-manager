@@ -1,9 +1,10 @@
-<mat-tab-group (selectedIndexChange)="onSelectedIndexChange($event)" [selectedIndex]="selectedIndex" fxFlexFill
-               dynamicHeight="true">
+<mat-tab-group (selectedIndexChange)="onSelectedIndexChange($event)" [selectedIndex]="selectedIndex"
+               dynamicHeight="false">
   <mat-tab *ngFor="let recordGroup of groupedRecords;">
     <ng-template mat-tab-label>
       <span>{{categoryMap[recordGroup?.category]?.name}}</span>
-      <a (click)="$event.stopPropagation()" [href]="recordGroup.records | ids | pdfLink:patientName" mat-button target="_blank">
+      <a (click)="$event.stopPropagation()" [href]="recordGroup.records | ids | pdfLink:patientName" mat-button
+         target="_blank">
         <mat-icon aria-label="pdf">picture_as_pdf</mat-icon>
       </a>
     </ng-template>
@@ -13,9 +14,9 @@
 </mat-tab-group>
 
 <ng-template matTabContent #page let-recordsToShow="records" let-category="category">
-  <div class="page-container" fxLayout="column" fxLayout.gt-md="row wrap" fxLayoutAlign="center"
+  <div class="page-container" fxLayout="row wrap" fxLayoutAlign="center"
        fxLayoutGap="10px">
-    <mat-card fxFlex="1" fxFlex.gt-md="calc(50% - 10px)" class="page" *ngFor="let record of recordsToShow">
+    <mat-card *ngFor="let record of recordsToShow" class="page" fxFlex>
       <mat-card-header>
         <mat-card-title>
           <h2>
@@ -24,17 +25,30 @@
           </h2>
         </mat-card-title>
         <mat-card-subtitle>{{ record.tags.join(", ") }}</mat-card-subtitle>
-        <div fxFlex="1 0 30%"></div>
-        <div class="action-button-bar" fxFlex="1 0 0%">
-          <button mat-icon-button color="primary" (click)="edit(record)">
-            <mat-icon aria-label="Edit">edit</mat-icon>
+        <div fxFlex></div>
+
+        <div>
+          <button [matMenuTriggerFor]="menu" mat-icon-button>
+            <mat-icon>more_vert</mat-icon>
           </button>
-          <button mat-icon-button color="primary" (click)="onOpenInEditor(record)">
-            <mat-icon aria-label="editor">open_in_new</mat-icon>
-          </button>
-          <button mat-icon-button color="warn" (click)="delete(record)">
-            <mat-icon aria-label="Delete">delete</mat-icon>
-          </button>
+          <mat-menu #menu="matMenu">
+            <button (click)="onDelete(record)" mat-menu-item>
+              <mat-icon aria-label="delete" color="warn">delete</mat-icon>
+              <span>Löschen</span>
+            </button>
+            <button (click)="onDuplicateRecord(record)" mat-menu-item>
+              <mat-icon aria-label="duplicate">content_copy</mat-icon>
+              <span>Duplizieren</span>
+            </button>
+            <button (click)="onOpenInEditor(record)" mat-menu-item>
+              <mat-icon aria-label="editor">open_in_new</mat-icon>
+              <span>Editor</span>
+            </button>
+            <a [href]="record.id | pdfLink" mat-menu-item target="_blank">
+              <mat-icon aria-label="pdf">picture_as_pdf</mat-icon>
+              Pdf
+            </a>
+          </mat-menu>
         </div>
       </mat-card-header>
       <img (click)="onRecordClicked(record.id)" mat-card-image

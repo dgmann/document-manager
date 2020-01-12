@@ -1,7 +1,6 @@
 <div [fxLayout.gt-md]="viewMode" fxLayout="column" fxLayoutAlign="center" fxLayoutGap="10px">
-  <div *ngFor="let page of pages; let i = index; trackBy: trackByFn" class="page-container"
-       fxFlex.gt-md="calc(50% - 10px)">
-    <mat-card>
+  <div *ngFor="let page of pages; let i = index; trackBy: trackByFn" class="page-container" fxFlex>
+    <mat-card class="page">
       <mat-card-header>
         <mat-card-title>Seite {{ i + 1 }}</mat-card-title>
         <mat-card-subtitle>von {{ pages.length }}</mat-card-subtitle>
@@ -22,7 +21,7 @@
           <mat-icon aria-label="delete">delete</mat-icon>
         </button>
       </mat-card-header>
-      <img (click)="clickRecord.emit()" [alt]="'Page ' + i" [src]="page.url" class="page" mat-card-image>
+      <img (click)="clickRecord.emit()" [alt]="'Page ' + i" [src]="page.url" mat-card-image>
     </mat-card>
   </div>
 </div>

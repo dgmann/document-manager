@@ -22,6 +22,7 @@ export class MultiRecordListComponent {
   @Output() updateRecord = new EventEmitter<EditResult>();
   @Output() deleteRecord = new EventEmitter<Record>();
   @Output() openInEditor = new EventEmitter<Record>();
+  @Output() duplicate = new EventEmitter<Record>();
   selectedCategory: string;
 
   @Input() set patient(patient: Patient) {
@@ -65,7 +66,7 @@ export class MultiRecordListComponent {
     this.dialog.open(record).subscribe(result => this.updateRecord.emit(result));
   }
 
-  delete(record: Record) {
+  onDelete(record: Record) {
     this.messageBox.open('Löschen', 'Wollen sie diesen Befund löschen?').subscribe(yes => {
       if (yes) {
         this.deleteRecord.emit(record);
@@ -75,6 +76,10 @@ export class MultiRecordListComponent {
 
   onOpenInEditor(record: Record) {
     this.openInEditor.emit(record);
+  }
+
+  onDuplicateRecord(record: Record) {
+    this.duplicate.emit(record);
   }
 
   onSelectedIndexChange(index: number) {

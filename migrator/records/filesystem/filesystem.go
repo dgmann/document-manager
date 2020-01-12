@@ -2,8 +2,8 @@ package filesystem
 
 import (
 	"context"
+	"fmt"
 	"github.com/dgmann/document-manager/migrator/records/models"
-	"github.com/pkg/errors"
 	"io"
 	"os"
 	"path/filepath"
@@ -12,7 +12,7 @@ import (
 func CreateIndex(ctx context.Context, dir string) (*Index, error) {
 	var files []RecordContainerCloser
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
-		return nil, errors.Wrap(err, "directory to index does not exist")
+		return nil, fmt.Errorf("directory to index does not exist: %w", err)
 	}
 
 	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {

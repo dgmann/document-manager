@@ -29,6 +29,10 @@ func (t *ExporterController) Export(w http.ResponseWriter, req *http.Request) {
 		NewErrorResponse(w, err, http.StatusBadRequest).WriteJSON()
 	}
 	res, err := t.creator.Create(req.Context(), title, records)
+	if err != nil {
+		NewErrorResponse(w, err, http.StatusInternalServerError).WriteJSON()
+		return
+	}
 
 	w.Header().Add("Content-Type", "application/pdf")
 	NewBinaryResponseWithStatus(w, res, http.StatusOK).Write()

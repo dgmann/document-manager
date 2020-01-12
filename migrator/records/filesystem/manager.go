@@ -2,6 +2,7 @@ package filesystem
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"path/filepath"
@@ -17,13 +18,13 @@ func NewManager(recordDirectory, dataDirectory string) *Manager {
 	return &Manager{RecordDirectory: recordDirectory, DataDirectory: dataDirectory}
 }
 
-func (m *Manager) Index(ctx context.Context) (*Index, error) {
+func (m *Manager) Index(ctx context.Context) (index *Index, err error) {
 	if m.index != nil {
 		return m.index, nil
 	}
 
 	filePath := filepath.Join(m.DataDirectory, "filesystem.gob")
-	index, err := LoadIndexFromFile(filePath)
+	index, err = LoadIndexFromFile(filePath)
 	if err != nil {
 		m.index, err = CreateIndex(ctx, m.RecordDirectory)
 		if err != nil {
@@ -32,11 +33,17 @@ func (m *Manager) Index(ctx context.Context) (*Index, error) {
 	} else {
 		m.index = index
 	}
+
 	defer func() {
+		if errors.Is(err, context.Canceled) {
+			return
+		}
+
 		if err := m.index.Save(filePath); err != nil {
 			logrus.WithError(err).Error("error saving filesystemindex to disk")
 		}
 	}()
+
 	logrus.Info("load sub records")
 	if err := m.index.LoadSubRecords(ctx, filepath.Join(m.DataDirectory, "splitted")); err != nil {
 		return nil, err

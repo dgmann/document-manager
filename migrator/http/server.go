@@ -115,6 +115,17 @@ func (s *Server) Run() error {
 	})
 	http.HandleFunc("/import", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodGet {
+			if !s.ImportManager.IsLoaded() {
+				w.Header().Set("Content-Type", "application/json")
+				_ = json.NewEncoder(w).Encode(map[string]interface{}{
+					"total":      0,
+					"imported":   0,
+					"errors":     nil,
+					"categories": 0,
+				})
+				return
+			}
+
 			importable, err := s.ImportManager.DataToImport(r.Context())
 			if err != nil {
 				w.WriteHeader(http.StatusInternalServerError)

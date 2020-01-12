@@ -3,7 +3,7 @@ module github.com/dgmann/document-manager/api
 require (
 	github.com/cskr/pubsub v1.0.1
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/dgmann/document-manager/pdf-processor/pkg/processor v0.0.0-20190929105418-0408c3fc5544
+	github.com/dgmann/document-manager/pdf-processor/pkg/processor v0.0.0-20191219091335-e12b189b6d8c
 	github.com/go-chi/chi v4.0.2+incompatible
 	github.com/go-chi/cors v1.0.0
 	github.com/go-stack/stack v1.8.0 // indirect

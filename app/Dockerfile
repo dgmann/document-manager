@@ -1,4 +1,4 @@
-FROM node:latest as builder
+FROM node:lts-alpine as builder
 
 WORKDIR /build
 ADD package.json package-lock.json ./

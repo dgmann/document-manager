@@ -19,8 +19,6 @@ github.com/golang/protobuf v1.2.0/go.mod h1:6lQm79b+lXiMfvg/cZm0SGofjICqVBUtrP5y
 github.com/golang/protobuf v1.3.2 h1:6nsPYzhq5kReh6QImI3k5qWzO4PEbvbIW2cwSfR/6xs=
 github.com/golang/protobuf v1.3.2/go.mod h1:6lQm79b+lXiMfvg/cZm0SGofjICqVBUtrP5yJMmIC1U=
 github.com/google/go-cmp v0.2.0/go.mod h1:oXzfMopK8JAjlY9xF4vHSVASa0yLyX7SntLO5aqRK0M=
-github.com/h2non/filetype v1.0.5 h1:Esu2EFM5vrzNynnGQpj0nxhCkzVQh2HRY7AXUh/dyJM=
-github.com/h2non/filetype v1.0.5/go.mod h1:isekKqOuhMj+s/7r3rIeTErIRy4Rub5uBWHfvMusLMU=
 github.com/hhrutter/lzw v0.0.0-20190827003112-58b82c5a41cc h1:crd+cScoxEqSOqClzjkNMNQNdMCF3SGXhPdDWBQfNZE=
 github.com/hhrutter/lzw v0.0.0-20190827003112-58b82c5a41cc/go.mod h1:yJBvOcu1wLQ9q9XZmfiPfur+3dQJuIhYQsMGLYcItZk=
 github.com/hhrutter/tiff v0.0.0-20190827003322-d08e2ad45835 h1:8XqemC6WorzU92LW/+cMr8e+oCpRUobYuieBCpb7bLw=
@@ -34,8 +32,6 @@ github.com/onsi/ginkgo v1.6.0 h1:Ix8l273rp3QzYgXSR+c8d1fTG7UPgYkOSELPhiY/YGw=
 github.com/onsi/ginkgo v1.6.0/go.mod h1:lLunBs/Ym6LB5Z9jYTR76FiuTmxDTDusOGeTQH+WWjE=
 github.com/onsi/gomega v1.4.2 h1:3mYCb7aPxS/RU7TI1y4rkEn1oKmPRjNJLNEXgw7MH2I=
 github.com/onsi/gomega v1.4.2/go.mod h1:ex+gbHU/CVuBBDIJjb2X0qEXbFg53c61hWP/1CpauHY=
-github.com/pdfcpu/pdfcpu v0.2.5 h1:7jBh0EOQgxxpe35XjTtEzjHJzVMHO3ZwUn8EYNEA6Ng=
-github.com/pdfcpu/pdfcpu v0.2.5/go.mod h1:VLoFmLCCnUkneQe2uTjK1ZgPveTUZKGgIb2OP20+W5c=
 github.com/pdfcpu/pdfcpu v0.2.6-0.20191115001021-1e3294bc5ab2 h1:JqD1CI4N3I5GO9h8vudomsG8IqZYKtqZrItJQOY1DZ0=
 github.com/pdfcpu/pdfcpu v0.2.6-0.20191115001021-1e3294bc5ab2/go.mod h1:VLoFmLCCnUkneQe2uTjK1ZgPveTUZKGgIb2OP20+W5c=
 github.com/phpdave11/gofpdi v1.0.7/go.mod h1:vBmVV0Do6hSBHC8uKUQ71JGW+ZGQq74llk/7bXwjDoI=
@@ -85,8 +81,6 @@ gopkg.in/gemnasium/logrus-airbrake-hook.v2 v2.1.2 h1:OAj3g0cR6Dx/R07QgQe8wkA9RNj
 gopkg.in/gemnasium/logrus-airbrake-hook.v2 v2.1.2/go.mod h1:Xk6kEKp8OKb+X14hQBKWaSkCsqBpgog8nAV2xsGOxlo=
 gopkg.in/gographics/imagick.v3 v3.2.0 h1:eUwlkCw2fa20OGu47G39Im8c50S9n/CVkh8PwtOKExA=
 gopkg.in/gographics/imagick.v3 v3.2.0/go.mod h1:HbW83cYCl1jftZi3B/VZpVqsuNi4vW7qUrghjxBiT+8=
-gopkg.in/h2non/filetype.v1 v1.0.5 h1:CC1jjJjoEhNVbMhXYalmGBhOBK2V70Q1N850wt/98/Y=
-gopkg.in/h2non/filetype.v1 v1.0.5/go.mod h1:M0yem4rwSX5lLVrkEuRRp2/NinFMD5vgJ4DlAhZcfNo=
 gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 h1:uRGJdciOHaEIrze2W8Q3AKkepLTh2hOroT7a+7czfdQ=
 gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7/go.mod h1:dt/ZhP58zS4L8KSrWDmTeBkI65Dw0HsyUHuEVlX15mw=
 gopkg.in/yaml.v2 v2.2.1 h1:mUhvW9EsL+naU5Q3cakzfE91YhliOondGd6ZrsDBHQE=

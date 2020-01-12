@@ -110,7 +110,7 @@ func (f *DiskStorage) ForEach(keyed storage.Keyed, forEachFn ForEachFunc) error 
 	return f.storage.Walk(p, func(currentPath string, info os.FileInfo, err error) error {
 		if !info.IsDir() {
 			ext := filepath.Ext(info.Name())
-			abs := strings.Trim(currentPath, ext)
+			abs := strings.TrimSuffix(currentPath, ext)
 			rel, err := filepath.Rel(f.Root, abs)
 			if err != nil {
 				return err
@@ -118,7 +118,6 @@ func (f *DiskStorage) ForEach(keyed storage.Keyed, forEachFn ForEachFunc) error 
 
 			keys := strings.Split(rel, string(filepath.Separator))
 			resource := storage.NewKeyedGenericResource(nil, ext, keys...)
-
 			withData, err := f.Get(resource)
 			if err != nil {
 				return fmt.Errorf("error reading resource %s: %w", filepath.Join(resource.Key()...), err)

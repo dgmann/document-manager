@@ -5,6 +5,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build --prod=true",
+    "build-low-memory": "node --max_old_space_size=800 ./node_modules/@angular/cli/bin/ng build --prod=true",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"

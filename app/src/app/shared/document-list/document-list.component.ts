@@ -27,7 +27,7 @@ import {NotificationService} from '@app/core';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DocumentListComponent implements OnInit, AfterViewInit {
-  @ViewChild(MatSort, { static: false }) sort: MatSort;
+  @ViewChild(MatSort) sort: MatSort;
 
   @Input() selectedIds: string[];
 

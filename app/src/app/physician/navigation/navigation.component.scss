@@ -1,4 +1,4 @@
-@import "../../../styles/theme";
+@import "theme-variables";
 
 .badge {
   font-size: 11px;
@@ -15,8 +15,4 @@
 
   border-radius: 50%;
   margin-left: 5px;
-}
-
-.active {
-  @extend .mat-raised-button;
 }

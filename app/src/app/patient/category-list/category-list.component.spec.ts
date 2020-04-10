@@ -21,7 +21,7 @@ describe('CategoryListComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(CategoryListComponent);
     component = fixture.componentInstance;
-    component.categories = of([]);
+    component.categories = [];
     fixture.detectChanges();
   });
 

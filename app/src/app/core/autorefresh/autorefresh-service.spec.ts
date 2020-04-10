@@ -1,7 +1,7 @@
 import {AutorefreshService} from './autorefresh-service';
-import {NotificationMessage, NotificationMessageType} from '../notifications/websocket-service';
+import {NotificationMessage, NotificationMessageType, NotificationTopic} from '../notifications/websocket-service';
 import {ActionType, RecordEvent} from '../notifications/notification-service';
-import {DeleteRecordSuccess, LoadRecordsSuccess, UpdateRecordSuccess} from '../store';
+import {DeleteRecordSuccess} from '@app/core/records';
 import {of, throwError} from 'rxjs';
 import createSpyObj = jasmine.createSpyObj;
 
@@ -16,7 +16,7 @@ describe('AutoRefreshService', () => {
     websocketService = createSpyObj(['create']);
     websocketService.create.and.returnValue(of(null));
     store = createSpyObj(['pipe', 'dispatch']);
-    service = new AutorefreshService(store, websocketService, notificationService);
+    service = new AutorefreshService(store, websocketService, notificationService, null);
   });
 
   it('should create service', () => {
@@ -25,9 +25,10 @@ describe('AutoRefreshService', () => {
 
   it('should handle create messages', () => {
     const createMessage: NotificationMessage = {
-      data: {},
+      id: '1',
       timestamp: new Date(),
-      type: NotificationMessageType.Created
+      type: NotificationMessageType.Created,
+      topic: NotificationTopic.Records
     };
     service.webSocket$ = of(createMessage);
 
@@ -37,21 +38,19 @@ describe('AutoRefreshService', () => {
       type: ActionType.ADDED,
       message: 'Neues Dokument hinzugefügt',
       timestamp: createMessage.timestamp,
-      record: createMessage.data
-    });
-    const expectedStoreAction = new LoadRecordsSuccess({
-      records: [createMessage.data]
+      id: createMessage.id
     });
 
     expect(notificationService.publish).toHaveBeenCalledWith(expectedNotification);
-    expect(store.dispatch).toHaveBeenCalledWith(expectedStoreAction);
+    expect(store.dispatch).toHaveBeenCalled();
   });
 
   it('should handle update messages', () => {
     const message: NotificationMessage = {
-      data: {id: '1'},
+      id: '1',
       timestamp: new Date(),
-      type: NotificationMessageType.Updated
+      type: NotificationMessageType.Updated,
+      topic: NotificationTopic.Records
     };
     service.webSocket$ = of(message);
 
@@ -61,23 +60,19 @@ describe('AutoRefreshService', () => {
       type: ActionType.UPDATED,
       message: 'Änderungen gespeichert',
       timestamp: message.timestamp,
-      record: message.data
-    });
-    const expectedStoreAction = new UpdateRecordSuccess({
-      record: {
-        id: message.data.id as string, changes: message.data
-      }
+      id: message.id
     });
 
     expect(notificationService.publish).toHaveBeenCalledWith(expectedNotification);
-    expect(store.dispatch).toHaveBeenCalledWith(expectedStoreAction);
+    expect(store.dispatch).toHaveBeenCalled();
   });
 
   it('should handle delete messages', () => {
     const message: NotificationMessage = {
-      data: {id: '1'},
+      id: '1',
       timestamp: new Date(),
-      type: NotificationMessageType.Deleted
+      type: NotificationMessageType.Deleted,
+      topic: NotificationTopic.Records
     };
     service.webSocket$ = of(message);
 
@@ -87,9 +82,9 @@ describe('AutoRefreshService', () => {
       type: ActionType.DELETED,
       message: 'Dokument gelöscht',
       timestamp: message.timestamp,
-      record: message.data
+      id: message.id
     });
-    const expectedStoreAction = new DeleteRecordSuccess({id: message.data.id as string});
+    const expectedStoreAction = new DeleteRecordSuccess({id: message.id as string});
 
     expect(notificationService.publish).toHaveBeenCalledWith(expectedNotification);
     expect(store.dispatch).toHaveBeenCalledWith(expectedStoreAction);

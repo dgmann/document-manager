@@ -21,8 +21,6 @@ describe('RecordFilterComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(RecordFilterComponent);
     component = fixture.componentInstance;
-    component.records = of();
-    component.patient = of();
     fixture.detectChanges();
   });
 

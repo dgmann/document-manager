@@ -2,9 +2,9 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {PatientComponent} from './patient.component';
 import {CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
-import {RecordService} from '@app/core/store';
+import {RecordService} from '@app/core/records';
 import {PatientService} from './patient.service';
-import {CategoryService} from '../core';
+import {CategoryService} from '@app/core/categories';
 import {RouterTestingModule} from '@angular/router/testing';
 import {of} from 'rxjs';
 import createSpy = jasmine.createSpy;

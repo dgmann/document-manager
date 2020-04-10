@@ -5,7 +5,7 @@ import {MatDialogModule} from '@angular/material/dialog';
 import {MatTableModule} from '@angular/material/table';
 import {CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
 import {RouterTestingModule} from '@angular/router/testing';
-import {RecordService} from '@app/core/store';
+import {RecordService} from '@app/core/records';
 import {of} from 'rxjs';
 
 describe('DocumentListComponent', () => {
@@ -31,7 +31,6 @@ describe('DocumentListComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(DocumentListComponent);
     component = fixture.componentInstance;
-    component.records = of();
     fixture.detectChanges();
   });
 

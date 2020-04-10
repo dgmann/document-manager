@@ -21,7 +21,6 @@ describe('TagListComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(TagListComponent);
     component = fixture.componentInstance;
-    component.tags = of();
     fixture.detectChanges();
   });
 

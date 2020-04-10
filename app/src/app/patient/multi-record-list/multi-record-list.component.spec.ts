@@ -5,7 +5,6 @@ import {MatCardModule} from '@angular/material/card';
 import {MatIconModule} from '@angular/material/icon';
 import {MatTabsModule} from '@angular/material/tabs';
 import {DocumentEditDialogService} from '@app/shared';
-import {of} from 'rxjs';
 import createSpyObj = jasmine.createSpyObj;
 
 describe('MultiRecordListComponent', () => {
@@ -31,9 +30,9 @@ describe('MultiRecordListComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(MultiRecordListComponent);
     component = fixture.componentInstance;
-    component.records = of([]);
-    component.selectedCategory = of('1');
-    component.categories = of({});
+    component.records = [];
+    component.selectedCategory = '1';
+    component.categories = {};
     fixture.detectChanges();
   });
 

@@ -4,7 +4,7 @@ import {InboxComponent} from './inbox.component';
 import {InboxService} from './inbox.service';
 import {of} from 'rxjs';
 import {SharedModule} from '../shared';
-import {RecordService, Status} from '../core/store';
+import {RecordService} from '../core/records';
 import {RouterTestingModule} from '@angular/router/testing';
 import {CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';

@@ -3,7 +3,7 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {ActionMenuComponent} from './action-menu.component';
 import {MatMenuModule} from '@angular/material/menu';
 import {CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
-import {Status} from '@app/core/store';
+import {Status} from '@app/core/records';
 
 describe('ActionMenuComponent', () => {
   let component: ActionMenuComponent;

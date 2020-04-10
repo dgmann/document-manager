@@ -5,7 +5,7 @@ import {PageListComponent} from './page-list/page-list.component';
 import {MatButtonModule} from '@angular/material/button';
 import {MatCardModule} from '@angular/material/card';
 import {MatIconModule} from '@angular/material/icon';
-import {RecordService} from '../core/store';
+import {RecordService} from '../core/records';
 import {RouterTestingModule} from '@angular/router/testing';
 import {of} from 'rxjs';
 import createSpy = jasmine.createSpy;

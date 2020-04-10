@@ -1,10 +1,10 @@
 import {Injectable} from '@angular/core';
 import {select, Store} from '@ngrx/store';
-import {Record, RecordService, selectInboxIds, selectInboxRecords, Status} from '../core/store';
+import {Record, RecordService, selectInboxIds, selectInboxRecords, Status} from '../core/records';
 import {selectSelectedIds, selectSelectedRecords, State} from './reducers';
 import {SelectRecords} from './store/inbox.actions';
 import {Observable} from 'rxjs';
-import {debounceTime, map, take} from 'rxjs/operators';
+import {debounceTime, take} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'

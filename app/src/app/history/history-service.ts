@@ -1,9 +1,9 @@
 import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
-import {Record} from '@app/core/store';
-import {environment} from '@env/environment';
+import {Record} from '@app/core/records';
 import {map, withLatestFrom} from 'rxjs/operators';
 import {BehaviorSubject, combineLatest, Observable} from 'rxjs';
+import {ConfigService} from '@app/core/config';
 
 @Injectable()
 export class HistoryService {
@@ -13,8 +13,8 @@ export class HistoryService {
   skip = 0;
   limit = 20;
 
-  constructor(private http: HttpClient) {
-    this.selectedRecord$ = combineLatest(this.selectedId$, this.records$)
+  constructor(private http: HttpClient, private config: ConfigService) {
+    this.selectedRecord$ = combineLatest([this.selectedId$, this.records$])
       .pipe(map(([id, records]) => records.find(record => record.id === id)));
   }
 
@@ -36,6 +36,6 @@ export class HistoryService {
       skip: skip.toString(),
       limit: limit.toString()
     };
-    return this.http.get<Record[]>(`${environment.api}/records`, {params});
+    return this.http.get<Record[]>(`${this.config.getApiUrl()}/records`, {params});
   }
 }

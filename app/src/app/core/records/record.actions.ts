@@ -54,8 +54,12 @@ export class UpdateRecordSuccess implements Action {
   readonly type = RecordActionTypes.UpdateRecordSuccess;
 
   constructor(public payload: { record: Update<Record> }) {
-    this.payload.record.changes.date = this.payload.record.changes.date && moment(this.payload.record.changes.date) || null;
-    this.payload.record.changes.receivedAt = this.payload.record.changes.receivedAt && moment(this.payload.record.changes.receivedAt) || null;
+    this.payload.record.changes.date = this.payload.record.changes.date
+      && moment(this.payload.record.changes.date)
+      || null;
+    this.payload.record.changes.receivedAt = this.payload.record.changes.receivedAt
+      && moment(this.payload.record.changes.receivedAt)
+      || null;
   }
 }
 

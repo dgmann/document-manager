@@ -3,7 +3,7 @@ import {MatSnackBar} from '@angular/material/snack-bar';
 import {groupBy, map} from 'lodash-es';
 import {Subject} from 'rxjs';
 import {bufferTime, filter} from 'rxjs/operators';
-import {EventSnackbarComponent} from './event-snackbar/event-snackbar.component';
+import {EventSnackbarComponent} from '../event-snackbar/event-snackbar.component';
 
 @Injectable({
   providedIn: 'root'

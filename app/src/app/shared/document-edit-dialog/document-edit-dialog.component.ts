@@ -16,10 +16,12 @@ import {filter, map, startWith, take} from 'rxjs/operators';
 import {Patient} from '@app/patient';
 
 
-import {Record} from '@app/core/store';
-import {Category, CategoryService, ExternalApiService, TagService} from '../../core';
+import {Record} from '@app/core/records';
+import {TagService} from '@app/core/tags';
+import {Category, CategoryService} from '@app/core/categories'
 import {untilDestroyed} from 'ngx-take-until-destroy';
 import {EditResult} from './edit-result.model';
+import {ExternalApiService} from './external-api.service';
 
 @Component({
   selector: 'app-document-edit-dialog',

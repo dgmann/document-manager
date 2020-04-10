@@ -4,7 +4,7 @@ import {ActivatedRoute} from '@angular/router';
 import {includes} from 'lodash-es';
 import {Observable} from 'rxjs';
 import {filter, switchMap} from 'rxjs/operators';
-import {Page, PageUpdate, Record, RecordService} from '../core/store';
+import {Page, PageUpdate, Record, RecordService} from '@app/core/records';
 
 
 @Component({

@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import {Category, CategoryService} from '@app/core';
+import {Component, OnInit} from '@angular/core';
+import {Category, CategoryService} from '@app/core/categories';
 import {Observable} from 'rxjs';
 import {NgForm} from '@angular/forms';
 

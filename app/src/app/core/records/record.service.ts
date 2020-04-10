@@ -2,13 +2,13 @@ import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {select, Store} from '@ngrx/store';
 import {map} from 'rxjs/operators';
-import {environment} from '@env/environment';
-import {State} from '../reducers';
+import {State} from '../store';
 import {DeleteRecord, LoadRecords, UpdatePages, UpdateRecord} from './record.actions';
 import {PageUpdate, Record} from './record.model';
 import {selectAllRecords, selectInvalidIds, selectIsLoading, selectRecordEntities} from './record.selectors';
 import {Observable} from 'rxjs';
-import {ActionType, GenericEvent, NotificationService, RecordEvent} from '../../notification-service';
+import {ActionType, GenericEvent, NotificationService, RecordEvent} from '../notifications/notification-service';
+import {ConfigService} from '@app/core/config';
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +18,10 @@ export class RecordService {
   public invalidIds: Observable<string[]>;
   public isLoading$: Observable<boolean>;
 
-  constructor(private store: Store<State>, private http: HttpClient, private notifications: NotificationService) {
+  constructor(private store: Store<State>,
+              private http: HttpClient,
+              private notifications: NotificationService,
+              private config: ConfigService) {
     this.records = this.store.pipe(select(selectAllRecords));
     this.invalidIds = this.store.pipe(select(selectInvalidIds));
     this.isLoading$ = this.store.pipe(select(selectIsLoading));
@@ -53,7 +56,7 @@ export class RecordService {
     const formData = new FormData();
     formData.append('pdf', pdf);
     formData.append('sender', 'Client');
-    this.http.post<Record>(environment.api + '/records', formData)
+    this.http.post<Record>(this.config.getApiUrl() + '/records', formData)
       .subscribe(record => this.notifications.publish(new RecordEvent({
         type: ActionType.NONE,
         timestamp: new Date(),
@@ -67,7 +70,7 @@ export class RecordService {
       timestamp: new Date(),
       message: 'PDF wird angehängt...'
     }));
-    this.http.post<Record>(`${environment.api}/records/${targetId}/append/${sourceId}`, null)
+    this.http.post<Record>(`${this.config.getApiUrl()}/records/${targetId}/append/${sourceId}`, null)
       .subscribe(record => this.notifications.publish(new RecordEvent({
         type: ActionType.NONE,
         timestamp: new Date(),
@@ -81,7 +84,7 @@ export class RecordService {
       timestamp: new Date(),
       message: 'Befund wird zurückgesetzt...'
     }));
-    this.http.put<Record>(`${environment.api}/records/${id}/reset`, null)
+    this.http.put<Record>(`${this.config.getApiUrl()}/records/${id}/reset`, null)
       .subscribe(record => this.notifications.publish(new RecordEvent({
         type: ActionType.NONE,
         timestamp: new Date(),
@@ -95,7 +98,7 @@ export class RecordService {
       timestamp: new Date(),
       message: 'Befund wird dupliziert...'
     }));
-    this.http.post<Record>(`${environment.api}/records/${id}/duplicate`, null)
+    this.http.post<Record>(`${this.config.getApiUrl()}/records/${id}/duplicate`, null)
       .subscribe(record => this.notifications.publish(new RecordEvent({
         type: ActionType.NONE,
         timestamp: new Date(),
@@ -105,7 +108,7 @@ export class RecordService {
   }
 
   public createPDFLink(ids: string[]) {
-    const url = new URL(`${environment.api}/export`);
+    const url = new URL(`${this.config.getApiUrl()}/export`);
     ids.forEach(id => url.searchParams.append('id', id));
     return url.href;
   }

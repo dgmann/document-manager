@@ -1,7 +1,7 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 
 
-import {PageUpdate, Record, RecordService} from '../../core/store/index';
+import {PageUpdate, Record, RecordService} from '@app/core/records';
 
 @Component({
   selector: 'app-record-viewer',

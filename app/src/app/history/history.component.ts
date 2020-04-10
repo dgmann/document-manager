@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {HistoryService} from '@app/history/history-service';
-import {Record} from '@app/core/store';
+import {Record} from '@app/core/records';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 

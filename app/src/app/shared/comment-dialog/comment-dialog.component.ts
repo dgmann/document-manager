@@ -1,6 +1,6 @@
 import {Component, Inject} from '@angular/core';
 import {MAT_DIALOG_DATA} from '@angular/material/dialog';
-import {Record} from '@app/core/store';
+import {Record} from '@app/core/records';
 
 @Component({
   selector: 'app-comment-dialog',

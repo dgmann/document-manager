@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, Inject, OnInit} from '@angular/core';
 import {MAT_SNACK_BAR_DATA} from '@angular/material/snack-bar';
-import {NotificationEvent} from '@app/core';
+import {NotificationEvent} from '@app/core/notifications';
 
 @Component({
   selector: 'app-event-snackbar',

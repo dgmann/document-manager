@@ -7,7 +7,7 @@ import {
   selectOtherRecords,
   selectReviewRecords,
   Status
-} from '../core/store/index';
+} from '../core/records';
 import {selectSelectedIds, selectSelectedRecords, State} from './reducers';
 import {SelectRecords} from './store/physician.actions';
 import {Observable} from 'rxjs';

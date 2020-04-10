@@ -17,8 +17,27 @@ export const selectReviewIds = createSelector(selectRecordState, (state: fromRec
 export const selectOtherIds = createSelector(selectRecordState, (state: fromRecord.State) => state.otherIds);
 export const selectDoneIds = createSelector(selectRecordState, (state: fromRecord.State) => state.doneIds);
 
-export const selectInboxRecords = createSelector(selectInboxIds, selectRecordEntities, (ids: string[], records: Dictionary<Record>) => ids.map(id => records[id]));
-export const selectEscalatedRecords = createSelector(selectEscalatedIds, selectRecordEntities, (ids: string[], records: Dictionary<Record>) => ids.map(id => records[id]));
-export const selectReviewRecords = createSelector(selectReviewIds, selectRecordEntities, (ids: string[], records: Dictionary<Record>) => ids.map(id => records[id]));
-export const selectOtherRecords = createSelector(selectOtherIds, selectRecordEntities, (ids: string[], records: Dictionary<Record>) => ids.map(id => records[id]));
-export const selectDoneRecords = createSelector(selectDoneIds, selectRecordEntities, (ids: string[], records: Dictionary<Record>) => ids.map(id => records[id]));
+export const selectInboxRecords = createSelector(
+  selectInboxIds,
+  selectRecordEntities,
+  (ids: string[], records: Dictionary<Record>) => ids.map(id => records[id])
+);
+export const selectEscalatedRecords = createSelector(
+  selectEscalatedIds,
+  selectRecordEntities,
+  (ids: string[], records: Dictionary<Record>) => ids.map(id => records[id])
+);
+export const selectReviewRecords = createSelector(
+  selectReviewIds,
+  selectRecordEntities,
+  (ids: string[], records: Dictionary<Record>) => ids.map(id => records[id])
+);
+export const selectOtherRecords = createSelector(
+  selectOtherIds,
+  selectRecordEntities,
+  (ids: string[], records: Dictionary<Record>) => ids.map(id => records[id]));
+export const selectDoneRecords = createSelector(
+  selectDoneIds,
+  selectRecordEntities,
+  (ids: string[], records: Dictionary<Record>) => ids.map(id => records[id])
+);

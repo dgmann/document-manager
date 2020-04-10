@@ -4,11 +4,10 @@ import {Actions, Effect, ofType} from '@ngrx/effects';
 import {Action} from '@ngrx/store';
 import {of} from 'rxjs';
 import {catchError, map, switchMap} from 'rxjs/operators';
-import {environment} from '@env/environment';
-import {Record} from '@app/core/store';
-import {LoadRecordsFail, LoadRecordsSuccess} from '../../core/store/record';
+import {Record, LoadRecordsFail, LoadRecordsSuccess} from '@app/core/records';
 import {PatientActionTypes, SelectPatient, SetPatient, SetPatientRecords} from './patient.actions';
-import {Patient} from './patient.model';
+import {Patient} from '@app/patient';
+import {ConfigService} from '@app/core/config';
 
 @Injectable()
 export class PatientEffects {
@@ -16,7 +15,7 @@ export class PatientEffects {
   @Effect()
   selectLoadPatientEffect$ = this.actions$.pipe(
     ofType(PatientActionTypes.SelectPatientId),
-    switchMap((action: SelectPatient) => this.http.get<Patient>(`${environment.api}/patients/${action.payload.id}`)),
+    switchMap((action: SelectPatient) => this.http.get<Patient>(`${this.config.getApiUrl()}/patients/${action.payload.id}`)),
     map(data => new SetPatient({patient: data})),
     catchError(() => of(new SetPatient({patient: null})))
   );
@@ -24,7 +23,7 @@ export class PatientEffects {
   @Effect()
   selectLoadRecordsEffect$ = this.actions$.pipe(
     ofType(PatientActionTypes.SelectPatientId),
-    switchMap((action: SelectPatient) => this.http.get<Record[]>(`${environment.api}/patients/${action.payload.id}/records`).pipe(
+    switchMap((action: SelectPatient) => this.http.get<Record[]>(`${this.config.getApiUrl()}/patients/${action.payload.id}/records`).pipe(
       switchMap(data => of<Action>(new LoadRecordsSuccess({records: data}), new SetPatientRecords({
         id: action.payload.id,
         recordIds: data.map(r => r.id)
@@ -33,6 +32,6 @@ export class PatientEffects {
     ))
   );
 
-  constructor(private actions$: Actions, private http: HttpClient) {
+  constructor(private actions$: Actions, private http: HttpClient, private config: ConfigService) {
   }
 }

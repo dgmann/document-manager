@@ -1,4 +1,4 @@
-import {Category} from '@app/core';
+import {Category} from '@app/core/categories';
 
 export interface Patient {
   id: string;

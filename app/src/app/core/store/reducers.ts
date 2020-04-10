@@ -1,7 +1,7 @@
 import {ActionReducerMap, MetaReducer} from '@ngrx/store';
 import {environment} from '@env/environment';
-import * as fromRecord from './record/record.reducer';
-import * as fromLog from './log/log.reducer';
+import * as fromRecord from '../records/record.reducer';
+import * as fromLog from '../log/log.reducer';
 
 
 export interface State {

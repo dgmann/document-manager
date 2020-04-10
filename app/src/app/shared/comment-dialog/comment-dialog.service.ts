@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
-import {Record} from '@app/core/store';
+import {Record} from '@app/core/records';
 import {Observable} from 'rxjs';
 import {CommentDialogComponent} from './comment-dialog.component';
 

@@ -4,7 +4,8 @@ import {ActivatedRoute, NavigationEnd, Router} from '@angular/router';
 import {Observable} from 'rxjs';
 import {filter, map, mergeMap} from 'rxjs/operators';
 import {Patient} from './patient';
-import {AutorefreshService, NotificationService} from './core';
+import {AutorefreshService} from '@app/core/autorefresh';
+import {NotificationService} from '@app/core/notifications';
 
 @Component({
   selector: 'app-root',

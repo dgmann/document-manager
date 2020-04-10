@@ -13,7 +13,7 @@ import {SelectCategory, SelectPatient, SelectRecord, SetFilter} from './store/pa
 import {Filter} from './store/patient.reducer';
 import {Observable} from 'rxjs';
 import {Patient} from './store/patient.model';
-import {Record} from '../core/store/record';
+import {Record} from '../core/records';
 
 @Injectable()
 export class PatientService {

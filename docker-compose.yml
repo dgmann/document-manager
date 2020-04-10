@@ -40,14 +40,13 @@ services:
   app:
     build: ./app
     environment:
-      - API_URL=$PROTO://$BASE_URL/api
-      - WS_URL=$WEBSOCKET_PROTO://$BASE_URL/api/notifications
+      - API_HOST=$HOST_NAME
     networks:
       - backend
   fax_watcher:
     build: ./directory-watcher
     environment:
-      - DESTINATION=$PROTO://$BASE_URL/api
+      - DESTINATION=http://api/api
       - PARSER=fax
     depends_on:
       - api
@@ -58,7 +57,7 @@ services:
   scan_watcher:
     build: ./directory-watcher
     environment:
-      - DESTINATION=$PROTO://$BASE_URL/api
+      - DESTINATION=http://api/api
       - PARSER=generic
       - SENDER=Scan
     depends_on:
@@ -88,7 +87,7 @@ services:
       - DB_USER=
       - DB_PASSWORD=
       - DB_NAME=
-      - API_URL=$PROTO://$BASE_URL/api
+      - API_URL=http://api/api
 networks:
   backend:
 volumes:

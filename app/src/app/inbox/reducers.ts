@@ -1,6 +1,6 @@
 import {createFeatureSelector, createSelector, MetaReducer} from '@ngrx/store';
 import {environment} from '@env/environment';
-import {selectRecordEntities} from '../core/store';
+import {selectRecordEntities} from '@app/core/records';
 import * as fromInbox from './store/inbox.reducer';
 
 export const reducers = fromInbox.reducer;

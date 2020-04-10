@@ -4,8 +4,8 @@ import {FormControl} from '@angular/forms';
 import {MatAutocompleteSelectedEvent} from '@angular/material/autocomplete';
 import {Observable} from 'rxjs';
 import {debounceTime, filter, map, switchMap} from 'rxjs/operators';
-import {environment} from '@env/environment';
 import {Patient} from '@app/patient';
+import {ConfigService} from '@app/core/config';
 
 @Component({
   selector: 'app-patient-search',
@@ -18,7 +18,7 @@ export class PatientSearchComponent implements OnInit {
   public searchResults: Observable<Patient[]>;
   public searchInput = new FormControl();
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private config: ConfigService) {
   }
 
   ngOnInit() {
@@ -29,12 +29,12 @@ export class PatientSearchComponent implements OnInit {
         switchMap(query => {
           const patientId = parseInt(query, 10);
           if (patientId) {
-            return this.http.get<Patient>(`${environment.api}/patients/${patientId}`).pipe(
+            return this.http.get<Patient>(`${this.config.getApiUrl()}/patients/${patientId}`).pipe(
               map(patient => [patient])
             );
           } else {
             const patientQuery = this.parseQuery(query);
-            return this.http.get<Patient[]>(`${environment.api}/patients`, {params: {...patientQuery}});
+            return this.http.get<Patient[]>(`${this.config.getApiUrl()}/patients`, {params: {...patientQuery}});
           }
         })
       );

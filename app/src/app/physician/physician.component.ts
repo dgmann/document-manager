@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Observable} from 'rxjs';
 import {filter, map} from 'rxjs/operators';
-import {Record} from '@app/core/store';
+import {Record} from '@app/core/records';
 import {PhysicianService} from './physician.service';
 
 @Component({

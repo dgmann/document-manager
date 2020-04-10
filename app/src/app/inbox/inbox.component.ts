@@ -1,11 +1,10 @@
 import {ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {Record} from '../core/store';
+import {Record} from '@app/core/records';
 import {InboxService} from './inbox.service';
-import {ActionBarService} from '@app/inbox/action-bar/action-bar.service';
+import {ActionBarService} from '@app/inbox/action-bar';
 import {untilDestroyed} from 'ngx-take-until-destroy';
-import {RecordViewerViewMode} from '@app/shared/record-viewer/record-viewer.component';
 
 @Component({
   selector: 'app-inbox',

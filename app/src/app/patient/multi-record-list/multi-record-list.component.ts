@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 import {findIndex, groupBy, sortBy} from 'lodash-es';
-import {Category} from '@app/core';
-import {Record} from '@app/core/store';
+import {Category} from '@app/core/categories';
+import {Record} from '@app/core/records';
 import {DocumentEditDialogService, EditResult, MessageBoxService} from '../../shared';
 import {Patient} from '@app/patient';
 

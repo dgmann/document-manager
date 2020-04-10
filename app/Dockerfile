@@ -15,6 +15,6 @@ COPY run.sh /run.sh
 RUN chmod +x /run.sh
 COPY --from=builder /build/dist/app /app
 
-ENV API_URL=http://localhost:8080 WS_URL=ws://localhost:8080/notifications
+ENV API_HOST=localhost ENABLE_SSL=true
 
 CMD ["/bin/sh", "/run.sh"]

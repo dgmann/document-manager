@@ -1,7 +1,7 @@
 import {AutorefreshService} from './autorefresh-service';
-import {NotificationMessage, NotificationMessageType} from './websocket-service';
-import {ActionType, RecordEvent} from './notification-service';
-import {DeleteRecordSuccess, LoadRecordsSuccess, UpdateRecordSuccess} from './store';
+import {NotificationMessage, NotificationMessageType} from '../notifications/websocket-service';
+import {ActionType, RecordEvent} from '../notifications/notification-service';
+import {DeleteRecordSuccess, LoadRecordsSuccess, UpdateRecordSuccess} from '../store';
 import {of, throwError} from 'rxjs';
 import createSpyObj = jasmine.createSpyObj;
 

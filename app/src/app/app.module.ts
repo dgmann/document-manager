@@ -1,6 +1,6 @@
 import {BrowserModule} from '@angular/platform-browser';
 import localeDe from '@angular/common/locales/de';
-import {LOCALE_ID, NgModule} from '@angular/core';
+import {APP_INITIALIZER, LOCALE_ID, NgModule} from '@angular/core';
 
 import {AppComponent} from './app.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
@@ -14,8 +14,15 @@ import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {registerLocaleData} from '@angular/common';
 import {AppRoutingModule} from './app-routing.module';
 import {MatMenuModule} from '@angular/material/menu';
+import {ConfigService} from '@app/core/config';
 
 registerLocaleData(localeDe, 'de');
+
+const initializerConfigFn = (appConfig: ConfigService) => {
+  return () => {
+    return appConfig.loadAppConfig();
+  };
+};
 
 @NgModule({
   declarations: [
@@ -35,7 +42,13 @@ registerLocaleData(localeDe, 'de');
     MatMenuModule,
   ],
   providers: [
-    {provide: LOCALE_ID, useValue: 'de-DE'}
+    {provide: LOCALE_ID, useValue: 'de-DE'},
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initializerConfigFn,
+      multi: true,
+      deps: [ConfigService],
+    },
   ],
   bootstrap: [AppComponent]
 })

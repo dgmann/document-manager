@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
-import {Status} from '@app/core/store';
+import {Status} from '@app/core/records';
 import {InboxService} from '@app/inbox/inbox.service';
 import {Observable} from 'rxjs';
 import {take} from 'rxjs/operators';

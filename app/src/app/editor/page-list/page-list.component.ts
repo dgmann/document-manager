@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {PageUpdate} from '@app/core/store';
+import {PageUpdate} from '@app/core/records';
 import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
 
 @Component({

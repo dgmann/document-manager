@@ -2,14 +2,15 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Observable} from 'rxjs';
 import {filter, switchMap} from 'rxjs/operators';
-import {Record, RecordService} from '../core/store';
+import {Record, RecordService} from '@app/core/records';
 import {PatientService} from './patient.service';
 import {Patient} from './store/patient.model';
 import {Filter} from './store/patient.reducer';
 import {untilDestroyed} from 'ngx-take-until-destroy';
-import {Category, CategoryService, TagService} from '@app/core';
+import {Category, CategoryService} from '@app/core/categories';
 import {EditResult} from '../shared';
 import {animate, AnimationEvent, style, transition, trigger} from '@angular/animations';
+import {TagService} from '@app/core/tags';
 
 
 @Component({

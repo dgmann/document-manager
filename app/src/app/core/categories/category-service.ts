@@ -1,8 +1,9 @@
 import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
-import {environment} from '@env/environment';
 import {map} from 'rxjs/operators';
 import {BehaviorSubject, Observable} from 'rxjs';
+import {ConfigService} from '@app/core/config/config-service';
+import {Category} from './category';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +12,7 @@ export class CategoryService {
   public categories: Observable<Category[]>;
   public categoryMap: Observable<{ [id: string]: Category }>;
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private config: ConfigService) {
     this.categories = new BehaviorSubject<Category[]>([]);
     this.categoryMap = this.categories.pipe(
       map(cat => cat.reduce((accumulator, currentValue) => ({
@@ -22,23 +23,18 @@ export class CategoryService {
   }
 
   public load() {
-    this.http.get<Category[]>(environment.api + '/categories')
+    this.http.get<Category[]>(this.config.getApiUrl() + '/categories')
       .subscribe(categories => (this.categories as BehaviorSubject<Category[]>).next(categories));
   }
 
   public getByPatientId(id: string) {
-    return this.http.get<Category[]>(`${environment.api}/patients/${id}/categories`);
+    return this.http.get<Category[]>(`${this.config.getApiUrl()}/patients/${id}/categories`);
   }
 
   public add(id: string, category: string) {
-    return this.http.post(`${environment.api}/categories`, {
+    return this.http.post(`${this.config.getApiUrl()}/categories`, {
       id,
       name: category
     });
   }
-}
-
-export interface Category {
-  id: string;
-  name: string;
 }

@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Moment} from 'moment';
 import {BehaviorSubject, combineLatest} from 'rxjs';
-import {Category} from '@app/core';
+import {Category} from '@app/core/categories';
 import {Filter} from '../store/patient.reducer';
 
 @Component({

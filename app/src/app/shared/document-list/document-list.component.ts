@@ -14,10 +14,10 @@ import {Router} from '@angular/router';
 import {includes, without} from 'lodash-es';
 
 
-import {Record, RecordService, Status} from '@app/core/store';
+import {Record, RecordService, Status} from '@app/core/records';
 import {CommentDialogService} from '../comment-dialog/comment-dialog.service';
 import {DocumentEditDialogService} from '../document-edit-dialog/document-edit-dialog.service';
-import {NotificationService} from '@app/core';
+import {NotificationService} from '@app/core/notifications';
 
 
 @Component({

@@ -1,11 +1,12 @@
 import {Injectable} from '@angular/core';
 import {Store} from '@ngrx/store';
 import {filter, retry} from 'rxjs/operators';
-import {environment} from '@env/environment';
-import {LoadRecords, State} from './store';
-import {ActionType, GenericEvent, NotificationService, RecordEvent} from './notification-service';
-import {NotificationMessage, NotificationMessageType, WebsocketService} from './websocket-service';
+import {LoadRecords} from '@app/core/records';
+import {ActionType, GenericEvent, NotificationService, RecordEvent} from '../notifications/notification-service';
+import {NotificationMessage, NotificationMessageType, WebsocketService} from '../notifications/websocket-service';
 import {Observable} from 'rxjs';
+import {ConfigService} from '@app/core/config';
+import {State} from '@app/core/store';
 
 @Injectable({
   providedIn: 'root'
@@ -15,8 +16,9 @@ export class AutorefreshService {
 
   constructor(private store: Store<State>,
               private websocketService: WebsocketService,
-              private notificationService: NotificationService) {
-    const ws = this.websocketService.create(environment.websocket);
+              private notificationService: NotificationService,
+              private config: ConfigService) {
+    const ws = this.websocketService.create(this.config.getNotificationWebsocketUrl());
     const filterRecordEvents = filter((event: NotificationMessage) =>
       event.type === NotificationMessageType.Created
       || event.type === NotificationMessageType.Updated

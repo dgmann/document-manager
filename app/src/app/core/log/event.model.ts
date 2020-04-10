@@ -1,4 +1,4 @@
-import {Record} from '../record';
+import {Record} from '../records';
 
 export interface Event {
   payload: { timestamp: Date, message: string };

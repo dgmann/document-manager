@@ -1,7 +1,7 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {MatTableDataSource} from '@angular/material/table';
 import {sortBy} from 'lodash-es';
-import {Category} from '@app/core';
+import {Category} from '@app/core/categories';
 import {MultiSelectService} from '../multi-select.service';
 
 @Component({

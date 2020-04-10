@@ -1,5 +1,5 @@
 import {Pipe, PipeTransform} from '@angular/core';
-import {CategoryService} from '@app/core';
+import {CategoryService} from '@app/core/categories';
 import {map} from 'rxjs/operators';
 import {Observable} from 'rxjs';
 

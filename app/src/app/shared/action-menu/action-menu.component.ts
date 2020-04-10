@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {Record, Status} from '../../core/store/index';
+import {Record, Status} from '@app/core/records';
 
 @Component({
   selector: 'app-action-menu',

@@ -4,8 +4,8 @@
 
 export const environment = {
   production: false,
-  api: 'http://192.168.255.126/api',
-  websocket: 'ws://192.168.255.126/api/notifications'
+  api: 'http://localhost/api',
+  websocket: 'ws://localhost/api/notifications'
 };
 
 /*

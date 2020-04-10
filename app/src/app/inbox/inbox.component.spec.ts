@@ -58,21 +58,8 @@ describe('InboxComponent', () => {
   describe('Record Selection', () => {
     it('should select single record', () => {
       const id = '1';
-      component.onSelectRecord(id);
+      component.onSelectRecords([id]);
       expect(inboxService.selectIds).toHaveBeenCalledWith([id]);
-    });
-
-    it('should select all records', () => {
-      const ids = ['1', '2', '3'];
-      inboxService.allInboxRecordIds$ = of(ids);
-
-      component.onSelectAllRecords(true);
-      expect(inboxService.selectIds).toHaveBeenCalledWith(ids);
-    });
-
-    it('should deselect all records', () => {
-      component.onSelectAllRecords(false);
-      expect(inboxService.selectIds).toHaveBeenCalledWith([]);
     });
 
     it('should add record in multi-select mode', () => {
@@ -81,7 +68,7 @@ describe('InboxComponent', () => {
 
       inboxService.selectedIds$ = of(selectedIds);
       inboxService.isMultiSelect$ = of(true);
-      component.onSelectRecord(id);
+      component.onSelectRecords([id]);
       expect(inboxService.selectIds).toHaveBeenCalledWith([...selectedIds, id]);
     });
 
@@ -91,7 +78,7 @@ describe('InboxComponent', () => {
 
       inboxService.selectedIds$ = of(selectedIds);
       inboxService.isMultiSelect$ = of(true);
-      component.onSelectRecord(id);
+      component.onSelectRecords([id]);
       expect(inboxService.selectIds).toHaveBeenCalledWith(['1', '2']);
     });
   });
@@ -103,26 +90,12 @@ describe('InboxComponent', () => {
       {}
     ];
     const event = {
-      nativeEvent: {
-        dataTransfer: {
-          files
-        }
-      },
-      dragData: null
-    };
+      dataTransfer: {
+        files
+      }
+    } as unknown as DragEvent;
 
     component.onDrop(event);
     expect(inboxService.upload).toHaveBeenCalledTimes(3);
-  });
-
-  it('should delete selected records', () => {
-    component.onDeleteSelectedRecords();
-    expect(inboxService.deleteSelectedRecords).toHaveBeenCalled();
-  });
-
-  it('should update status of selected records', () => {
-    const status = Status.DONE;
-    component.onSetStatusOfSelectedRecords(status);
-    expect(inboxService.updateSelectedRecords).toHaveBeenCalledWith({status});
   });
 });

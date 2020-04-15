@@ -332,7 +332,7 @@ func (controller *RecordController) UpdatePages(w http.ResponseWriter, req *http
 		return
 	}
 
-	var errorIds []string
+	var errs []error
 	var wg sync.WaitGroup
 	var mutex = &sync.Mutex{}
 
@@ -349,28 +349,32 @@ func (controller *RecordController) UpdatePages(w http.ResponseWriter, req *http
 				img, err := controller.pdfProcessor.Rotate(req.Context(), bytes.NewBuffer(img.Image), int(update.Rotate))
 				if err != nil {
 					mutex.Lock()
-					errorIds = append(errorIds, update.Id)
+					errs = append(errs, fmt.Errorf("error rotating page %s: %w", update.Id, err))
 					mutex.Unlock()
 					return
 				}
 				err = controller.images.Write(storage.NewKeyedGenericResource(img.Image, img.Format, id, update.Id))
 				if err != nil {
 					mutex.Lock()
-					errorIds = append(errorIds, update.Id)
+					errs = append(errs, fmt.Errorf("error saving page %s: %w", update.Id, err))
 					mutex.Unlock()
 					return
 				}
 			} else {
 				mutex.Lock()
-				errorIds = append(errorIds, update.Id)
+				errs = append(errs, fmt.Errorf("unknown error processing page %s: %w", update.Id, err))
 				mutex.Unlock()
 			}
 		}(u)
 	}
 
 	wg.Wait()
-	if len(errorIds) > 0 {
-		NewErrorResponse(w, fmt.Errorf("error rotating pages %s", strings.Join(errorIds, ",")), http.StatusInternalServerError).WriteJSON()
+	if len(errs) > 0 {
+		errMessages := make([]string, len(errs))
+		for i, e := range errs {
+			errMessages[i] = e.Error()
+		}
+		NewErrorResponse(w, fmt.Errorf("error rotating pages: %s", strings.Join(errMessages, ", \n")), http.StatusInternalServerError).WriteJSON()
 		return
 	}
 

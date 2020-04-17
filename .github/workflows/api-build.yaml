@@ -1,0 +1,22 @@
+name: Build Frontend App
+on:
+  push:
+    paths:
+      - 'app/**'
+      - '.github/workflow/api-build.yaml'
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Publish to Registry
+        uses: elgohr/Publish-Docker-Github-Action@master
+        with:
+          name: dgmann/document-manager/api
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: docker.pkg.github.com
+          dockerfile: api/Dockerfile
+          context: api/

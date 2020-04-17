@@ -1,4 +1,4 @@
-FROM golang as builder
+FROM golang:1.14 as builder
 
 RUN apt-get update && apt-get install -y unzip libaio1 libaio-dev
 

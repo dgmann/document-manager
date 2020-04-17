@@ -13,10 +13,12 @@ jobs:
       - uses: actions/checkout@v2
       - name: Publish to Registry
         uses: elgohr/Publish-Docker-Github-Action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           name: dgmann/document-manager/migrator
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
           registry: docker.pkg.github.com
-          dockerfile: migrator/Dockerfile
-          context: migrator/
+          workdir: migrator/
+          buildargs: GITHUB_TOKEN

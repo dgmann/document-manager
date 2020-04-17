@@ -9,7 +9,7 @@ import (
 	"github.com/dgmann/document-manager/api/pdf"
 	"github.com/dgmann/document-manager/api/storage"
 	"github.com/go-chi/chi"
-	"github.com/mongodb/mongo-go-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"io/ioutil"
 	"net/http"
 	"net/url"

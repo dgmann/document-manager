@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"github.com/dgmann/document-manager/api/storage"
 	"github.com/jinzhu/copier"
-	"github.com/mongodb/mongo-go-driver/bson"
-	"github.com/mongodb/mongo-go-driver/bson/primitive"
 	"github.com/sirupsen/logrus"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"io"
 	"time"
 )

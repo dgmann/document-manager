@@ -6,9 +6,9 @@ import (
 	"errors"
 	"github.com/dgmann/document-manager/api/datastore"
 	"github.com/dgmann/document-manager/api/datastore/mock"
-	"github.com/mongodb/mongo-go-driver/bson/primitive"
-	"github.com/mongodb/mongo-go-driver/mongo"
 	"github.com/stretchr/testify/assert"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 	"testing"
 )
 

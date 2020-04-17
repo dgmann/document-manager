@@ -2,9 +2,10 @@ package mongo
 
 import (
 	"context"
-	"github.com/mongodb/mongo-go-driver/bson"
-	"github.com/mongodb/mongo-go-driver/mongo"
-	"github.com/mongodb/mongo-go-driver/mongo/readpref"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
 const (
@@ -23,7 +24,7 @@ func NewClient(dbHost string, dbName string) *Client {
 }
 
 func (c *Client) Connect(ctx context.Context) error {
-	client, err := mongo.Connect(ctx, c.uri)
+	client, err := mongo.NewClient(options.Client().ApplyURI(c.uri))
 	if err != nil {
 		return err
 	}

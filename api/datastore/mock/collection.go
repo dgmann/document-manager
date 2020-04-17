@@ -3,9 +3,9 @@ package mock
 import (
 	"context"
 	"github.com/dgmann/document-manager/api/datastore"
-	"github.com/mongodb/mongo-go-driver/mongo"
-	"github.com/mongodb/mongo-go-driver/mongo/options"
 	"github.com/stretchr/testify/mock"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type Collection struct {

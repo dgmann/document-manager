@@ -1,8 +1,8 @@
-name: Build Frontend App
+name: Build API
 on:
   push:
     paths:
-      - 'app/**'
+      - 'api/**'
       - '.github/workflow/api-build.yaml'
 
 jobs:

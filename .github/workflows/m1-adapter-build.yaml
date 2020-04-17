@@ -1,0 +1,22 @@
+name: Build M1 Adapter
+on:
+  push:
+    paths:
+      - 'm1-adapter/**'
+      - '.github/workflow/m1-adapter-build.yaml'
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Publish to Registry
+        uses: elgohr/Publish-Docker-Github-Action@master
+        with:
+          name: dgmann/document-manager/m1-adapter
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: docker.pkg.github.com
+          dockerfile: m1-adapter/Dockerfile
+          context: m1-adapter/

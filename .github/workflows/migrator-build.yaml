@@ -1,0 +1,22 @@
+name: Build Migrator
+on:
+  push:
+    paths:
+      - 'migrator/**'
+      - '.github/workflow/migrator-build.yaml'
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Publish to Registry
+        uses: elgohr/Publish-Docker-Github-Action@master
+        with:
+          name: dgmann/document-manager/migrator
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: docker.pkg.github.com
+          dockerfile: migrator/Dockerfile
+          context: migrator/

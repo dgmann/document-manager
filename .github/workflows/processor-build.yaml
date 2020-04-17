@@ -1,0 +1,22 @@
+name: Build Processor
+on:
+  push:
+    paths:
+      - 'pdf-processor/**'
+      - '.github/workflow/processor-build.yaml'
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Publish to Registry
+        uses: elgohr/Publish-Docker-Github-Action@master
+        with:
+          name: dgmann/document-manager/pdf-processor
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: docker.pkg.github.com
+          dockerfile: pdf-processor/Dockerfile
+          context: pdf-processor/

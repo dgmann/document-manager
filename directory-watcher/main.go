@@ -7,6 +7,7 @@ import (
 	"github.com/namsral/flag"
 	log "github.com/sirupsen/logrus"
 	"os"
+	"time"
 )
 
 var directory string
@@ -35,7 +36,7 @@ func init() {
 
 func main() {
 	w := watcher.NewDirectoryWatcher(scanInterval, retryCount)
-	uploader := client.NewHttpUploader(destination)
+	uploader := client.NewHttpUploader(destination, time.Second*5)
 	var p parser.Parser
 	if pars == "fax" {
 		p = &parser.Fax{}
@@ -54,7 +55,7 @@ func main() {
 			w.Error(record)
 		}
 		record.File = f
-		err = uploader.Upload(record.NewRecord)
+		err = uploader.CreateRecord(record.NewRecord)
 		f.Close()
 		if err != nil {
 			log.WithField("record", record).WithField("error", err).Errorf("error uploading record")

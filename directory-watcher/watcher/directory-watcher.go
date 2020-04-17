@@ -14,7 +14,12 @@ import (
 
 type NewRecord struct {
 	*client.NewRecord
-	PdfPath string
+	PdfPath      string
+	RetryCounter int
+}
+
+func NewNewRecord(record *client.NewRecord, pdfPath string) *NewRecord {
+	return &NewRecord{NewRecord: record, PdfPath: pdfPath, RetryCounter: 0}
 }
 
 type DirectoryWatcher struct {
@@ -52,7 +57,7 @@ func (w *DirectoryWatcher) Watch(dir string, parser parser.Parser) <-chan *NewRe
 				}
 
 				parsed := parser.Parse(f.Name())
-				record := &NewRecord{NewRecord: parsed}
+				record := NewNewRecord(parsed, f.Name())
 				record.PdfPath = path.Join(dir, f.Name())
 				w.add(record)
 			}

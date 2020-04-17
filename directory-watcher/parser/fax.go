@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"github.com/dgmann/document-manager/api/app"
 	"github.com/dgmann/document-manager/api/client"
 	"strings"
 	"time"
@@ -28,9 +27,7 @@ func (f *Fax) Parse(fileName string) *client.NewRecord {
 	}
 
 	return &client.NewRecord{
-		CreateRecord: app.CreateRecord{
-			Sender:     sender,
-			ReceivedAt: receviedAt,
-		},
+		Sender:     sender,
+		ReceivedAt: receviedAt,
 	}
 }

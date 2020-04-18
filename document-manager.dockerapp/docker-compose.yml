@@ -1,0 +1,98 @@
+version: "3.8"
+services:
+
+  gateway:
+    image: docker.pkg.github.com/dgmann/document-manager/gateway:latest
+    ports:
+      - 80:80
+    networks:
+      - backend
+    depends_on:
+      - api
+      - app
+      - m1-adapter
+  db:
+    image: mongo:latest
+    networks:
+      - backend
+    volumes:
+      - "mongo:/data/db"
+  processor:
+    build: ./pdf-processor
+    networks:
+      - backend
+  api:
+    image: docker.pkg.github.com/dgmann/document-manager/api:latest
+    volumes:
+      - "records:/records"
+      - "archive:/archive"
+    environment:
+      - DB_HOST=${api.db.host}
+      - DB_NAME=${api.db.name}
+      - PDFPROCESSOR_URL=${processor.url}
+    networks:
+      - backend
+    depends_on:
+      - db
+      - processor
+  app:
+    image: docker.pkg.github.com/dgmann/document-manager/app:latest
+    environment:
+      - API_HOST=${host.name}
+      - ENABLE_SSL=false
+    networks:
+      - backend
+  fax_watcher:
+    image: docker.pkg.github.com/dgmann/document-manager/directory-watcher:latest
+    environment:
+      - DESTINATION=${api.url}
+      - PARSER=fax
+    depends_on:
+      - api
+    networks:
+      - backend
+    volumes:
+      - "fax:/records"
+  scan_watcher:
+    image: docker.pkg.github.com/dgmann/document-manager/directory-watcher:latest
+    environment:
+      - DESTINATION=${api.url}
+      - PARSER=generic
+      - SENDER=Scan
+    depends_on:
+      - api
+    networks:
+      - backend
+    volumes:
+      - "scans:/records"
+  m1-adapter:
+    image: docker.pkg.github.com/dgmann/document-manager/m1-adapter:latest
+    networks:
+      - backend
+  migrator:
+    image: docker.pkg.github.com/dgmann/document-manager/migrator:latest
+    volumes:
+      - "migrator-records:/records"
+      - "migrator-data:/data"
+    depends_on:
+      - api
+    networks:
+      - backend
+    ports:
+      - 8080:8080
+    environment:
+      - DB_HOST=${migrator.mssql.host}
+      - DB_USER=${migrator.mssql.user}
+      - DB_PASSWORD=${migrator.mssql.password}
+      - DB_NAME=${migrator.mssql.name}
+      - API_URL=${api.url}
+networks:
+  backend:
+volumes:
+  mongo:
+  records:
+  archive:
+  fax:
+  scans:
+  migrator-data:
+  migrator-records:

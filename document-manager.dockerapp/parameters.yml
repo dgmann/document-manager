@@ -1,0 +1,17 @@
+host:
+  name: localhost
+processor:
+  url: processor:9000
+api:
+  url: http://api/api
+  db:
+    name: manager
+    host: db
+app:
+  ssl: false
+migrator:
+  mssql:
+    host: mssql
+    user: migration
+    password: demo
+    name: PdfDatabase

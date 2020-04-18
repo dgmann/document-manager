@@ -3,7 +3,7 @@ on:
   push:
     paths:
       - 'pdf-processor/**'
-      - '.github/workflow/processor-build.yaml'
+      - '.github/workflows/processor-build.yaml'
 
 jobs:
   push:

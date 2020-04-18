@@ -3,7 +3,7 @@ on:
   push:
     paths:
       - 'm1-adapter/**'
-      - '.github/workflow/m1-adapter-build.yaml'
+      - '.github/workflows/m1-adapter-build.yaml'
 
 jobs:
   push:

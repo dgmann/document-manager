@@ -3,7 +3,7 @@ on:
   push:
     paths:
       - 'app/**'
-      - '.github/workflow/app-build.yaml'
+      - '.github/workflows/app-build.yaml'
 
 jobs:
   push:

@@ -3,7 +3,7 @@ on:
   push:
     paths:
       - 'directory-watcher/**'
-      - '.github/workflow/watcher-build.yaml'
+      - '.github/workflows/watcher-build.yaml'
 
 jobs:
   push:

@@ -41,4 +41,6 @@ ENV DB_HOST=localhost \
     RETRY_COUNTER=3 \
     API_URL=http://api/api
 
+EXPOSE 8080
+
 CMD ["/migrator"]

@@ -2,6 +2,8 @@ package mongo
 
 import (
 	"context"
+	"fmt"
+	"github.com/dgmann/document-manager/api/datastore"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -19,12 +21,15 @@ type Client struct {
 	*mongo.Client
 }
 
-func NewClient(dbHost string, dbName string) *Client {
-	return &Client{uri: "mongodb://" + dbHost, dbName: dbName}
+func NewClient(config datastore.DatabaseConfig) *Client {
+	return &Client{
+		uri:    fmt.Sprintf("mongodb://%s:%s", config.Host, config.Port),
+		dbName: config.Name,
+	}
 }
 
 func (c *Client) Connect(ctx context.Context) error {
-	client, err := mongo.NewClient(options.Client().ApplyURI(c.uri))
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI(c.uri))
 	if err != nil {
 		return err
 	}

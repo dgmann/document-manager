@@ -1,33 +1,34 @@
 package main
 
 import (
+	"github.com/dgmann/document-manager/api/datastore"
 	"os"
+	"strings"
 )
 
 type Config struct {
 	RecordDirectory  string
 	ArchiveDirectory string
 	PdfProcessorUrl  string
-	Database         struct {
-		Host string
-		Name string
-	}
+	Database         datastore.DatabaseConfig
 }
 
 func ConfigFromEnv() Config {
 	recordDir := envOrDefault("RECORD_DIR", "/records")
 	archiveDir := envOrDefault("ARCHIVE_DIR", "/archive")
 	dbHost := envOrDefault("DB_HOST", "localhost")
+	dbPort := envOrDefault("DB_PORT", "27017")
 	dbName := envOrDefault("DB_NAME", "manager")
 	pdfProcessorUrl := envOrDefault("PDFPROCESSOR_URL", "127.0.0.1:9000")
 	return Config{
 		RecordDirectory:  recordDir,
 		ArchiveDirectory: archiveDir,
 		PdfProcessorUrl:  pdfProcessorUrl,
-		Database: struct {
-			Host string
-			Name string
-		}{Host: dbHost, Name: dbName},
+		Database: datastore.DatabaseConfig{
+			Host: strings.TrimSpace(dbHost),
+			Port: strings.TrimSpace(dbPort),
+			Name: strings.TrimSpace(dbName),
+		},
 	}
 }
 

@@ -27,8 +27,8 @@ func main() {
 		return
 	}
 
-	log.WithFields(log.Fields{"host": config.Database.Host, "database": config.Database.Name}).Info("connecting to database")
-	client := mongo.NewClient(config.Database.Host, config.Database.Name)
+	log.WithFields(log.Fields{"host": config.Database.Host, "port": config.Database.Port, "database": config.Database.Name}).Info("connecting to database")
+	client := mongo.NewClient(config.Database)
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 	if err := client.Connect(ctx); err != nil {

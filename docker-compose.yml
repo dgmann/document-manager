@@ -12,8 +12,8 @@ services:
     networks:
       backend: null
     volumes:
-      - records
-      - archive
+      - records:/records
+      - archive:/archive
   app:
     environment:
       API_HOST: localhost
@@ -37,7 +37,7 @@ services:
     networks:
       backend: null
     volumes:
-      - fax
+      - fax:/records
   gateway:
     depends_on:
       - api
@@ -84,7 +84,7 @@ services:
     networks:
       backend: null
     volumes:
-      - scans
+      - scans:/records
 networks:
   backend: {}
 volumes:

@@ -1,4 +1,4 @@
-version: "3.8"
+version: "3"
 services:
   api:
     depends_on:
@@ -8,21 +8,17 @@ services:
       DB_HOST: db
       DB_NAME: manager
       PDFPROCESSOR_URL: processor:9000
-    image: docker.pkg.github.com/dgmann/document-manager/api:latest
+    image: ghcr.io/dgmann/document-manager/api:latest
     networks:
       backend: null
     volumes:
-      - type: volume
-        source: records
-        target: /records
-      - type: volume
-        source: archive
-        target: /archive
+      - records
+      - archive
   app:
     environment:
       API_HOST: localhost
       ENABLE_SSL: "false"
-    image: docker.pkg.github.com/dgmann/document-manager/app:latest
+    image: ghcr.io/dgmann/document-manager/app:latest
     networks:
       backend: null
   db:
@@ -30,37 +26,30 @@ services:
     networks:
       backend: null
     volumes:
-      - type: volume
-        source: mongo
-        target: /data/db
+      - mongo
   fax_watcher:
     depends_on:
       - api
     environment:
       DESTINATION: http://api/api
       PARSER: fax
-    image: docker.pkg.github.com/dgmann/document-manager/directory-watcher:latest
+    image: ghcr.io/dgmann/document-manager/directory-watcher:latest
     networks:
       backend: null
     volumes:
-      - type: volume
-        source: fax
-        target: /records
+      - fax
   gateway:
     depends_on:
       - api
       - app
       - m1-adapter
-    image: docker.pkg.github.com/dgmann/document-manager/gateway:latest
+    image: ghcr.io/dgmann/document-manager/gateway:latest
     networks:
       backend: null
     ports:
-      - mode: ingress
-        target: 80
-        published: 80
-        protocol: tcp
+      - 80:80
   m1-adapter:
-    image: docker.pkg.github.com/dgmann/document-manager/m1-adapter:latest
+    image: ghcr.io/dgmann/document-manager/m1-adapter:latest
     networks:
       backend: null
   migrator:
@@ -72,24 +61,16 @@ services:
       DB_NAME: PdfDatabase
       DB_PASSWORD: demo
       DB_USER: migration
-    image: docker.pkg.github.com/dgmann/document-manager/migrator:latest
+    image: ghcr.io/dgmann/document-manager/migrator:latest
     networks:
       backend: null
     ports:
-      - mode: ingress
-        target: 8080
-        published: 8080
-        protocol: tcp
+      - 8080:8080
     volumes:
-      - type: volume
-        source: migrator-records
-        target: /records
-      - type: volume
-        source: migrator-data
-        target: /data
+      - migrator-records
+      - migrator-data
   processor:
-    build:
-      context: ./pdf-processor
+    image: ghcr.io/dgmann/document-manager/pdf-processor:latest
     networks:
       backend: null
   scan_watcher:
@@ -99,13 +80,11 @@ services:
       DESTINATION: http://api/api
       PARSER: generic
       SENDER: Scan
-    image: docker.pkg.github.com/dgmann/document-manager/directory-watcher:latest
+    image: ghcr.io/dgmann/document-manager/directory-watcher:latest
     networks:
       backend: null
     volumes:
-      - type: volume
-        source: scans
-        target: /records
+      - scans
 networks:
   backend: {}
 volumes:

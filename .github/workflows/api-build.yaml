@@ -16,7 +16,7 @@ jobs:
         with:
           name: dgmann/document-manager/api
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-          registry: docker.pkg.github.com
+          password: ${{ secrets.CR_PAT }}
+          registry: ghcr.io
           dockerfile: api/Dockerfile
           context: api/

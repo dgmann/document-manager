@@ -16,7 +16,7 @@ jobs:
         with:
           name: dgmann/document-manager/m1-adapter
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-          registry: docker.pkg.github.com
+          password: ${{ secrets.CR_PAT }}
+          registry: ghcr.io
           dockerfile: m1-adapter/Dockerfile
           context: m1-adapter/

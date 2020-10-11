@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/dgmann/document-manager/api/datastore"
+	"github.com/sirupsen/logrus"
 	"io"
 	"io/ioutil"
 	"mime/multipart"
@@ -46,7 +47,15 @@ func (u *HttpUploader) CreateCategory(category datastore.Category) error {
 		return err
 	}
 	defer res.Body.Close()
-	return nil
+	if res.StatusCode == http.StatusCreated {
+		return nil
+	}
+	resBody, _ := ioutil.ReadAll(res.Body)
+	if res.StatusCode == http.StatusConflict {
+		logrus.Infof("Category %s already exists. Skipping: %s", category.Id, string(resBody))
+		return nil
+	}
+	return errors.New(fmt.Sprintf("bad response. Status: %v, Message: %s", res.StatusCode, string(resBody)))
 }
 
 func (u *HttpUploader) CreateRecord(create *NewRecord) error {

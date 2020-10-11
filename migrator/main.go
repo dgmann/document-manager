@@ -14,6 +14,7 @@ func main() {
 		logrus.Error(fmt.Errorf("error during startup: %w", err))
 		return
 	}
-	logrus.Info("application started. Listening...")
-	logrus.Fatal(server.Run())
+	port := "8080"
+	logrus.Infof("application started. Listening on port %s...", port)
+	logrus.Fatal(server.Run(port))
 }

@@ -38,7 +38,7 @@ func NewServer(conf Config) (*Server, error) {
 	return &Server{DatabaseManager: recordManager, FilesystemManager: fileystemManager, ImportManager: importManager, config: conf, State: State{ImportRunning: semaphore.NewWeighted(1)}}, nil
 }
 
-func (s *Server) Run() error {
+func (s *Server) Run(port string) error {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		t := template.Must(template.New("index.gohtml").ParseFiles("web/template/index.gohtml"))
 		if err := t.Execute(w, s); err != nil {
@@ -161,7 +161,7 @@ func (s *Server) Run() error {
 			}
 		}
 	})
-	return http.ListenAndServe(":8080", nil)
+	return http.ListenAndServe(":"+port, nil)
 }
 
 func returnCounts(w http.ResponseWriter, countable models.Countable) {

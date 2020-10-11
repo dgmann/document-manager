@@ -108,13 +108,21 @@ func (controller *RecordController) Create(w http.ResponseWriter, req *http.Requ
 	receivedAt := time.Now()
 	var date time.Time
 	if r := req.FormValue("receivedAt"); r != "" {
-		if parsed, err := time.Parse(time.RFC3339, r); err != nil {
+		parsed, err := time.Parse(time.RFC3339, r)
+		if err == nil {
 			receivedAt = parsed
+		} else {
+			NewErrorResponse(w, fmt.Errorf("field: receivedAt. invalid date format %w. Expected %s", err, time.RFC3339), http.StatusBadRequest).WriteJSON()
+			return
 		}
 	}
 	if r := req.FormValue("date"); r != "" {
-		if parsed, err := time.Parse(time.RFC3339, r); err != nil {
+		parsed, err := time.Parse(time.RFC3339, r)
+		if err == nil {
 			date = parsed
+		} else {
+			NewErrorResponse(w, fmt.Errorf("field: date. invalid date format %w. Expected %s", err, time.RFC3339), http.StatusBadRequest).WriteJSON()
+			return
 		}
 	}
 	newRecord := datastore.CreateRecord{Sender: sender, ReceivedAt: receivedAt, Date: date, PatientId: &patientId, Status: datastore.Status(status), Category: &category}

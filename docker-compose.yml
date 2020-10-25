@@ -26,7 +26,7 @@ services:
     networks:
       backend: null
     volumes:
-      - mongo
+      - mongo:/data/db
   fax_watcher:
     depends_on:
       - api

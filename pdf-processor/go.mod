@@ -3,6 +3,7 @@ module github.com/dgmann/document-manager/pdf-processor
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dgmann/document-manager/pdf-processor/pkg/processor v0.0.0-20200417153743-7da1f9dcefe3
+	github.com/disintegration/imaging v1.6.2
 	github.com/gen2brain/go-fitz v0.0.0-20190716092309-62357ab3d4a9
 	github.com/golang/protobuf v1.4.0 // indirect
 	github.com/jung-kurt/gofpdf v1.16.2
@@ -20,7 +21,6 @@ require (
 	google.golang.org/grpc v1.28.1
 	gopkg.in/airbrake/gobrake.v2 v2.0.9 // indirect
 	gopkg.in/gemnasium/logrus-airbrake-hook.v2 v2.1.2 // indirect
-	gopkg.in/gographics/imagick.v3 v3.3.0
 )
 
 go 1.14

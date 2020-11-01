@@ -67,10 +67,7 @@ func (c *CategoryService) FindByPatient(ctx context.Context, id string) ([]datas
 	if err != nil {
 		return nil, fmt.Errorf("while resolving categories %v: %w", ids, err)
 	}
-	err = cursor.Close(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("while closing cursor: %w", err)
-	}
+	defer cursor.Close(ctx)
 	return castToCategorySlice(ctx, cursor)
 }
 

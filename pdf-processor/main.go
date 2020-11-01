@@ -28,8 +28,8 @@ func main() {
 	extractors["pdfcpu"] = pdfcpu.NewExtractor()
 
 	rasterizers := make(map[string]pdf.ImageConverter)
-	rasterizers["poppler"] := poppler.NewRasterizer()
-	rasterizers["mupdf"] := mupdf.NewRasterizer()
+	rasterizers["poppler"] = poppler.NewRasterizer()
+	rasterizers["mupdf"] = mupdf.NewRasterizer()
 
 	rotator := imaging.NewRotator()
 	converter := dual.NewProcessor(poppler.NewExtractor(), poppler.NewRasterizer(), mupdf.NewRasterizer())

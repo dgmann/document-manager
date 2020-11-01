@@ -10,7 +10,7 @@ services:
       PDFPROCESSOR_URL: processor:9000
     image: ghcr.io/dgmann/document-manager/api:latest
     networks:
-      backend: null
+      - backend
     volumes:
       - records:/records
       - archive:/archive
@@ -20,13 +20,13 @@ services:
       ENABLE_SSL: "false"
     image: ghcr.io/dgmann/document-manager/app:latest
     networks:
-      backend: null
+       backend
   db:
     image: mongo:latest
     networks:
-      backend: null
+      - backend
     volumes:
-      - mongo
+      - mongo:/data/db
   fax_watcher:
     depends_on:
       - api

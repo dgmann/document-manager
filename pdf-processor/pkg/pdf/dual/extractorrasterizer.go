@@ -22,7 +22,7 @@ func NewProcessor(extractor, rasterizer pdf.ImageConverter, counter pdf.PageCoun
 }
 
 func (processor *Processor) ToImages(data io.Reader) ([]*processor.Image, error) {
-	file, err := ioutil.TempFile("", "pdf")
+	file, err := ioutil.TempFile("", "pdf-*.pdf")
 	if err != nil {
 		return nil, fmt.Errorf("error creating temp file: %w", err)
 	}
@@ -31,6 +31,7 @@ func (processor *Processor) ToImages(data io.Reader) ([]*processor.Image, error)
 		return nil, fmt.Errorf("error writing to temp file: %w", err)
 	}
 
+	_, _ = file.Seek(0, io.SeekStart)
 	pageCount, err := processor.Counter.Count(file)
 	if err != nil {
 		return nil, err

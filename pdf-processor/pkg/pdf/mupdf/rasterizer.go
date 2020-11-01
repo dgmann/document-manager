@@ -2,22 +2,23 @@ package mupdf
 
 import (
 	"bytes"
-	"github.com/dgmann/document-manager/pdf-processor/pkg/processor"
-	"github.com/gen2brain/go-fitz"
 	"image/png"
 	"io"
+
+	"github.com/dgmann/document-manager/pdf-processor/pkg/processor"
+	"github.com/gen2brain/go-fitz"
 )
 
-type Processor struct {
+type Rasterizer struct {
 	encoder png.Encoder
 }
 
-func NewProcessor() *Processor {
+func NewRasterizer() *Rasterizer {
 	encoder := png.Encoder{CompressionLevel: png.BestCompression}
-	return &Processor{encoder: encoder}
+	return &Rasterizer{encoder: encoder}
 }
 
-func (m *Processor) ToImages(data io.Reader) ([]*processor.Image, error) {
+func (m *Rasterizer) ToImages(data io.Reader) ([]*processor.Image, error) {
 	pdf, err := fitz.NewFromReader(data)
 	if err != nil {
 		return nil, err
@@ -39,7 +40,7 @@ func (m *Processor) ToImages(data io.Reader) ([]*processor.Image, error) {
 	return images, nil
 }
 
-func (m *Processor) Count(data io.Reader) (int, error) {
+func (m *Rasterizer) Count(data io.Reader) (int, error) {
 	pdf, err := fitz.NewFromReader(data)
 	if err != nil {
 		return 0, err

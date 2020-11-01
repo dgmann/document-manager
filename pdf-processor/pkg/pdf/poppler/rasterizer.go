@@ -3,23 +3,24 @@ package poppler
 import (
 	"bytes"
 	"fmt"
-	"github.com/dgmann/document-manager/pdf-processor/filesystem"
-	"github.com/dgmann/document-manager/pdf-processor/pkg/processor"
 	"io"
 	"io/ioutil"
 	"os"
 	"os/exec"
 	"path"
+
+	"github.com/dgmann/document-manager/pdf-processor/filesystem"
+	"github.com/dgmann/document-manager/pdf-processor/pkg/processor"
 )
 
-type Processor struct {
+type Rasterizer struct {
 }
 
-func NewProcessor() *Processor {
-	return &Processor{}
+func NewRasterizer() *Rasterizer {
+	return &Rasterizer{}
 }
 
-func (c *Processor) ToImages(data io.Reader) ([]*processor.Image, error) {
+func (c *Rasterizer) ToImages(data io.Reader) ([]*processor.Image, error) {
 	var errorbuf bytes.Buffer
 
 	outdir, err := ioutil.TempDir("", "images")

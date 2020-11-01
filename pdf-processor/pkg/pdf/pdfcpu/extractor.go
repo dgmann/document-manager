@@ -3,24 +3,25 @@ package pdfcpu
 import (
 	"bytes"
 	"fmt"
+	"io"
+	"io/ioutil"
+	"os"
+
 	"github.com/dgmann/document-manager/pdf-processor/filesystem"
 	"github.com/dgmann/document-manager/pdf-processor/pkg/processor"
 	"github.com/pdfcpu/pdfcpu/pkg/api"
 	"github.com/pdfcpu/pdfcpu/pkg/log"
 	"github.com/pdfcpu/pdfcpu/pkg/pdfcpu"
-	"io"
-	"io/ioutil"
-	"os"
 )
 
-type Processor struct {
+type Extractor struct {
 }
 
-func NewProcessor() *Processor {
-	return &Processor{}
+func NewExtractor() *Extractor {
+	return &Extractor{}
 }
 
-func (m *Processor) ToImages(data io.Reader) (images []*processor.Image, err error) {
+func (m *Extractor) ToImages(data io.Reader) (images []*processor.Image, err error) {
 	b, err := ioutil.ReadAll(data)
 	seeker := bytes.NewReader(b)
 	outdir, err := ioutil.TempDir("", "images")
@@ -39,7 +40,7 @@ func (m *Processor) ToImages(data io.Reader) (images []*processor.Image, err err
 	return filesystem.ReadImagesFromDirectory(outdir)
 }
 
-func (m *Processor) Count(data io.Reader) (int, error) {
+func (m *Extractor) Count(data io.Reader) (int, error) {
 	b, err := ioutil.ReadAll(data)
 	if err != nil {
 		return 0, nil

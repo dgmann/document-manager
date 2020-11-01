@@ -9,16 +9,16 @@ import (
 	"github.com/gen2brain/go-fitz"
 )
 
-type Rasterizer struct {
+type Processor struct {
 	encoder png.Encoder
 }
 
-func NewRasterizer() *Rasterizer {
+func NewProcessor() *Processor {
 	encoder := png.Encoder{CompressionLevel: png.BestCompression}
-	return &Rasterizer{encoder: encoder}
+	return &Processor{encoder: encoder}
 }
 
-func (m *Rasterizer) ToImages(data io.Reader) ([]*processor.Image, error) {
+func (m *Processor) ToImages(data io.Reader) ([]*processor.Image, error) {
 	pdf, err := fitz.NewFromReader(data)
 	if err != nil {
 		return nil, err
@@ -40,7 +40,7 @@ func (m *Rasterizer) ToImages(data io.Reader) ([]*processor.Image, error) {
 	return images, nil
 }
 
-func (m *Rasterizer) Count(data io.Reader) (int, error) {
+func (m *Processor) Count(data io.Reader) (int, error) {
 	pdf, err := fitz.NewFromReader(data)
 	if err != nil {
 		return 0, err

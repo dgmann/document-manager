@@ -22,6 +22,7 @@ func main() {
 	go func() {
 		log.Println(http.ListenAndServe(":8080", nil))
 	}()
+	config := ConfigFromEnv()
 
 	extractors := make(map[string]pdf.ImageConverter)
 	extractors["poppler"] = poppler.NewExtractor()
@@ -29,10 +30,18 @@ func main() {
 
 	rasterizers := make(map[string]pdf.ImageConverter)
 	rasterizers["poppler"] = poppler.NewRasterizer()
-	rasterizers["mupdf"] = mupdf.NewRasterizer()
+	rasterizers["mupdf"] = mupdf.NewProcessor()
 
 	rotator := imaging.NewRotator()
-	converter := dual.NewProcessor(poppler.NewExtractor(), poppler.NewRasterizer(), mupdf.NewRasterizer())
+	extractor, ok := extractors[config.Extractor]
+	if !ok {
+		log.Fatalf("%s is not a valid extractor. Valid values: poppler, pdfcpu", config.Extractor)
+	}
+	rasterizer, ok := rasterizers[config.Rasterizer]
+	if !ok {
+		log.Fatalf("%s is not a valid rasterizer. Valid values: poppler, mupdf", config.Extractor)
+	}
+	converter := dual.NewProcessor(extractor, rasterizer, mupdf.NewProcessor())
 
 	creator := gopdf.NewPdfCreator()
 	port := 9000

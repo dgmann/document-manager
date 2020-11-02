@@ -62,7 +62,7 @@ export class MultiRecordListComponent {
     this.clickRecord.emit(id);
   }
 
-  edit(record: Record) {
+  onEdit(record: Record) {
     this.dialog.open(record).subscribe(result => this.updateRecord.emit(result));
   }
 

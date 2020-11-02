@@ -6,6 +6,6 @@
   <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
   <mat-date-range-picker #picker></mat-date-range-picker>
 
-  <mat-error *ngIf="range.controls.start.hasError('matStartDateInvalid')">Invalid start date</mat-error>
-  <mat-error *ngIf="range.controls.end.hasError('matEndDateInvalid')">Invalid end date</mat-error>
+  <mat-error *ngIf="range.controls.start.hasError('matStartDateInvalid')">Ungültiges Startdatum</mat-error>
+  <mat-error *ngIf="range.controls.end.hasError('matEndDateInvalid')">Ungültiges Enddatum</mat-error>
 </mat-form-field>

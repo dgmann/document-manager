@@ -1,13 +1,14 @@
 package main
 
 import (
+	"os"
+	"time"
+
 	"github.com/dgmann/document-manager/api/client"
 	"github.com/dgmann/document-manager/directory-watcher/parser"
 	"github.com/dgmann/document-manager/directory-watcher/watcher"
 	"github.com/namsral/flag"
 	log "github.com/sirupsen/logrus"
-	"os"
-	"time"
 )
 
 var directory string
@@ -47,6 +48,7 @@ func main() {
 	} else {
 		panic("Invalid parser: " + pars)
 	}
+	log.Infof("Start watching directory %s", directory)
 	records := w.Watch(directory, p)
 	for record := range records {
 		f, err := os.Open(record.PdfPath)

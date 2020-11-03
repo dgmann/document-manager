@@ -3,18 +3,19 @@ package server
 import (
 	"context"
 	"encoding/json"
-	"github.com/dgmann/document-manager/m1-helper/bdt"
-	"github.com/sirupsen/logrus"
+	"log"
 	"net/http"
 	"os"
+
+	"github.com/dgmann/document-manager/m1-helper/bdt"
 )
 
-func Run(ctx context.Context, fileName string) {
-	srv := &http.Server{Addr: ":3000"}
+func Run(ctx context.Context, fileName string, port string) {
+	srv := &http.Server{Addr: ":" + port}
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if _, err := w.Write([]byte("BDT file path: " + fileName)); err != nil {
-			logrus.Error(err)
+			log.Printf(err.Error())
 		}
 	})
 

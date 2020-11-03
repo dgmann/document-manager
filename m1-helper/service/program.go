@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+
 	"github.com/dgmann/document-manager/m1-helper/hotkey"
 	"github.com/dgmann/document-manager/m1-helper/server"
 	"github.com/kardianos/service"
@@ -14,13 +15,15 @@ type program struct {
 	ctx       context.Context
 	fileName  string
 	serverUrl string
+	port      string
 }
 
-func newProgram(fileName, serverUrl string) *program {
+func newProgram(fileName, serverUrl string, port string) *program {
 	return &program{
 		ctx:       context.Background(),
 		fileName:  fileName,
 		serverUrl: serverUrl,
+		port:      port,
 	}
 }
 
@@ -29,7 +32,7 @@ func (p *program) Start(s service.Service) error {
 	ctx, cancel := context.WithCancel(p.ctx)
 	p.cancel = cancel
 	go hotkey.Register(ctx, p.fileName, p.serverUrl)
-	go server.Run(ctx, p.fileName)
+	go server.Run(ctx, p.fileName, p.port)
 	return nil
 }
 

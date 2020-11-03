@@ -2,10 +2,11 @@ package hotkey
 
 import (
 	"fmt"
-	"github.com/sirupsen/logrus"
-	"golang.org/x/sys/windows"
+	"log"
 	"time"
 	"unsafe"
+
+	"golang.org/x/sys/windows"
 )
 
 type Manager struct {
@@ -25,7 +26,7 @@ func NewManager() *Manager {
 
 func (m *Manager) Close() {
 	if err := m.user32.Release(); err != nil {
-		logrus.Error(err)
+		log.Fatal(err)
 	}
 }
 

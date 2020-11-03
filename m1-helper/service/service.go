@@ -1,29 +1,26 @@
 package service
 
 import (
+	"fmt"
+
 	"github.com/kardianos/service"
-	"log"
 )
 
-func New(fileName, serverUrl string) (service.Service, service.Logger, error) {
+func New(fileName, serverUrl string, port string) (service.Service, service.Logger, error) {
 	svcConfig := &service.Config{
 		Name:        "M1Helper",
 		DisplayName: "M1-Helper",
 		Description: "Dienst für die Verbindung von M1 und DocumentManager",
 	}
 
-	prg := newProgram(fileName, serverUrl)
+	prg := newProgram(fileName, serverUrl, port)
 	s, err := service.New(prg, svcConfig)
 	if err != nil {
-		log.Fatal(err)
+		return nil, nil, fmt.Errorf("error creating service: %w", err)
 	}
 	logger, err = s.Logger(nil)
 	if err != nil {
-		log.Fatal(err)
-	}
-	err = s.Run()
-	if err != nil {
-		logger.Error(err)
+		return nil, nil, fmt.Errorf("error creating logger: %w", err)
 	}
 	return s, logger, nil
 }

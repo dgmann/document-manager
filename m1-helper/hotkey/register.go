@@ -3,9 +3,10 @@ package hotkey
 import (
 	"context"
 	"fmt"
-	"github.com/dgmann/document-manager/m1-helper/bdt"
 	"os"
 	"os/exec"
+
+	"github.com/dgmann/document-manager/m1-helper/bdt"
 )
 
 func Register(ctx context.Context, fileName, serverUrl string) {
@@ -13,12 +14,20 @@ func Register(ctx context.Context, fileName, serverUrl string) {
 	defer manager.Close()
 	manager.Register(Hotkey{Id: 1, Modifiers: ModAlt + ModCtrl, KeyCode: 'P'})
 	keyPresses := manager.Listen()
+	println(len(keyPresses))
 	for {
 		select {
-		case <-keyPresses:
+		case x, ok := <-keyPresses:
+			if !ok {
+				keyPresses = nil
+				continue
+			}
+
+			println(x)
 			f, err := os.Open(fileName)
 			if err != nil {
 				println("error reading patient file")
+				continue
 			}
 
 			patient, err := bdt.Parse(f)

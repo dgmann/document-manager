@@ -28,6 +28,7 @@ func Run(ctx context.Context, fileName string, port string) {
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			j.Encode(err)
+			return
 		}
 		defer f.Close()
 
@@ -35,6 +36,7 @@ func Run(ctx context.Context, fileName string, port string) {
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			j.Encode(err)
+			return
 		}
 		j.Encode(patient)
 	})

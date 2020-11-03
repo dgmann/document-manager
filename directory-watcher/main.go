@@ -4,7 +4,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/dgmann/document-manager/api/client"
+	client "github.com/dgmann/document-manager/apiclient"
 	"github.com/dgmann/document-manager/directory-watcher/parser"
 	"github.com/dgmann/document-manager/directory-watcher/watcher"
 	"github.com/namsral/flag"

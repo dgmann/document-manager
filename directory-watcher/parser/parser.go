@@ -1,9 +1,9 @@
 package parser
 
 import (
-	"github.com/dgmann/document-manager/api/client"
+	"github.com/dgmann/document-manager/apiclient"
 )
 
 type Parser interface {
-	Parse(fileName string) *client.NewRecord
+	Parse(fileName string) *apiclient.NewRecord
 }

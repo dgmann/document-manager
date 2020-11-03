@@ -3,13 +3,14 @@ package watcher
 import (
 	"errors"
 	"fmt"
-	"github.com/dgmann/document-manager/api/client"
-	"github.com/dgmann/document-manager/directory-watcher/parser"
-	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"os"
 	"path"
 	"time"
+
+	client "github.com/dgmann/document-manager/apiclient"
+	"github.com/dgmann/document-manager/directory-watcher/parser"
+	log "github.com/sirupsen/logrus"
 )
 
 type NewRecord struct {

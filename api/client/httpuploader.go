@@ -7,12 +7,10 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"mime/multipart"
 	"net/http"
 	"time"
-
-	"github.com/dgmann/document-manager/api/datastore"
-	"github.com/sirupsen/logrus"
 )
 
 type HttpUploader struct {
@@ -32,12 +30,28 @@ type NewRecord struct {
 	Sender     string
 	Date       *time.Time
 	PatientId  *string
-	Status     *datastore.Status
+	Status     *Status
 	Comment    *string
 	Category   *string
 }
 
-func (u *HttpUploader) CreateCategory(category datastore.Category) error {
+type Status string
+
+const (
+	StatusNone      Status = ""
+	StatusInbox     Status = "inbox"
+	StatusEscalated Status = "escalated"
+	StatusReview    Status = "review"
+	StatusOther     Status = "other"
+	StatusDone      Status = "done"
+)
+
+type Category struct {
+	Id   string `bson:"_id,omitempty" json:"id"`
+	Name string `bson:"name,omitempty" json:"name"`
+}
+
+func (u *HttpUploader) CreateCategory(category Category) error {
 	body := new(bytes.Buffer)
 	if err := json.NewEncoder(body).Encode(category); err != nil {
 		return err
@@ -53,7 +67,7 @@ func (u *HttpUploader) CreateCategory(category datastore.Category) error {
 	}
 	resBody, _ := ioutil.ReadAll(res.Body)
 	if res.StatusCode == http.StatusConflict {
-		logrus.Infof("Category %s already exists. Skipping: %s", category.Id, string(resBody))
+		log.Printf("Category %s already exists. Skipping: %s", category.Id, string(resBody))
 		return nil
 	}
 	return errors.New(fmt.Sprintf("bad response. Status: %v, Message: %s", res.StatusCode, string(resBody)))

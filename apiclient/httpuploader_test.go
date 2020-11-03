@@ -1,12 +1,13 @@
-package client
+package apiclient
 
 import (
 	"bytes"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestHttpUploader_Upload(t *testing.T) {

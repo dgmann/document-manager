@@ -24,13 +24,7 @@ func main() {
 	}()
 	config := ConfigFromEnv()
 
-	extractors := make(map[string]pdf.ImageConverter)
-	extractors["poppler"] = poppler.NewExtractor()
-	extractors["pdfcpu"] = pdfcpu.NewExtractor()
-
-	rasterizers := make(map[string]pdf.ImageConverter)
-	rasterizers["poppler"] = poppler.NewRasterizer()
-	rasterizers["mupdf"] = mupdf.NewProcessor()
+	extractors, rasterizers := initProcessors()
 
 	rotator := imaging.NewRotator()
 	extractor, ok := extractors[config.Extractor]
@@ -41,7 +35,7 @@ func main() {
 	if !ok {
 		log.Fatalf("%s is not a valid rasterizer. Valid values: poppler, mupdf", config.Extractor)
 	}
-	converter := dual.NewProcessor(extractor, rasterizer, mupdf.NewProcessor())
+	converter := dual.NewProcessor(extractor(), rasterizer(), pdfcpu.NewExtractor())
 
 	creator := gopdf.NewPdfCreator()
 	port := 9000
@@ -55,4 +49,17 @@ func main() {
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Error(err)
 	}
+}
+
+type initFunc func() pdf.ImageConverter
+
+func initProcessors() (map[string]initFunc, map[string]initFunc) {
+	extractors := make(map[string]initFunc)
+	extractors["poppler"] = func() pdf.ImageConverter { return poppler.NewExtractor() }
+	extractors["pdfcpu"] = func() pdf.ImageConverter { return pdfcpu.NewExtractor() }
+
+	rasterizers := make(map[string]initFunc)
+	rasterizers["poppler"] = func() pdf.ImageConverter { return poppler.NewRasterizer() }
+	rasterizers["mupdf"] = func() pdf.ImageConverter { return mupdf.NewProcessor() }
+	return extractors, rasterizers
 }

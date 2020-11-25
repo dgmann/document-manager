@@ -24,3 +24,24 @@ func ReadImagesFromDirectory(dirname string) ([]*processor.Image, error) {
 	}
 	return images, nil
 }
+
+func ReadFiles(dirname string) ([]string, error) {
+	files, err := ioutil.ReadDir(dirname)
+	if err != nil {
+		return nil, err
+	}
+	paths := make([]string, len(files))
+	for i, f := range files {
+		paths[i] = path.Join(dirname, f.Name())
+	}
+	return paths, nil
+}
+
+func ToImage(file string) (*processor.Image, error) {
+	extension := path.Ext(file)
+	content, err := ioutil.ReadFile(file)
+	if err != nil {
+		return nil, err
+	}
+	return &processor.Image{Content: content, Format: strings.Trim(extension, ".")}, nil
+}

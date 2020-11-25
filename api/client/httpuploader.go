@@ -5,13 +5,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/dgmann/document-manager/api/datastore"
-	"github.com/sirupsen/logrus"
 	"io"
 	"io/ioutil"
 	"mime/multipart"
 	"net/http"
 	"time"
+
+	"github.com/dgmann/document-manager/api/datastore"
+	"github.com/sirupsen/logrus"
 )
 
 type HttpUploader struct {
@@ -81,7 +82,7 @@ func createParamMap(create *NewRecord) map[string]string {
 	params := map[string]string{
 		"sender": create.Sender,
 	}
-	if !create.Date.IsZero() {
+	if create.Date != nil && !create.Date.IsZero() {
 		params["date"] = create.Date.Format(time.RFC3339)
 	}
 	if !create.ReceivedAt.IsZero() {

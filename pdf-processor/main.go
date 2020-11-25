@@ -2,29 +2,46 @@ package main
 
 import (
 	"fmt"
+	"net"
+	"net/http"
+	_ "net/http/pprof"
+
+	"github.com/dgmann/document-manager/pdf-processor/pkg/image/imaging"
+	"github.com/dgmann/document-manager/pdf-processor/pkg/pdf"
 	"github.com/dgmann/document-manager/pdf-processor/pkg/pdf/dual"
 	"github.com/dgmann/document-manager/pdf-processor/pkg/pdf/gopdf"
-	"github.com/dgmann/document-manager/pdf-processor/pkg/pdf/imagick"
 	"github.com/dgmann/document-manager/pdf-processor/pkg/pdf/mupdf"
+	"github.com/dgmann/document-manager/pdf-processor/pkg/pdf/pdfcpu"
 	"github.com/dgmann/document-manager/pdf-processor/pkg/pdf/poppler"
 	"github.com/dgmann/document-manager/pdf-processor/pkg/processor"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
-	"net"
-	"net/http"
-	_ "net/http/pprof"
 )
 
 func main() {
 	go func() {
 		log.Println(http.ListenAndServe(":8080", nil))
 	}()
+	config := ConfigFromEnv()
 
-	imagick.Initialize()
-	defer imagick.Terminate()
+	extractors := make(map[string]pdf.ImageConverter)
+	extractors["poppler"] = poppler.NewExtractor()
+	extractors["pdfcpu"] = pdfcpu.NewExtractor()
 
-	rotator := imagick.NewProcessor()
-	converter := dual.NewProcessor(poppler.NewExtractor(), poppler.NewProcessor(), mupdf.NewProcessor())
+	rasterizers := make(map[string]pdf.ImageConverter)
+	rasterizers["poppler"] = poppler.NewRasterizer()
+	rasterizers["mupdf"] = mupdf.NewProcessor()
+
+	rotator := imaging.NewRotator()
+	extractor, ok := extractors[config.Extractor]
+	if !ok {
+		log.Fatalf("%s is not a valid extractor. Valid values: poppler, pdfcpu", config.Extractor)
+	}
+	rasterizer, ok := rasterizers[config.Rasterizer]
+	if !ok {
+		log.Fatalf("%s is not a valid rasterizer. Valid values: poppler, mupdf", config.Extractor)
+	}
+	converter := dual.NewProcessor(extractor, rasterizer, mupdf.NewProcessor())
 
 	creator := gopdf.NewPdfCreator()
 	port := 9000

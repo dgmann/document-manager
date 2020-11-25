@@ -25,13 +25,15 @@ import {PatientEffects} from './store/patient.effects';
 import {TagListComponent} from './tag-list/tag-list.component';
 import {RecordFilterComponent} from './record-filter/record-filter.component';
 import {DateRangeSelectorComponent} from './date-range-selector/date-range-selector.component';
-import {FormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatMenuModule} from '@angular/material/menu';
+import { MatMomentDateModule } from '@angular/material-moment-adapter';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
+    ReactiveFormsModule,
     PatientRouterModule,
     SharedModule,
     MatButtonModule,
@@ -41,6 +43,7 @@ import {MatMenuModule} from '@angular/material/menu';
     MatTableModule,
     MatCardModule,
     MatDatepickerModule,
+    MatMomentDateModule,
     MatDividerModule,
     MatSidenavModule,
     MatIconModule,

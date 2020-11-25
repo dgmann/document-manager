@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+
 	"github.com/dgmann/document-manager/api/datastore"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -29,7 +30,7 @@ func (c *CategoryService) All(ctx context.Context) ([]datastore.Category, error)
 	if err != nil {
 		return nil, fmt.Errorf("while loading categories: %w", err)
 	}
-	err = cursor.Close(ctx)
+	defer cursor.Close(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("while closing cursor: %w", err)
 	}
@@ -66,10 +67,7 @@ func (c *CategoryService) FindByPatient(ctx context.Context, id string) ([]datas
 	if err != nil {
 		return nil, fmt.Errorf("while resolving categories %v: %w", ids, err)
 	}
-	err = cursor.Close(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("while closing cursor: %w", err)
-	}
+	defer cursor.Close(ctx)
 	return castToCategorySlice(ctx, cursor)
 }
 

@@ -3,17 +3,19 @@ package main
 import (
 	"bytes"
 	"context"
+
+	"github.com/dgmann/document-manager/pdf-processor/pkg/image"
 	"github.com/dgmann/document-manager/pdf-processor/pkg/pdf"
 	"github.com/dgmann/document-manager/pdf-processor/pkg/processor"
 )
 
 type GRPCServer struct {
 	converter pdf.ImageConverter
-	rotator   pdf.Rotator
+	rotator   image.Rotator
 	creator   pdf.Creator
 }
 
-func NewGRPCServer(c pdf.ImageConverter, r pdf.Rotator, creator pdf.Creator) *GRPCServer {
+func NewGRPCServer(c pdf.ImageConverter, r image.Rotator, creator pdf.Creator) *GRPCServer {
 	return &GRPCServer{converter: c, rotator: r, creator: creator}
 }
 
@@ -35,7 +37,8 @@ func (g *GRPCServer) ConvertPdfToImage(pdf *processor.Pdf, sender processor.PdfP
 }
 
 func (g *GRPCServer) RotateImage(ctx context.Context, rotate *processor.Rotate) (*processor.Image, error) {
-	return g.rotator.Rotate(rotate.Content, rotate.Degree)
+	buf := bytes.NewBuffer(rotate.Content)
+	return g.rotator.Rotate(buf, rotate.Degree)
 }
 
 func (g *GRPCServer) CreatePdf(ctx context.Context, document *processor.Document) (*processor.Pdf, error) {

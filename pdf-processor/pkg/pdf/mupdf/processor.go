@@ -2,10 +2,11 @@ package mupdf
 
 import (
 	"bytes"
-	"github.com/dgmann/document-manager/pdf-processor/pkg/processor"
-	"github.com/gen2brain/go-fitz"
 	"image/png"
 	"io"
+
+	"github.com/dgmann/document-manager/pdf-processor/pkg/processor"
+	"github.com/gen2brain/go-fitz"
 )
 
 type Processor struct {

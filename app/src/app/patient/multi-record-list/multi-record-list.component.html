@@ -20,11 +20,14 @@
       <mat-card-header>
         <mat-card-title>
           <h2>
-            <span *ngIf="category === 'all'">{{ categoryMap[record.category]?.name }}: </span>
+            <span *ngIf="category === 'all'">{{ categoryMap[record.category]?.name }}:</span>
             {{ record.date | date: 'mediumDate' }}
           </h2>
         </mat-card-title>
-        <mat-card-subtitle>{{ record.tags.join(", ") }}</mat-card-subtitle>
+        <mat-card-subtitle> 
+          <span>Seitenanzahl: {{record.pages.length}} </span>
+          <span *ngIf="record.tags.length > 0">| Tags: {{ record.tags.join(", ") }}</span>
+        </mat-card-subtitle>
         <div fxFlex></div>
 
         <div>
@@ -32,6 +35,10 @@
             <mat-icon>more_vert</mat-icon>
           </button>
           <mat-menu #menu="matMenu">
+            <button (click)="onEdit(record)" mat-menu-item>
+              <mat-icon aria-label="edit">edit</mat-icon>
+              <span>Bearbeiten</span>
+            </button>
             <button (click)="onDelete(record)" mat-menu-item>
               <mat-icon aria-label="delete" color="warn">delete</mat-icon>
               <span>Löschen</span>

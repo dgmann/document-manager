@@ -33,9 +33,9 @@ export class MultiRecordListComponent {
   @Input() set records(records: Record[]) {
     const grouped = groupBy(records, 'category');
     const groupedRecords = Object.entries(grouped)
-      .map(entry => ({category: entry[0], records: sortBy(entry[1], ['date'])}));
+      .map(entry => ({category: entry[0], records: entry[1]}));
     const sorted = sortBy(groupedRecords, ['category']);
-    this.groupedRecords = [...sorted, {category: 'all', records: sortBy(records, ['date'])}];
+    this.groupedRecords = [...sorted, {category: 'all', records}];
     this.setSelectedIndex(this.groupedRecords, this.selectedCategory);
   }
 
@@ -62,7 +62,7 @@ export class MultiRecordListComponent {
     this.clickRecord.emit(id);
   }
 
-  edit(record: Record) {
+  onEdit(record: Record) {
     this.dialog.open(record).subscribe(result => this.updateRecord.emit(result));
   }
 

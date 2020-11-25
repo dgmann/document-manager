@@ -23,11 +23,11 @@ export class RecordFilterComponent implements OnInit {
   }
 
   ngOnInit() {
-    combineLatest(
+    combineLatest([
       this.selectedTags,
       this.selectedCategories,
       this.dateRange
-    ).subscribe(([tags, categories, dateRange]) => this.change.emit({
+    ]).subscribe(([tags, categories, dateRange]) => this.change.emit({
       categoryIds: categories.map(c => c.id),
       tags,
       from: dateRange.from,

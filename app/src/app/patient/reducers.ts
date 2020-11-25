@@ -1,9 +1,10 @@
 import {createFeatureSelector, createSelector, MetaReducer} from '@ngrx/store';
-import {difference, includes, intersection} from 'lodash-es';
+import {difference, flow, includes, intersection, reverse, sortBy} from 'lodash-es';
 import {environment} from '@env/environment';
 import {Record, selectDoneIds, selectRecordEntities} from '../core/records';
 import * as fromPatient from './store/patient.reducer';
 import {Filter} from './store/patient.reducer';
+import { Dictionary } from '@ngrx/entity';
 
 export const reducers = fromPatient.reducer;
 export {State} from './store/patient.reducer';
@@ -23,7 +24,11 @@ export const selectPatientRecords = createSelector(
   selectPatientRecordIds,
   selectDoneIds,
   selectRecordEntities,
-  (ids: string[], doneIds: string[], records) => intersection(ids, doneIds).map(id => records[id]));
+  (ids: string[], doneIds: string[], records: Dictionary<Record>) => flow(
+    ids => ids.map(id => records[id]) as Record[], 
+    records => sortBy(records, 'date'), 
+    records => reverse(records)
+  )(intersection(ids, doneIds)));
 export const selectFilter = createSelector(selectFeature, (state: fromPatient.State) => state.filter);
 export const selectSelectedRecordId = createSelector(selectFeature, (state: fromPatient.State) => state.selectedRecordId);
 export const selectSelectedRecord = createSelector(selectSelectedRecordId, selectRecordEntities, (id: string, records) => records[id]);

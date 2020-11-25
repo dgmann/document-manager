@@ -1,92 +1,99 @@
-version: "3"
+version: '3'
 services:
   api:
-    depends_on:
-      - db
-      - processor
+    image: 'ghcr.io/dgmann/document-manager/api:latest'
+    volumes:
+      - 'archive:/archive'
+      - 'records:/records'
+    networks:
+      - backend
     environment:
       DB_HOST: db
       DB_NAME: manager
-      PDFPROCESSOR_URL: processor:9000
-    image: ghcr.io/dgmann/document-manager/api:latest
-    networks:
-      backend: null
-    volumes:
-      - records:/records
-      - archive:/archive
+      PDFPROCESSOR_URL: 'processor:9000'
+    depends_on:
+      - db
+      - processor
+    restart: always
   app:
+    image: 'ghcr.io/dgmann/document-manager/app:latest'
+    networks: 
+      - backend
     environment:
       API_HOST: localhost
-      ENABLE_SSL: "false"
-    image: ghcr.io/dgmann/document-manager/app:latest
-    networks:
-      backend: null
+      ENABLE_SSL: 'false'
+    restart: always
   db:
-    image: mongo:latest
-    networks:
-      backend: null
+    image: 'mongo:latest'
     volumes:
-      - mongo:/data/db
+      - 'mongo:/data/db'
+    networks:
+      - backend
+    restart: always
   fax_watcher:
+    image: 'ghcr.io/dgmann/document-manager/directory-watcher:latest'
+    volumes:
+      - 'fax:/records'
+    networks:
+      - backend
+    environment:
+      DESTINATION: 'http://api/api'
+      PARSER: fax
     depends_on:
       - api
-    environment:
-      DESTINATION: http://api/api
-      PARSER: fax
-    image: ghcr.io/dgmann/document-manager/directory-watcher:latest
-    networks:
-      backend: null
-    volumes:
-      - fax:/records
+    restart: always
   gateway:
+    image: 'ghcr.io/dgmann/document-manager/gateway:latest'
+    ports:
+      - '80:80'
+    networks:
+      - backend
     depends_on:
       - api
       - app
       - m1-adapter
-    image: ghcr.io/dgmann/document-manager/gateway:latest
-    networks:
-      backend: null
-    ports:
-      - 80:80
+    restart: always
   m1-adapter:
-    image: ghcr.io/dgmann/document-manager/m1-adapter:latest
+    image: 'ghcr.io/dgmann/document-manager/m1-adapter:latest'
     networks:
-      backend: null
+      - backend
+    restart: always
   migrator:
-    depends_on:
-      - api
+    image: 'ghcr.io/dgmann/document-manager/migrator:latest'
+    volumes:
+      - migrator-data
+      - migrator-records
+    ports:
+      - '8080:8080'
+    networks:
+      - backend
     environment:
-      API_URL: http://api/api
+      API_URL: 'http://api/api'
       DB_HOST: mssql
       DB_NAME: PdfDatabase
       DB_PASSWORD: demo
       DB_USER: migration
-    image: ghcr.io/dgmann/document-manager/migrator:latest
-    networks:
-      backend: null
-    ports:
-      - 8080:8080
-    volumes:
-      - migrator-records
-      - migrator-data
-  processor:
-    image: ghcr.io/dgmann/document-manager/pdf-processor:latest
-    networks:
-      backend: null
-  scan_watcher:
     depends_on:
       - api
+    restart: always
+  processor:
+    image: 'ghcr.io/dgmann/document-manager/pdf-processor:latest'
+    networks:
+      - backend
+    restart: always
+  scan_watcher:
+    image: 'ghcr.io/dgmann/document-manager/directory-watcher:latest'
+    volumes:
+      - 'scans:/records'
+    networks:
+      - backend
     environment:
-      DESTINATION: http://api/api
+      DESTINATION: 'http://api/api'
       PARSER: generic
       SENDER: Scan
-    image: ghcr.io/dgmann/document-manager/directory-watcher:latest
-    networks:
-      backend: null
-    volumes:
-      - scans:/records
-networks:
-  backend: {}
+    depends_on:
+      - api
+    restart: always
 volumes:
   archive: {}
   fax: {}
@@ -95,3 +102,5 @@ volumes:
   mongo: {}
   records: {}
   scans: {}
+networks:
+  backend: {}

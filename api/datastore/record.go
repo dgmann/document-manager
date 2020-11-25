@@ -4,13 +4,14 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
+	"time"
+
 	"github.com/dgmann/document-manager/api/storage"
 	"github.com/jinzhu/copier"
 	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"io"
-	"time"
 )
 
 type Status string
@@ -136,7 +137,7 @@ type Record struct {
 	Tags        *[]string          `bson:"tags,omitempty" json:"tags"`
 	Pages       []Page             `bson:"pages,omitempty" json:"pages"`
 	Status      *Status            `bson:"status,omitempty" json:"status"`
-	UpdatedAt   time.Time          `bson:"updateAt"`
+	UpdatedAt   time.Time          `bson:"updatedAt"`
 	ArchivedPDF string
 }
 

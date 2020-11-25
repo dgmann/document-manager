@@ -1,6 +1,7 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Output} from '@angular/core';
+import { FormControl, FormGroup } from '@angular/forms';
 import {Moment} from 'moment';
-import {BehaviorSubject, combineLatest} from 'rxjs';
+import { distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'app-date-range-selector',
@@ -8,41 +9,17 @@ import {BehaviorSubject, combineLatest} from 'rxjs';
   styleUrls: ['./date-range-selector.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DateRangeSelectorComponent implements OnInit {
-  @Output() change = new EventEmitter<{ from: Moment, until: Moment }>();
-  untilValue: Date = null;
-  fromValue: Date = null;
-  private from = new BehaviorSubject<Moment>(null);
-  private until = new BehaviorSubject<Moment>(null);
+export class DateRangeSelectorComponent {
+  @Output() dateRangeChange = new EventEmitter<{ from: Moment, until: Moment }>();
+  range = new FormGroup({
+    start: new FormControl(),
+    end: new FormControl()
+  });
 
   constructor() {
   }
 
-  ngOnInit() {
-    combineLatest(
-      this.from,
-      this.until
-    ).subscribe(([from, until]) => this.change.emit({
-      from,
-      until
-    }));
-  }
-
-  setFrom(value: Moment) {
-    this.from.next(value);
-  }
-
-  setUntil(value: Moment) {
-    this.until.next(value);
-  }
-
-  clearFrom() {
-    this.fromValue = null;
-    this.from.next(null);
-  }
-
-  clearUntil() {
-    this.untilValue = null;
-    this.until.next(null);
+  onDateChange() {
+    this.dateRangeChange.emit({from: this.range.value.start, until: this.range.value.end})
   }
 }

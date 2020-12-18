@@ -72,6 +72,7 @@ func save(pdfs []*SplittedPdf, outDir string) ([]*models.SubRecord, error) {
 	var pdfList = make([]*models.SubRecord, 0, len(pdfs))
 	for _, pdf := range pdfs {
 		writer := pdfModel.NewPdfWriter()
+		writer.SetVersion(1, 7)
 		for _, p := range pdf.Pages {
 			writer.AddPage(p)
 		}

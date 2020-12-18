@@ -65,7 +65,7 @@ func (m *Extractor) ToImages(data io.Reader) ([]*processor.Image, error) {
 	var images []*processor.Image
 	for _, group := range groups {
 		if len(group) == 1 {
-			img, err := filesystem.ToImage(group[1])
+			img, err := filesystem.ToImage(group[0])
 			if err != nil {
 				return nil, err
 			}

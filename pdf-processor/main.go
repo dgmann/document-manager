@@ -10,7 +10,6 @@ import (
 	"github.com/dgmann/document-manager/pdf-processor/pkg/pdf"
 	"github.com/dgmann/document-manager/pdf-processor/pkg/pdf/dual"
 	"github.com/dgmann/document-manager/pdf-processor/pkg/pdf/gopdf"
-	"github.com/dgmann/document-manager/pdf-processor/pkg/pdf/mupdf"
 	"github.com/dgmann/document-manager/pdf-processor/pkg/pdf/pdfcpu"
 	"github.com/dgmann/document-manager/pdf-processor/pkg/pdf/poppler"
 	"github.com/dgmann/document-manager/pdf-processor/pkg/processor"
@@ -60,6 +59,5 @@ func initProcessors() (map[string]initFunc, map[string]initFunc) {
 
 	rasterizers := make(map[string]initFunc)
 	rasterizers["poppler"] = func() pdf.ImageConverter { return poppler.NewRasterizer() }
-	rasterizers["mupdf"] = func() pdf.ImageConverter { return mupdf.NewProcessor() }
 	return extractors, rasterizers
 }

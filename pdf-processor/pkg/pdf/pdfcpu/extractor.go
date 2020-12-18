@@ -36,7 +36,16 @@ func (m *Extractor) Count(data io.Reader) (int, error) {
 		return 0, nil
 	}
 	seeker := bytes.NewReader(b)
-	return api.PageCount(seeker, configuration)
+	ctx, err := api.ReadContext(seeker, configuration)
+	if err != nil {
+		return 0, err
+	}
+
+	if err := ctx.EnsurePageCount(); err != nil {
+		return 0, err
+	}
+
+	return ctx.PageCount, nil
 }
 
 func (m *Extractor) ToImages(data io.Reader) ([]*processor.Image, error) {

@@ -40,6 +40,7 @@ func (processor *Processor) ToImages(data io.Reader) ([]*processor.Image, error)
 	_, _ = file.Seek(0, io.SeekStart)
 	images, err := processor.Extractor.ToImages(file)
 
+	logrus.Debug(err)
 	if len(images) == pageCount {
 		return images, nil
 	}

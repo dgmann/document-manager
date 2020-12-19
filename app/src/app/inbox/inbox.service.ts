@@ -38,7 +38,8 @@ export class InboxService {
   }
 
   public deleteSelectedRecords() {
-    this.doForAllSelectedRecords(this.recordService.delete);
+    const deleteMethod = (id: string) => this.recordService.delete(id);
+    this.doForAllSelectedRecords(deleteMethod);
   }
 
   public updateSelectedRecords(changes: any) {
@@ -46,7 +47,7 @@ export class InboxService {
     this.doForAllSelectedRecords(update);
   }
 
-  private doForAllSelectedRecords(callback: (id: string) => void) {
+  private doForAllSelectedRecords(callback: (id: string) => any) {
     this.selectedIds$.pipe(take(1)).subscribe(ids => ids.forEach(id => callback(id)));
   }
 }

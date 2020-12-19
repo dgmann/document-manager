@@ -11,6 +11,8 @@ service PdfProcessor {
     }
     rpc RotateImage (Rotate) returns (Image) {
     }
+    rpc CreatePdf (Document) returns (Pdf) {
+    }
 }
 
 message Rotate {

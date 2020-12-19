@@ -22,6 +22,7 @@ type PdfProcessorClient interface {
 	// Convert the pages of a PDF file to images.
 	ConvertPdfToImage(ctx context.Context, in *Pdf, opts ...grpc.CallOption) (PdfProcessor_ConvertPdfToImageClient, error)
 	RotateImage(ctx context.Context, in *Rotate, opts ...grpc.CallOption) (*Image, error)
+	CreatePdf(ctx context.Context, in *Document, opts ...grpc.CallOption) (*Pdf, error)
 }
 
 type pdfProcessorClient struct {
@@ -73,6 +74,15 @@ func (c *pdfProcessorClient) RotateImage(ctx context.Context, in *Rotate, opts .
 	return out, nil
 }
 
+func (c *pdfProcessorClient) CreatePdf(ctx context.Context, in *Document, opts ...grpc.CallOption) (*Pdf, error) {
+	out := new(Pdf)
+	err := c.cc.Invoke(ctx, "/processor.PdfProcessor/CreatePdf", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PdfProcessorServer is the server API for PdfProcessor service.
 // All implementations must embed UnimplementedPdfProcessorServer
 // for forward compatibility
@@ -82,6 +92,7 @@ type PdfProcessorServer interface {
 	// Convert the pages of a PDF file to images.
 	ConvertPdfToImage(*Pdf, PdfProcessor_ConvertPdfToImageServer) error
 	RotateImage(context.Context, *Rotate) (*Image, error)
+	CreatePdf(context.Context, *Document) (*Pdf, error)
 	mustEmbedUnimplementedPdfProcessorServer()
 }
 
@@ -94,6 +105,9 @@ func (UnimplementedPdfProcessorServer) ConvertPdfToImage(*Pdf, PdfProcessor_Conv
 }
 func (UnimplementedPdfProcessorServer) RotateImage(context.Context, *Rotate) (*Image, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RotateImage not implemented")
+}
+func (UnimplementedPdfProcessorServer) CreatePdf(context.Context, *Document) (*Pdf, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreatePdf not implemented")
 }
 func (UnimplementedPdfProcessorServer) mustEmbedUnimplementedPdfProcessorServer() {}
 
@@ -147,6 +161,24 @@ func _PdfProcessor_RotateImage_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PdfProcessor_CreatePdf_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Document)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PdfProcessorServer).CreatePdf(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/processor.PdfProcessor/CreatePdf",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PdfProcessorServer).CreatePdf(ctx, req.(*Document))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // PdfProcessor_ServiceDesc is the grpc.ServiceDesc for PdfProcessor service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -157,6 +189,10 @@ var PdfProcessor_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RotateImage",
 			Handler:    _PdfProcessor_RotateImage_Handler,
+		},
+		{
+			MethodName: "CreatePdf",
+			Handler:    _PdfProcessor_CreatePdf_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

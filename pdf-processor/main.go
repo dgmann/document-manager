@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/dgmann/document-manager/pdf-processor/pkg/pdf/unipdf"
+	"github.com/dgmann/document-manager/pdf-processor/pkg/processor"
 	"net"
 	"net/http"
 	_ "net/http/pprof"
@@ -13,7 +14,6 @@ import (
 	"github.com/dgmann/document-manager/pdf-processor/pkg/pdf/gopdf"
 	"github.com/dgmann/document-manager/pdf-processor/pkg/pdf/pdfcpu"
 	"github.com/dgmann/document-manager/pdf-processor/pkg/pdf/poppler"
-	"github.com/dgmann/document-manager/pdf-processor/pkg/processor"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 )

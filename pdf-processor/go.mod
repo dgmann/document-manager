@@ -10,11 +10,12 @@ require (
 	github.com/pdfcpu/pdfcpu v0.3.7
 	github.com/sirupsen/logrus v1.7.0
 	github.com/unidoc/unipdf/v3 v3.9.0
-	golang.org/x/net v0.0.0-20201110031124-69a78807bb2b // indirect
-	golang.org/x/sys v0.0.0-20201119102817-f84b799fce68 // indirect
+	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9 // indirect
+	golang.org/x/net v0.0.0-20201216054612-986b41b23924 // indirect
+	golang.org/x/sys v0.0.0-20201218084310-7d0127a74742 // indirect
 	golang.org/x/text v0.3.4 // indirect
-	google.golang.org/genproto v0.0.0-20201119123407-9b1e624d6bc4 // indirect
-	google.golang.org/grpc v1.33.2
+	google.golang.org/genproto v0.0.0-20201214200347-8c77b98c765d // indirect
+	google.golang.org/grpc v1.34.0
 )
 
 go 1.14

@@ -45,11 +45,11 @@ func (processor *Processor) ToImages(data io.Reader) ([]*processor.Image, error)
 		return images, nil
 	}
 
-	logrus.Infof("extracting did not work. Fallback to rasterizing. Expected Pages: %d, actual: %d", pageCount, len(images))
+	logrus.Infof("extracting did not work. Fallback to rasterizing. Expected Pages: %d, actual: %d. Error: %s", pageCount, len(images), err)
 	_, _ = file.Seek(0, io.SeekStart)
 	images, err = processor.Rasterizer.ToImages(file)
 	if len(images) == pageCount {
 		return images, nil
 	}
-	return nil, fmt.Errorf("error rasterizing images. Expected %d, Actual: %d", pageCount, len(images))
+	return nil, fmt.Errorf("error rasterizing images. Expected %d, Actual: %d. Error: %s", pageCount, len(images), err)
 }

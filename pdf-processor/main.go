@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/dgmann/document-manager/pdf-processor/pkg/pdf/unipdf"
 	"net"
 	"net/http"
 	_ "net/http/pprof"
@@ -56,6 +57,7 @@ func initProcessors() (map[string]initFunc, map[string]initFunc) {
 	extractors := make(map[string]initFunc)
 	extractors["poppler"] = func() pdf.ImageConverter { return poppler.NewExtractor() }
 	extractors["pdfcpu"] = func() pdf.ImageConverter { return pdfcpu.NewExtractor() }
+	extractors["unipdf"] = func() pdf.ImageConverter { return unipdf.NewExtractor() }
 
 	rasterizers := make(map[string]initFunc)
 	rasterizers["poppler"] = func() pdf.ImageConverter { return poppler.NewRasterizer() }

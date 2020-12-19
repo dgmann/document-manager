@@ -60,6 +60,9 @@ func (m *Extractor) ToImages(data io.Reader) ([]*processor.Image, error) {
 			err = e
 		}
 	}()
+	pageCount, err := m.Count(seeker)
+	_, _ = seeker.Seek(0, io.SeekStart)
+
 	if err := api.ExtractImages(seeker, outdir, "pdf", nil, configuration); err != nil {
 		return nil, fmt.Errorf("error extracting images: %w", err)
 	}
@@ -67,7 +70,7 @@ func (m *Extractor) ToImages(data io.Reader) ([]*processor.Image, error) {
 	if err != nil {
 		return nil, err
 	}
-	groups, err := groupImagesByPage(files)
+	groups, err := groupImagesByPage(files, pageCount)
 	if err != nil {
 		return nil, err
 	}
@@ -90,8 +93,8 @@ func (m *Extractor) ToImages(data io.Reader) ([]*processor.Image, error) {
 	return images, nil
 }
 
-func groupImagesByPage(files []string) ([][]string, error) {
-	pages := make([][]string, len(files)) // There are be at least as many files as pages. Probably more
+func groupImagesByPage(files []string, pageCount int) ([][]string, error) {
+	pages := make([][]string, pageCount)
 	for _, file := range files {
 		_, basename := filepath.Split(file)
 		if basename == "" {
@@ -107,7 +110,15 @@ func groupImagesByPage(files []string) ([][]string, error) {
 			return nil, fmt.Errorf("invalid filename %s: %w", file, err)
 		}
 		index := pageNumber - 1
+		if index >= len(pages) {
+			return nil, fmt.Errorf("there are fewer images than pages. Num Images %d, Num Pages: %d", len(pages), pageNumber)
+		}
 		pages[index] = append(pages[index], file)
+	}
+	for i, pageGroup := range pages {
+		if len(pageGroup) == 0 { //There is an empty page
+			return nil, fmt.Errorf("page %d does not contain any images", i+1)
+		}
 	}
 	return pages, nil
 }

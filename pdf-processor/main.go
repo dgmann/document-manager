@@ -61,5 +61,6 @@ func initProcessors() (map[string]initFunc, map[string]initFunc) {
 
 	rasterizers := make(map[string]initFunc)
 	rasterizers["poppler"] = func() pdf.ImageConverter { return poppler.NewRasterizer() }
+	rasterizers["unipdf"] = func() pdf.ImageConverter { return unipdf.NewRasterizer() }
 	return extractors, rasterizers
 }

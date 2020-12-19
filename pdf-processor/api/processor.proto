@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package processor;
+option go_package = "github.com/dgmann/document-manager/pdf-processor/pkg/processor";
+
+service PdfProcessor {
+    // Convert the pages of a PDF file to images.
+    //
+    // Convert the pages of a PDF file to images.
+    rpc ConvertPdfToImage (Pdf) returns (stream Image) {
+    }
+    rpc RotateImage (Rotate) returns (Image) {
+    }
+}
+
+message Rotate {
+    bytes content = 1;
+    double degree = 2;
+}
+
+message Pdf {
+    bytes content = 1;
+    enum Method {
+        AUTO = 0;
+        EXTRACT = 1;
+        RASTERIZE = 2;
+        EXPLICIT = 4;
+    }
+    Method method = 2;
+    string method_name = 3; // Method name when EXPLICIT is selected.
+    repeated uint32 page_numbers = 4; // Page numbers which should be processed
+}
+
+message Image {
+    string format = 1;
+    bytes content = 2;
+}
+
+message Document {
+    string title = 1;
+    repeated Document documents = 2;
+    repeated Image pages = 3;
+}

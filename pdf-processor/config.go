@@ -10,7 +10,7 @@ type Config struct {
 }
 
 func ConfigFromEnv() Config {
-	extractor := envOrDefault("EXTRACTOR", "pdfcpu")
+	extractor := envOrDefault("EXTRACTOR", "unipdf")
 	rasterizer := envOrDefault("RASTERIZER", "poppler")
 	return Config{
 		Extractor:  extractor,

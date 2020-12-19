@@ -44,3 +44,7 @@ func (g *GRPCServer) RotateImage(ctx context.Context, rotate *processor.Rotate) 
 func (g *GRPCServer) CreatePdf(ctx context.Context, document *processor.Document) (*processor.Pdf, error) {
 	return g.creator.Create(document)
 }
+
+func (g *GRPCServer) mustEmbedUnimplementedPdfProcessorServer() {
+	panic("implement me")
+}

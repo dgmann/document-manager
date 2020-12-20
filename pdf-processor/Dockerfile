@@ -11,6 +11,6 @@ RUN go mod download
 COPY . .
 RUN go build -o /processor .
 
-EXPOSE 8181
+EXPOSE 8080 9000
 
 CMD ["/processor"]

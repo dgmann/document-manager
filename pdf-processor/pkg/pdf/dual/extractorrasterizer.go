@@ -2,13 +2,12 @@ package dual
 
 import (
 	"fmt"
-	"io"
-	"io/ioutil"
-	"os"
-
 	"github.com/dgmann/document-manager/pdf-processor/pkg/pdf"
 	"github.com/dgmann/document-manager/pdf-processor/pkg/processor"
 	"github.com/sirupsen/logrus"
+	"io"
+	"io/ioutil"
+	"os"
 )
 
 type Processor struct {
@@ -26,7 +25,14 @@ func (processor *Processor) ToImages(data io.Reader) ([]*processor.Image, error)
 	if err != nil {
 		return nil, fmt.Errorf("error creating temp file: %w", err)
 	}
-	defer os.Remove(file.Name())
+	defer func() {
+		if err := file.Close(); err != nil {
+			logrus.Warn(err)
+		}
+		if err := os.Remove(file.Name()); err != nil {
+			logrus.Warn(err)
+		}
+	}()
 	if _, err := io.Copy(file, data); err != nil {
 		return nil, fmt.Errorf("error writing to temp file: %w", err)
 	}

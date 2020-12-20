@@ -9,6 +9,7 @@ import (
 	"github.com/dgmann/document-manager/migrator/records/filesystem"
 	"github.com/jmoiron/sqlx"
 	"github.com/sirupsen/logrus"
+	"os"
 	"path"
 	"path/filepath"
 	"strconv"
@@ -32,7 +33,7 @@ type Manager struct {
 
 func NewManager(filesystemManager *filesystem.Manager, dataDirectory string, db *sqlx.DB, url string, retryCount int) *Manager {
 	importer := NewImporter(url, retryCount, 1*time.Minute)
-	return &Manager{FilesystemManager: filesystemManager, dataDirectory: dataDirectory, Importer: importer, db: db, importedRecordsPath: filepath.Join(dataDirectory, "importedrecords.gob")}
+	return &Manager{FilesystemManager: filesystemManager, dataDirectory: dataDirectory, Importer: importer, db: db, importedRecordsPath: filepath.Join(dataDirectory, ImportedFileName)}
 }
 
 func (m *Manager) IsLoaded() bool {
@@ -93,6 +94,17 @@ func (m *Manager) Load(fileName string) error {
 	return nil
 }
 
+func (m *Manager) Files() []string {
+	var files []string
+	if _, err := os.Stat(filepath.Join(m.dataDirectory, FileName)); err == nil {
+		files = append(files, FileName)
+	}
+	if _, err := os.Stat(filepath.Join(m.dataDirectory, FailedFileName)); err == nil {
+		files = append(files, FailedFileName)
+	}
+	return files
+}
+
 func (m *Manager) Import(ctx context.Context) error {
 	dataToImport, err := m.DataToImport(ctx)
 	if err != nil {
@@ -148,8 +160,8 @@ func (m *Manager) importRecords(ctx context.Context, recordsToImport []Importabl
 				recordsToImport[i] = *r.Record
 			}
 			reimportable := Import{Records: recordsToReimport}
-			if err := reimportable.Save(path.Join(m.dataDirectory, "failedrecords.gob")); err != nil {
-				logrus.WithError(err).Warn("error saving failedrecords.gob")
+			if err := reimportable.Save(path.Join(m.dataDirectory, FailedFileName)); err != nil {
+				logrus.WithError(err).Warn("error saving " + FailedFileName)
 			}
 			if err == nil {
 				err = m.ImportErrors

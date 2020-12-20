@@ -12,6 +12,7 @@ import (
 	"html/template"
 	"net/http"
 	_ "net/http/pprof"
+	"strings"
 )
 
 type Server struct {
@@ -19,7 +20,7 @@ type Server struct {
 	FilesystemManager *filesystem.Manager
 	ImportManager     *importer.Manager
 	State             State
-	config            Config
+	Config            Config
 }
 
 type State struct {
@@ -35,7 +36,7 @@ func NewServer(conf Config) (*Server, error) {
 	}
 	fileystemManager := filesystem.NewManager(conf.RecordDirectory, conf.DataDirectory)
 	importManager := importer.NewManager(fileystemManager, conf.DataDirectory, recordManager.Db, conf.ApiURL, conf.RetryCount)
-	return &Server{DatabaseManager: recordManager, FilesystemManager: fileystemManager, ImportManager: importManager, config: conf, State: State{ImportRunning: semaphore.NewWeighted(1)}}, nil
+	return &Server{DatabaseManager: recordManager, FilesystemManager: fileystemManager, ImportManager: importManager, Config: conf, State: State{ImportRunning: semaphore.NewWeighted(1)}}, nil
 }
 
 func (s *Server) Run(port string) error {
@@ -113,6 +114,41 @@ func (s *Server) Run(port string) error {
 			w.WriteHeader(http.StatusMethodNotAllowed)
 		}
 	})
+	http.HandleFunc("/files", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodGet {
+			filename := strings.TrimPrefix(r.URL.Path, "/files")
+			if filename == "" {
+				w.Header().Set("Content-Type", "application/json")
+				_ = json.NewEncoder(w).Encode(s.ImportManager.Files())
+			} else {
+				importManager := importer.NewManager(s.FilesystemManager, s.Config.DataDirectory, s.DatabaseManager.Db, s.Config.ApiURL, s.Config.RetryCount)
+				if err := importManager.Load(filename); err != nil {
+					w.WriteHeader(http.StatusInternalServerError)
+					fmt.Fprint(w, err.Error())
+					return
+				}
+				importable, err := importManager.DataToImport(r.Context())
+				if err != nil {
+					w.WriteHeader(http.StatusInternalServerError)
+					fmt.Fprint(w, err.Error())
+					return
+				}
+				w.Header().Set("Content-Type", "application/json")
+				records := importable.Records
+				if len(records) > 500 {
+					records = records[:500]
+				}
+				_ = json.NewEncoder(w).Encode(map[string]interface{}{
+					"total":     len(importable.Records),
+					"records":   records,
+					"truncated": len(importable.Records) > 500,
+				})
+			}
+
+		} else {
+			w.WriteHeader(http.StatusMethodNotAllowed)
+		}
+	})
 	http.HandleFunc("/import", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodGet {
 			if !s.ImportManager.IsLoaded() {
@@ -122,6 +158,7 @@ func (s *Server) Run(port string) error {
 					"imported":   0,
 					"errors":     nil,
 					"categories": 0,
+					"hasData":    false,
 				})
 				return
 			}
@@ -138,6 +175,7 @@ func (s *Server) Run(port string) error {
 				"imported":   len(s.ImportManager.ImportedRecords()),
 				"errors":     s.ImportManager.ImportErrors,
 				"categories": len(importable.Categories),
+				"hasData":    true,
 			})
 		} else if r.Method == http.MethodPut {
 			if ok := s.State.ImportRunning.TryAcquire(1); !ok {

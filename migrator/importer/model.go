@@ -9,6 +9,8 @@ import (
 )
 
 const FileName string = "datatoimport.gob"
+const FailedFileName string = "failedrecords.gob"
+const ImportedFileName string = "importedrecords.gob"
 
 type ImportableRecord struct {
 	client.NewRecord

@@ -2,12 +2,11 @@ package http
 
 import (
 	"github.com/namsral/flag"
-	"path/filepath"
 )
 
 type Config struct {
-	Username, Password, Hostname, Instance, RecordDirectory, DbName, DataDirectory, OutputFile, ApiURL string
-	RetryCount                                                                                         int
+	Username, Password, Hostname, Instance, RecordDirectory, DbName, DataDirectory, ApiURL string
+	RetryCount                                                                             int
 }
 
 func NewConfig() Config {
@@ -36,7 +35,6 @@ func NewConfig() Config {
 		RecordDirectory: recordDirectory,
 		DataDirectory:   dataDirectory,
 		DbName:          dbName,
-		OutputFile:      filepath.Join(dataDirectory, "output.gob"),
 		ApiURL:          apiURL,
 		RetryCount:      retryCount,
 	}

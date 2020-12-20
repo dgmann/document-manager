@@ -1,8 +1,7 @@
 package importer
 
 import (
-	"github.com/dgmann/document-manager/api/client"
-	"github.com/dgmann/document-manager/api/datastore"
+	client "github.com/dgmann/document-manager/apiclient"
 	"github.com/dgmann/document-manager/migrator/records/filesystem"
 	"github.com/dgmann/document-manager/migrator/records/models"
 	"strconv"
@@ -46,7 +45,7 @@ func (i *ImportableRecord) PageCount() int {
 }
 
 type Import struct {
-	Categories []datastore.Category
+	Categories []client.Category
 	Records    []ImportableRecord
 }
 

@@ -2,12 +2,12 @@ package categories
 
 import (
 	"fmt"
-	"github.com/dgmann/document-manager/api/datastore"
+	client "github.com/dgmann/document-manager/apiclient"
 	"github.com/jmoiron/sqlx"
 )
 
-func All(db *sqlx.DB) ([]datastore.Category, error) {
-	var categories []datastore.Category
+func All(db *sqlx.DB) ([]client.Category, error) {
+	var categories []client.Category
 
 	query := `select Name, Description
 			  from Spezialisations`
@@ -18,7 +18,7 @@ func All(db *sqlx.DB) ([]datastore.Category, error) {
 	defer rows.Close()
 
 	for rows.Next() {
-		var category datastore.Category
+		var category client.Category
 		if err := rows.Scan(&category.Id, &category.Name); err != nil {
 			return nil, fmt.Errorf("error fetching database row: %w", err)
 		}

@@ -3,8 +3,7 @@ package importer
 import (
 	"context"
 	"fmt"
-	"github.com/dgmann/document-manager/api/client"
-	"github.com/dgmann/document-manager/api/datastore"
+	client "github.com/dgmann/document-manager/apiclient"
 	"github.com/dgmann/document-manager/migrator/categories"
 	"github.com/dgmann/document-manager/migrator/records/filesystem"
 	"github.com/jmoiron/sqlx"
@@ -50,7 +49,7 @@ func (m *Manager) DataToImport(ctx context.Context) (*Import, error) {
 	}
 
 	var filesToImport []ImportableRecord
-	status := datastore.StatusDone
+	status := client.StatusDone
 	index, err := m.FilesystemManager.Index(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("error fetching filesystem index: %w", err)
@@ -119,7 +118,7 @@ func (m *Manager) Import(ctx context.Context) error {
 	return nil
 }
 
-func (m *Manager) importCategories(cats []datastore.Category) error {
+func (m *Manager) importCategories(cats []client.Category) error {
 	for _, category := range cats {
 		if err := m.Api.CreateCategory(category); err != nil {
 			return err

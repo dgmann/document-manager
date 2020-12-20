@@ -3,7 +3,7 @@ package importer
 import (
 	"context"
 	"fmt"
-	"github.com/dgmann/document-manager/api/client"
+	client "github.com/dgmann/document-manager/apiclient"
 	"github.com/sirupsen/logrus"
 	"io"
 	"os"

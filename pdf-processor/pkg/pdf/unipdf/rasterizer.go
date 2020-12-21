@@ -3,8 +3,9 @@ package unipdf
 import (
 	"io"
 
+	"github.com/dgmann/document-manager/pdf-processor/pkg/pdf"
 	"github.com/dgmann/document-manager/pdf-processor/pkg/processor"
-	pdf "github.com/unidoc/unipdf/v3/model"
+	unipdf "github.com/unidoc/unipdf/v3/model"
 	"github.com/unidoc/unipdf/v3/render"
 )
 
@@ -15,23 +16,25 @@ func NewRasterizer() *Rasterizer {
 	return &Rasterizer{}
 }
 
-func (e *Rasterizer) ToImages(data io.ReadSeeker) ([]*processor.Image, error) {
-	pdfReader, err := pdf.NewPdfReader(data)
+func (e *Rasterizer) ToImages(data io.ReadSeeker, writer pdf.ImageSender) (int, error) {
+	pdfReader, err := unipdf.NewPdfReader(data)
 	if err != nil {
-		return nil, err
+		return 0, err
 	}
 	renderer := render.NewImageDevice()
-	var images []*processor.Image
+	imagesSent := 0
 	for _, page := range pdfReader.PageList {
 		res, err := renderer.Render(page)
 		if err != nil {
-			return nil, err
+			return imagesSent, err
 		}
 		img, err := encode(res)
 		if err != nil {
-			return nil, err
+			return imagesSent, err
 		}
-		images = append(images, &processor.Image{Content: img, Format: "png"})
+		if err := writer.Send(&processor.Image{Content: img, Format: "png"}); err != nil {
+			return imagesSent, err
+		}
 	}
-	return images, nil
+	return imagesSent, nil
 }

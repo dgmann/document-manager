@@ -14,6 +14,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/dgmann/document-manager/pdf-processor/pkg/pdf"
 	"github.com/dgmann/document-manager/pdf-processor/pkg/processor"
 
 	"github.com/dgmann/document-manager/pdf-processor/filesystem"
@@ -44,10 +45,10 @@ func (m *Extractor) Count(data io.ReadSeeker) (int, error) {
 	return ctx.PageCount, nil
 }
 
-func (m *Extractor) ToImages(data io.ReadSeeker) ([]*processor.Image, error) {
+func (m *Extractor) ToImages(data io.ReadSeeker, writer pdf.ImageSender) (int, error) {
 	outdir, err := ioutil.TempDir("", "images")
 	if err != nil {
-		return nil, fmt.Errorf("error creating tmp dir: %w", err)
+		return 0, fmt.Errorf("error creating tmp dir: %w", err)
 	}
 	defer func() {
 		if e := os.RemoveAll(outdir); e != nil && err == nil {
@@ -58,33 +59,35 @@ func (m *Extractor) ToImages(data io.ReadSeeker) ([]*processor.Image, error) {
 	_, _ = data.Seek(0, io.SeekStart)
 
 	if err := api.ExtractImages(data, outdir, "pdf", nil, configuration); err != nil {
-		return nil, fmt.Errorf("error extracting images: %w", err)
+		return 0, fmt.Errorf("error extracting images: %w", err)
 	}
 	files, err := filesystem.ReadFiles(outdir)
 	if err != nil {
-		return nil, err
+		return 0, err
 	}
 	groups, err := groupImagesByPage(files, pageCount)
 	if err != nil {
-		return nil, err
+		return 0, err
 	}
-	var images []*processor.Image
+	imagesSent := 0
 	for _, group := range groups {
 		if len(group) == 1 {
 			img, err := filesystem.ToImage(group[0])
 			if err != nil {
-				return nil, err
+				return imagesSent, err
 			}
-			images = append(images, img)
+			writer.Send(img)
 		} else if len(group) > 1 {
 			concatenated, err := concatenateImages(group)
 			if err != nil {
-				return nil, err
+				return imagesSent, err
 			}
-			images = append(images, &processor.Image{Content: concatenated, Format: "png"})
+			if err := writer.Send(&processor.Image{Content: concatenated, Format: "png"}); err != nil {
+				return imagesSent, err
+			}
 		}
 	}
-	return images, nil
+	return imagesSent, nil
 }
 
 func groupImagesByPage(files []string, pageCount int) ([][]string, error) {

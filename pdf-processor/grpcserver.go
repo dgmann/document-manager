@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -12,20 +13,26 @@ import (
 	"github.com/dgmann/document-manager/pdf-processor/pkg/pdf"
 	"github.com/dgmann/document-manager/pdf-processor/pkg/processor"
 	"github.com/sirupsen/logrus"
+	"google.golang.org/grpc/status"
 )
 
 type GRPCServer struct {
-	converter pdf.ImageConverter
-	rotator   image.Rotator
-	creator   pdf.Creator
+	converterFactory *pdf.ConverterFactory
+	rotator          image.Rotator
+	creator          pdf.Creator
 	*processor.UnimplementedPdfProcessorServer
 }
 
-func NewGRPCServer(c pdf.ImageConverter, r image.Rotator, creator pdf.Creator) *GRPCServer {
-	return &GRPCServer{converter: c, rotator: r, creator: creator}
+func NewGRPCServer(c *pdf.ConverterFactory, r image.Rotator, creator pdf.Creator) *GRPCServer {
+	return &GRPCServer{converterFactory: c, rotator: r, creator: creator}
 }
 
-func (g *GRPCServer) ConvertPdfToImage(pdf *processor.Pdf, sender processor.PdfProcessor_ConvertPdfToImageServer) error {
+func (g *GRPCServer) ConvertPdfToImage(pdfFile *processor.Pdf, sender processor.PdfProcessor_ConvertPdfToImageServer) error {
+	converter := g.converterFactory.Extractor()
+	if pdfFile.Method == processor.Pdf_RASTERIZE {
+		converter = g.converterFactory.Rasterizer()
+	}
+
 	file, err := ioutil.TempFile("", "pdf-*.pdf")
 	if err != nil {
 		return fmt.Errorf("error creating temp file: %w", err)
@@ -39,21 +46,16 @@ func (g *GRPCServer) ConvertPdfToImage(pdf *processor.Pdf, sender processor.PdfP
 		}
 	}()
 
-	if _, err := io.Copy(file, bytes.NewReader(pdf.Content)); err != nil {
+	if _, err := io.Copy(file, bytes.NewReader(pdfFile.Content)); err != nil {
 		return fmt.Errorf("error writing to temp file: %w", err)
 	}
 	_, _ = file.Seek(0, io.SeekStart)
 
-	images, err := g.converter.ToImages(file)
-	if err != nil {
-		return err
-	}
-
-	for _, img := range images {
-		err = sender.Send(img)
-		if err != nil {
-			return err
+	if _, err := converter.ToImages(file, sender); err != nil {
+		if errors.Is(err, pdf.ErrorExtraction) {
+			return status.Error(400, err.Error())
 		}
+		return err
 	}
 
 	return nil

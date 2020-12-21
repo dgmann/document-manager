@@ -10,7 +10,7 @@ import (
 	"path"
 
 	"github.com/dgmann/document-manager/pdf-processor/filesystem"
-	"github.com/dgmann/document-manager/pdf-processor/pkg/processor"
+	"github.com/dgmann/document-manager/pdf-processor/pkg/pdf"
 )
 
 type Extractor struct {
@@ -20,12 +20,12 @@ func NewExtractor() *Extractor {
 	return &Extractor{}
 }
 
-func (e *Extractor) ToImages(data io.ReadSeeker) ([]*processor.Image, error) {
+func (e *Extractor) ToImages(data io.ReadSeeker, writer pdf.ImageSender) (int, error) {
 	var errorbuf bytes.Buffer
 
 	outdir, err := ioutil.TempDir("", "images")
 	if err != nil {
-		return nil, fmt.Errorf("error creating tmp dir: %w", err)
+		return 0, fmt.Errorf("error creating tmp dir: %w", err)
 	}
 	defer func() {
 		if e := os.RemoveAll(outdir); e != nil && err == nil {
@@ -38,7 +38,17 @@ func (e *Extractor) ToImages(data io.ReadSeeker) ([]*processor.Image, error) {
 	cmd.Stderr = &errorbuf
 	err = cmd.Run()
 	if err != nil {
-		return nil, fmt.Errorf("error: %w. Message: %s", err, errorbuf.String())
+		return 0, fmt.Errorf("error: %w. Message: %s", err, errorbuf.String())
 	}
-	return filesystem.ReadImagesFromDirectory(outdir)
+
+	images, err := filesystem.ReadImagesFromDirectory(outdir)
+	if err != nil {
+		return 0, err
+	}
+	for _, img := range images {
+		if err := writer.Send(img); err != nil {
+			return 0, err
+		}
+	}
+	return len(images), nil
 }

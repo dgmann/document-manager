@@ -14,8 +14,11 @@ github.com/cncf/udpa/go v0.0.0-20200629203442-efcf912fb354/go.mod h1:WmhPx2Nbnht
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
+github.com/dgmann/document-manager v0.0.0-20201221210023-36227080820b h1:TE4yYI44rEZ2Tk3Q6wBYfCQcqHnn642kPjiL9qWWaRI=
 github.com/dgmann/document-manager/pdf-processor/pkg/processor v0.0.0-20201218203619-e44dea61f994 h1:+CsmqQmhkVcXEzuawM27p+kWZOHFYr+0H4mKI40mX4U=
 github.com/dgmann/document-manager/pdf-processor/pkg/processor v0.0.0-20201218203619-e44dea61f994/go.mod h1:4dxE9d48eHFfhO5j0zfu5U7lheejE8QsONJVlTYb+nI=
+github.com/dgmann/document-manager/pdf-processor/pkg/processor v0.0.0-20201221210023-36227080820b h1:FWTzMwfaS7ffTXJoVes5pfXRl2OISX4wLwxxDfZRKDw=
+github.com/dgmann/document-manager/pdf-processor/pkg/processor v0.0.0-20201221210023-36227080820b/go.mod h1:QTLCPUOS2/Hz1j3vS1raPWYT0fz33Dem0SYWRgLerQk=
 github.com/disintegration/imaging v1.6.2 h1:w1LecBlG2Lnp8B3jk5zSuNqd7b4DXhcjwek1ei82L+c=
 github.com/disintegration/imaging v1.6.2/go.mod h1:44/5580QXChDfwIclfc/PCwrr44amcmDAg8hxG0Ewe4=
 github.com/envoyproxy/go-control-plane v0.9.0/go.mod h1:YTl/9mNaCwkRvm6d1a2C3ymFceY/DCBVvsKhRF0iEA4=
@@ -140,6 +143,8 @@ golang.org/x/sys v0.0.0-20201119102817-f84b799fce68 h1:nxC68pudNYkKU6jWhgrqdreuF
 golang.org/x/sys v0.0.0-20201119102817-f84b799fce68/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/sys v0.0.0-20201218084310-7d0127a74742 h1:+CBz4km/0KPU3RGTwARGh/noP3bEwtHcq+0YcBQM2JQ=
 golang.org/x/sys v0.0.0-20201218084310-7d0127a74742/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
+golang.org/x/sys v0.0.0-20201221093633-bc327ba9c2f0 h1:n+DPcgTwkgWzIFpLmoimYR2K2b0Ga5+Os4kayIN0vGo=
+golang.org/x/sys v0.0.0-20201221093633-bc327ba9c2f0/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/term v0.0.0-20201126162022-7de9c90e9dd1/go.mod h1:bj7SfCRtBDWHUb9snDiAeCFNEtKQo2Wmx5Cou7ajbmo=
 golang.org/x/text v0.3.0 h1:g61tztE5qeGQ89tm6NTjjM9VPIm088od1l6aSorWRWg=
 golang.org/x/text v0.3.0/go.mod h1:NqM8EUOU14njkJ3fqMW+pc6Ldnwhi/IjpwHt7yyuwOQ=

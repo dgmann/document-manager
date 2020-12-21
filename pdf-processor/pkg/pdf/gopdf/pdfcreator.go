@@ -3,6 +3,8 @@ package gopdf
 import (
 	"bufio"
 	"bytes"
+	"fmt"
+
 	"github.com/dgmann/document-manager/pdf-processor/pkg/processor"
 	"github.com/jung-kurt/gofpdf"
 )
@@ -33,7 +35,7 @@ func (creator *PdfCreator) Create(document *processor.Document) (*processor.Pdf,
 
 	pages := getPages(document, 0)
 	for i, page := range pages {
-		pageName := string(i)
+		pageName := fmt.Sprint(i)
 		var opt gofpdf.ImageOptions
 		opt.ImageType = page.Image.Format
 		opt.ReadDpi = true

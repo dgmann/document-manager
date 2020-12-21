@@ -5,6 +5,7 @@ import (
 	"image/png"
 	"io"
 
+	"github.com/dgmann/document-manager/pdf-processor/pkg/pdf"
 	"github.com/dgmann/document-manager/pdf-processor/pkg/processor"
 	"github.com/gen2brain/go-fitz"
 )
@@ -18,26 +19,28 @@ func NewProcessor() *Processor {
 	return &Processor{encoder: encoder}
 }
 
-func (m *Processor) ToImages(data io.ReadSeeker) ([]*processor.Image, error) {
+func (m *Processor) ToImages(data io.ReadSeeker, writer pdf.ImageSender) (int, error) {
 	pdf, err := fitz.NewFromReader(data)
 	if err != nil {
-		return nil, err
+		return 9, err
 	}
 	defer pdf.Close()
 
-	images := make([]*processor.Image, pdf.NumPage())
+	imagesSent := 0
 	for i := 0; i < pdf.NumPage(); i++ {
 		img, err := pdf.ImageDPI(i, 150)
 		if err != nil {
-			return nil, err
+			return imagesSent, err
 		}
 		var buf bytes.Buffer
 		if err := m.encoder.Encode(&buf, img); err != nil {
-			return nil, err
+			return imagesSent, err
 		}
-		images[i] = &processor.Image{Content: buf.Bytes(), Format: "png"}
+		if err := writer.Send(&processor.Image{Content: buf.Bytes(), Format: "png"}); err != nil {
+			return imagesSent, err
+		}
 	}
-	return images, nil
+	return imagesSent, nil
 }
 
 func (m *Processor) Count(data io.ReadSeeker) (int, error) {

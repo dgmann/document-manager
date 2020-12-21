@@ -11,7 +11,6 @@ import (
 
 	"github.com/dgmann/document-manager/pdf-processor/pkg/image/imaging"
 	"github.com/dgmann/document-manager/pdf-processor/pkg/pdf"
-	"github.com/dgmann/document-manager/pdf-processor/pkg/pdf/dual"
 	"github.com/dgmann/document-manager/pdf-processor/pkg/pdf/gopdf"
 	"github.com/dgmann/document-manager/pdf-processor/pkg/pdf/pdfcpu"
 	"github.com/dgmann/document-manager/pdf-processor/pkg/pdf/poppler"
@@ -36,7 +35,7 @@ func main() {
 	if !ok {
 		log.Fatalf("%s is not a valid rasterizer. Valid values: poppler, mupdf", config.Extractor)
 	}
-	converter := dual.NewProcessor(extractor(), rasterizer(), pdfcpu.NewExtractor())
+	converter := pdf.NewConverter(extractor(), rasterizer(), pdfcpu.NewExtractor())
 
 	creator := gopdf.NewPdfCreator()
 	port := 9000

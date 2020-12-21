@@ -20,7 +20,7 @@ func NewRasterizer() *Rasterizer {
 	return &Rasterizer{}
 }
 
-func (c *Rasterizer) ToImages(data io.Reader) ([]*processor.Image, error) {
+func (c *Rasterizer) ToImages(data io.ReadSeeker) ([]*processor.Image, error) {
 	var errorbuf bytes.Buffer
 
 	outdir, err := ioutil.TempDir("", "images")

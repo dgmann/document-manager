@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
-	"github.com/dgmann/document-manager/pdf-processor/pkg/pdf/unipdf"
-	"github.com/dgmann/document-manager/pdf-processor/pkg/processor"
 	"net"
 	"net/http"
 	_ "net/http/pprof"
+
+	"github.com/dgmann/document-manager/pdf-processor/pkg/pdf/unipdf"
+	"github.com/dgmann/document-manager/pdf-processor/pkg/processor"
 
 	"github.com/dgmann/document-manager/pdf-processor/pkg/image/imaging"
 	"github.com/dgmann/document-manager/pdf-processor/pkg/pdf"

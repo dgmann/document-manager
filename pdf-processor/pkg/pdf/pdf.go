@@ -1,12 +1,13 @@
 package pdf
 
 import (
-	"github.com/dgmann/document-manager/pdf-processor/pkg/processor"
 	"io"
+
+	"github.com/dgmann/document-manager/pdf-processor/pkg/processor"
 )
 
 type ImageConverter interface {
-	ToImages(data io.Reader) ([]*processor.Image, error)
+	ToImages(data io.ReadSeeker) ([]*processor.Image, error)
 }
 
 type Rotator interface {
@@ -18,5 +19,5 @@ type Creator interface {
 }
 
 type PageCounter interface {
-	Count(data io.Reader) (int, error)
+	Count(data io.ReadSeeker) (int, error)
 }

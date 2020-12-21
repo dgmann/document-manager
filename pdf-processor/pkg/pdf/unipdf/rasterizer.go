@@ -1,12 +1,11 @@
 package unipdf
 
 import (
-	"bytes"
+	"io"
+
 	"github.com/dgmann/document-manager/pdf-processor/pkg/processor"
 	pdf "github.com/unidoc/unipdf/v3/model"
 	"github.com/unidoc/unipdf/v3/render"
-	"io"
-	"io/ioutil"
 )
 
 type Rasterizer struct {
@@ -16,13 +15,8 @@ func NewRasterizer() *Rasterizer {
 	return &Rasterizer{}
 }
 
-func (e *Rasterizer) ToImages(data io.Reader) ([]*processor.Image, error) {
-	b, err := ioutil.ReadAll(data)
-	if err != nil {
-		return nil, err
-	}
-	seeker := bytes.NewReader(b)
-	pdfReader, err := pdf.NewPdfReader(seeker)
+func (e *Rasterizer) ToImages(data io.ReadSeeker) ([]*processor.Image, error) {
+	pdfReader, err := pdf.NewPdfReader(data)
 	if err != nil {
 		return nil, err
 	}

@@ -3,13 +3,14 @@ package poppler
 import (
 	"bytes"
 	"fmt"
-	"github.com/dgmann/document-manager/pdf-processor/filesystem"
-	"github.com/dgmann/document-manager/pdf-processor/pkg/processor"
 	"io"
 	"io/ioutil"
 	"os"
 	"os/exec"
 	"path"
+
+	"github.com/dgmann/document-manager/pdf-processor/filesystem"
+	"github.com/dgmann/document-manager/pdf-processor/pkg/processor"
 )
 
 type Extractor struct {
@@ -19,7 +20,7 @@ func NewExtractor() *Extractor {
 	return &Extractor{}
 }
 
-func (e *Extractor) ToImages(data io.Reader) ([]*processor.Image, error) {
+func (e *Extractor) ToImages(data io.ReadSeeker) ([]*processor.Image, error) {
 	var errorbuf bytes.Buffer
 
 	outdir, err := ioutil.TempDir("", "images")

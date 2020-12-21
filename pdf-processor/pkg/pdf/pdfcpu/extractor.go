@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"github.com/dgmann/document-manager/pdf-processor/pkg/processor"
 	_ "image/jpeg"
 	"image/png"
 	_ "image/png"
@@ -14,6 +13,8 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+
+	"github.com/dgmann/document-manager/pdf-processor/pkg/processor"
 
 	"github.com/dgmann/document-manager/pdf-processor/filesystem"
 	gim "github.com/ozankasikci/go-image-merge"
@@ -30,13 +31,8 @@ func NewExtractor() *Extractor {
 
 var configuration = &pdfcpu.Configuration{ValidationMode: pdfcpu.ValidationNone, Reader15: true}
 
-func (m *Extractor) Count(data io.Reader) (int, error) {
-	b, err := ioutil.ReadAll(data)
-	if err != nil {
-		return 0, nil
-	}
-	seeker := bytes.NewReader(b)
-	ctx, err := api.ReadContext(seeker, configuration)
+func (m *Extractor) Count(data io.ReadSeeker) (int, error) {
+	ctx, err := api.ReadContext(data, configuration)
 	if err != nil {
 		return 0, err
 	}
@@ -48,9 +44,7 @@ func (m *Extractor) Count(data io.Reader) (int, error) {
 	return ctx.PageCount, nil
 }
 
-func (m *Extractor) ToImages(data io.Reader) ([]*processor.Image, error) {
-	b, err := ioutil.ReadAll(data)
-	seeker := bytes.NewReader(b)
+func (m *Extractor) ToImages(data io.ReadSeeker) ([]*processor.Image, error) {
 	outdir, err := ioutil.TempDir("", "images")
 	if err != nil {
 		return nil, fmt.Errorf("error creating tmp dir: %w", err)
@@ -60,10 +54,10 @@ func (m *Extractor) ToImages(data io.Reader) ([]*processor.Image, error) {
 			err = e
 		}
 	}()
-	pageCount, err := m.Count(seeker)
-	_, _ = seeker.Seek(0, io.SeekStart)
+	pageCount, err := m.Count(data)
+	_, _ = data.Seek(0, io.SeekStart)
 
-	if err := api.ExtractImages(seeker, outdir, "pdf", nil, configuration); err != nil {
+	if err := api.ExtractImages(data, outdir, "pdf", nil, configuration); err != nil {
 		return nil, fmt.Errorf("error extracting images: %w", err)
 	}
 	files, err := filesystem.ReadFiles(outdir)

@@ -18,7 +18,7 @@ func NewProcessor() *Processor {
 	return &Processor{encoder: encoder}
 }
 
-func (m *Processor) ToImages(data io.Reader) ([]*processor.Image, error) {
+func (m *Processor) ToImages(data io.ReadSeeker) ([]*processor.Image, error) {
 	pdf, err := fitz.NewFromReader(data)
 	if err != nil {
 		return nil, err
@@ -40,7 +40,7 @@ func (m *Processor) ToImages(data io.Reader) ([]*processor.Image, error) {
 	return images, nil
 }
 
-func (m *Processor) Count(data io.Reader) (int, error) {
+func (m *Processor) Count(data io.ReadSeeker) (int, error) {
 	pdf, err := fitz.NewFromReader(data)
 	if err != nil {
 		return 0, err

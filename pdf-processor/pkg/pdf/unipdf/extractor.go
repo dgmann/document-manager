@@ -2,16 +2,18 @@ package unipdf
 
 import (
 	"bytes"
+	"image"
+	"image/png"
+	"io"
+	"sync"
+
 	"github.com/dgmann/document-manager/pdf-processor/pkg/processor"
 	gim "github.com/ozankasikci/go-image-merge"
 	"github.com/unidoc/unipdf/v3/extractor"
 	pdf "github.com/unidoc/unipdf/v3/model"
-	"image"
-	"image/color"
-	"image/png"
-	"io"
-	"io/ioutil"
 )
+
+type syncpool struct{ sync.Pool }
 
 type Extractor struct {
 }
@@ -20,12 +22,7 @@ func NewExtractor() *Extractor {
 	return &Extractor{}
 }
 
-func (e *Extractor) ToImages(data io.Reader) ([]*processor.Image, error) {
-	b, err := ioutil.ReadAll(data)
-	if err != nil {
-		return nil, err
-	}
-	seeker := bytes.NewReader(b)
+func (e *Extractor) ToImages(seeker io.ReadSeeker) ([]*processor.Image, error) {
 	pdfReader, err := pdf.NewPdfReader(seeker)
 	if err != nil {
 		return nil, err
@@ -66,26 +63,6 @@ func extractImage(page *pdf.PdfPage) ([]byte, error) {
 		goImages[i] = goImg
 	}
 	return concatenateImages(goImages)
-}
-
-// Decode image.Image's pixel data into []*Pixel
-func DecodePixelsFromImage(img image.Image, offsetX, offsetY int) []*Pixel {
-	pixels := []*Pixel{}
-	for y := 0; y <= img.Bounds().Max.Y; y++ {
-		for x := 0; x <= img.Bounds().Max.X; x++ {
-			p := &Pixel{
-				Point: image.Point{x + offsetX, y + offsetY},
-				Color: img.At(x, y),
-			}
-			pixels = append(pixels, p)
-		}
-	}
-	return pixels
-}
-
-type Pixel struct {
-	Point image.Point
-	Color color.Color
 }
 
 func concatenateImages(imgs []image.Image) ([]byte, error) {

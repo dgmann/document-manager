@@ -4,13 +4,16 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
+	"io/ioutil"
+
 	"github.com/dgmann/document-manager/api/datastore"
 	"github.com/dgmann/document-manager/api/storage"
 	"github.com/dgmann/document-manager/pdf-processor/pkg/processor"
+	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/connectivity"
-	"io"
-	"io/ioutil"
+	"google.golang.org/grpc/status"
 )
 
 type PdfProcessor struct {
@@ -44,11 +47,29 @@ func (p *PdfProcessor) Convert(ctx context.Context, f io.Reader) ([]storage.Imag
 	}
 
 	client := processor.NewPdfProcessorClient(p.conn)
-	stream, err := client.ConvertPdfToImage(ctx, &processor.Pdf{Content: b})
+	stream, err := client.ConvertPdfToImage(ctx, &processor.Pdf{
+		Content: b,
+		Method:  processor.Pdf_EXTRACT,
+	})
 	if err != nil {
 		return nil, err
 	}
+	images, err := receive(stream)
+	if st := status.Convert(err); st.Code() == 400 { // Extraction failed, try rasterize
+		logrus.Info(err)
+		stream, err = client.ConvertPdfToImage(ctx, &processor.Pdf{
+			Content: b,
+			Method:  processor.Pdf_RASTERIZE,
+		})
+		if err != nil {
+			return nil, err
+		}
+		return receive(stream)
+	}
+	return images, nil
+}
 
+func receive(stream processor.PdfProcessor_ConvertPdfToImageClient) ([]storage.Image, error) {
 	var images []storage.Image
 	for {
 		image, err := stream.Recv()

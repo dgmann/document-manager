@@ -56,7 +56,7 @@ func (p *PdfProcessor) Convert(ctx context.Context, f io.Reader) ([]storage.Imag
 	}
 	images, err := receive(stream)
 	if st := status.Convert(err); st.Code() == 400 { // Extraction failed, try rasterize
-		logrus.Info(err)
+		logrus.Info(err.Error() + ". Retrying with rasterization")
 		stream, err = client.ConvertPdfToImage(ctx, &processor.Pdf{
 			Content: b,
 			Method:  processor.Pdf_RASTERIZE,

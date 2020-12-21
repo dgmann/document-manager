@@ -30,47 +30,56 @@ func (e *Extractor) ToImages(seeker io.ReadSeeker, writer pdf.ImageSender) (int,
 	}
 	imagesSent := 0
 	for _, page := range pdfReader.PageList {
-		img, err := extractImage(page)
-		if err != nil {
+		if err := convertPage(writer, page); err != nil {
 			return imagesSent, err
-		}
-
-		if err := writer.Send(&processor.Image{Content: img, Format: "png"}); err != nil {
-			return 0, err
 		}
 		imagesSent++
 	}
 	return imagesSent, nil
 }
 
-func extractImage(page *unipdf.PdfPage) ([]byte, error) {
+func convertPage(writer pdf.ImageSender, page *unipdf.PdfPage) error {
+	buf := pool.GetBuffer()
+	defer pool.PutBuffer(buf)
+
+	if err := extractImage(buf, page); err != nil {
+		return err
+	}
+
+	if err := writer.Send(&processor.Image{Content: buf.Bytes(), Format: "png"}); err != nil {
+		return err
+	}
+	return nil
+}
+
+func extractImage(buf io.Writer, page *unipdf.PdfPage) error {
 	extract, err := extractor.New(page)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	images, err := extract.ExtractPageImages(nil)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	if len(images.Images) == 1 {
 		goImg, err := images.Images[0].Image.ToGoImage()
 		if err != nil {
-			return nil, err
+			return err
 		}
-		return encode(goImg)
+		return encode(buf, goImg)
 	}
 	goImages := make([]image.Image, len(images.Images))
 	for i, img := range images.Images {
 		goImg, err := img.Image.ToGoImage()
 		if err != nil {
-			return nil, err
+			return err
 		}
 		goImages[i] = goImg
 	}
-	return concatenateImages(goImages)
+	return concatenateImages(buf, goImages)
 }
 
-func concatenateImages(imgs []image.Image) ([]byte, error) {
+func concatenateImages(buf io.Writer, imgs []image.Image) error {
 	grids := make([]*gim.Grid, 0, len(imgs))
 	for _, img := range imgs {
 		img2 := img
@@ -79,17 +88,15 @@ func concatenateImages(imgs []image.Image) ([]byte, error) {
 
 	img, err := gim.New(grids, 1, len(imgs)).Merge()
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return encode(img)
+	return encode(buf, img)
 }
 
-func encode(img image.Image) ([]byte, error) {
-	buf := pool.GetBuffer()
-	defer pool.PutBuffer(buf)
+func encode(buf io.Writer, img image.Image) error {
 	if err := png.Encode(buf, img); err != nil {
-		return nil, err
+		return err
 	}
-	return buf.Bytes(), nil
+	return nil
 }

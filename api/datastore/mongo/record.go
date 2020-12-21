@@ -4,17 +4,17 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
+	"io/ioutil"
+	"time"
+
 	"github.com/dgmann/document-manager/api/datastore"
 	"github.com/dgmann/document-manager/api/event"
 	"github.com/dgmann/document-manager/api/storage"
-	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"io"
-	"io/ioutil"
-	"time"
 )
 
 type RecordService struct {
@@ -109,22 +109,25 @@ func (r *RecordService) Create(ctx context.Context, data datastore.CreateRecord,
 	}
 
 	if err := r.Pdfs.Write(storage.NewKeyedGenericResource(pdfBytes, "pdf", record.Id.Hex())); err != nil {
-		e := r.Images.Delete(storage.NewKey(record.Id.Hex()))
-		logrus.Error(e)
-		return nil, err
+		if e := r.Images.Delete(storage.NewKey(record.Id.Hex())); e != nil {
+			err = fmt.Errorf("%s. %w", e, err)
+		}
+		return nil, fmt.Errorf("error storing pdf in filesystem. %w", err)
 	}
 
 	res, err := r.Records.InsertOne(ctx, record)
 	if err != nil {
-		e := r.Images.Delete(storage.NewKey(record.Id.Hex()))
-		logrus.Error(e)
-		e = r.Pdfs.Delete(storage.NewKey(record.Id.Hex()))
-		logrus.Error(e)
-		return nil, err
+		if e := r.Images.Delete(storage.NewKey(record.Id.Hex())); e != nil {
+			err = fmt.Errorf("%s. %w", e, err)
+		}
+		if e := r.Pdfs.Delete(storage.NewKey(record.Id.Hex())); e != nil {
+			err = fmt.Errorf("%s. %w", e, err)
+		}
+		return nil, fmt.Errorf("error storing pdf in database. %w", err)
 	}
 	created, err := r.findByObjectId(ctx, res.InsertedID.(primitive.ObjectID))
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error finding newly created document in database. %w", err)
 	}
 
 	r.Events.Send(event.New(event.RecordTopic, event.Created, created.Id.Hex()))

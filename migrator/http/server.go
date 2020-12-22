@@ -200,7 +200,7 @@ func (s *Server) Run(port string) error {
 				fmt.Fprint(w, err.Error())
 				return
 			}
-			w.WriteHeader(http.StatusAccepted)
+			w.WriteHeader(http.StatusOK)
 		}
 	})
 	return http.ListenAndServe(":"+port, nil)

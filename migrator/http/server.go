@@ -151,6 +151,7 @@ func (s *Server) Run(port string) error {
 		}
 	})
 	http.HandleFunc("/import", func(w http.ResponseWriter, r *http.Request) {
+		defer r.Body.Close()
 		if r.Method == http.MethodGet {
 			if !s.ImportManager.IsLoaded() {
 				w.Header().Set("Content-Type", "application/json")

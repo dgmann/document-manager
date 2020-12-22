@@ -2,6 +2,7 @@ package poppler
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -20,7 +21,7 @@ func NewRasterizer() *Rasterizer {
 	return &Rasterizer{}
 }
 
-func (c *Rasterizer) ToImages(data io.ReadSeeker, writer pdf.ImageSender) (int, error) {
+func (c *Rasterizer) ToImages(ctx context.Context, data io.ReadSeeker, writer pdf.ImageSender) (int, error) {
 	var errorbuf bytes.Buffer
 
 	outdir, err := ioutil.TempDir("", "images")
@@ -33,7 +34,7 @@ func (c *Rasterizer) ToImages(data io.ReadSeeker, writer pdf.ImageSender) (int, 
 		}
 	}()
 
-	cmd := exec.Command("pdftoppm", "-png", "-jpeg", "-r", "200", "-", path.Join(outdir, "img"))
+	cmd := exec.CommandContext(ctx, "pdftoppm", "-png", "-jpeg", "-r", "200", "-", path.Join(outdir, "img"))
 	cmd.Stdin = data
 	cmd.Stderr = &errorbuf
 	err = cmd.Run()

@@ -2,6 +2,7 @@ package poppler
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -20,7 +21,7 @@ func NewExtractor() *Extractor {
 	return &Extractor{}
 }
 
-func (e *Extractor) ToImages(data io.ReadSeeker, writer pdf.ImageSender) (int, error) {
+func (e *Extractor) ToImages(ctx context.Context, data io.ReadSeeker, writer pdf.ImageSender) (int, error) {
 	var errorbuf bytes.Buffer
 
 	outdir, err := ioutil.TempDir("", "images")
@@ -33,7 +34,7 @@ func (e *Extractor) ToImages(data io.ReadSeeker, writer pdf.ImageSender) (int, e
 		}
 	}()
 
-	cmd := exec.Command("pdfimages", "-png", "-j", "-", path.Join(outdir, "img"))
+	cmd := exec.CommandContext(ctx, "pdfimages", "-png", "-j", "-", path.Join(outdir, "img"))
 	cmd.Stdin = data
 	cmd.Stderr = &errorbuf
 	err = cmd.Run()

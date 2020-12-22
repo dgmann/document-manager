@@ -1,6 +1,7 @@
 package pdf
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -13,7 +14,7 @@ type ImageSender interface {
 }
 
 type ImageConverter interface {
-	ToImages(data io.ReadSeeker, writer ImageSender) (int, error)
+	ToImages(ctx context.Context, data io.ReadSeeker, writer ImageSender) (int, error)
 }
 
 type Rotator interface {
@@ -59,14 +60,14 @@ type converter struct {
 	counter   PageCounter
 }
 
-func (c *converter) ToImages(data io.ReadSeeker, writer ImageSender) (int, error) {
+func (c *converter) ToImages(ctx context.Context, data io.ReadSeeker, writer ImageSender) (int, error) {
 	pageCount, err := c.counter.Count(data)
 	if err != nil {
 		return 0, err
 	}
 
 	_, _ = data.Seek(0, io.SeekStart)
-	imagesSent, err := c.converter.ToImages(data, writer)
+	imagesSent, err := c.converter.ToImages(ctx, data, writer)
 
 	if err != nil {
 		return 0, fmt.Errorf("%s. %w", err, ErrorExtraction)

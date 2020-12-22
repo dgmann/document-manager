@@ -2,6 +2,7 @@ package mupdf
 
 import (
 	"bytes"
+	"context"
 	"image/png"
 	"io"
 
@@ -19,7 +20,7 @@ func NewProcessor() *Processor {
 	return &Processor{encoder: encoder}
 }
 
-func (m *Processor) ToImages(data io.ReadSeeker, writer pdf.ImageSender) (int, error) {
+func (m *Processor) ToImages(ctx context.Context, data io.ReadSeeker, writer pdf.ImageSender) (int, error) {
 	pdf, err := fitz.NewFromReader(data)
 	if err != nil {
 		return 9, err

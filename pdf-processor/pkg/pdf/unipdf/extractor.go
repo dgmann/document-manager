@@ -1,6 +1,7 @@
 package unipdf
 
 import (
+	"context"
 	"image"
 	"image/png"
 	"io"
@@ -23,7 +24,7 @@ func NewExtractor() *Extractor {
 	return &Extractor{}
 }
 
-func (e *Extractor) ToImages(seeker io.ReadSeeker, writer pdf.ImageSender) (int, error) {
+func (e *Extractor) ToImages(ctx context.Context, seeker io.ReadSeeker, writer pdf.ImageSender) (int, error) {
 	pdfReader, err := unipdf.NewPdfReader(seeker)
 	if err != nil {
 		return 0, err

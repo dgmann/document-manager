@@ -2,6 +2,7 @@ package pdfcpu
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"fmt"
 	_ "image/jpeg"
@@ -45,7 +46,7 @@ func (m *Extractor) Count(data io.ReadSeeker) (int, error) {
 	return ctx.PageCount, nil
 }
 
-func (m *Extractor) ToImages(data io.ReadSeeker, writer pdf.ImageSender) (int, error) {
+func (m *Extractor) ToImages(ctx context.Context, data io.ReadSeeker, writer pdf.ImageSender) (int, error) {
 	outdir, err := ioutil.TempDir("", "images")
 	if err != nil {
 		return 0, fmt.Errorf("error creating tmp dir: %w", err)
@@ -71,6 +72,10 @@ func (m *Extractor) ToImages(data io.ReadSeeker, writer pdf.ImageSender) (int, e
 	}
 	imagesSent := 0
 	for _, group := range groups {
+		if errors.Is(ctx.Err(), context.Canceled) {
+			return imagesSent, ctx.Err()
+		}
+
 		if len(group) == 1 {
 			img, err := filesystem.ToImage(group[0])
 			if err != nil {

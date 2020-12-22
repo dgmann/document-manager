@@ -1,6 +1,8 @@
 package unipdf
 
 import (
+	"context"
+	"errors"
 	"io"
 
 	"github.com/dgmann/document-manager/pdf-processor/pkg/pdf"
@@ -17,7 +19,7 @@ func NewRasterizer() *Rasterizer {
 	return &Rasterizer{}
 }
 
-func (e *Rasterizer) ToImages(data io.ReadSeeker, writer pdf.ImageSender) (int, error) {
+func (e *Rasterizer) ToImages(ctx context.Context, data io.ReadSeeker, writer pdf.ImageSender) (int, error) {
 	pdfReader, err := unipdf.NewPdfReader(data)
 	if err != nil {
 		return 0, err
@@ -25,7 +27,9 @@ func (e *Rasterizer) ToImages(data io.ReadSeeker, writer pdf.ImageSender) (int, 
 	renderer := render.NewImageDevice()
 	imagesSent := 0
 	for _, page := range pdfReader.PageList {
-
+		if errors.Is(ctx.Err(), context.Canceled) {
+			return imagesSent, ctx.Err()
+		}
 		if err := rasterizePage(writer, renderer, page); err != nil {
 			return imagesSent, err
 		}

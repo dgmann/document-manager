@@ -51,7 +51,7 @@ func (g *GRPCServer) ConvertPdfToImage(pdfFile *processor.Pdf, sender processor.
 	}
 	_, _ = file.Seek(0, io.SeekStart)
 
-	if _, err := converter.ToImages(file, sender); err != nil {
+	if _, err := converter.ToImages(sender.Context(), file, sender); err != nil {
 		if errors.Is(err, pdf.ErrorExtraction) {
 			return status.Error(400, err.Error())
 		}

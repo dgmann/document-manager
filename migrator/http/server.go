@@ -180,6 +180,7 @@ func (s *Server) Run(port string) error {
 			})
 		} else if r.Method == http.MethodPut {
 			if ok := s.State.ImportRunning.TryAcquire(1); !ok {
+				w.WriteHeader(http.StatusOK)
 				fmt.Fprint(w, "import already running")
 				return
 			}
@@ -198,6 +199,7 @@ func (s *Server) Run(port string) error {
 				fmt.Fprint(w, err.Error())
 				return
 			}
+			w.WriteHeader(http.StatusAccepted)
 		}
 	})
 	return http.ListenAndServe(":"+port, nil)

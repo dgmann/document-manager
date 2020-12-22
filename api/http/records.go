@@ -5,18 +5,19 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/dgmann/document-manager/api/datastore"
-	"github.com/dgmann/document-manager/api/pdf"
-	"github.com/dgmann/document-manager/api/storage"
-	"github.com/go-chi/chi"
-	"go.mongodb.org/mongo-driver/bson/primitive"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/dgmann/document-manager/api/datastore"
+	"github.com/dgmann/document-manager/api/pdf"
+	"github.com/dgmann/document-manager/api/storage"
+	"github.com/go-chi/chi"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type RecordController struct {
@@ -129,26 +130,21 @@ func (controller *RecordController) Create(w http.ResponseWriter, req *http.Requ
 
 	file, _, err := req.FormFile("pdf")
 	if err != nil {
-		NewErrorResponse(w, fmt.Errorf("no file found. Please specify a pdf file in the field: pdf. %w", err), 400).WriteJSON()
+		NewErrorResponse(w, fmt.Errorf("no file found. Please specify a pdf file in the field: pdf. %w", err), http.StatusBadRequest).WriteJSON()
 		return
 	}
+	defer file.Close()
 
-	fileBytes, err := ioutil.ReadAll(file)
+	images, err := controller.pdfProcessor.Convert(req.Context(), file)
 	if err != nil {
-		NewErrorResponse(w, err, http.StatusBadRequest).WriteJSON()
+		NewErrorResponse(w, err, http.StatusInternalServerError).WriteJSON()
 		return
 	}
-	_ = file.Close()
+	_, _ = file.Seek(0, io.SeekStart)
 
-	images, err := controller.pdfProcessor.Convert(req.Context(), bytes.NewBuffer(fileBytes))
+	res, err := controller.records.Create(req.Context(), newRecord, images, file)
 	if err != nil {
-		NewErrorResponse(w, err, http.StatusBadRequest).WriteJSON()
-		return
-	}
-
-	res, err := controller.records.Create(req.Context(), newRecord, images, bytes.NewBuffer(fileBytes))
-	if err != nil {
-		NewErrorResponse(w, err, http.StatusBadRequest).WriteJSON()
+		NewErrorResponse(w, err, http.StatusInternalServerError).WriteJSON()
 		return
 	}
 

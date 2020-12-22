@@ -43,7 +43,7 @@ func (p *PdfProcessor) Close() error {
 func (p *PdfProcessor) Convert(ctx context.Context, f io.Reader) ([]storage.Image, error) {
 	b, err := ioutil.ReadAll(f)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error reading pdf to convert. %w", err)
 	}
 
 	client := processor.NewPdfProcessorClient(p.conn)
@@ -52,7 +52,7 @@ func (p *PdfProcessor) Convert(ctx context.Context, f io.Reader) ([]storage.Imag
 		Method:  processor.Pdf_EXTRACT,
 	})
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error calling ConvertPdfToImage method. %w", err)
 	}
 	images, err := receive(stream)
 	if st := status.Convert(err); st.Code() == 400 { // Extraction failed, try rasterize
@@ -62,7 +62,7 @@ func (p *PdfProcessor) Convert(ctx context.Context, f io.Reader) ([]storage.Imag
 			Method:  processor.Pdf_RASTERIZE,
 		})
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("error calling rasterize method. %w", err)
 		}
 		return receive(stream)
 	}
@@ -77,7 +77,7 @@ func receive(stream processor.PdfProcessor_ConvertPdfToImageClient) ([]storage.I
 			break
 		}
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("error converting pdf page to image. %w", err)
 		}
 		images = append(images, *storage.NewImage(image.Content, image.Format))
 	}

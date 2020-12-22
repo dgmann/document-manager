@@ -3,16 +3,17 @@ package http
 import (
 	"encoding/json"
 	"fmt"
+	"html/template"
+	"net/http"
+	_ "net/http/pprof"
+	"strings"
+
 	"github.com/dgmann/document-manager/migrator/importer"
 	"github.com/dgmann/document-manager/migrator/records/databasereader"
 	"github.com/dgmann/document-manager/migrator/records/filesystem"
 	"github.com/dgmann/document-manager/migrator/records/models"
 	"github.com/dgmann/document-manager/migrator/validator"
 	"golang.org/x/sync/semaphore"
-	"html/template"
-	"net/http"
-	_ "net/http/pprof"
-	"strings"
 )
 
 type Server struct {
@@ -114,9 +115,9 @@ func (s *Server) Run(port string) error {
 			w.WriteHeader(http.StatusMethodNotAllowed)
 		}
 	})
-	http.HandleFunc("/files", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/files/", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == http.MethodGet {
-			filename := strings.TrimPrefix(r.URL.Path, "/files")
+			filename := strings.TrimPrefix(r.URL.Path, "/files/")
 			if filename == "" {
 				w.Header().Set("Content-Type", "application/json")
 				_ = json.NewEncoder(w).Encode(s.ImportManager.Files())

@@ -142,6 +142,7 @@ func (m *Manager) ImportedRecords() map[string]ImportableRecord {
 func (m *Manager) importRecords(ctx context.Context, recordsToImport []ImportableRecord) (err error) {
 	importedRecords := m.ImportedRecords()
 	records := Difference(recordsToImport, importedRecords)
+	logrus.Infof("importing %d records", len(records))
 	importedCh, errCh := m.ImportRecords(ctx, records)
 
 	defer func() {
@@ -149,6 +150,7 @@ func (m *Manager) importRecords(ctx context.Context, recordsToImport []Importabl
 			record.File = nil
 			importedRecords[key] = record
 		}
+		logrus.Infof("imported %d records", len(importedRecords))
 		if err := filesystem.SaveToGob(importedRecords, m.importedRecordsPath); err != nil {
 			logrus.Warn(err)
 		}

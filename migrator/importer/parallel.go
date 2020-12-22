@@ -2,6 +2,7 @@ package importer
 
 import (
 	"context"
+	"math"
 	"runtime"
 	"sync"
 )
@@ -12,7 +13,7 @@ func parallel(ctx context.Context, values []ImportableRecord, action func(*Impor
 	errCh := make(chan ImportError)
 	successCh := make(chan *ImportableRecord)
 
-	chunk := len(values) / workerCount
+	chunk := int(math.Ceil(float64(len(values)) / float64(workerCount)))
 
 	var wg sync.WaitGroup
 	for i := 0; i < workerCount; i++ {

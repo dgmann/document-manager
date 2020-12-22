@@ -3,16 +3,17 @@ package importer
 import (
 	"context"
 	"fmt"
-	client "github.com/dgmann/document-manager/apiclient"
-	"github.com/dgmann/document-manager/migrator/categories"
-	"github.com/dgmann/document-manager/migrator/records/filesystem"
-	"github.com/jmoiron/sqlx"
-	"github.com/sirupsen/logrus"
 	"os"
 	"path"
 	"path/filepath"
 	"strconv"
 	"time"
+
+	client "github.com/dgmann/document-manager/apiclient"
+	"github.com/dgmann/document-manager/migrator/categories"
+	"github.com/dgmann/document-manager/migrator/records/filesystem"
+	"github.com/jmoiron/sqlx"
+	"github.com/sirupsen/logrus"
 )
 
 type SubrecordIndex interface {
@@ -31,7 +32,7 @@ type Manager struct {
 }
 
 func NewManager(filesystemManager *filesystem.Manager, dataDirectory string, db *sqlx.DB, url string, retryCount int) *Manager {
-	importer := NewImporter(url, retryCount, 1*time.Minute)
+	importer := NewImporter(url, retryCount, 30*time.Minute)
 	return &Manager{FilesystemManager: filesystemManager, dataDirectory: dataDirectory, Importer: importer, db: db, importedRecordsPath: filepath.Join(dataDirectory, ImportedFileName)}
 }
 

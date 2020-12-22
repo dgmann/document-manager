@@ -40,14 +40,5 @@ func (c *Rasterizer) ToImages(data io.ReadSeeker, writer pdf.ImageSender) (int, 
 	if err != nil {
 		return 0, fmt.Errorf("error: %w. Message: %s", err, errorbuf.String())
 	}
-	images, err := filesystem.ReadImagesFromDirectory(outdir)
-	if err != nil {
-		return 0, err
-	}
-	for _, img := range images {
-		if err := writer.Send(img); err != nil {
-			return 9, err
-		}
-	}
-	return len(images), nil
+	return filesystem.ReadImagesFromDirectory(outdir, writer)
 }

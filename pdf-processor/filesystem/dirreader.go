@@ -1,28 +1,44 @@
 package filesystem
 
 import (
-	"github.com/dgmann/document-manager/pdf-processor/pkg/processor"
 	"io/ioutil"
+	"os"
 	"path"
 	"strings"
+
+	"github.com/dgmann/document-manager/pdf-processor/pkg/pdf"
+	"github.com/dgmann/document-manager/pdf-processor/pkg/pool"
+	"github.com/dgmann/document-manager/pdf-processor/pkg/processor"
 )
 
-func ReadImagesFromDirectory(dirname string) ([]*processor.Image, error) {
+func ReadImagesFromDirectory(dirname string, writer pdf.ImageSender) (int, error) {
 	files, err := ioutil.ReadDir(dirname)
 	if err != nil {
-		return nil, err
+		return 0, err
 	}
-	var images []*processor.Image
+	imagesSent := 0
 	for _, f := range files {
 		p := path.Join(dirname, f.Name())
-		extension := path.Ext(f.Name())
-		content, err := ioutil.ReadFile(p)
-		if err != nil {
-			return nil, err
+		if err := sendFile(f, p, writer); err != nil {
+			return imagesSent, err
 		}
-		images = append(images, &processor.Image{Content: content, Format: strings.Trim(extension, ".")})
 	}
-	return images, nil
+	return imagesSent, nil
+}
+
+func sendFile(f os.FileInfo, p string, writer pdf.ImageSender) error {
+	extension := path.Ext(f.Name())
+	file, err := os.Open("file.go")
+	if err != nil {
+		return err
+	}
+	buf := pool.GetBuffer()
+	defer pool.PutBuffer(buf)
+	_, err = buf.ReadFrom(file)
+	if err != nil {
+		return err
+	}
+	return writer.Send(&processor.Image{Content: buf.Bytes(), Format: strings.Trim(extension, ".")})
 }
 
 func ReadFiles(dirname string) ([]string, error) {

@@ -16,21 +16,21 @@ import (
 )
 
 func main() {
-	fileName := flag.String("f", "./aow_pat.bdt", "BDT file containing current patient")
-	serverUrl := flag.String("s", "http://localhost", "Document-Manager URL")
-	port := flag.String("p", "3000", "port")
+	fileName := flag.String("f", lookupEnvOrString("M1_BDT_FILE", "./aow_pat.bdt"), "BDT file containing current patient. Env: M1_BDT_FILE")
+	serverURL := flag.String("s", lookupEnvOrString("DOCUMENT_MANAGER_URL", "http://localhost"), "Document-Manager URL")
+	port := flag.String("p", lookupEnvOrString("M1_HELPER_PORT", "3000"), "port")
 	flag.Parse()
 	if *fileName == "" {
 		log.Fatal("no BDT file provided")
 	}
 
-	s, logger, err := service.New(*fileName, *serverUrl, *port)
+	s, logger, err := service.New(*fileName, *serverURL, *port)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	if service.Interactive() {
-		runInteractive(*fileName, *serverUrl, *port)
+		runInteractive(*fileName, *serverURL, *port)
 		if success := installUninstallService(s); !success {
 			log.Printf("running interactive on port %s", *port)
 
@@ -40,6 +40,13 @@ func main() {
 			logger.Errorf("error starting service: %w", err)
 		}
 	}
+}
+
+func lookupEnvOrString(key string, defaultVal string) string {
+	if val, ok := os.LookupEnv(key); ok {
+		return val
+	}
+	return defaultVal
 }
 
 func runInteractive(fileName, serverUrl, port string) {

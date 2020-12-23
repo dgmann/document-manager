@@ -14,7 +14,7 @@ func Run(ctx context.Context, fileName string, port string) {
 	srv := &http.Server{Addr: ":" + port}
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		if _, err := w.Write([]byte("BDT file path: " + fileName)); err != nil {
+		if _, err := w.Write([]byte("BDT file path: " + fileName + "\nCtrl + Alt + P")); err != nil {
 			log.Printf(err.Error())
 		}
 	})

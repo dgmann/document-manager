@@ -11,6 +11,7 @@ func New(fileName, serverUrl string, port string) (service.Service, service.Logg
 		Name:        "M1Helper",
 		DisplayName: "M1-Helper",
 		Description: "Dienst für die Verbindung von M1 und DocumentManager",
+		Arguments:   []string{"-f", fileName, "-s", serverUrl, "-p", port},
 	}
 
 	prg := newProgram(fileName, serverUrl, port)

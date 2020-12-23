@@ -6,6 +6,7 @@ import {filter, map, mergeMap} from 'rxjs/operators';
 import {Patient} from './patient';
 import {AutorefreshService} from '@app/core/autorefresh';
 import {NotificationService} from '@app/core/notifications';
+import { ExternalApiService } from './shared/document-edit-dialog/external-api.service';
 
 @Component({
   selector: 'app-root',
@@ -20,7 +21,8 @@ export class AppComponent {
               private notificationService: NotificationService,
               private router: Router,
               private activatedRoute: ActivatedRoute,
-              private titleService: Title) {
+              private titleService: Title,
+              private patientService: ExternalApiService) {
 
     autorefreshService.start();
     this.notificationService.logToConsole();
@@ -44,5 +46,9 @@ export class AppComponent {
 
   onSelectPatient(event: Patient) {
     this.router.navigate(['/patient', event.id]);
+  }
+
+  navigateToCurrentPatient() {
+    this.patientService.getSelectedPatient().subscribe(patient => this.onSelectPatient(patient))
   }
 }

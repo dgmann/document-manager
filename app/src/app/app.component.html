@@ -8,7 +8,7 @@
       <mat-icon color="primary">supervisor_account</mat-icon>
       <span>Arzt</span>
     </button>
-    <button mat-menu-item routerLink="/patient/3" routerLinkActive="active">
+    <button mat-menu-item (click)=navigateToCurrentPatient()>
       <mat-icon color="primary">face</mat-icon>
       <span>Patient</span>
     </button>

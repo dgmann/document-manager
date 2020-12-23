@@ -8,6 +8,8 @@ on:
 jobs:
   push:
     runs-on: ubuntu-latest
+    env:
+      working-directory: ./m1-helper
 
     steps:
       - uses: actions/checkout@v2
@@ -15,6 +17,7 @@ jobs:
         with:
           go-version: '^1.14.0' # The Go version to download (if necessary) and use.
       - name: "Compile"
+        working-directory: ${{env.working-directory}}
         run: | 
           GOOS=windows GOARCH=amd64 go build -ldflags="-s -w" -o m1-helper.exe . && zip --junk-paths m1-helper-64.zip m1-helper.exe
           GOOS=windows GOARCH=386 go build -ldflags="-s -w" -o m1-helper.exe . && zip --junk-paths m1-helper-32.zip m1-helper.exe
@@ -30,6 +33,7 @@ jobs:
           prerelease: true
       - name: Upload 64bit Release Asset
         id: upload-release-asset-64 
+        working-directory: ${{env.working-directory}}
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -40,6 +44,7 @@ jobs:
           asset_content_type: application/zip
       - name: Upload 32bit Release Asset
         id: upload-release-asset-32 
+        working-directory: ${{env.working-directory}}
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

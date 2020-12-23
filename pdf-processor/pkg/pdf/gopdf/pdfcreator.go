@@ -35,6 +35,10 @@ func (creator *PdfCreator) Create(document *processor.Document) (*processor.Pdf,
 
 	pages := getPages(document, 0)
 	for i, page := range pages {
+		if page.Bookmarks != nil && i%2 != 0 { // If a new document starts and we have an uneven page number add an additional empty page
+			pdf.AddPage()
+		}
+
 		pageName := fmt.Sprint(i)
 		var opt gofpdf.ImageOptions
 		opt.ImageType = page.Image.Format

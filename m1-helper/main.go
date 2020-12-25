@@ -30,10 +30,9 @@ func main() {
 	}
 
 	if service.Interactive() {
-		runInteractive(*fileName, *serverURL, *port)
 		if success := installUninstallService(s); !success {
 			log.Printf("running interactive on port %s", *port)
-
+			runInteractive(*fileName, *serverURL, *port)
 		}
 	} else {
 		if err := s.Run(); err != nil {

@@ -14,7 +14,6 @@ func Register(ctx context.Context, fileName, serverUrl string) {
 	defer manager.Close()
 	manager.Register(Hotkey{Id: 1, Modifiers: ModAlt + ModCtrl, KeyCode: 'P'})
 	keyPresses := manager.Listen()
-	println(len(keyPresses))
 	for {
 		select {
 		case x, ok := <-keyPresses:

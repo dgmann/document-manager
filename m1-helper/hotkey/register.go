@@ -3,6 +3,7 @@ package hotkey
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
 	"os/exec"
 
@@ -33,7 +34,10 @@ func Register(ctx context.Context, fileName, serverUrl string) {
 			_ = f.Close()
 
 			cmd := exec.Command("explorer", fmt.Sprintf("%s/patient/%s", serverUrl, patient.Id))
-			_ = cmd.Run()
+			err = cmd.Run()
+			if err != nil {
+				log.Println(err)
+			}
 		case <-ctx.Done():
 			return
 		}

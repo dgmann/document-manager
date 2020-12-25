@@ -21,6 +21,7 @@ func main() {
 	fileName := flag.String("f", lookupEnvOrString("M1_BDT_FILE", "./aow_pat.bdt"), "BDT file containing current patient. Env: M1_BDT_FILE")
 	serverURL := flag.String("s", lookupEnvOrString("DOCUMENT_MANAGER_URL", "http://localhost"), "Document-Manager URL")
 	port := flag.String("p", lookupEnvOrString("M1_HELPER_PORT", "3000"), "port")
+	interactive := flag.Bool("i", true, "run in interactive mode")
 	flag.Parse()
 	if *fileName == "" {
 		log.Fatal("no BDT file provided")
@@ -32,7 +33,7 @@ func main() {
 	}
 
 	if service.Interactive() {
-		if success := installUninstallService(s); !success {
+		if *interactive || !installUninstallService(s) {
 			log.Printf("running interactive on port %s", *port)
 			runInteractive(*fileName, *serverURL, *port)
 		}

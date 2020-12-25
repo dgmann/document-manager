@@ -9,7 +9,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/dgmann/document-manager/m1-helper/hotkey"
+	"github.com/MakeNowJust/hotkey"
+	"github.com/dgmann/document-manager/m1-helper/client"
 	"github.com/dgmann/document-manager/m1-helper/server"
 	"github.com/dgmann/document-manager/m1-helper/service"
 	service2 "github.com/kardianos/service"
@@ -53,7 +54,14 @@ func lookupEnvOrString(key string, defaultVal string) string {
 
 func runInteractive(fileName, serverUrl, port string) {
 	ctx := context.Background()
-	go hotkey.Register(ctx, fileName, serverUrl)
+	manager := hotkey.New()
+	manager.Register(hotkey.Alt+hotkey.Ctrl, 'P', func() {
+		go func() {
+			if err := client.OpenPatient("exlorer", serverUrl, port); err != nil {
+				log.Println(err)
+			}
+		}()
+	})
 	server.Run(ctx, fileName, port)
 }
 

@@ -6,7 +6,7 @@ import (
 	"github.com/kardianos/service"
 )
 
-func New(fileName, serverUrl string, port string) (service.Service, service.Logger, error) {
+func New(openCmd, fileName, serverUrl string, port string) (service.Service, service.Logger, error) {
 	svcConfig := &service.Config{
 		Name:        "M1Helper",
 		DisplayName: "M1-Helper",
@@ -14,7 +14,7 @@ func New(fileName, serverUrl string, port string) (service.Service, service.Logg
 		Arguments:   []string{"-f", fileName, "-s", serverUrl, "-p", port},
 	}
 
-	prg := newProgram(fileName, serverUrl, port)
+	prg := newProgram(openCmd, fileName, serverUrl, port)
 	s, err := service.New(prg, svcConfig)
 	if err != nil {
 		return nil, nil, fmt.Errorf("error creating service: %w", err)

@@ -23,12 +23,13 @@ func main() {
 	serverURL := flag.String("s", lookupEnvOrString("DOCUMENT_MANAGER_URL", "http://localhost"), "Document-Manager URL")
 	port := flag.String("p", lookupEnvOrString("M1_HELPER_PORT", "3000"), "port")
 	interactive := flag.Bool("i", true, "run in interactive mode")
+	openCommand := flag.String("c", "explorer", "default command to open Document-Manager. Default: explorer [SERVERURL]/patient/[ID]")
 	flag.Parse()
 	if *fileName == "" {
 		log.Fatal("no BDT file provided")
 	}
 
-	s, logger, err := service.New(*fileName, *serverURL, *port)
+	s, logger, err := service.New(*openCommand, *fileName, *serverURL, *port)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -36,7 +37,7 @@ func main() {
 	if service.Interactive() {
 		if *interactive || !installUninstallService(s) {
 			log.Printf("running interactive on port %s", *port)
-			runInteractive(*fileName, *serverURL, *port)
+			runInteractive(*openCommand, *fileName, *serverURL, *port)
 		}
 	} else {
 		if err := s.Run(); err != nil {
@@ -52,12 +53,12 @@ func lookupEnvOrString(key string, defaultVal string) string {
 	return defaultVal
 }
 
-func runInteractive(fileName, serverUrl, port string) {
+func runInteractive(openCommand, fileName, serverUrl, port string) {
 	ctx := context.Background()
 	manager := hotkey.New()
 	manager.Register(hotkey.Alt+hotkey.Ctrl, 'P', func() {
 		go func() {
-			if err := client.OpenPatient("exlorer", fileName, serverUrl); err != nil {
+			if err := client.OpenPatient(openCommand, fileName, serverUrl); err != nil {
 				log.Println(err)
 			}
 		}()

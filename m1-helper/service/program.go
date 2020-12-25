@@ -16,14 +16,16 @@ type program struct {
 	cancel        context.CancelFunc
 	ctx           context.Context
 	hotkeyManager *hotkey.Manager
+	openCmd       string
 	fileName      string
 	serverUrl     string
 	port          string
 }
 
-func newProgram(fileName, serverUrl string, port string) *program {
+func newProgram(openCmd, fileName, serverUrl string, port string) *program {
 	return &program{
 		ctx:           context.Background(),
+		openCmd:       openCmd,
 		fileName:      fileName,
 		serverUrl:     serverUrl,
 		port:          port,
@@ -37,7 +39,7 @@ func (p *program) Start(s service.Service) error {
 	p.cancel = cancel
 	p.hotkeyManager.Register(hotkey.Alt+hotkey.Ctrl, 'P', func() {
 		go func() {
-			if err := client.OpenPatient("exlorer", p.fileName, p.serverUrl); err != nil {
+			if err := client.OpenPatient(p.openCmd, p.fileName, p.serverUrl); err != nil {
 				log.Println(err)
 			}
 		}()

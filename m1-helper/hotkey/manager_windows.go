@@ -1,3 +1,4 @@
+// +build windows
 package hotkey
 
 import (
@@ -35,9 +36,9 @@ func (m *Manager) Register(hotkey Hotkey) {
 		0, uintptr(hotkey.Id), uintptr(hotkey.Modifiers), uintptr(hotkey.KeyCode))
 	if r1 == 1 {
 		m.hotkeys[int16(hotkey.Id)] = &hotkey
-		fmt.Println("Registered", hotkey)
+		fmt.Println("Registered", hotkey.String())
 	} else {
-		fmt.Println("Failed to register", hotkey, ", error:", err)
+		fmt.Println("Failed to register", hotkey.String(), ", error:", err)
 	}
 }
 
@@ -51,12 +52,23 @@ func (m *Manager) Listen() <-chan *Hotkey {
 
 			// Registered id is in the WPARAM field:
 			if id := msg.WPARAM; id != 0 {
-				fmt.Println("Hotkey pressed:", m.hotkeys[id])
-				channel <- m.hotkeys[id]
+				pressed, ok := m.hotkeys[id]
+				if !ok {
+					log.Printf("hotkey with id %d not found", id)
+				}
+				select {
+				case channel <- pressed:
+					log.Println("Hotkey pressed:", pressed)
+				default:
+					log.Println("Hotkey pressed but channel buffer is full:", pressed)
+				}
+
 			}
 
 			time.Sleep(time.Millisecond * 50)
 		}
+		fmt.Println("Stop listening for hotkeys")
+		close(channel)
 	}()
 	return channel
 }

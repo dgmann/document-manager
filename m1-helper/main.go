@@ -15,6 +15,8 @@ import (
 	service2 "github.com/kardianos/service"
 )
 
+var NotInstalledGer = "Der angegebene Dienst ist kein installierter Dienst."
+
 func main() {
 	fileName := flag.String("f", lookupEnvOrString("M1_BDT_FILE", "./aow_pat.bdt"), "BDT file containing current patient. Env: M1_BDT_FILE")
 	serverURL := flag.String("s", lookupEnvOrString("DOCUMENT_MANAGER_URL", "http://localhost"), "Document-Manager URL")
@@ -56,7 +58,7 @@ func runInteractive(fileName, serverUrl, port string) {
 
 func installUninstallService(s service2.Service) bool {
 	status, err := s.Status()
-	if err != service2.ErrNotInstalled {
+	if err != nil {
 		log.Printf("error reading status: %s", err)
 	}
 	if status == service2.StatusRunning || status == service2.StatusStopped {
@@ -72,7 +74,7 @@ func installUninstallService(s service2.Service) bool {
 			return true
 		}
 		return false
-	} else if err == service2.ErrNotInstalled && askForConfirmation("Service not installed. Do you want to install the service?") {
+	} else if askForConfirmation("Service not installed. Do you want to install the service?") {
 		if err := s.Install(); err != nil {
 			log.Fatalf("error installing service: %s", err)
 		}

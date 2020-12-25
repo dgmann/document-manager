@@ -48,7 +48,7 @@ func toBirthDate(s string) *time.Time {
 	if len(s) == 0 {
 		return nil
 	}
-	result, err := time.Parse("01022006", s)
+	result, err := time.Parse("02012006", s)
 	if err != nil {
 		return nil
 	}

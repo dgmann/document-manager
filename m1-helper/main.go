@@ -22,7 +22,7 @@ func main() {
 	fileName := flag.String("f", lookupEnvOrString("M1_BDT_FILE", "./aow_pat.bdt"), "BDT file containing current patient. Env: M1_BDT_FILE")
 	serverURL := flag.String("s", lookupEnvOrString("DOCUMENT_MANAGER_URL", "http://localhost"), "Document-Manager URL")
 	port := flag.String("p", lookupEnvOrString("M1_HELPER_PORT", "3000"), "port")
-	interactive := flag.Bool("i", true, "run in interactive mode")
+	interactive := flag.Bool("i", false, "run in interactive mode")
 	openCommand := flag.String("c", "explorer", "default command to open Document-Manager. Default: explorer [SERVERURL]/patient/[ID]")
 	flag.Parse()
 	if *fileName == "" {

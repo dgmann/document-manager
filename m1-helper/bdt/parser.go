@@ -25,7 +25,7 @@ func Parse(data io.Reader) (*Patient, error) {
 		if len(r) < 8 {
 			continue
 		}
-		key, value := string(r[2:7]), string(r[7:])
+		key, value := string(r[3:7]), string(r[7:])
 		results[key] = value
 	}
 

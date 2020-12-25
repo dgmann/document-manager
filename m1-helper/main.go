@@ -57,7 +57,7 @@ func runInteractive(fileName, serverUrl, port string) {
 	manager := hotkey.New()
 	manager.Register(hotkey.Alt+hotkey.Ctrl, 'P', func() {
 		go func() {
-			if err := client.OpenPatient("exlorer", serverUrl, port); err != nil {
+			if err := client.OpenPatient("exlorer", fileName, serverUrl); err != nil {
 				log.Println(err)
 			}
 		}()

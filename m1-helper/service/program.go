@@ -37,7 +37,7 @@ func (p *program) Start(s service.Service) error {
 	p.cancel = cancel
 	p.hotkeyManager.Register(hotkey.Alt+hotkey.Ctrl, 'P', func() {
 		go func() {
-			if err := client.OpenPatient("exlorer", p.serverUrl, p.port); err != nil {
+			if err := client.OpenPatient("exlorer", p.fileName, p.serverUrl); err != nil {
 				log.Println(err)
 			}
 		}()

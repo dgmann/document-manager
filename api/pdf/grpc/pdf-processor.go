@@ -65,6 +65,8 @@ func (p *PdfProcessor) Convert(ctx context.Context, f io.Reader) ([]storage.Imag
 			return nil, fmt.Errorf("error calling rasterize method. %w", err)
 		}
 		return receive(stream)
+	} else if err != nil {
+		return nil, fmt.Errorf("error converting images: %w", err)
 	}
 	return images, nil
 }

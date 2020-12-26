@@ -70,9 +70,9 @@ func (w *DirectoryWatcher) Watch(dir string, parser parser.Parser) <-chan *NewRe
 
 func (w *DirectoryWatcher) Done(record *NewRecord) {
 	if err := w.remove(record); err != nil {
-		log.WithField("error", err).WithField("record", record).Infof("error processing record")
+		log.WithField("error", err).WithField("path", record.PdfPath).Infof("could not remove processed record")
 	} else {
-		log.WithField("record", record).Infof("record sucessfully processed")
+		log.WithField("path", record.PdfPath).Infof("record sucessfully processed")
 	}
 }
 

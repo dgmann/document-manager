@@ -50,6 +50,7 @@ func (w *DirectoryWatcher) Watch(dir string, parser parser.Parser) <-chan *NewRe
 			files, err := ioutil.ReadDir(dir)
 			if err != nil {
 				log.Fatalf("error reading directory %s: %s", dir, err)
+				continue
 			}
 
 			for _, f := range files {

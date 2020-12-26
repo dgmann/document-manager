@@ -53,14 +53,15 @@ func main() {
 	for record := range records {
 		f, err := os.Open(record.PdfPath)
 		if err != nil {
-			log.WithField("record", record).WithField("error", err).Errorf("error opening pdf")
+			log.WithField("path", record.PdfPath).WithField("error", err).Errorf("error opening pdf")
 			w.Error(record)
+			continue
 		}
 		record.File = f
 		err = uploader.CreateRecord(record.NewRecord)
 		f.Close()
 		if err != nil {
-			log.WithField("record", record).WithField("error", err).Errorf("error uploading record")
+			log.WithField("path", record.PdfPath).WithField("error", err).Errorf("error uploading record")
 			w.Error(record)
 		} else {
 			w.Done(record)

@@ -49,7 +49,7 @@ func (w *DirectoryWatcher) Watch(dir string, parser parser.Parser) <-chan *NewRe
 		for range w.ticker.C {
 			files, err := ioutil.ReadDir(dir)
 			if err != nil {
-				log.Fatal(err)
+				log.Fatalf("error reading directory %s: %s", dir, err)
 			}
 
 			for _, f := range files {
@@ -81,10 +81,10 @@ func (w *DirectoryWatcher) Error(record *NewRecord) {
 		go func(record *NewRecord) {
 			time.Sleep(2 * time.Second)
 			w.recordChannel <- record
-			log.WithField("record", record).Info("requeue record")
+			log.WithField("path", record.PdfPath).Info("requeue record")
 		}(record)
 	} else {
-		log.WithField("record", record).WithField("retryCount", w.retryCount).Info("retry counter exceeded")
+		log.WithField("path", record.PdfPath).WithField("retryCount", w.retryCount).Info("retry counter exceeded")
 	}
 }
 

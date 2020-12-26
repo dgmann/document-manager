@@ -19,8 +19,14 @@ jobs:
       - name: "Compile"
         working-directory: ${{env.working-directory}}
         run: | 
-          GOOS=windows GOARCH=amd64 go build -ldflags="-s -w" -o m1-helper.exe . && zip --junk-paths m1-helper-64.zip m1-helper.exe
-          GOOS=windows GOARCH=386 go build -ldflags="-s -w" -o m1-helper.exe . && zip --junk-paths m1-helper-32.zip m1-helper.exe
+          GOOS=windows GOARCH=amd64 go build -ldflags="-s -w" -H=windowsgui -o m1-helper.exe . && \ 
+            GOOS=windows GOARCH=amd64 go build -ldflags="-s -w" -o m1-helper_console.exe . && \
+            zip --junk-paths m1-helper-64.zip *.exe && \ 
+            rm *.exe
+          GOOS=windows GOARCH=386 go build -ldflags="-s -w" -H=windowsgui -o m1-helper.exe . && \ 
+            GOOS=windows GOARCH=386 go build -ldflags="-s -w" -o m1-helper_console.exe . && \ 
+            zip --junk-paths m1-helper-32.zip *.exe && \
+            rm *.exe
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1

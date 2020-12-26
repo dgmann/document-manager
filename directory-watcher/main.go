@@ -17,6 +17,7 @@ var pars string
 var sender string
 var retryCount int
 var scanInterval int
+var timeout int
 
 func init() {
 	flag.StringVar(&directory, "directory", "", "Directory to watch")
@@ -25,6 +26,7 @@ func init() {
 	flag.StringVar(&sender, "sender", "", "The value to use as a sender")
 	flag.IntVar(&retryCount, "retry", 5, "Times to retry uploading a record")
 	flag.IntVar(&scanInterval, "scan", 1, "Interval in seconds at which to scan the directory")
+	flag.IntVar(&timeout, "timeout", 60, "timeout in seconds. Default: 60")
 	flag.Parse()
 	if len(directory) == 0 {
 		panic("Invalid directory")
@@ -37,7 +39,7 @@ func init() {
 
 func main() {
 	w := watcher.NewDirectoryWatcher(scanInterval, retryCount)
-	uploader := client.NewHttpUploader(destination, time.Second*5)
+	uploader := client.NewHttpUploader(destination, time.Second*time.Duration(timeout))
 	var p parser.Parser
 	if pars == "fax" {
 		p = &parser.Fax{}

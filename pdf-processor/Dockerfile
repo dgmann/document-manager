@@ -1,3 +1,8 @@
+FROM alpine:latest as base
+
+RUN apk add --no-cache \
+    libjpeg-turbo libpng  poppler-utils libtiff
+
 FROM golang:1.15 as builder
 
 RUN apt-get update && \
@@ -11,6 +16,9 @@ RUN go mod download
 COPY . .
 RUN go build -o /processor .
 
+FROM base
 EXPOSE 8080 9000
+
+COPY --from=builder /processor /processor
 
 CMD ["/processor"]

@@ -1,9 +1,10 @@
 package main
 
 import (
-	"github.com/dgmann/document-manager/api/datastore"
 	"os"
 	"strings"
+
+	"github.com/dgmann/document-manager/api/datastore"
 )
 
 type Config struct {

@@ -1,7 +1,7 @@
 FROM alpine:latest as base
 
 RUN apk add --no-cache \
-    libjpeg-turbo libpng  poppler-utils libtiff
+    libjpeg-turbo libpng tiff poppler-utils
 
 FROM golang:1.15 as builder
 

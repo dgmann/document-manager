@@ -26,9 +26,9 @@ func ReadImagesFromDirectory(dirname string, writer pdf.ImageSender) (int, error
 	return imagesSent, nil
 }
 
-func sendFile(f os.FileInfo, p string, writer pdf.ImageSender) error {
+func sendFile(f os.FileInfo, filePath string, writer pdf.ImageSender) error {
 	extension := path.Ext(f.Name())
-	file, err := os.Open("file.go")
+	file, err := os.Open(filePath)
 	if err != nil {
 		return err
 	}

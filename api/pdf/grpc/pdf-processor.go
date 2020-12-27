@@ -79,7 +79,7 @@ func receive(stream processor.PdfProcessor_ConvertPdfToImageClient) ([]storage.I
 			break
 		}
 		if err != nil {
-			return nil, fmt.Errorf("error converting pdf page to image. %w", err)
+			return nil, err
 		}
 		images = append(images, *storage.NewImage(image.Content, image.Format))
 	}

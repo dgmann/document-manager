@@ -22,6 +22,7 @@ func ReadImagesFromDirectory(dirname string, writer pdf.ImageSender) (int, error
 		if err := sendFile(f, p, writer); err != nil {
 			return imagesSent, err
 		}
+		imagesSent++
 	}
 	return imagesSent, nil
 }

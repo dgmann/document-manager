@@ -14,7 +14,7 @@ COPY go.mod go.sum ./
 RUN go mod download
 
 COPY . .
-RUN go build -o /processor .
+RUN CGO_ENABLED=0 go build -o /processor .
 
 FROM base
 EXPOSE 8080 9000

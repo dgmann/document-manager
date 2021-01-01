@@ -3,6 +3,7 @@ package mock
 import (
 	"context"
 	"github.com/dgmann/document-manager/api/datastore"
+	"github.com/dgmann/document-manager/api/pdf"
 	"github.com/dgmann/document-manager/api/storage"
 	"github.com/stretchr/testify/mock"
 	"io"
@@ -16,7 +17,7 @@ func NewPdfProcessor() *PdfProcessor {
 	return &PdfProcessor{}
 }
 
-func (mock *PdfProcessor) Convert(ctx context.Context, f io.Reader) ([]storage.Image, error) {
+func (mock *PdfProcessor) Convert(ctx context.Context, f io.Reader, opts *pdf.ConvertOptions) ([]storage.Image, error) {
 	args := mock.Called(ctx, f)
 	return args.Get(0).([]storage.Image), args.Error(1)
 }

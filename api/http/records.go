@@ -107,6 +107,7 @@ func (controller *RecordController) Create(w http.ResponseWriter, req *http.Requ
 	status := req.FormValue("status")
 	category := req.FormValue("category")
 	receivedAt := time.Now()
+	method := req.FormValue("method")
 	var date time.Time
 	if r := req.FormValue("receivedAt"); r != "" {
 		parsed, err := time.Parse(time.RFC3339, r)
@@ -135,7 +136,14 @@ func (controller *RecordController) Create(w http.ResponseWriter, req *http.Requ
 	}
 	defer file.Close()
 
-	images, err := controller.pdfProcessor.Convert(req.Context(), file)
+	var opts *pdf.ConvertOptions
+	if method == pdf.EXTRACT.String() {
+		opts = pdf.Extract()
+	} else if method == pdf.RASTERIZE.String() {
+		opts = pdf.Rasterize()
+	}
+
+	images, err := controller.pdfProcessor.Convert(req.Context(), file, opts)
 	if err != nil {
 		NewErrorResponse(w, err, http.StatusInternalServerError).WriteJSON()
 		return
@@ -232,13 +240,21 @@ func (controller *RecordController) Duplicate(w http.ResponseWriter, req *http.R
 
 func (controller *RecordController) Reset(w http.ResponseWriter, req *http.Request) {
 	id := URLParamFromContext(req.Context(), "recordId")
+	method := URLParamFromContext(req.Context(), "method")
 	f, err := controller.pdfs.Get(id)
 	if err != nil {
 		NewErrorResponse(w, err, http.StatusNotFound).WriteJSON()
 		return
 	}
 
-	images, err := controller.pdfProcessor.Convert(req.Context(), bytes.NewBuffer(f.Data()))
+	var opts *pdf.ConvertOptions
+	if method == pdf.EXTRACT.String() {
+		opts = pdf.Extract()
+	} else if method == pdf.RASTERIZE.String() {
+		opts = pdf.Rasterize()
+	}
+
+	images, err := controller.pdfProcessor.Convert(req.Context(), bytes.NewBuffer(f.Data()), opts)
 	if err != nil {
 		NewErrorResponse(w, err, http.StatusInternalServerError).WriteJSON()
 		return

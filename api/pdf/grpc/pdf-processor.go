@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/dgmann/document-manager/api/pdf"
 	"io"
 	"io/ioutil"
 
@@ -40,13 +41,42 @@ func (p *PdfProcessor) Close() error {
 	return p.conn.Close()
 }
 
-func (p *PdfProcessor) Convert(ctx context.Context, f io.Reader) ([]storage.Image, error) {
+func (p *PdfProcessor) Convert(ctx context.Context, f io.Reader, opts *pdf.ConvertOptions) ([]storage.Image, error) {
+	if opts == nil {
+		opts = &pdf.ConvertOptions{}
+	}
+
 	b, err := ioutil.ReadAll(f)
 	if err != nil {
 		return nil, fmt.Errorf("error reading pdf to convert. %w", err)
 	}
 
 	client := processor.NewPdfProcessorClient(p.conn)
+
+	if opts.Method == pdf.EXTRACT {
+		stream, err := client.ConvertPdfToImage(ctx, &processor.Pdf{
+			Content: b,
+			Method:  processor.Pdf_EXTRACT,
+		})
+		if err != nil {
+			return nil, fmt.Errorf("error calling ConvertPdfToImage method. %w", err)
+		}
+		return receive(stream)
+	} else if opts.Method == pdf.RASTERIZE {
+		stream, err := client.ConvertPdfToImage(ctx, &processor.Pdf{
+			Content: b,
+			Method:  processor.Pdf_RASTERIZE,
+		})
+		if err != nil {
+			return nil, fmt.Errorf("error calling ConvertPdfToImage method. %w", err)
+		}
+		return receive(stream)
+	} else {
+		return convertAuto(ctx, client, b)
+	}
+}
+
+func convertAuto(ctx context.Context, client processor.PdfProcessorClient, b []byte) ([]storage.Image, error) {
 	stream, err := client.ConvertPdfToImage(ctx, &processor.Pdf{
 		Content: b,
 		Method:  processor.Pdf_EXTRACT,

@@ -2,6 +2,7 @@ package unipdf
 
 import (
 	"context"
+	"fmt"
 	"image"
 	"image/png"
 	"io"
@@ -62,6 +63,15 @@ func extractImage(buf io.Writer, page *unipdf.PdfPage) error {
 	if err != nil {
 		return err
 	}
+
+	if box, err := page.GetMediaBox(); err == nil {
+		for _, img := range images.Images {
+			if box.Width()/img.X < 3 {
+				return fmt.Errorf("starting position of found image is not in the first third of the page. page width: %d, image X: %d", int64(box.Width()), int64(img.X))
+			}
+		}
+	}
+
 	if len(images.Images) == 1 {
 		goImg, err := images.Images[0].Image.ToGoImage()
 		if err != nil {

@@ -13,8 +13,31 @@ type Processor interface {
 	Creator
 }
 
+type Method string
+
+func (m Method) String() string {
+	return string(m)
+}
+
+const (
+	EXTRACT   Method = "extract"
+	RASTERIZE Method = "rasterize"
+)
+
+type ConvertOptions struct {
+	Method Method
+}
+
+func Extract() *ConvertOptions {
+	return &ConvertOptions{Method: EXTRACT}
+}
+
+func Rasterize() *ConvertOptions {
+	return &ConvertOptions{Method: RASTERIZE}
+}
+
 type Converter interface {
-	Convert(ctx context.Context, f io.Reader) ([]storage.Image, error)
+	Convert(ctx context.Context, f io.Reader, opts *ConvertOptions) ([]storage.Image, error)
 }
 
 type Rotator interface {

@@ -240,7 +240,7 @@ func (controller *RecordController) Duplicate(w http.ResponseWriter, req *http.R
 
 func (controller *RecordController) Reset(w http.ResponseWriter, req *http.Request) {
 	id := URLParamFromContext(req.Context(), "recordId")
-	method := URLParamFromContext(req.Context(), "method")
+	method := req.URL.Query().Get("method")
 	f, err := controller.pdfs.Get(id)
 	if err != nil {
 		NewErrorResponse(w, err, http.StatusNotFound).WriteJSON()

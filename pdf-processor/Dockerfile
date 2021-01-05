@@ -1,7 +1,9 @@
 FROM alpine:latest as base
 
 RUN apk add --no-cache \
-    libjpeg-turbo libpng tiff poppler-utils
+    libjpeg-turbo libpng tiff poppler-utils msttcorefonts-installer fontconfig && \
+    update-ms-fonts && \
+    fc-cache -f
 
 FROM golang:1.15 as builder
 

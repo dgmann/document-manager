@@ -79,12 +79,16 @@ export class RecordService {
       })));
   }
 
-  public reset(id: string) {
+  public reset(id: string, method?: string) {
     this.notifications.publish(new GenericEvent({
       timestamp: new Date(),
       message: 'Befund wird zurückgesetzt...'
     }));
-    this.http.put<Record>(`${this.config.getApiUrl()}/records/${id}/reset`, null)
+    let url = `${this.config.getApiUrl()}/records/${id}/reset`;
+    if (method) {
+      url = `${url}?method=${method}`;
+    }
+    this.http.put<Record>(url, null)
       .subscribe(record => this.notifications.publish(new RecordEvent({
         type: ActionType.NONE,
         timestamp: new Date(),

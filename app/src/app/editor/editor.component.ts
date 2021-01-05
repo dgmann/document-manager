@@ -50,8 +50,8 @@ export class EditorComponent implements OnInit {
     this.pages = pages.map(p => PageUpdate.FromPage(p));
   }
 
-  reset(id: string) {
-    this.recordService.reset(id);
+  reset(id: string, mode?: string) {
+    this.recordService.reset(id, mode);
   }
 
 }

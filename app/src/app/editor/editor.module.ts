@@ -1,5 +1,6 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
+import { MatMenuModule } from '@angular/material/menu';
 import {EditorComponent} from './editor.component';
 import {MatButtonModule} from '@angular/material/button';
 import {MatCardModule} from '@angular/material/card';
@@ -17,6 +18,7 @@ import {FlexLayoutModule} from '@angular/flex-layout';
     FlexLayoutModule,
     MatCardModule,
     MatButtonModule,
+    MatMenuModule,
     MatIconModule,
     SharedModule,
     EditorRouterModule,

@@ -3,13 +3,12 @@ import {select, Store} from '@ngrx/store';
 import {
   selectFilteredPatientRecords,
   selectPatientRecords,
-  selectSelectedCategoryId,
   selectSelectedId,
   selectSelectedPatient,
   selectSelectedRecord,
   State
 } from './reducers';
-import {SelectCategory, SelectPatient, SelectRecord, SetFilter} from './store/patient.actions';
+import {SelectPatient, SelectRecord, SetFilter} from './store/patient.actions';
 import {Filter} from './store/patient.reducer';
 import {Observable} from 'rxjs';
 import {Patient} from './store/patient.model';
@@ -20,7 +19,6 @@ export class PatientService {
   public selectedPatient$: Observable<Patient>;
   public selectedPatientRecords$: Observable<Record[]>;
   public selectedRecord$: Observable<Record>;
-  public selectedCategory$: Observable<string>;
   public filteredPatientRecord$: Observable<Record[]>;
   public selectedId$: Observable<string>;
 
@@ -28,7 +26,6 @@ export class PatientService {
     this.selectedPatient$ = this.store.pipe(select(selectSelectedPatient));
     this.selectedPatientRecords$ = this.store.pipe(select(selectPatientRecords));
     this.selectedRecord$ = this.store.pipe(select(selectSelectedRecord));
-    this.selectedCategory$ = this.store.pipe(select(selectSelectedCategoryId));
     this.filteredPatientRecord$ = this.store.pipe(select(selectFilteredPatientRecords));
     this.selectedId$ = this.store.pipe(select(selectSelectedId));
   }
@@ -43,9 +40,5 @@ export class PatientService {
 
   public selectRecord(id: string) {
     this.store.dispatch(new SelectRecord({id}));
-  }
-
-  public selectCategory(id: string) {
-    this.store.dispatch(new SelectCategory({id}));
   }
 }

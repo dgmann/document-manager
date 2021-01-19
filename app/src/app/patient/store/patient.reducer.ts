@@ -13,7 +13,6 @@ export interface State {
   selectedId: string;
   selectedPatient: Patient;
   selectedRecordId: string;
-  selectedCategory: string;
   patientRecordMap: { [id: string]: string[] };
   filter: Filter;
 }
@@ -22,7 +21,6 @@ export const initialState: State = {
   selectedId: null,
   selectedPatient: null,
   selectedRecordId: null,
-  selectedCategory: null,
   patientRecordMap: {},
   filter: {
     categoryIds: [],
@@ -61,12 +59,6 @@ export function reducer(state = initialState, action: PatientActions): State {
       return Object.assign({}, state, {
         selectedRecordId: action.payload.id
       });
-
-    case PatientActionTypes.SelectCategory:
-      return {
-        ...state,
-        selectedCategory: action.payload.id
-      };
 
     default:
       return state;

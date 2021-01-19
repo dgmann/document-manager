@@ -10,21 +10,26 @@
   font-weight: 500;
 }
 
+.page-container {
+  height: 100%;
+  overflow-y: scroll;
+}
+
 .page {
   @include mat-elevation(8);
   @include record-page();
   margin-bottom: 10px;
   min-width: 300px;
+
+  &[selected] {
+    background-color: $accent-light;
+  }
 }
 
 .action-button-bar {
   overflow: hidden;
   display: flex;
   justify-content: flex-end;
-}
-
-mat-tab-group {
-  height: 100%;
 }
 
 mat-card-header {

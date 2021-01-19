@@ -46,16 +46,8 @@ export class SelectRecord implements Action {
   }
 }
 
-export class SelectCategory implements Action {
-  readonly type = PatientActionTypes.SelectCategory;
-
-  constructor(public payload: { id: string }) {
-  }
-}
-
 export type PatientActions = SelectPatient
   | SetPatientRecords
   | SetPatient
   | SetFilter
-  | SelectRecord
-  | SelectCategory;
+  | SelectRecord;

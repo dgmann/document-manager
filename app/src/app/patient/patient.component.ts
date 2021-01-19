@@ -34,9 +34,7 @@ export class PatientComponent implements OnInit, OnDestroy {
   public records$: Observable<Record[]>;
   public patient$: Observable<Patient>;
   public selectedRecord$: Observable<Record>;
-  public showDetails = false;
   public categories$: Observable<{ [id: string]: Category }>;
-  public selectedCategory$: Observable<string>;
 
   public availableCategories$: Observable<Category[]>;
   public availableTags$: Observable<string[]>;
@@ -53,10 +51,6 @@ export class PatientComponent implements OnInit, OnDestroy {
     this.route.params
         .pipe(untilDestroyed(this))
         .subscribe(params => this.patientService.selectPatient(params.id));
-    this.selectedCategory$ = this.patientService.selectedCategory$;
-    this.route.queryParamMap
-        .pipe(untilDestroyed(this))
-        .subscribe(params => this.patientService.selectCategory(params.get('category')));
 
     this.records$ = this.patientService.filteredPatientRecord$;
     this.patient$ = this.patientService.selectedPatient$;
@@ -75,15 +69,10 @@ export class PatientComponent implements OnInit, OnDestroy {
 
   onSelectRecord(id: string) {
     this.patientService.selectRecord(id);
-    this.showDetails = true;
   }
 
   setFilter(set: Filter) {
     this.patientService.setFilter(set);
-  }
-
-  onSelectedCategoryChange(category: string) {
-    this.router.navigate(['.'], {relativeTo: this.route, queryParams: {category}});
   }
 
   onUpdateRecord(data: EditResult) {
@@ -104,5 +93,9 @@ export class PatientComponent implements OnInit, OnDestroy {
 
   onAnimationEvent(event: AnimationEvent) {
     event.element.focus();
+  }
+
+  onDetailsPanelClose() {
+    this.patientService.selectRecord(null);
   }
 }

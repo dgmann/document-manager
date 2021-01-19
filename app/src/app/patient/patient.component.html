@@ -1,7 +1,17 @@
 <mat-sidenav-container fxFlexFill>
   <mat-sidenav #sidenav mode="side">
-    <app-record-filter [categories]="availableCategories$ | async" [tags]="availableTags$ | async"
-                       (change)="setFilter($event)"></app-record-filter>
+    <div fxLayout="column">
+      <app-record-filter [categories]="availableCategories$ | async" [tags]="availableTags$ | async"
+                         (change)="setFilter($event)"></app-record-filter>
+      <mat-card>
+        <a mat-flat-button color="primary" [href]="records$ | async | ids | pdfLink:(patient$ | async)?.name" target="_blank">
+          <mat-icon>picture_as_pdf</mat-icon>
+          Export
+        </a>
+      </mat-card>
+
+    </div>
+
     <div [hidden]="!sidenav.opened" fxFlex="40px">
       <button (click)="sidenav.toggle()" aria-label="Open Filter" color="primary" mat-icon-button>
         <mat-icon>menu_open</mat-icon>
@@ -17,8 +27,7 @@
     <app-multi-record-list (clickRecord)="onSelectRecord($event)" (duplicate)="onDuplicateRecord($event)" [@panelInOut]
                            [categories]="categories$ | async" [patient]="patient$ | async"
                            [records]="records$ | async"
-                           [selectedCategory]="selectedCategory$ | async"
-                           (selectedCategoryChange)="onSelectedCategoryChange($event)"
+                           [selectedRecordId]="(selectedRecord$ | async)?.id"
                            (updateRecord)="onUpdateRecord($event)"
                            (deleteRecord)="onDeleteRecord($event)"
                            (openInEditor)="onOpenInEditor($event)"
@@ -26,19 +35,19 @@
                            fxFlex>
     </app-multi-record-list>
 
-    <mat-card (@panelInOut.done)="onAnimationEvent($event)" (keydown.escape)="showDetails = false" *ngIf="showDetails"
+    <mat-card (@panelInOut.done)="onAnimationEvent($event)" (keydown.escape)="onDetailsPanelClose()" *ngIf="selectedRecord$ | async as selectedRecord"
               [@panelInOut] class="record-details" fxFlex="65%" tabindex="0">
       <mat-card-header>
-        <mat-card-title *ngIf="selectedRecord$ | async as selectedRecord;">
+        <mat-card-title>
           <h2>{{ selectedRecord.category | category | async }}: {{ selectedRecord.date | date: 'mediumDate' }}</h2>
         </mat-card-title>
         <div fxFlex></div>
-        <button (click)="showDetails= false" mat-icon-button>
+        <button (click)="onDetailsPanelClose()" mat-icon-button>
           <mat-icon aria-label="close">close</mat-icon>
         </button>
       </mat-card-header>
       <div mat-card-image>
-        <app-record-viewer [record]="selectedRecord$ | async"></app-record-viewer>
+        <app-record-viewer [record]="selectedRecord"></app-record-viewer>
       </div>
 
     </mat-card>

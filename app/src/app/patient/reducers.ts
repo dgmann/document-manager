@@ -25,14 +25,13 @@ export const selectPatientRecords = createSelector(
   selectDoneIds,
   selectRecordEntities,
   (ids: string[], doneIds: string[], records: Dictionary<Record>) => flow(
-    ids => ids.map(id => records[id]) as Record[], 
-    records => sortBy(records, 'date'), 
+    ids => ids.map(id => records[id]) as Record[],
+    records => sortBy(records, 'date'),
     records => reverse(records)
   )(intersection(ids, doneIds)));
 export const selectFilter = createSelector(selectFeature, (state: fromPatient.State) => state.filter);
 export const selectSelectedRecordId = createSelector(selectFeature, (state: fromPatient.State) => state.selectedRecordId);
 export const selectSelectedRecord = createSelector(selectSelectedRecordId, selectRecordEntities, (id: string, records) => records[id]);
-export const selectSelectedCategoryId = createSelector(selectFeature, (state: fromPatient.State) => state.selectedCategory);
 
 const filterRecords = (records: Record[], filter: Filter) => {
   return records.filter(record => {

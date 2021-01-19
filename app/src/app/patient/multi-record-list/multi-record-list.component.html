@@ -1,65 +1,48 @@
-<mat-tab-group (selectedIndexChange)="onSelectedIndexChange($event)" [selectedIndex]="selectedIndex"
-               dynamicHeight="false">
-  <mat-tab *ngFor="let recordGroup of groupedRecords;">
-    <ng-template mat-tab-label>
-      <span>{{categoryMap[recordGroup?.category]?.name}}</span>
-      <a (click)="$event.stopPropagation()" [href]="recordGroup.records | ids | pdfLink:patientName" mat-button
-         target="_blank">
-        <mat-icon aria-label="pdf">picture_as_pdf</mat-icon>
-      </a>
-    </ng-template>
-    <ng-container [ngTemplateOutletContext]="{records: recordGroup.records, category: recordGroup.category}"
-                  [ngTemplateOutlet]="page"></ng-container>
-  </mat-tab>
-</mat-tab-group>
+<div class="page-container" fxLayout="row wrap" fxLayoutAlign="center"
+     fxLayoutGap="10px">
+  <mat-card *ngFor="let record of records" class="page" fxFlex [attr.selected]="record.id == selectedRecordId ? 'true' : null">
+    <mat-card-header>
+      <mat-card-title>
+        <h2>
+          <span>{{ categories[record.category]?.name }}:</span>
+          {{ record.date | date: 'mediumDate' }}
+        </h2>
+      </mat-card-title>
+      <mat-card-subtitle>
+        <span>Seitenanzahl: {{record.pages.length}} </span>
+        <span *ngIf="record.tags.length > 0">| Tags: {{ record.tags.join(", ") }}</span>
+      </mat-card-subtitle>
+      <div fxFlex></div>
 
-<ng-template matTabContent #page let-recordsToShow="records" let-category="category">
-  <div class="page-container" fxLayout="row wrap" fxLayoutAlign="center"
-       fxLayoutGap="10px">
-    <mat-card *ngFor="let record of recordsToShow" class="page" fxFlex>
-      <mat-card-header>
-        <mat-card-title>
-          <h2>
-            <span *ngIf="category === 'all'">{{ categoryMap[record.category]?.name }}:</span>
-            {{ record.date | date: 'mediumDate' }}
-          </h2>
-        </mat-card-title>
-        <mat-card-subtitle> 
-          <span>Seitenanzahl: {{record.pages.length}} </span>
-          <span *ngIf="record.tags.length > 0">| Tags: {{ record.tags.join(", ") }}</span>
-        </mat-card-subtitle>
-        <div fxFlex></div>
-
-        <div>
-          <button [matMenuTriggerFor]="menu" mat-icon-button>
-            <mat-icon>more_vert</mat-icon>
+      <div>
+        <button [matMenuTriggerFor]="menu" mat-icon-button>
+          <mat-icon>more_vert</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu">
+          <button (click)="onEdit(record)" mat-menu-item>
+            <mat-icon aria-label="edit">edit</mat-icon>
+            <span>Bearbeiten</span>
           </button>
-          <mat-menu #menu="matMenu">
-            <button (click)="onEdit(record)" mat-menu-item>
-              <mat-icon aria-label="edit">edit</mat-icon>
-              <span>Bearbeiten</span>
-            </button>
-            <button (click)="onDelete(record)" mat-menu-item>
-              <mat-icon aria-label="delete" color="warn">delete</mat-icon>
-              <span>Löschen</span>
-            </button>
-            <button (click)="onDuplicateRecord(record)" mat-menu-item>
-              <mat-icon aria-label="duplicate">content_copy</mat-icon>
-              <span>Duplizieren</span>
-            </button>
-            <button (click)="onOpenInEditor(record)" mat-menu-item>
-              <mat-icon aria-label="editor">open_in_new</mat-icon>
-              <span>Editor</span>
-            </button>
-            <a [href]="record.id | pdfLink" mat-menu-item target="_blank">
-              <mat-icon aria-label="pdf">picture_as_pdf</mat-icon>
-              Pdf
-            </a>
-          </mat-menu>
-        </div>
-      </mat-card-header>
-      <img (click)="onRecordClicked(record.id)" mat-card-image
-           [src]="record.pages[0].url">
-    </mat-card>
-  </div>
-</ng-template>
+          <button (click)="onDelete(record)" mat-menu-item>
+            <mat-icon aria-label="delete" color="warn">delete</mat-icon>
+            <span>Löschen</span>
+          </button>
+          <button (click)="onDuplicateRecord(record)" mat-menu-item>
+            <mat-icon aria-label="duplicate">content_copy</mat-icon>
+            <span>Duplizieren</span>
+          </button>
+          <button (click)="onOpenInEditor(record)" mat-menu-item>
+            <mat-icon aria-label="editor">open_in_new</mat-icon>
+            <span>Editor</span>
+          </button>
+          <a [href]="record.id | pdfLink" mat-menu-item target="_blank">
+            <mat-icon aria-label="pdf">picture_as_pdf</mat-icon>
+            Pdf
+          </a>
+        </mat-menu>
+      </div>
+    </mat-card-header>
+    <img (click)="onRecordClicked(record.id)" mat-card-image
+         [src]="record.pages[0].url">
+  </mat-card>
+</div>

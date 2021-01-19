@@ -9,7 +9,6 @@ import {MatIconModule} from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
 import {MatSidenavModule} from '@angular/material/sidenav';
 import {MatTableModule} from '@angular/material/table';
-import {MatTabsModule} from '@angular/material/tabs';
 import {MatDividerModule} from '@angular/material/divider';
 import {EffectsModule} from '@ngrx/effects';
 import {StoreModule} from '@ngrx/store';
@@ -47,7 +46,6 @@ import { MatMomentDateModule } from '@angular/material-moment-adapter';
     MatDividerModule,
     MatSidenavModule,
     MatIconModule,
-    MatTabsModule,
     StoreModule.forFeature('patient', reducers, {metaReducers}),
     EffectsModule.forFeature([PatientEffects]),
     MatMenuModule,

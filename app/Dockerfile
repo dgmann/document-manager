@@ -15,6 +15,6 @@ COPY run.sh /run.sh
 RUN chmod +x /run.sh
 COPY --from=builder /build/dist/app /app
 
-ENV API_HOST=localhost ENABLE_SSL=true
+ENV ENABLE_SSL=false
 
 CMD ["/bin/sh", "/run.sh"]

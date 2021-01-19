@@ -22,7 +22,7 @@ func (t *TagService) ByPatient(ctx context.Context, id string) ([]string, error)
 }
 
 func (t *TagService) query(ctx context.Context, query interface{}) ([]string, error) {
-	res, err := t.records.Distinct(ctx, "tags", bson.M{})
+	res, err := t.records.Distinct(ctx, "tags", query)
 	if err != nil {
 		return []string{}, err
 	}

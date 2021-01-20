@@ -5,15 +5,16 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"github.com/MakeNowJust/hotkey"
+	"github.com/dgmann/document-manager/m1-helper/client"
+	"github.com/dgmann/document-manager/m1-helper/icon"
+	"github.com/dgmann/document-manager/m1-helper/server"
+	"github.com/dgmann/document-manager/m1-helper/service"
+	"github.com/getlantern/systray"
+	service2 "github.com/kardianos/service"
 	"log"
 	"os"
 	"strings"
-
-	"github.com/MakeNowJust/hotkey"
-	"github.com/dgmann/document-manager/m1-helper/client"
-	"github.com/dgmann/document-manager/m1-helper/server"
-	"github.com/dgmann/document-manager/m1-helper/service"
-	service2 "github.com/kardianos/service"
 )
 
 var NotInstalledGer = "Der angegebene Dienst ist kein installierter Dienst."
@@ -51,19 +52,6 @@ func lookupEnvOrString(key string, defaultVal string) string {
 		return val
 	}
 	return defaultVal
-}
-
-func runInteractive(openCommand, fileName, serverUrl, port string) {
-	ctx := context.Background()
-	manager := hotkey.New()
-	manager.Register(hotkey.Alt+hotkey.Ctrl, 'P', func() {
-		go func() {
-			if err := client.OpenPatient(openCommand, fileName, serverUrl); err != nil {
-				log.Println(err)
-			}
-		}()
-	})
-	server.Run(ctx, fileName, port)
 }
 
 func installUninstallService(s service2.Service) bool {
@@ -116,5 +104,44 @@ func askForConfirmation(s string) bool {
 		} else if response == "n" || response == "no" {
 			return false
 		}
+	}
+}
+
+func runInteractive(openCommand, fileName, serverUrl, port string) {
+	ctx, cancel := context.WithCancel(context.Background())
+
+	openPatientCmd := func() {
+		if err := client.OpenPatient(openCommand, fileName, serverUrl); err != nil {
+			log.Println(err)
+		}
+	}
+
+	manager := hotkey.New()
+	manager.Register(hotkey.Alt+hotkey.Ctrl, 'P', func() {
+		go openPatientCmd()
+	})
+	go server.Run(ctx, fileName, port)
+
+	onExit := func() {
+		cancel()
+	}
+	systray.Run(onReady(openPatientCmd), onExit)
+}
+
+func onReady(openPatientCmd func()) func() {
+	return func() {
+		systray.SetIcon(icon.Data)
+		systray.SetTitle("Document Manager Helper")
+		systray.SetTooltip("Document Manager Helper")
+		mOpen := systray.AddMenuItem("Patient", "Derzeitigen Patienten öffnen")
+		go func() {
+			<-mOpen.ClickedCh
+			openPatientCmd()
+		}()
+		mQuit := systray.AddMenuItem("Beenden", "Helper beenden")
+		go func() {
+			<-mQuit.ClickedCh
+			systray.Quit()
+		}()
 	}
 }

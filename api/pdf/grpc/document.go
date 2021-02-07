@@ -2,12 +2,13 @@ package grpc
 
 import (
 	"fmt"
-	"github.com/dgmann/document-manager/api/datastore"
-	"github.com/dgmann/document-manager/api/storage"
-	"github.com/dgmann/document-manager/pdf-processor/pkg/processor"
 	"sort"
 	"strings"
 	"time"
+
+	"github.com/dgmann/document-manager/api/datastore"
+	"github.com/dgmann/document-manager/api/storage"
+	"github.com/dgmann/document-manager/pdf-processor/pkg/processor"
 )
 
 func NewDocument(title string, records []datastore.Record, images storage.ImageService, categories []datastore.Category) (*processor.Document, error) {
@@ -40,7 +41,7 @@ func NewDocument(title string, records []datastore.Record, images storage.ImageS
 				date2 = time.Time{}
 			}
 
-			return date1.Before(date2)
+			return !date1.Before(date2)
 		})
 		subdocuments := make([]*processor.Document, 0, len(grouped))
 		for _, record := range grouped {

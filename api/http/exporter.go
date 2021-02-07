@@ -2,9 +2,10 @@ package http
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/dgmann/document-manager/api/datastore"
 	"github.com/dgmann/document-manager/api/pdf"
-	"net/http"
 )
 
 type ExporterController struct {
@@ -23,8 +24,9 @@ func (t *ExporterController) Export(w http.ResponseWriter, req *http.Request) {
 	}
 	title := req.URL.Query().Get("title")
 	query := datastore.NewRecordQuery().SetIds(recordsIds)
+	queryOptions := datastore.NewQueryOptions().SetSort(req.URL.Query().Get("sort"))
 	ctx := req.Context()
-	records, err := t.records.Query(ctx, query)
+	records, err := t.records.Query(ctx, query, queryOptions)
 	if err != nil {
 		NewErrorResponse(w, err, http.StatusBadRequest).WriteJSON()
 	}

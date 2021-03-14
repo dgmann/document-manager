@@ -5,6 +5,10 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"log"
+	"os"
+	"strings"
+
 	"github.com/MakeNowJust/hotkey"
 	"github.com/dgmann/document-manager/m1-helper/client"
 	"github.com/dgmann/document-manager/m1-helper/icon"
@@ -12,9 +16,6 @@ import (
 	"github.com/dgmann/document-manager/m1-helper/service"
 	"github.com/getlantern/systray"
 	service2 "github.com/kardianos/service"
-	"log"
-	"os"
-	"strings"
 )
 
 var NotInstalledGer = "Der angegebene Dienst ist kein installierter Dienst."
@@ -24,10 +25,18 @@ func main() {
 	serverURL := flag.String("s", lookupEnvOrString("DOCUMENT_MANAGER_URL", "http://localhost"), "Document-Manager URL")
 	port := flag.String("p", lookupEnvOrString("M1_HELPER_PORT", "3000"), "port")
 	interactive := flag.Bool("i", false, "run in interactive mode")
+	listen := flag.Bool("l", true, "listens on the specified port")
 	openCommand := flag.String("c", "explorer", "default command to open Document-Manager. Default: explorer [SERVERURL]/patient/[ID]")
 	flag.Parse()
 	if *fileName == "" {
 		log.Fatal("no BDT file provided")
+	}
+
+	if !*listen {
+		if err := client.OpenPatient(*openCommand, *fileName, *serverURL); err != nil {
+			log.Println(err)
+		}
+		return
 	}
 
 	s, logger, err := service.New(*openCommand, *fileName, *serverURL, *port)

@@ -2,8 +2,8 @@ import {HttpClient} from '@angular/common/http';
 import {ChangeDetectionStrategy, Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {FormControl} from '@angular/forms';
 import {MatAutocompleteSelectedEvent} from '@angular/material/autocomplete';
-import {Observable} from 'rxjs';
-import {debounceTime, filter, map, switchMap} from 'rxjs/operators';
+import {Observable, EMPTY} from 'rxjs';
+import {catchError, debounceTime, filter, map, switchMap} from 'rxjs/operators';
 import {Patient} from '@app/patient';
 import {ConfigService} from '@app/core/config';
 
@@ -30,7 +30,8 @@ export class PatientSearchComponent implements OnInit {
           const patientId = parseInt(query, 10);
           if (patientId) {
             return this.http.get<Patient>(`${this.config.getApiUrl()}/patients/${patientId}`).pipe(
-              map(patient => [patient])
+              map(patient => [patient]),
+              catchError(err => EMPTY)
             );
           } else {
             const patientQuery = this.parseQuery(query);

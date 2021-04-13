@@ -46,7 +46,7 @@ func (m *Extractor) Count(data io.ReadSeeker) (int, error) {
 	return ctx.PageCount, nil
 }
 
-func (m *Extractor) ToImages(ctx context.Context, data io.ReadSeeker, writer pdf.ImageSender) (int, error) {
+func (m *Extractor) ToImages(ctx context.Context, data io.ReadSeeker, writer pdf.ImageSender) (res int, err error) {
 	outdir, err := ioutil.TempDir("", "images")
 	if err != nil {
 		return 0, fmt.Errorf("error creating tmp dir: %w", err)
@@ -54,6 +54,11 @@ func (m *Extractor) ToImages(ctx context.Context, data io.ReadSeeker, writer pdf
 	defer func() {
 		if e := os.RemoveAll(outdir); e != nil && err == nil {
 			err = e
+		}
+	}()
+	defer func() {
+		if r := recover(); r != nil {
+			err = errors.New("panic occurred in pdfcpu package")
 		}
 	}()
 	pageCount, err := m.Count(data)

@@ -1,4 +1,7 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {ConfigService} from '@app/core/config';
 
 import {PatientComponent} from './patient.component';
 import {CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
@@ -8,6 +11,7 @@ import {CategoryService} from '@app/core/categories';
 import {RouterTestingModule} from '@angular/router/testing';
 import {of} from 'rxjs';
 import createSpy = jasmine.createSpy;
+import {SharedModule} from '@app/shared';
 
 describe('PatientComponent', () => {
   let component: PatientComponent;
@@ -16,7 +20,10 @@ describe('PatientComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [
-        RouterTestingModule
+        RouterTestingModule,
+        HttpClientTestingModule,
+        SharedModule,
+        NoopAnimationsModule
       ],
       declarations: [PatientComponent],
       providers: [
@@ -27,6 +34,7 @@ describe('PatientComponent', () => {
             filteredPatientRecord$: of(),
             selectedPatient$: of(),
             selectedRecord$: of(),
+            selectedId$: of(),
             selectPatient: createSpy(),
             selectCategory: createSpy()
           }
@@ -37,6 +45,7 @@ describe('PatientComponent', () => {
             load: createSpy()
           }
         },
+        { provide: ConfigService, useValue: {getApiUrl: () => 'http://test.com'}}
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })

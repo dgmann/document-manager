@@ -1,7 +1,7 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {DateRangeSelectorComponent} from './date-range-selector.component';
-import {FormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatNativeDateModule} from '@angular/material/core';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatFormFieldModule} from '@angular/material/form-field';
@@ -17,7 +17,7 @@ describe('DateRangeSelectorComponent', () => {
     TestBed.configureTestingModule({
       imports: [
         BrowserAnimationsModule,
-        FormsModule,
+        ReactiveFormsModule,
         MatDatepickerModule,
         MatNativeDateModule,
         MatFormFieldModule,

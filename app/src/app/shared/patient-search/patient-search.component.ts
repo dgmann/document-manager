@@ -1,9 +1,9 @@
 import {HttpClient} from '@angular/common/http';
-import {ChangeDetectionStrategy, Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FormControl} from '@angular/forms';
 import {MatAutocompleteSelectedEvent} from '@angular/material/autocomplete';
 import {Observable, EMPTY} from 'rxjs';
-import {catchError, debounceTime, filter, map, switchMap} from 'rxjs/operators';
+import {catchError, debounceTime, filter, map, startWith, switchMap} from 'rxjs/operators';
 import {Patient} from '@app/patient';
 import {ConfigService} from '@app/core/config';
 
@@ -15,6 +15,10 @@ import {ConfigService} from '@app/core/config';
 })
 export class PatientSearchComponent implements OnInit {
   @Output() selectPatient = new EventEmitter<Patient>();
+  @Input() set value(value: string) {
+    this.searchInput.setValue(value);
+  }
+
   public searchResults: Observable<Patient[]>;
   public searchInput = new FormControl();
 
@@ -24,6 +28,7 @@ export class PatientSearchComponent implements OnInit {
   ngOnInit() {
     this.searchResults = this.searchInput.valueChanges
       .pipe(
+        startWith(this.searchInput.value),
         debounceTime(500),
         filter(query => !!query && query.length > 0),
         switchMap(query => {

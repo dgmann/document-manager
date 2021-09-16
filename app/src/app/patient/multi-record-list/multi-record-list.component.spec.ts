@@ -1,4 +1,5 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import { MatDialogModule } from '@angular/material/dialog';
 
 import {MultiRecordListComponent} from './multi-record-list.component';
 import {MatCardModule} from '@angular/material/card';
@@ -14,7 +15,8 @@ describe('MultiRecordListComponent', () => {
     TestBed.configureTestingModule({
       imports: [
         MatCardModule,
-        MatIconModule
+        MatIconModule,
+        MatDialogModule
       ],
       declarations: [MultiRecordListComponent],
       providers: [

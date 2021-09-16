@@ -2,7 +2,9 @@ import {MatBottomSheet, MatBottomSheetConfig} from '@angular/material/bottom-she
 import {ActionBarComponent} from '@app/inbox/action-bar/action-bar.component';
 import {Injectable} from '@angular/core';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class ActionBarService {
   public isOpen: boolean;
 

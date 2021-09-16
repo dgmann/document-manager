@@ -1,4 +1,5 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import { MatMenuModule } from '@angular/material/menu';
 
 import {EditorComponent} from './editor.component';
 import {PageListComponent} from './page-list/page-list.component';
@@ -20,6 +21,7 @@ describe('EditorComponent', () => {
         MatCardModule,
         MatButtonModule,
         MatIconModule,
+        MatMenuModule,
         RouterTestingModule
       ],
       declarations: [

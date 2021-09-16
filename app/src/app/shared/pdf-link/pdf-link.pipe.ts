@@ -14,6 +14,9 @@ export class PdfLinkPipe implements PipeTransform {
     if (typeof ids === 'string') {
       ids = [ids];
     }
+    if (!ids) {
+      return '';
+    }
     if (!title) {
       title = `Exportiert um: ${new DatePipe(this.locale).transform(new Date(), 'short')}`;
     }

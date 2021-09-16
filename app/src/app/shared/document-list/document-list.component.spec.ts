@@ -1,4 +1,5 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
 
 import {DocumentListComponent} from './document-list.component';
 import {MatDialogModule} from '@angular/material/dialog';
@@ -17,7 +18,8 @@ describe('DocumentListComponent', () => {
       imports: [
         MatTableModule,
         RouterTestingModule,
-        MatDialogModule
+        MatDialogModule,
+        MatSnackBarModule
       ],
       declarations: [DocumentListComponent],
       providers: [

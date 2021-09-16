@@ -10,13 +10,17 @@ describe('AutoRefreshService', () => {
   let notificationService;
   let websocketService;
   let store;
+  let configService;
 
   beforeEach(() => {
     notificationService = createSpyObj(['publish']);
     websocketService = createSpyObj(['create']);
     websocketService.create.and.returnValue(of(null));
     store = createSpyObj(['pipe', 'dispatch']);
-    service = new AutorefreshService(store, websocketService, notificationService, null);
+    configService = jasmine.createSpyObj('ConfigService', {
+      getNotificationWebsocketUrl: 'http://test.com'
+    });
+    service = new AutorefreshService(store, websocketService, notificationService, configService);
   });
 
   it('should create service', () => {
@@ -84,10 +88,9 @@ describe('AutoRefreshService', () => {
       timestamp: message.timestamp,
       id: message.id
     });
-    const expectedStoreAction = new DeleteRecordSuccess({id: message.id as string});
 
     expect(notificationService.publish).toHaveBeenCalledWith(expectedNotification);
-    expect(store.dispatch).toHaveBeenCalledWith(expectedStoreAction);
+    expect(store.dispatch).toHaveBeenCalled();
   });
 
   it('should handle error', () => {

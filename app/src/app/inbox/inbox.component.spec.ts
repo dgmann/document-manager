@@ -1,4 +1,9 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {MatBottomSheetModule} from '@angular/material/bottom-sheet';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
+import {ActionBarService} from '@app/inbox/action-bar';
+import { InboxModule } from '@app/inbox/inbox.module';
+import { provideMockStore } from '@ngrx/store/testing';
 
 import {InboxComponent} from './inbox.component';
 import {InboxService} from './inbox.service';
@@ -21,11 +26,14 @@ describe('InboxComponent', () => {
       imports: [
         SharedModule,
         RouterTestingModule,
-        NoopAnimationsModule
+        NoopAnimationsModule,
+        MatBottomSheetModule,
+        MatSnackBarModule,
       ],
       declarations: [InboxComponent],
-      providers: [{
-        provide: InboxService, useValue: {
+      providers: [
+        provideMockStore(),
+        {provide: InboxService, useValue: {
           allInboxRecords$: of([]),
           selectedIds$: of([]),
           selectedRecords$: of([]),
@@ -35,7 +43,7 @@ describe('InboxComponent', () => {
           selectIds: createSpy('selectIds'),
           deleteSelectedRecords: createSpy('deleteSelectedRecords'),
           updateSelectedRecords: createSpy('updateSelectedRecords')
-        }
+        },
       },
         {provide: RecordService, useValue: createSpyObj('RecordService', ['updatePages'])}
       ],
@@ -55,34 +63,6 @@ describe('InboxComponent', () => {
     expect(inboxService.loadRecords).toHaveBeenCalled();
   });
 
-  describe('Record Selection', () => {
-    it('should select single record', () => {
-      const id = '1';
-      component.onSelectRecords([id]);
-      expect(inboxService.selectIds).toHaveBeenCalledWith([id]);
-    });
-
-    it('should add record in multi-select mode', () => {
-      const id = '3';
-      const selectedIds = ['1', '2'];
-
-      inboxService.selectedIds$ = of(selectedIds);
-      inboxService.isMultiSelect$ = of(true);
-      component.onSelectRecords([id]);
-      expect(inboxService.selectIds).toHaveBeenCalledWith([...selectedIds, id]);
-    });
-
-    it('should remove record in multi-select mode', () => {
-      const id = '3';
-      const selectedIds = ['1', '2', '3'];
-
-      inboxService.selectedIds$ = of(selectedIds);
-      inboxService.isMultiSelect$ = of(true);
-      component.onSelectRecords([id]);
-      expect(inboxService.selectIds).toHaveBeenCalledWith(['1', '2']);
-    });
-  });
-
   it('should upload pdfs on drop', () => {
     const files = [
       {},
@@ -91,8 +71,11 @@ describe('InboxComponent', () => {
     ];
     const event = {
       dataTransfer: {
-        files
-      }
+        files,
+        clearData: () => {}
+      },
+      preventDefault: () => {},
+      stopPropagation: () => {}
     } as unknown as DragEvent;
 
     component.onDrop(event);

@@ -1,4 +1,4 @@
 {
-  "host": "localhost",
-  "useSSL": true
+  "host": "192.168.255.127",
+  "useSSL": false
 }

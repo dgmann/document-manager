@@ -20,6 +20,6 @@ export class DateRangeSelectorComponent {
   }
 
   onDateChange() {
-    this.dateRangeChange.emit({from: this.range.value.start, until: this.range.value.end})
+    this.dateRangeChange.emit({from: this.range.value.start, until: this.range.value.end});
   }
 }

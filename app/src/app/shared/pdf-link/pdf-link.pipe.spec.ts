@@ -1,10 +1,20 @@
 import { PdfLinkPipe } from './pdf-link.pipe';
 
 describe('PdfLinkPipe', () => {
+  let pipe: PdfLinkPipe;
+
+  beforeEach(() => {
+    const configService = jasmine.createSpyObj('ConfigService', {
+      getApiUrl: '1'
+    });
+    pipe = new PdfLinkPipe('de-DE', configService);
+  });
+
   it('create an instance', () => {
-    const configService = jasmine.createSpyObj('ConfigService', ['getApiUrl']);
-    configService.and.returnValue('');
-    const pipe = new PdfLinkPipe('de-DE', configService);
     expect(pipe).toBeTruthy();
+  });
+
+  it('handles invalid values', () => {
+    expect(pipe.transform(undefined)).toBe('');
   });
 });

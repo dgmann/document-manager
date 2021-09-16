@@ -3,11 +3,13 @@
   <form #form id="document-edit-dialog-form" [formGroup]="editForm" (ngSubmit)="onSubmit()">
 
     <div fxLayout="row" fxLayoutGap="10px">
-      <mat-form-field [hintLabel]="patient ? (patient?.lastName + ', ' + patient?.firstName) : ''">
+      <mat-form-field floatLabel="always" [hintLabel]="patient | patient">
+        <mat-label>Patientennummer</mat-label>
         <input matInput formControlName="patientId" [tabindex]="tabIndex | async" minlength="1"
-               placeholder="Patientennummer" required>
+               [placeholder]="patient | patient" required>
       </mat-form-field>
-      <mat-form-field>
+      <mat-form-field floatLabel="always">
+        <mat-label>Befund Datum</mat-label>
         <input matInput formControlName="date" [tabindex]="tabIndex | async" [matDatepicker]="picker" required>
         <mat-datepicker-toggle #datepickertoogle matSuffix [for]="picker"></mat-datepicker-toggle>
         <mat-datepicker #picker></mat-datepicker>

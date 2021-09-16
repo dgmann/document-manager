@@ -31,6 +31,7 @@ import {MessageBoxComponent} from './message-box/message-box.component';
 import {PdfLinkPipe} from './pdf-link/pdf-link.pipe';
 import {IdsPipe} from './pipes/ids/ids.pipe';
 import {CategoryPipe} from './pipes/category/category.pipe';
+import { PatientPipe } from './pipes/patient/patient.pipe';
 
 
 @NgModule({
@@ -69,7 +70,8 @@ import {CategoryPipe} from './pipes/category/category.pipe';
     MessageBoxComponent,
     PdfLinkPipe,
     IdsPipe,
-    CategoryPipe
+    CategoryPipe,
+    PatientPipe
   ],
   entryComponents: [
     DocumentEditDialogComponent,
@@ -86,7 +88,8 @@ import {CategoryPipe} from './pipes/category/category.pipe';
     SplitPanelComponent,
     PdfLinkPipe,
     IdsPipe,
-    CategoryPipe
+    CategoryPipe,
+    PatientPipe,
   ],
   providers: [],
 })

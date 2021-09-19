@@ -3,10 +3,10 @@
   <form #form id="document-edit-dialog-form" [formGroup]="editForm" (ngSubmit)="onSubmit()">
 
     <div fxLayout="row" fxLayoutGap="10px">
-      <mat-form-field floatLabel="always" [hintLabel]="patient | patient">
-        <mat-label>Patientennummer</mat-label>
-        <input matInput formControlName="patientId" [tabindex]="tabIndex | async" minlength="1"
-               [placeholder]="patient | patient" required>
+      <mat-form-field floatLabel="always" [hintLabel]="selectedPatient$ | async | patient: 'long'">
+        <mat-label>Patient</mat-label>
+        <app-patient-search formControlName="patient" [tabindex]="tabIndex | async" minlength="1"
+                            [placeholder]="currentExternalPatient$ | async | patient" required></app-patient-search>
       </mat-form-field>
       <mat-form-field floatLabel="always">
         <mat-label>Befund Datum</mat-label>

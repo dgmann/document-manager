@@ -11,14 +11,14 @@ import {
 import {FormControl, FormGroup} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import * as moment from 'moment';
-import {Observable, ReplaySubject} from 'rxjs';
-import {filter, map, startWith, take} from 'rxjs/operators';
+import {Observable, of, ReplaySubject} from 'rxjs';
+import {defaultIfEmpty, filter, map, mergeMap, startWith, take} from 'rxjs/operators';
 import {Patient} from '@app/patient';
 
 
 import {Record} from '@app/core/records';
 import {TagService} from '@app/core/tags';
-import {Category, CategoryService} from '@app/core/categories'
+import {Category, CategoryService} from '@app/core/categories';
 import {untilDestroyed} from 'ngx-take-until-destroy';
 import {EditResult} from './edit-result.model';
 import {ExternalApiService} from './external-api.service';
@@ -33,7 +33,8 @@ export class DocumentEditDialogComponent implements AfterViewInit, OnInit, OnDes
   @ViewChild('datepickertoogle', { read: ElementRef, static: true }) datepickerToggle;
   public record: Record;
   public tabIndex = new ReplaySubject<number>();
-  public patient: Patient;
+  public currentExternalPatient$: Observable<Patient>;
+  public selectedPatient$: Observable<Patient>;
 
   public categories: Category[];
   public tags: Observable<string[]>;
@@ -41,7 +42,7 @@ export class DocumentEditDialogComponent implements AfterViewInit, OnInit, OnDes
   filteredCategories: Observable<Category[]>;
 
   editForm = new FormGroup({
-    patientId: new FormControl(''),
+    patient: new FormControl(''),
     date: new FormControl(moment()),
     category: new FormControl(),
     tags: new FormControl()
@@ -69,21 +70,23 @@ export class DocumentEditDialogComponent implements AfterViewInit, OnInit, OnDes
     this.tagService.load();
     this.tags = this.tagService.tags;
 
-    this.patientService.getSelectedPatient().subscribe(p => {
-      this.patient = p;
-      if (!this.editForm.get('patientId').value) {
-        this.editForm.patchValue({
-          patientId: this.patient.id,
-        });
-      }
-    });
+    this.currentExternalPatient$ = this.patientService.getSelectedPatient();
 
     this.editForm.patchValue({
-      patientId: this.record.patientId,
       date: this.record.date || moment(),
       category: this.record.category,
       tags: this.record.tags
     });
+
+    if (this.record.patientId) {
+      this.editForm.patchValue({
+        patient: {id: this.record.patientId, firstName: '', lastName: ''} as Patient
+      });
+    }
+
+    this.patientService.getPatientById(this.record.patientId).subscribe(patient => this.editForm.patchValue({
+      patient,
+    }));
 
     if (this.record.category) {
       this.categoryService.categoryMap.pipe(
@@ -93,6 +96,17 @@ export class DocumentEditDialogComponent implements AfterViewInit, OnInit, OnDes
         category: categories[this.record.category],
       }));
     }
+
+    this.selectedPatient$ = this.editForm.get('patient').valueChanges.pipe(
+      startWith(this.editForm.get('patient').value),
+      mergeMap(value => {
+        if (!value) {
+          return this.currentExternalPatient$;
+        } else {
+          return of(value);
+        }
+      })
+    );
 
     if (this.record.patientId && this.record.date) {
       this.tabIndex.next(-1);
@@ -112,7 +126,7 @@ export class DocumentEditDialogComponent implements AfterViewInit, OnInit, OnDes
     if (this.editForm.valid) {
       const changeSet: EditResult = {
         id: this.record.id, change: {
-          patientId: this.editForm.get('patientId').value,
+          patientId: this.editForm.get('patient').value.id,
           date: this.editForm.get('date').value,
           tags: this.editForm.get('tags').value,
           category: this.editForm.get('category').value.id

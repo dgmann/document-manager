@@ -33,7 +33,10 @@
         <div fxFlex="1 1 auto">
           <router-outlet name="navigation"></router-outlet>
         </div>
-        <app-patient-search fxShow fxHide.lt-sm (selectPatient)="onSelectPatient($event)"></app-patient-search>
+        <mat-form-field appearance="standard">
+          <app-patient-search (ngModelChange)="onSelectPatient($event)" ngModel fxShow fxHide.lt-sm placeholder="Suche" [clearOnSubmit]="true"></app-patient-search>
+        </mat-form-field>
+
       </div>
     </mat-toolbar>
   </nav>

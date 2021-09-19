@@ -1,6 +1,7 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {Title} from '@angular/platform-browser';
 import {ActivatedRoute, NavigationEnd, Router} from '@angular/router';
+import {PatientSearchComponent} from '@app/shared/patient-search/patient-search.component';
 import {Observable} from 'rxjs';
 import {filter, map, mergeMap} from 'rxjs/operators';
 import {Patient} from './patient';
@@ -45,10 +46,14 @@ export class AppComponent {
   }
 
   onSelectPatient(event: Patient) {
-    this.router.navigate(['/patient', event.id]);
+    this.navigateToPatient(event);
   }
 
   navigateToCurrentPatient() {
-    this.patientService.getSelectedPatient().subscribe(patient => this.onSelectPatient(patient))
+    this.patientService.getSelectedPatient().subscribe(patient => this.navigateToPatient(patient))
+  }
+
+  navigateToPatient(patient: Patient) {
+    this.router.navigate(['/patient', patient.id]);
   }
 }

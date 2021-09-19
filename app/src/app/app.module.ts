@@ -1,3 +1,5 @@
+import {FormsModule} from '@angular/forms';
+import {MatFormFieldModule} from '@angular/material/form-field';
 import {BrowserModule} from '@angular/platform-browser';
 import localeDe from '@angular/common/locales/de';
 import {APP_INITIALIZER, LOCALE_ID, NgModule} from '@angular/core';
@@ -31,6 +33,7 @@ const initializerConfigFn = (appConfig: ConfigService) => {
   imports: [
     BrowserModule,
     SharedModule,
+    FormsModule,
     BrowserAnimationsModule,
     AppRoutingModule,
     MatIconModule,
@@ -40,6 +43,7 @@ const initializerConfigFn = (appConfig: ConfigService) => {
     MatSnackBarModule,
     CoreModule,
     MatMenuModule,
+    MatFormFieldModule,
   ],
   providers: [
     {provide: LOCALE_ID, useValue: 'de-DE'},

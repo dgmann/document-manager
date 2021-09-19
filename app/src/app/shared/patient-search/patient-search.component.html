@@ -1,4 +1,4 @@
-<input type="text" matInput [placeholder]="placeholder" [formControl]="searchInput" [matAutocomplete]="auto">
+<input type="text" matInput [placeholder]="placeholder" [formControl]="searchInput" [matAutocomplete]="auto" (emptied)="onEmptied($event)">
 <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete" (optionSelected)="onSelectPatient($event)"
                   [displayWith]="displayFn">
   <mat-option *ngFor="let result of searchResults | async" [value]="result">

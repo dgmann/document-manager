@@ -16,6 +16,7 @@ import {ControlValueAccessor, FormControl, NgControl} from '@angular/forms';
 import {MatAutocompleteSelectedEvent} from '@angular/material/autocomplete';
 import {MatFormFieldControl} from '@angular/material/form-field';
 import {ExternalApiService} from '@app/shared/document-edit-dialog/external-api.service';
+import {isEqual} from 'lodash-es';
 import {Observable, EMPTY, Subject} from 'rxjs';
 import {catchError, debounceTime, filter, map, startWith, switchMap} from 'rxjs/operators';
 import {Patient} from '@app/patient';
@@ -35,6 +36,7 @@ export class PatientSearchComponent implements OnInit, OnDestroy, ControlValueAc
   @Input() set value(value: Patient | string) {
     const setPatient = (v: Patient) => {
       this._value = v;
+      this.onChange(v);
       this.searchInput.setValue(v);
       this.stateChanges.next();
     };
@@ -140,6 +142,13 @@ export class PatientSearchComponent implements OnInit, OnDestroy, ControlValueAc
           }
         })
       );
+
+    // Unset value as it may not match the currently selected value anymore
+    this.searchInput.valueChanges.subscribe(current => {
+      if (this.value && !isEqual(this.value, current)) {
+        this.value = null;
+      }
+    });
   }
 
   parseQuery(query: string) {
@@ -159,7 +168,6 @@ export class PatientSearchComponent implements OnInit, OnDestroy, ControlValueAc
   }
 
   onSelectPatient(event: MatAutocompleteSelectedEvent) {
-    this.onChange(event.option.value);
     this.value = event.option.value;
     if (this.clearOnSubmit) {
       this.searchInput.reset();
@@ -206,5 +214,9 @@ export class PatientSearchComponent implements OnInit, OnDestroy, ControlValueAc
   @HostListener('focus', ['$event'])
   onFocus(e) {
     this.elRef.nativeElement.querySelector('input').focus();
+  }
+
+  onEmptied(e) {
+    console.log(e);
   }
 }

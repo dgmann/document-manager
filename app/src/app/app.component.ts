@@ -46,7 +46,9 @@ export class AppComponent {
   }
 
   onSelectPatient(event: Patient) {
-    this.navigateToPatient(event);
+    if (event) {
+      this.navigateToPatient(event);
+    }
   }
 
   navigateToCurrentPatient() {

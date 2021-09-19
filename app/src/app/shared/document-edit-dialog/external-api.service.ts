@@ -13,8 +13,7 @@ export class ExternalApiService {
   }
 
   getSelectedPatient() {
-    return of({id: '1', firstName: 'Jon', lastName: 'Doe', birthDate: new Date('01.01.2000')} as Patient);
-    //return this.http.get<Patient>('http://localhost:3000/patient');
+    return this.http.get<Patient>('http://localhost:3000/patient');
   }
 
   getPatientById(id: string): Observable<Patient> {

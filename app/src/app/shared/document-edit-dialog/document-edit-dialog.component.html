@@ -5,8 +5,8 @@
     <div fxLayout="row" fxLayoutGap="10px">
       <mat-form-field floatLabel="always" [hintLabel]="selectedPatient$ | async | patient: 'long'">
         <mat-label>Patient</mat-label>
-        <app-patient-search formControlName="patient" [tabindex]="tabIndex | async" minlength="1"
-                            [placeholder]="currentExternalPatient$ | async | patient" required></app-patient-search>
+        <app-patient-search formControlName="patient" [tabindex]="tabIndex | async"
+                            [placeholder]="currentExternalPatient$ | async | patient"></app-patient-search>
       </mat-form-field>
       <mat-form-field floatLabel="always">
         <mat-label>Befund Datum</mat-label>

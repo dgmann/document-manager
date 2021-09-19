@@ -17,7 +17,7 @@ export class PatientPipe implements PipeTransform {
     if (format === PatientPipe.LONG) {
       res = `${patient.id}: ${res}`;
     }
-    if (format === PatientPipe.WITH_DATE_OF_BIRTH || format === PatientPipe.LONG) {
+    if (patient.birthDate && (format === PatientPipe.WITH_DATE_OF_BIRTH || format === PatientPipe.LONG)) {
       res = `${res} (${formatDate(patient.birthDate, 'mediumDate', this.locale)})`;
     }
     return res;

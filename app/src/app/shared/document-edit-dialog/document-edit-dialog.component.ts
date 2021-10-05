@@ -8,7 +8,7 @@ import {
   OnInit,
   ViewChild
 } from '@angular/core';
-import {FormControl, FormGroup} from '@angular/forms';
+import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import * as moment from 'moment';
 import {Observable, of, ReplaySubject} from 'rxjs';
@@ -44,7 +44,7 @@ export class DocumentEditDialogComponent implements AfterViewInit, OnInit, OnDes
   editForm = new FormGroup({
     patient: new FormControl(''),
     date: new FormControl(moment()),
-    category: new FormControl(),
+    category: new FormControl(null, Validators.required),
     tags: new FormControl()
   });
 
@@ -124,15 +124,18 @@ export class DocumentEditDialogComponent implements AfterViewInit, OnInit, OnDes
 
   onSubmit() {
     if (this.editForm.valid) {
-      const changeSet: EditResult = {
-        id: this.record.id, change: {
-          patientId: this.editForm.get('patient').value.id,
-          date: this.editForm.get('date').value,
-          tags: this.editForm.get('tags').value,
-          category: this.editForm.get('category').value.id
-        }
-      };
-      this.dialogRef.close(changeSet);
+      this.selectedPatient$.pipe(
+        take(1),
+        map(patient => ({
+          id: this.record.id,
+          change: {
+            patientId: patient.id,
+            date: this.editForm.get('date').value,
+            tags: this.editForm.get('tags').value,
+            category: this.editForm.get('category').value.id
+          }
+      }) as EditResult))
+        .subscribe(changeSet => this.dialogRef.close(changeSet));
     }
   }
 

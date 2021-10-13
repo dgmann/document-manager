@@ -2,6 +2,7 @@
   <div class="left-panel">
     <app-document-list (selectRecords)="onSelectRecords($event)" [allowMultiselect]="false" [records]="records$ | async"
                        [selectedIds]="selectedIds$ | async"></app-document-list>
+    <button mat-button style="width: 100%" color="primary" (click)="loadMoreRecords()">Mehr</button>
   </div>
   <div class="right-panel">
     <app-record-viewer [record]="selectedRecord$ | async"></app-record-viewer>

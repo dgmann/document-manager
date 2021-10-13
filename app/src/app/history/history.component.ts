@@ -30,4 +30,7 @@ export class HistoryComponent implements OnInit {
     this.historyService.selectRecord(ids[0]);
   }
 
+  loadMoreRecords() {
+    this.historyService.next();
+  }
 }

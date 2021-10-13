@@ -98,8 +98,11 @@ export class DocumentEditDialogComponent implements AfterViewInit, OnInit, OnDes
     }
 
     this.selectedPatient$ = this.editForm.get('patient').valueChanges.pipe(
-      startWith(this.editForm.get('patient').value),
+      startWith(null),
       mergeMap(value => {
+        if (value == null) {
+          value = this.editForm.get('patient').value;
+        }
         if (!value) {
           return this.currentExternalPatient$;
         } else {

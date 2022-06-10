@@ -38,7 +38,7 @@ type DiskStorage struct {
 func NewDiskStorage(directory string) (*DiskStorage, error) {
 	storageEngine := osFileSystem{}
 	diskstorage := &DiskStorage{storage: storageEngine, Root: directory}
-	if err := diskstorage.ensureKeyedLocation(storage.NewKey(directory)); err != nil {
+	if err := diskstorage.ensureKeyedLocation(storage.RootKey); err != nil {
 		return nil, fmt.Errorf("error creating disk storage: %w", err)
 	}
 	return diskstorage, nil

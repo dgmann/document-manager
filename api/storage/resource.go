@@ -51,15 +51,14 @@ type GenericResource struct {
 	format string
 }
 
-func NewGenericResource(data []byte, format string) *GenericResource {
-	return &GenericResource{[]string{}, data, format}
-}
-
 //NewKeyedGenericResource creates a new GenericResource with the provided data, format and keys
 func NewKeyedGenericResource(data []byte, format string, key ...string) *GenericResource {
 	format = strings.TrimLeft(format, ".")
 	return &GenericResource{key, data, format}
 }
+
+// RootKey isa Locatable to the root of the FileSystem
+var RootKey = NewKey("/")
 
 //NewKey creates a new Locatable only with the provided keys set.
 //Can be used as an identifier

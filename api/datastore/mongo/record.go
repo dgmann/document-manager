@@ -185,7 +185,8 @@ func (r *RecordService) Update(ctx context.Context, id string, record datastore.
 	return &updated, nil
 }
 
-// UpdatePages updates the pages specified while keeping the rest of the original pages
+// UpdatePages updates the pages of a document without modifying the pages themselves.
+// Useful for deleting multiple pages
 func (r *RecordService) UpdatePages(ctx context.Context, id string, updates []datastore.PageUpdate) (*datastore.Record, error) {
 	record, err := r.Find(ctx, id)
 	if err != nil {
@@ -198,7 +199,10 @@ func (r *RecordService) UpdatePages(ctx context.Context, id string, updates []da
 	var updated []datastore.Page
 	for _, update := range updates {
 		page := pages[update.Id]
-		page.UpdatedAt = time.Now()
+		// Check if the page was really modified or just included without modification
+		if update.Rotate != 0 {
+			page.UpdatedAt = time.Now()
+		}
 		updated = append(updated, page)
 	}
 	return r.Update(ctx, id, datastore.Record{Pages: updated})

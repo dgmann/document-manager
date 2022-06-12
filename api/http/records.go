@@ -339,11 +339,6 @@ func (controller *RecordController) UpdatePages(w http.ResponseWriter, req *http
 	}
 
 	id := URLParamFromContext(req.Context(), "recordId")
-	updated, err := controller.records.UpdatePages(req.Context(), id, updates)
-	if err != nil {
-		NewErrorResponse(w, err, http.StatusBadRequest).WriteJSON()
-		return
-	}
 
 	images, err := controller.images.Get(id)
 	if err != nil {
@@ -394,6 +389,12 @@ func (controller *RecordController) UpdatePages(w http.ResponseWriter, req *http
 			errMessages[i] = e.Error()
 		}
 		NewErrorResponse(w, fmt.Errorf("error rotating pages: %s", strings.Join(errMessages, ", \n")), http.StatusInternalServerError).WriteJSON()
+		return
+	}
+
+	updated, err := controller.records.UpdatePages(req.Context(), id, updates)
+	if err != nil {
+		NewErrorResponse(w, err, http.StatusBadRequest).WriteJSON()
 		return
 	}
 

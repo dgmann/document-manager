@@ -13,10 +13,10 @@
                   mat-icon-button>
             <mat-icon aria-label="down">arrow_downward</mat-icon>
           </button>
-          <button (click)="rotate(record.id, pages, i, -90)" color="primary" mat-icon-button>
+          <button (click)="rotate(record.id, pages, i, 90)" color="primary" mat-icon-button>
             <mat-icon aria-label="rotate-left">rotate_left</mat-icon>
           </button>
-          <button (click)="rotate(record.id, pages, i, 90)" color="primary" mat-icon-button>
+          <button (click)="rotate(record.id, pages, i, -90)" color="primary" mat-icon-button>
             <mat-icon aria-label="rotate-right">rotate_right</mat-icon>
           </button>
           <button (click)="delete(record.id, pages, i)" [disabled]="pages.length <= 1" color="warn" mat-icon-button>

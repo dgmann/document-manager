@@ -22,7 +22,7 @@
     </button>
   </mat-menu>
 
-  <nav fxFlex="64px">
+  <nav fxFlex="64px" class="header" [attr.data-color]="navColor | async">
     <mat-toolbar color="primary">
       <div fxLayout="row" fxFlex="100%" fxLayoutAlign="center center">
         <button [matMenuTriggerFor]="appMenu" mat-icon-button>

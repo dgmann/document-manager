@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import {Title} from '@angular/platform-browser';
 import {ActivatedRoute, NavigationEnd, Router} from '@angular/router';
 import {PatientSearchComponent} from '@app/shared/patient-search/patient-search.component';
@@ -17,6 +17,7 @@ import { ExternalApiService } from './shared/document-edit-dialog/external-api.s
 })
 export class AppComponent {
   public title: Observable<string>;
+  public navColor: Observable<string>;
 
   constructor(private autorefreshService: AutorefreshService,
               private notificationService: NotificationService,
@@ -29,20 +30,27 @@ export class AppComponent {
     this.notificationService.logToConsole();
     this.notificationService.logToSnackBar();
 
-    this.title = this.router.events.pipe(
+    const routes = this.router.events.pipe(
       filter((event) => event instanceof NavigationEnd),
       map(() => this.activatedRoute),
-      map(route => {
-        while (route.firstChild) {
-          route = route.firstChild;
-        }
-        return route;
-      }),
+      mergeMap(route => {
+        // Go to second level as first level is always /
+        route = route.firstChild;
+        return route?.children || [];
+      }));
+
+    this.title = routes.pipe(
       filter(route => route.outlet === 'primary'),
       mergeMap(route => route.data),
       map(data => data.title)
     );
     this.title.subscribe(title => this.titleService.setTitle(`${title} - Document Manager`));
+
+    this.navColor = routes.pipe(
+      filter(route => route.outlet === 'primary'),
+      mergeMap(route => route.data),
+      map(data => data.color)
+    );
   }
 
   onSelectPatient(event: Patient) {
@@ -52,7 +60,7 @@ export class AppComponent {
   }
 
   navigateToCurrentPatient() {
-    this.patientService.getSelectedPatient().subscribe(patient => this.navigateToPatient(patient))
+    this.patientService.getSelectedPatient().subscribe(patient => this.navigateToPatient(patient));
   }
 
   navigateToPatient(patient: Patient) {

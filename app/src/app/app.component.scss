@@ -4,11 +4,19 @@
   height: 100vh;
 }
 
-.side-nav {
-  background-color: $primary-lighter;
+.body-container {
 }
 
-.body-container {
+.header[data-color=teal] {
+  $primary: mat-palette($mat-teal);
+  $app-theme: mat-light-theme($primary, $app-accent, $app-warn);
+  @include mat-toolbar-color($app-theme);
+}
+
+.header[data-color=purple] {
+  $primary: mat-palette($mat-deep-purple);
+  $app-theme: mat-light-theme($primary, $app-accent, $app-warn);
+  @include mat-toolbar-color($app-theme);
 }
 
 @media print {

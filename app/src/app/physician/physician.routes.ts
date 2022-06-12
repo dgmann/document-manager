@@ -9,11 +9,11 @@ const PHYSICIAN_ROUTES: Routes = [
   {
     path: '',
     component: PhysicianComponent,
-    data: {title: 'Arzt'},
+    data: {title: 'Arzt', color: 'teal'},
     children: [
-      {path: 'review', component: PageReviewComponent, data: {title: 'Arzt'}},
-      {path: 'escalated', component: PageEscalatedComponent, data: {title: 'Arzt'}},
-      {path: 'other', component: PageOtherComponent, data: {title: 'Arzt'}},
+      {path: 'review', component: PageReviewComponent},
+      {path: 'escalated', component: PageEscalatedComponent},
+      {path: 'other', component: PageOtherComponent},
       {path: '', redirectTo: 'review', pathMatch: 'full'}
     ]
   },

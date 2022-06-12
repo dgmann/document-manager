@@ -53,7 +53,7 @@ func main() {
 	if err != nil {
 		log.WithError(err).Error("error connecting to pdf processor service")
 	}
-	eventService := event.NewWebsocketEventService(imageService)
+	eventService := event.NewWebsocketEventService()
 	tagService := mongo.NewTagService(client.Records())
 
 	srv := http.Server{

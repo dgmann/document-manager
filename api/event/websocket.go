@@ -2,16 +2,14 @@ package event
 
 import (
 	"github.com/cskr/pubsub"
-	"github.com/dgmann/document-manager/api/storage"
 )
 
 type WebsocketEventService struct {
-	ps            *pubsub.PubSub
-	modTimeReader storage.ModTimeReader
+	ps *pubsub.PubSub
 }
 
-func NewWebsocketEventService(modTimeReader storage.ModTimeReader) *WebsocketEventService {
-	return &WebsocketEventService{ps: pubsub.New(300), modTimeReader: modTimeReader}
+func NewWebsocketEventService() *WebsocketEventService {
+	return &WebsocketEventService{ps: pubsub.New(300)}
 }
 
 func (e *WebsocketEventService) Send(event Event) {

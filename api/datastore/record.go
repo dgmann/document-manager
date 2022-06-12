@@ -8,8 +8,6 @@ import (
 	"time"
 
 	"github.com/dgmann/document-manager/api/storage"
-	"github.com/jinzhu/copier"
-	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -164,11 +162,7 @@ func (r *Record) Clone() Record {
 	*clone = *r
 	pages := make([]Page, len(r.Pages))
 	for i, p := range r.Pages {
-		page := &Page{}
-		if err := copier.Copy(page, p); err != nil {
-			logrus.WithError(err).Warn("error cloning page")
-		}
-		pages[i] = *page
+		pages[i] = *p.Clone()
 	}
 	clone.Pages = pages
 
@@ -245,4 +239,32 @@ func NewRecord(data CreateRecord) *Record {
 		record.Status = &status
 	}
 	return record
+}
+
+type Page struct {
+	Id        string    `bson:"id" json:"id"`
+	Url       string    `json:"url"`
+	Content   string    `bson:"content" json:"content"`
+	Format    string    `bson:"format" json:"format"`
+	UpdatedAt time.Time `bson:"updatedAt" json:"updatedAt"`
+}
+
+func NewPage(format string) *Page {
+	id := primitive.NewObjectID().Hex()
+	return &Page{Id: id, Format: format, UpdatedAt: time.Now()}
+}
+
+func (p *Page) Clone() *Page {
+	return &Page{
+		Id:        p.Id,
+		Url:       p.Url,
+		Content:   p.Content,
+		Format:    p.Format,
+		UpdatedAt: p.UpdatedAt,
+	}
+}
+
+type PageUpdate struct {
+	Id     string  `json:"id"`
+	Rotate float64 `json:"rotate"`
 }

@@ -197,7 +197,9 @@ func (r *RecordService) UpdatePages(ctx context.Context, id string, updates []da
 	}
 	var updated []datastore.Page
 	for _, update := range updates {
-		updated = append(updated, pages[update.Id])
+		page := pages[update.Id]
+		page.UpdatedAt = time.Now()
+		updated = append(updated, page)
 	}
 	return r.Update(ctx, id, datastore.Record{Pages: updated})
 }

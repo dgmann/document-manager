@@ -41,7 +41,6 @@ func (controller *RecordController) Router() http.Handler {
 
 	r.Get("/{recordId}/pages/{imageId}", controller.Page)
 	r.Post("/{recordId}/pages", controller.UpdatePages)
-	r.Post("/{recordId}/pages/{imageId}/rotate/{degrees}", controller.RotatePage)
 	return r
 }
 
@@ -79,7 +78,7 @@ func (controller *RecordController) All(w http.ResponseWriter, req *http.Request
 		NewErrorResponse(w, err, http.StatusInternalServerError).WriteJSON()
 		return
 	}
-	withUrl := SetURLForRecordList(records, url.URL{Scheme: req.URL.Scheme, Host: req.Host}, controller.images)
+	withUrl := SetURLForRecordList(records, url.URL{Scheme: req.URL.Scheme, Host: req.Host})
 	NewResponse(w, withUrl).WriteJSON()
 }
 
@@ -97,7 +96,7 @@ func (controller *RecordController) One(w http.ResponseWriter, req *http.Request
 		return
 	}
 
-	withUrl := SetURLForRecord(result, url.URL{Scheme: req.URL.Scheme, Host: req.Host}, controller.images)
+	withUrl := SetURLForRecord(result, url.URL{Scheme: req.URL.Scheme, Host: req.Host})
 	NewResponse(w, withUrl).WriteJSON()
 }
 
@@ -156,7 +155,7 @@ func (controller *RecordController) Create(w http.ResponseWriter, req *http.Requ
 		return
 	}
 
-	withUrl := SetURLForRecord(res, url.URL{Scheme: req.URL.Scheme, Host: req.Host}, controller.images)
+	withUrl := SetURLForRecord(res, url.URL{Scheme: req.URL.Scheme, Host: req.Host})
 	NewResponseWithStatus(w, withUrl, http.StatusCreated).WriteJSON()
 }
 
@@ -185,7 +184,7 @@ func (controller *RecordController) Update(w http.ResponseWriter, req *http.Requ
 		return
 	}
 
-	withUrl := SetURLForRecord(updated, url.URL{Scheme: req.URL.Scheme, Host: req.Host}, controller.images)
+	withUrl := SetURLForRecord(updated, url.URL{Scheme: req.URL.Scheme, Host: req.Host})
 	NewResponse(w, withUrl).WriteJSON()
 }
 
@@ -234,7 +233,7 @@ func (controller *RecordController) Duplicate(w http.ResponseWriter, req *http.R
 		return
 	}
 
-	withUrl := SetURLForRecord(copiedRecord, url.URL{Scheme: req.URL.Scheme, Host: req.Host}, controller.images)
+	withUrl := SetURLForRecord(copiedRecord, url.URL{Scheme: req.URL.Scheme, Host: req.Host})
 	NewResponseWithStatus(w, withUrl, http.StatusCreated).WriteJSON()
 }
 
@@ -276,7 +275,7 @@ func (controller *RecordController) Reset(w http.ResponseWriter, req *http.Reque
 		return
 	}
 
-	withUrl := SetURLForRecord(updated, url.URL{Scheme: req.URL.Scheme, Host: req.Host}, controller.images)
+	withUrl := SetURLForRecord(updated, url.URL{Scheme: req.URL.Scheme, Host: req.Host})
 	NewResponse(w, withUrl).WriteJSON()
 }
 
@@ -309,7 +308,7 @@ func (controller *RecordController) Append(w http.ResponseWriter, req *http.Requ
 		return
 	}
 
-	withUrl := SetURLForRecord(updated, url.URL{Scheme: req.URL.Scheme, Host: req.Host}, controller.images)
+	withUrl := SetURLForRecord(updated, url.URL{Scheme: req.URL.Scheme, Host: req.Host})
 	NewResponse(w, withUrl).WriteJSON()
 }
 
@@ -398,38 +397,6 @@ func (controller *RecordController) UpdatePages(w http.ResponseWriter, req *http
 		return
 	}
 
-	withUrl := SetURLForRecord(updated, url.URL{Scheme: req.URL.Scheme, Host: req.Host}, controller.images)
+	withUrl := SetURLForRecord(updated, url.URL{Scheme: req.URL.Scheme, Host: req.Host})
 	NewResponse(w, withUrl).WriteJSON()
-}
-
-func (controller *RecordController) RotatePage(w http.ResponseWriter, req *http.Request) {
-	id := URLParamFromContext(req.Context(), "recordId")
-	images, err := controller.images.Get(id)
-	if err != nil {
-		NewErrorResponse(w, err, http.StatusBadRequest).WriteJSON()
-		return
-	}
-
-	degrees, err := strconv.Atoi(URLParamFromContext(req.Context(), "degrees"))
-	if err != nil {
-		NewErrorResponse(w, err, http.StatusBadRequest).WriteJSON()
-		return
-	}
-
-	imageId := URLParamFromContext(req.Context(), "imageId")
-	if img, ok := images[imageId]; ok {
-		img, err := controller.pdfProcessor.Rotate(req.Context(), bytes.NewBuffer(img.Image), degrees)
-		if err != nil {
-			NewErrorResponse(w, err, http.StatusBadRequest).WriteJSON()
-			return
-		}
-		if err := controller.images.Write(storage.NewKeyedGenericResource(img.Image, img.Format, id, imageId)); err != nil {
-			NewErrorResponse(w, err, http.StatusInternalServerError).WriteJSON()
-			return
-		}
-		NewResponse(w, img)
-	} else {
-		NewErrorResponse(w, fmt.Errorf("image %s not found", imageId), http.StatusNotFound).WriteJSON()
-		return
-	}
 }

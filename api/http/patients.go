@@ -54,6 +54,6 @@ func (controller *PatientController) Records(w http.ResponseWriter, req *http.Re
 		NewErrorResponse(w, err, 400).WriteJSON()
 		return
 	}
-	withUrl := SetURLForRecordList(records, url.URL{Scheme: req.URL.Scheme, Host: req.Host}, controller.images)
+	withUrl := SetURLForRecordList(records, url.URL{Scheme: req.URL.Scheme, Host: req.Host})
 	NewResponse(w, withUrl).WriteJSON()
 }

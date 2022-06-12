@@ -3,15 +3,15 @@
     <module name="document-manager" />
     <working_directory value="$PROJECT_DIR$/api" />
     <envs>
-      <env name="RECORD_DIR" value="~/records" />
       <env name="ARCHIVE_DIR" value="~/archive" />
-      <env name="DB_HOST" value="localhost" />
+      <env name="DB_HOST" value="docker.gassmann.local" />
       <env name="PDFPROCESSOR_URL" value="localhost:9000" />
+      <env name="RECORD_DIR" value="~/records" />
     </envs>
     <kind value="DIRECTORY" />
-    <filePath value="$PROJECT_DIR$/api/main.go" />
     <package value="github.com/dgmann/document-manager/api" />
     <directory value="$PROJECT_DIR$/api" />
+    <filePath value="$PROJECT_DIR$/api/main.go" />
     <method v="2" />
   </configuration>
 </component>

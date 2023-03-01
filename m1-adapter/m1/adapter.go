@@ -3,6 +3,7 @@ package m1
 import (
 	"database/sql"
 	"fmt"
+	"github.com/alexsergivan/transliterator"
 	_ "github.com/mattn/go-oci8"
 	"strings"
 )
@@ -13,10 +14,11 @@ type Adapter interface {
 type DatabaseAdapter struct {
 	connectionString string
 	db               *sql.DB
+	trans            *transliterator.Transliterator
 }
 
 func NewDatabaseAdapter(connectionString string) *DatabaseAdapter {
-	return &DatabaseAdapter{connectionString: connectionString}
+	return &DatabaseAdapter{connectionString: connectionString, trans: transliterator.NewTransliterator(nil)}
 }
 
 func (a *DatabaseAdapter) Connect() error {
@@ -65,6 +67,7 @@ func (a *DatabaseAdapter) GetAllPatients() ([]*Patient, error) {
 
 func (a *DatabaseAdapter) FindPatientsByName(firstname, lastname string) ([]*Patient, error) {
 	name := fmt.Sprintf("%s%%,%s%%", lastname, firstname)
+	name = a.trans.Transliterate(name, "de")
 	rows, err := a.db.Query(`Select Distinct
 								pat.PATID_EXT as PatID,
 								pat.Name as Nachname,

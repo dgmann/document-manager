@@ -45,10 +45,11 @@ func init() {
 
 func main() {
 	dsn := fmt.Sprintf("%s/%s@%s:%s/%s", username, password, host, port, dbname)
+	log.Println("Connecting to ", dsn)
 	adapter := m1.NewDatabaseAdapter(dsn)
 	err := adapter.Connect()
 	if err != nil {
-		println(err)
+		log.Fatalf("Error connecting to database: %s", err)
 	}
 	defer adapter.Close()
 

@@ -2,6 +2,7 @@ package m1
 
 import (
 	"database/sql"
+	"fmt"
 	_ "github.com/mattn/go-oci8"
 	"strings"
 )
@@ -63,8 +64,7 @@ func (a *DatabaseAdapter) GetAllPatients() ([]*Patient, error) {
 }
 
 func (a *DatabaseAdapter) FindPatientsByName(firstname, lastname string) ([]*Patient, error) {
-	firstname += "%"
-	lastname += "%"
+	name := fmt.Sprintf("%s%%,%s%%", lastname, firstname)
 	rows, err := a.db.Query(`Select Distinct
 								pat.PATID_EXT as PatID,
 								pat.Name as Nachname,
@@ -78,9 +78,8 @@ func (a *DatabaseAdapter) FindPatientsByName(firstname, lastname string) ([]*Pat
 								JOIN M1TELNR telnr on adress.ADRSS_ID = telnr.ADRSS_ID
 								LEFT OUTER JOIN M1WOHN wohn on adress.Wohn_ID = wohn.Wohn_ID
 								LEFT OUTER JOIN M1ORT wohnort on wohn.ORT_ID = wohnort.ORT_ID
-								WHERE LOWER(pat.Vorname) LIKE LOWER(:firstname)
-								AND LOWER(pat.Name) LIKE LOWER(:lastname)
-								ORDER BY pat.NAME, pat.VORNAME`, firstname, lastname)
+								WHERE pat.PATSNAME like UPPER(name)
+								ORDER BY pat.NAME, pat.VORNAME`, name)
 	if err != nil {
 		return nil, err
 	}

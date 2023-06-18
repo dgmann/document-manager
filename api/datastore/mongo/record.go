@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	log "github.com/sirupsen/logrus"
 	"io"
-	"io/ioutil"
 	"time"
 
 	"github.com/dgmann/document-manager/api/datastore"
@@ -103,7 +103,7 @@ func (r *RecordService) Create(ctx context.Context, data datastore.CreateRecord,
 		record.Pages = pages
 	}
 
-	pdfBytes, err := ioutil.ReadAll(pdfData)
+	pdfBytes, err := io.ReadAll(pdfData)
 	if err != nil {
 		return nil, err
 	}
@@ -130,7 +130,9 @@ func (r *RecordService) Create(ctx context.Context, data datastore.CreateRecord,
 		return nil, fmt.Errorf("error finding newly created document in database. %w", err)
 	}
 
-	r.Events.Send(event.New(event.RecordTopic, event.Created, created.Id.Hex()))
+	if err := r.Events.Send(ctx, event.New(event.RecordTopic, event.Created, created.Id.Hex(), created)); err != nil {
+		log.WithError(err).Info("error sending event")
+	}
 	return created, nil
 }
 
@@ -157,7 +159,9 @@ func (r *RecordService) Delete(ctx context.Context, id string) error {
 		return datastore.NewNotFoundError(id, Records, err)
 	}
 
-	r.Events.Send(event.New(event.RecordTopic, event.Deleted, id))
+	if err := r.Events.Send(ctx, event.New(event.RecordTopic, event.Deleted, id, nil)); err != nil {
+		log.WithError(err).Info("error sending event")
+	}
 	return err
 }
 
@@ -181,7 +185,9 @@ func (r *RecordService) Update(ctx context.Context, id string, record datastore.
 		return nil, err
 	}
 
-	r.Events.Send(event.New(event.RecordTopic, event.Updated, updated.Id.Hex()))
+	if err := r.Events.Send(ctx, event.New(event.RecordTopic, event.Updated, updated.Id.Hex(), updated)); err != nil {
+		log.WithError(err).Info("error sending event")
+	}
 	return &updated, nil
 }
 

@@ -1,6 +1,7 @@
 package event
 
 import (
+	"context"
 	"time"
 )
 
@@ -17,25 +18,27 @@ type Subscriber interface {
 }
 
 type Sender interface {
-	Send(event Event)
+	Send(ctx context.Context, event Event) error
 }
 
 type Event struct {
-	Type      Type      `json:"type"`
-	Topic     Topic     `json:"topic"`
-	Timestamp time.Time `json:"timestamp"`
-	Id        string    `json:"id"`
+	Type      Type        `json:"type"`
+	Topic     Topic       `json:"topic"`
+	Timestamp time.Time   `json:"timestamp"`
+	Id        string      `json:"id"`
+	Data      interface{} `json:"data"`
 }
 
 type Topic string
 
 const RecordTopic = "records"
 
-func New(topic Topic, eventType Type, id string) Event {
+func New(topic Topic, eventType Type, id string, data interface{}) Event {
 	return Event{
 		Type:      eventType,
 		Timestamp: time.Now(),
 		Id:        id,
 		Topic:     topic,
+		Data:      data,
 	}
 }

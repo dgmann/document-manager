@@ -30,6 +30,15 @@ services:
     networks:
       - backend
     restart: always
+  mqtt:
+    image: emqx:latest
+  ocr:
+    image: 'ghcr.io/dgmann/document-manager/ocr:latest'
+    networks:
+      - backend
+    restart: always
+    environment:
+      MQTT_BOKER: "mqtt:1883"
   fax_watcher:
     image: 'ghcr.io/dgmann/document-manager/directory-watcher:latest'
     volumes:

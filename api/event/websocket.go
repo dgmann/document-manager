@@ -1,6 +1,7 @@
 package event
 
 import (
+	"context"
 	"github.com/cskr/pubsub"
 )
 
@@ -12,8 +13,9 @@ func NewWebsocketEventService() *WebsocketEventService {
 	return &WebsocketEventService{ps: pubsub.New(300)}
 }
 
-func (e *WebsocketEventService) Send(event Event) {
+func (e *WebsocketEventService) Send(ctx context.Context, event Event) error {
 	e.ps.Pub(event, string(event.Type))
+	return nil
 }
 
 func (e *WebsocketEventService) Subscribe(t ...Type) chan interface{} {

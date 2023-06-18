@@ -1,0 +1,12 @@
+go 1.20
+
+use (
+	api
+	apiclient
+	directory-watcher
+	m1-adapter
+	m1-helper
+	pdf-processor
+	pdf-processor/pkg/processor
+	ocr-service
+)

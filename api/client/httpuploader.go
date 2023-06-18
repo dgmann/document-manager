@@ -5,13 +5,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/dgmann/document-manager/api/pkg/api"
 	"io"
 	"io/ioutil"
 	"mime/multipart"
 	"net/http"
 	"time"
 
-	"github.com/dgmann/document-manager/api/datastore"
 	"github.com/sirupsen/logrus"
 )
 
@@ -32,12 +32,12 @@ type NewRecord struct {
 	Sender     string
 	Date       *time.Time
 	PatientId  *string
-	Status     *datastore.Status
+	Status     *api.Status
 	Comment    *string
 	Category   *string
 }
 
-func (u *HttpUploader) CreateCategory(category datastore.Category) error {
+func (u *HttpUploader) CreateCategory(category api.Category) error {
 	body := new(bytes.Buffer)
 	if err := json.NewEncoder(body).Encode(category); err != nil {
 		return err

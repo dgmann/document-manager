@@ -2,7 +2,7 @@ name: Build OCR
 on:
   push:
     paths:
-      - 'orc/**'
+      - 'orc-service/**'
       - '.github/workflows/ocr-build.yaml'
 
 jobs:
@@ -12,11 +12,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Publish to Registry
-        uses: elgohr/Publish-Docker-Github-Action@master
+        uses: elgohr/Publish-Docker-Github-Action@v5
         with:
           name: dgmann/document-manager/ocr
           username: ${{ github.actor }}
           password: ${{ secrets.CR_PAT }}
           registry: ghcr.io
-          dockerfile: ocr/Dockerfile
-          context: ocr/
+          dockerfile: ocr-service/Dockerfile
+          context: ocr-service/

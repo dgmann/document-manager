@@ -1,0 +1,10 @@
+{
+    "vsmqtt.brokerProfiles": [
+        {
+            "name": "Local",
+            "host": "localhost",
+            "port": 1883,
+            "clientId": "vsmqtt_client_c2bf"
+        }
+    ]
+}

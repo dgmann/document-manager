@@ -10,6 +10,7 @@ import (
 	"github.com/dgmann/document-manager/api/status"
 	"github.com/dgmann/document-manager/api/storage/filesystem"
 	log "github.com/sirupsen/logrus"
+	"net"
 	"os"
 	"time"
 )
@@ -53,11 +54,25 @@ func main() {
 	if err != nil {
 		log.WithError(err).Error("error connecting to pdf processor service")
 	}
-	eventService := event.NewWebsocketEventService()
+
+	websocketService := event.NewWebsocketEventService()
+	conn, err := net.Dial("tcp", "mqtt:1883")
+	if err != nil {
+		log.WithError(err).Fatalln("error connecting to MQTT broker")
+	}
+	mqttService := event.NewMQTTEventSender(conn)
+	defer func(mqttService *event.MQTTEventSender) {
+		err := mqttService.Disconnect()
+		if err != nil {
+			log.Warnln(err)
+		}
+	}(mqttService)
+	eventService := event.NewMultiEventSender(websocketService, mqttService)
+
 	tagService := mongo.NewTagService(client.Records())
 
 	srv := http.Server{
-		EventService:    eventService,
+		EventService:    websocketService,
 		ImageService:    imageService,
 		TagService:      tagService,
 		CategoryService: categoryService,

@@ -10,7 +10,7 @@
       <sourceFolder url="file://$MODULE_DIR$/m1-adapter" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/m1-helper" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/pdf-processor" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/migrator" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/ocr-service" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/app/dist" />
       <excludeFolder url="file://$MODULE_DIR$/app/tmp" />
     </content>

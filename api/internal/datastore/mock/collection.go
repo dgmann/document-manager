@@ -2,7 +2,7 @@ package mock
 
 import (
 	"context"
-	"github.com/dgmann/document-manager/api/internal/datastore/datastore"
+	"github.com/dgmann/document-manager/api/internal/datastore"
 	"github.com/stretchr/testify/mock"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"

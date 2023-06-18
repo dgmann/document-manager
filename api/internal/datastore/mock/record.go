@@ -2,9 +2,9 @@ package mock
 
 import (
 	"context"
-	"github.com/dgmann/document-manager/api/internal/datastore/datastore"
+	"github.com/dgmann/document-manager/api/internal/datastore"
+	"github.com/dgmann/document-manager/api/internal/storage"
 	"github.com/dgmann/document-manager/api/pkg/api"
-	"github.com/dgmann/document-manager/api/storage"
 	"github.com/stretchr/testify/mock"
 	"io"
 )

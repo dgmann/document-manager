@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"time"
 )
 
@@ -16,17 +15,17 @@ func NewCategory(id, name string) *Category {
 }
 
 type Record struct {
-	Id          primitive.ObjectID `bson:"_id,omitempty" json:"id"`
-	Date        *time.Time         `bson:"date,omitempty" json:"date"`
-	ReceivedAt  time.Time          `bson:"receivedAt,omitempty" json:"receivetAt"`
-	PatientId   *string            `bson:"patientId,omitempty" json:"patientId"`
-	Comment     *string            `bson:"comment,omitempty" json:"comment"`
-	Sender      string             `bson:"sender,omitempty" json:"sender" form:"user" binding:"required"`
-	Category    *string            `bson:"category,omitempty" json:"category"`
-	Tags        *[]string          `bson:"tags,omitempty" json:"tags"`
-	Pages       []Page             `bson:"pages,omitempty" json:"pages"`
-	Status      *Status            `bson:"status,omitempty" json:"status"`
-	UpdatedAt   time.Time          `bson:"updatedAt"`
+	Id          string     `bson:"_id,omitempty" json:"id"`
+	Date        *time.Time `bson:"date,omitempty" json:"date"`
+	ReceivedAt  time.Time  `bson:"receivedAt,omitempty" json:"receivedAt"`
+	PatientId   *string    `bson:"patientId,omitempty" json:"patientId"`
+	Comment     *string    `bson:"comment,omitempty" json:"comment"`
+	Sender      string     `bson:"sender,omitempty" json:"sender" form:"user" binding:"required"`
+	Category    *string    `bson:"category,omitempty" json:"category"`
+	Tags        *[]string  `bson:"tags,omitempty" json:"tags"`
+	Pages       []Page     `bson:"pages,omitempty" json:"pages"`
+	Status      *Status    `bson:"status,omitempty" json:"status"`
+	UpdatedAt   time.Time  `bson:"updatedAt"`
 	ArchivedPDF string
 }
 
@@ -83,25 +82,19 @@ func formatTime(toFormat *time.Time) *string {
 }
 
 type CreateRecord struct {
-	Id         *primitive.ObjectID `form:"id"`
-	Date       time.Time           `form:"date" time_format:"2006-01-02T15:04:05Z07:00"`
-	ReceivedAt time.Time           `form:"receivedAt" time_format:"2006-01-02T15:04:05Z07:00"`
-	Sender     string              `form:"sender"`
-	Comment    *string             `form:"comment"`
-	PatientId  *string             `form:"patientId"`
-	Tags       []string            `form:"tags"`
-	Status     Status              `form:"status"`
-	Category   *string             `form:"category"`
+	Date       time.Time `form:"date" time_format:"2006-01-02T15:04:05Z07:00"`
+	ReceivedAt time.Time `form:"receivedAt" time_format:"2006-01-02T15:04:05Z07:00"`
+	Sender     string    `form:"sender"`
+	Comment    *string   `form:"comment"`
+	PatientId  *string   `form:"patientId"`
+	Tags       []string  `form:"tags"`
+	Status     Status    `form:"status"`
+	Category   *string   `form:"category"`
 	Pages      []Page
 }
 
 func NewRecord(data CreateRecord) *Record {
-	id := primitive.NewObjectID()
-	if data.Id != nil {
-		id = *data.Id
-	}
 	record := &Record{
-		Id:         id,
 		Date:       nil,
 		ReceivedAt: time.Now(),
 		Comment:    data.Comment,
@@ -138,11 +131,6 @@ type Page struct {
 	Content   string    `bson:"content" json:"content"`
 	Format    string    `bson:"format" json:"format"`
 	UpdatedAt time.Time `bson:"updatedAt" json:"updatedAt"`
-}
-
-func NewPage(format string) *Page {
-	id := primitive.NewObjectID().Hex()
-	return &Page{Id: id, Format: format, UpdatedAt: time.Now()}
 }
 
 func (p *Page) Clone() *Page {

@@ -18,7 +18,6 @@ import (
 	"github.com/dgmann/document-manager/api/internal/pdf"
 	"github.com/dgmann/document-manager/api/internal/storage"
 	"github.com/go-chi/chi"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // swagger:response record
@@ -200,22 +199,19 @@ func (controller *RecordController) Duplicate(w http.ResponseWriter, req *http.R
 		return
 	}
 
-	newId := primitive.NewObjectID()
-
-	err = controller.images.Copy(recordToDuplicate.Id.Hex(), newId.Hex())
-	if err != nil {
-		NewErrorResponse(w, err, http.StatusInternalServerError).WriteJSON()
-		return
-	}
-
 	data := bytes.NewBuffer(file.Data())
 	copiedRecord, err := controller.records.Create(req.Context(), api.CreateRecord{
-		Id:         &newId,
 		ReceivedAt: recordToDuplicate.ReceivedAt,
 		Sender:     recordToDuplicate.Sender,
 		Pages:      recordToDuplicate.Pages,
 	}, nil, data)
 
+	if err != nil {
+		NewErrorResponse(w, err, http.StatusInternalServerError).WriteJSON()
+		return
+	}
+
+	err = controller.images.Copy(recordToDuplicate.Id, copiedRecord.Id)
 	if err != nil {
 		NewErrorResponse(w, err, http.StatusInternalServerError).WriteJSON()
 		return
@@ -249,7 +245,7 @@ func (controller *RecordController) Reset(w http.ResponseWriter, req *http.Reque
 
 	var pages []api.Page
 	for _, img := range images {
-		page := api.NewPage(img.Format)
+		page := datastore.NewPage(img.Format)
 		if err := controller.images.Write(storage.NewKeyedGenericResource(img.Image, img.Format, id, page.Id)); err != nil {
 			NewErrorResponse(w, err, http.StatusInternalServerError).WriteJSON()
 			return

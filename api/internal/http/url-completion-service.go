@@ -44,7 +44,7 @@ func setURLForRecord(r *api.Record, url url.URL) {
 	}
 
 	for i, page := range r.Pages {
-		r.Pages[i].Url = fmt.Sprintf("%s%s/records/%s/pages/%s?modified=%d", domain, PathPrefix, r.Id.Hex(), page.Id, page.UpdatedAt.Unix())
+		r.Pages[i].Url = fmt.Sprintf("%s%s/records/%s/pages/%s?modified=%d", domain, PathPrefix, r.Id, page.Id, page.UpdatedAt.Unix())
 	}
-	r.ArchivedPDF = fmt.Sprintf("%s%s/archive/%s", domain, PathPrefix, r.Id.Hex())
+	r.ArchivedPDF = fmt.Sprintf("%s%s/archive/%s", domain, PathPrefix, r.Id)
 }

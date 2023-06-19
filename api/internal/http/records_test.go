@@ -40,5 +40,5 @@ func buildJSONResponseForRecord(record api.Record) string {
 		"sender": "mock", 
 		"status": "%s", 
 		"tags": []
-	}`, record.Id.Hex(), record.ReceivedAt.Format(time.RFC3339), record.UpdatedAt.Format(time.RFC3339Nano), api.StatusInbox)
+	}`, record.Id, record.ReceivedAt.Format(time.RFC3339), record.UpdatedAt.Format(time.RFC3339Nano), api.StatusInbox)
 }

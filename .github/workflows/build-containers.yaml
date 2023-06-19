@@ -1,0 +1,58 @@
+name: Build Images
+
+on:
+  push:
+    tags: ['v*.*.*']
+  pull_request: {}
+
+env:
+  IMAGE_REPOSITORY: "dgmann/document-manager"
+  IMAGE_REGISTRY: "ghcr.io"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        path: ['api', 'app', 'gateway', 'directory-watcher', 'm1-adapter', 'pdf-processor']
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.IMAGE_REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.CR_PAT }} # Use PAT to allow dgmann/document-manager as namespace
+
+      - name: Image Name
+        id: image-name
+        run: echo "image-name=${IMAGE_REGISTRY}/${IMAGE_REPOSITORY}/${IMAGE_NAME}" >> "$GITHUB_OUTPUT"
+        env:
+          IMAGE_NAME: ${{ matrix.path }}
+
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{ steps.image-name.outputs.image-name }}
+          labels:
+          tags: |
+            type=semver,pattern={{version}}
+            type=ref,event=pr
+
+      - name: Build & Push Image
+        uses: docker/build-push-action@v3
+        with:
+          context: ${{ matrix.path }}/
+          tags:  ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          push: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

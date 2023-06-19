@@ -1,4 +1,4 @@
 {
-  "host": "documentmanager.gassmann.local",
+  "host": "localhost",
   "useSSL": false
 }

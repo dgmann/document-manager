@@ -1,4 +1,4 @@
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import {PageEscalatedComponent} from './page-escalated.component';
 import {CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
@@ -9,7 +9,7 @@ describe('PageEscalatedComponent', () => {
   let component: PageEscalatedComponent;
   let fixture: ComponentFixture<PageEscalatedComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [
         PageEscalatedComponent

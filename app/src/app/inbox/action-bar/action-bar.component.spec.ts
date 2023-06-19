@@ -1,5 +1,5 @@
 import {HttpClientTestingModule} from '@angular/common/http/testing';
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {InboxService} from '@app/inbox/inbox.service';
 import {SharedModule} from '@app/shared';
@@ -12,7 +12,7 @@ describe('EventSnackbarComponent', () => {
   let component: ActionBarComponent;
   let fixture: ComponentFixture<ActionBarComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [
         MatIconModule,

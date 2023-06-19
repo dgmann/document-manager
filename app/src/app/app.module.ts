@@ -1,8 +1,10 @@
 import {FormsModule} from '@angular/forms';
+import { MAT_DATE_LOCALE } from '@angular/material/core';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {BrowserModule} from '@angular/platform-browser';
 import localeDe from '@angular/common/locales/de';
 import {APP_INITIALIZER, LOCALE_ID, NgModule} from '@angular/core';
+import { de } from 'date-fns/locale';
 
 import {AppComponent} from './app.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
@@ -47,6 +49,10 @@ const initializerConfigFn = (appConfig: ConfigService) => {
   ],
   providers: [
     {provide: LOCALE_ID, useValue: 'de-DE'},
+    {
+      provide: MAT_DATE_LOCALE,
+      useValue: de,
+    },
     {
       provide: APP_INITIALIZER,
       useFactory: initializerConfigFn,

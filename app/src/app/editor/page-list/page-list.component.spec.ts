@@ -1,4 +1,4 @@
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import {PageListComponent} from './page-list.component';
 import {MatButtonModule} from '@angular/material/button';
@@ -9,7 +9,7 @@ describe('PageListComponent', () => {
   let component: PageListComponent;
   let fixture: ComponentFixture<PageListComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [
         MatCardModule,

@@ -1,4 +1,4 @@
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import {PageReviewComponent} from './page-review.component';
 import {CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
@@ -10,7 +10,7 @@ describe('PageReviewComponent', () => {
   let component: PageReviewComponent;
   let fixture: ComponentFixture<PageReviewComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [MatTableModule],
       declarations: [

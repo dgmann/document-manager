@@ -1,11 +1,12 @@
-@import "../../../styles/theme-variables";
+@import "theme-variables";
+@import "drag-drop";
 
 .container {
   width: 100%;
   max-width: 100%;
 }
 
-.mat-row {
+.mat-mdc-row {
   cursor: pointer;
 }
 
@@ -13,7 +14,7 @@
   text-align: right;
 }
 
-.mat-icon-button:hover {
+.mat-mdc-icon-button:hover {
   background-color: $accent;
 
   .mat-icon {
@@ -25,15 +26,43 @@
   background-color: $accent-light;
 }
 
-.mat-row:hover {
+.container .mat-mdc-row:hover {
   background-color: $accent-lighter;
 }
 
-.mat-row:focus {
+.mat-mdc-row:focus {
   outline: none;
 }
 
-.mat-cell {
-  padding-right: 5px;
-  padding-left: 5px;
+.mat-column-numpages {
+  max-width: 70px;
+}
+
+.mat-column-actions {
+  max-width: 70px;
+}
+
+.dropzone {
+  position: relative;
+
+  &:after {
+    content:'';
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+    height: 100%;
+    width: 100%;
+    z-index: 101;
+    opacity: 0.6;
+
+    background: $accent-light;
+    border: 1px dashed $accent;
+    box-sizing: border-box;
+  }
+  &[dragover="true"]:after {
+    background-color: $accent;
+    border: 2px dashed black;
+  }
 }

@@ -1,7 +1,7 @@
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
-import {FlexLayoutModule} from '@angular/flex-layout';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import { MatDateFnsModule } from '@angular/material-date-fns-adapter';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {MatChipsModule} from '@angular/material/chips';
 import {MatDatepickerModule} from '@angular/material/datepicker';
@@ -12,7 +12,6 @@ import {MatInputModule} from '@angular/material/input';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatSelectModule} from '@angular/material/select';
 import {MatTooltipModule} from '@angular/material/tooltip';
-import {MatMomentDateModule} from '@angular/material-moment-adapter';
 import {MatButtonModule} from '@angular/material/button';
 import {MatCardModule} from '@angular/material/card';
 import {MatSortModule} from '@angular/material/sort';
@@ -32,66 +31,61 @@ import {PdfLinkPipe} from './pdf-link/pdf-link.pipe';
 import {IdsPipe} from './pipes/ids/ids.pipe';
 import {CategoryPipe} from './pipes/category/category.pipe';
 import { PatientPipe } from './pipes/patient/patient.pipe';
+import { ContainsPipe } from './pipes/contains/contains.pipe';
 
 
 @NgModule({
-  imports: [
-    CommonModule,
-    HttpClientModule,
-    FormsModule,
-    ReactiveFormsModule,
-    FlexLayoutModule,
-    MatSelectModule,
-    MatCardModule,
-    MatIconModule,
-    MatButtonModule,
-    MatDialogModule,
-    MatSortModule,
-    MatTableModule,
-    MatTooltipModule,
-    MatAutocompleteModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatMomentDateModule,
-    MatDatepickerModule,
-    MatChipsModule,
-    MatMenuModule,
-    DragDropModule
-  ],
-  declarations: [
-    RecordViewerComponent,
-    DocumentEditDialogComponent,
-    DocumentListComponent,
-    PatientSearchComponent,
-    SplitPanelComponent,
-    AutocompleteChipsComponent,
-    ActionMenuComponent,
-    CommentDialogComponent,
-    MessageBoxComponent,
-    PdfLinkPipe,
-    IdsPipe,
-    CategoryPipe,
-    PatientPipe
-  ],
-  entryComponents: [
-    DocumentEditDialogComponent,
-    CommentDialogComponent,
-    MessageBoxComponent
-  ],
-  exports: [
-    CommonModule,
-    FlexLayoutModule,
-    DocumentEditDialogComponent,
-    RecordViewerComponent,
-    DocumentListComponent,
-    PatientSearchComponent,
-    SplitPanelComponent,
-    PdfLinkPipe,
-    IdsPipe,
-    CategoryPipe,
-    PatientPipe,
-  ],
-  providers: [],
+    imports: [
+        CommonModule,
+        HttpClientModule,
+        FormsModule,
+        ReactiveFormsModule,
+        MatSelectModule,
+        MatCardModule,
+        MatIconModule,
+        MatButtonModule,
+        MatDialogModule,
+        MatSortModule,
+        MatTableModule,
+        MatTooltipModule,
+        MatAutocompleteModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatDateFnsModule,
+        MatDatepickerModule,
+        MatChipsModule,
+        MatMenuModule,
+        DragDropModule
+    ],
+    declarations: [
+        RecordViewerComponent,
+        DocumentEditDialogComponent,
+        DocumentListComponent,
+        PatientSearchComponent,
+        SplitPanelComponent,
+        AutocompleteChipsComponent,
+        ActionMenuComponent,
+        CommentDialogComponent,
+        MessageBoxComponent,
+        PdfLinkPipe,
+        IdsPipe,
+        CategoryPipe,
+        PatientPipe,
+        ContainsPipe
+    ],
+    exports: [
+        CommonModule,
+        DocumentEditDialogComponent,
+        RecordViewerComponent,
+        DocumentListComponent,
+        PatientSearchComponent,
+        SplitPanelComponent,
+        PdfLinkPipe,
+        IdsPipe,
+        CategoryPipe,
+        PatientPipe,
+    ],
+    providers: []
 })
 export class SharedModule {
 }

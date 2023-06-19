@@ -1,6 +1,6 @@
 import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {Injectable} from '@angular/core';
-import {Actions, Effect, ofType} from '@ngrx/effects';
+import {Actions, createEffect, ofType} from '@ngrx/effects';
 import {Action} from '@ngrx/store';
 import {Observable, of} from 'rxjs';
 import {catchError, map, mergeMap} from 'rxjs/operators';
@@ -26,7 +26,7 @@ import {ConfigService} from '@app/core/config';
 @Injectable()
 export class RecordEffects {
 
-  @Effect() load: Observable<Action> = this.actions$.pipe(
+  load: Observable<Action> = createEffect(() => this.actions$.pipe(
     ofType<LoadRecords>(RecordActionTypes.LoadRecords),
     mergeMap(action => {
       if (action.payload.query.id) {
@@ -41,9 +41,9 @@ export class RecordEffects {
         );
       }
     })
-  );
+  ));
 
-  @Effect() update: Observable<Action> = this.actions$.pipe(
+  update: Observable<Action> = createEffect(() => this.actions$.pipe(
     ofType<UpdateRecord>(RecordActionTypes.UpdateRecord),
     mergeMap(action =>
       this.http.patch<Record>(`${this.config.getApiUrl()}/records/${action.payload.record.id}`, action.payload.record.changes).pipe(
@@ -51,9 +51,9 @@ export class RecordEffects {
         catchError(err => of(new UpdateRecordFail({error: err})))
       )
     )
-  );
+  ));
 
-  @Effect() delete: Observable<Action> = this.actions$.pipe(
+  delete: Observable<Action> = createEffect(() => this.actions$.pipe(
     ofType<DeleteRecord>(RecordActionTypes.DeleteRecord),
     mergeMap(action =>
       this.http.delete(`${this.config.getApiUrl()}/records/${action.payload.id}`).pipe(
@@ -61,9 +61,9 @@ export class RecordEffects {
         catchError(err => of(new DeleteRecordFail({error: err})))
       )
     )
-  );
+  ));
 
-  @Effect() updatePages: Observable<Action> = this.actions$.pipe(
+  updatePages: Observable<Action> = createEffect(() => this.actions$.pipe(
     ofType<UpdatePages>(RecordActionTypes.UpdatePages),
     mergeMap(action =>
       this.http.post<Record>(`${this.config.getApiUrl()}/records/${action.payload.id}/pages`, action.payload.updates).pipe(
@@ -71,12 +71,12 @@ export class RecordEffects {
         catchError(err => of(new UpdateRecordFail({error: err})))
       )
     )
-  );
+  ));
 
-  @Effect() logError: Observable<Action> = this.actions$.pipe(
+  logError: Observable<Action> = createEffect(() => this.actions$.pipe(
     ofType<RecordErrorActions>(RecordActionTypes.LoadRecordsFail, RecordActionTypes.DeleteRecordFail, RecordActionTypes.UpdateRecordFail),
     mergeMap(action => of(this.errorFromHTTP(action.payload.error)))
-  );
+  ));
 
   constructor(private actions$: Actions, private http: HttpClient, private config: ConfigService) {
   }

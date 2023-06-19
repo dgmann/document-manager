@@ -1,30 +1,25 @@
-<div fxLayout="row" fxLayoutAlign="center center">
+<mat-card appearance="outlined">
+  <mat-card-header>
+    <mat-card-title>Fachrichtungen</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <mat-list>
+      <mat-list-item *ngFor="let category of categories$ | async"> {{ category.name }} </mat-list-item>
+    </mat-list>
+  </mat-card-content>
+  <mat-card-actions>
+    <form (ngSubmit)="addCategory(categoryForm)"
+          class="add-form"
+          #categoryForm="ngForm">
+      <mat-form-field>
+        <input ngModel matInput name="id" placeholder="Kürzel">
+      </mat-form-field>
 
-  <mat-card fxFlex="50%">
-    <mat-card-header>
-      <mat-card-title>Fachrichtungen</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      <mat-list>
-        <mat-list-item *ngFor="let category of categories$ | async"> {{ category.name }} </mat-list-item>
-      </mat-list>
-    </mat-card-content>
-    <mat-card-actions>
-      <form (ngSubmit)="addCategory(categoryForm)"
-            #categoryForm="ngForm"
-            fxLayoutGap="10px"
-            fxLayoutAlign="center center">
-        <mat-form-field>
-          <input ngModel matInput name="id" placeholder="Kürzel">
-        </mat-form-field>
+      <mat-form-field>
+        <input ngModel matInput name="name" placeholder="Fachrichtung">
+      </mat-form-field>
 
-        <mat-form-field>
-          <input ngModel matInput name="name" placeholder="Fachrichtung">
-        </mat-form-field>
-
-        <button type="submit" mat-button>Hinzufügen</button>
-      </form>
-    </mat-card-actions>
-  </mat-card>
-
-</div>
+      <button type="submit" mat-button>Hinzufügen</button>
+    </form>
+  </mat-card-actions>
+</mat-card>

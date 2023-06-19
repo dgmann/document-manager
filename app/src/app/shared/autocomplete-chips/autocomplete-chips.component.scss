@@ -1,0 +1,9 @@
+@import "layout";
+
+:host {
+  @include flex-container();
+}
+
+mat-form-field {
+  @include flex-filling-element;
+}

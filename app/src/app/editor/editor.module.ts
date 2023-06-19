@@ -1,5 +1,5 @@
 import {NgModule} from '@angular/core';
-import {CommonModule} from '@angular/common';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { MatMenuModule } from '@angular/material/menu';
 import {EditorComponent} from './editor.component';
 import {MatButtonModule} from '@angular/material/button';
@@ -10,19 +10,18 @@ import {SharedModule} from '../shared';
 import {EditorGuard} from './editor.guard';
 import {PageListComponent} from './page-list/page-list.component';
 import {DragDropModule} from '@angular/cdk/drag-drop';
-import {FlexLayoutModule} from '@angular/flex-layout';
 
 @NgModule({
   imports: [
     CommonModule,
-    FlexLayoutModule,
     MatCardModule,
     MatButtonModule,
     MatMenuModule,
     MatIconModule,
     SharedModule,
     EditorRouterModule,
-    DragDropModule
+    DragDropModule,
+    NgOptimizedImage
   ],
   declarations: [EditorComponent, PageListComponent],
   exports: [EditorComponent],

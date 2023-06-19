@@ -1,6 +1,42 @@
-.record-details {
-  overflow-y: auto;
-  will-change: transform;
+@import "layout";
+
+:host {
+  @include flex-container();
+}
+
+mat-sidenav-container {
+  @include flex-container(row);
+}
+
+.sidenav-panel {
+  @include flex-container(row);
+  height: 100%;
+}
+
+mat-sidenav-content {
+  @include flex-container(row);
+
+  app-multi-record-list {
+    @include flex-element(50%);
+  }
+
+  .record-details {
+    @include flex-element(50%);
+    overflow-y: auto;
+    will-change: transform;
+  }
+
+  .filler {
+    @include flex-filling-element;
+  }
+}
+
+#filter {
+  @include flex-filling-element();
+}
+
+.sidenav-button {
+  @include flex-element(40px);
 }
 
 .record-overview {

@@ -1,6 +1,5 @@
-<div class="page-container" fxLayout="row wrap" fxLayoutAlign="center"
-     fxLayoutGap="10px">
-  <mat-card *ngFor="let record of records" class="page" fxFlex [attr.selected]="record.id == selectedRecordId ? 'true' : null">
+<div class="page-container">
+  <mat-card appearance="outlined" *ngFor="let record of records" class="page" [attr.selected]="record.id == selectedRecordId ? 'true' : null">
     <mat-card-header>
       <mat-card-title>
         <h2>
@@ -12,7 +11,7 @@
         <span>Seitenanzahl: {{record.pages.length}} </span>
         <span *ngIf="record.tags.length > 0">| Tags: {{ record.tags.join(", ") }}</span>
       </mat-card-subtitle>
-      <div fxFlex></div>
+      <div class="filler"></div>
 
       <div>
         <button [matMenuTriggerFor]="menu" mat-icon-button>

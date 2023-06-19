@@ -2,7 +2,7 @@
 <mat-dialog-content>
   <form #form id="document-edit-dialog-form" [formGroup]="editForm" (ngSubmit)="onSubmit()">
 
-    <div fxLayout="row" fxLayoutGap="10px">
+    <div class="first-row">
       <mat-form-field floatLabel="always" [hintLabel]="selectedPatient$ | async | patient: 'long'">
         <mat-label>Patient</mat-label>
         <app-patient-search formControlName="patient" [tabindex]="tabIndex | async"
@@ -15,24 +15,18 @@
         <mat-datepicker #picker></mat-datepicker>
       </mat-form-field>
 
-      <div fxFlex="120px">
-        <mat-form-field>
-          <input type="text" placeholder="Fachrichtung" aria-label="Fachrichtung" matInput formControlName="category"
-                 [matAutocomplete]="auto">
-          <mat-autocomplete autoActiveFirstOption="true" #auto="matAutocomplete" [displayWith]="displayFn">
-            <mat-option *ngFor="let option of filteredCategories | async" [value]="option">
-              {{option.name}}
-            </mat-option>
-          </mat-autocomplete>
-        </mat-form-field>
-      </div>
+      <mat-form-field>
+        <input type="text" placeholder="Fachrichtung" aria-label="Fachrichtung" matInput formControlName="category"
+               [matAutocomplete]="auto">
+        <mat-autocomplete autoActiveFirstOption="true" #auto="matAutocomplete" [displayWith]="displayFn">
+          <mat-option *ngFor="let option of filteredCategories | async" [value]="option">
+            {{option.name}}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
     </div>
 
-    <div fxLayout="row">
-      <div fxFlexFill>
-        <app-autocomplete-chips formControlName="tags" [options]="tags | async"></app-autocomplete-chips>
-      </div>
-    </div>
+    <app-autocomplete-chips formControlName="tags" [options]="tags | async"></app-autocomplete-chips>
 
   </form>
 </mat-dialog-content>

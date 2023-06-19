@@ -1,0 +1,12 @@
+@import "layout";
+
+:host {
+  @include flex-container();
+}
+
+app-split-panel {
+  @include flex-container(row);
+}
+.left-panel {
+  @include flex-container(column);
+}

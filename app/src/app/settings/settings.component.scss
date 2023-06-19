@@ -1,0 +1,24 @@
+@import "layout";
+
+:host {
+  @include flex-container(row);
+  place-content: center;
+}
+
+mat-card {
+  @include flex-filling-element;
+  max-width: 700px;
+
+  mat-card-content {
+    overflow: scroll;
+  }
+
+  mat-card-actions {
+    padding-top: 2em;
+  }
+}
+
+.add-form {
+  @include flex-centering-container(row);
+  gap: 10px;
+}

@@ -1,12 +1,11 @@
 import {PatientActions, PatientActionTypes} from './patient.actions';
 import {Patient} from './patient.model';
-import {Moment} from 'moment';
 
 export interface Filter {
   categoryIds?: string[];
   tags?: string[];
-  from?: Moment;
-  until?: Moment;
+  from?: Date;
+  until?: Date;
 }
 
 export interface State {

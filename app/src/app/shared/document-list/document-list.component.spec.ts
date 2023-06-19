@@ -1,4 +1,4 @@
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 
 import {DocumentListComponent} from './document-list.component';
@@ -13,7 +13,7 @@ describe('DocumentListComponent', () => {
   let component: DocumentListComponent;
   let fixture: ComponentFixture<DocumentListComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [
         MatTableModule,

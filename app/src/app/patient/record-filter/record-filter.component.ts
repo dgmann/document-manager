@@ -1,5 +1,4 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {Moment} from 'moment';
 import {BehaviorSubject, combineLatest} from 'rxjs';
 import {Category} from '@app/core/categories';
 import {Filter} from '../store/patient.reducer';
@@ -15,7 +14,7 @@ export class RecordFilterComponent implements OnInit {
   @Input() tags: string[];
   @Output() change = new EventEmitter<Filter>();
 
-  private dateRange = new BehaviorSubject<{ from: Moment, until: Moment }>({from: null, until: null});
+  private dateRange = new BehaviorSubject<{ from: Date, until: Date }>({from: null, until: null});
   private selectedTags = new BehaviorSubject<string[]>([]);
   private selectedCategories = new BehaviorSubject<Category[]>([]);
 
@@ -43,7 +42,7 @@ export class RecordFilterComponent implements OnInit {
     this.selectedCategories.next(categories);
   }
 
-  onDateFilterChange(value: { from: Moment, until: Moment }) {
+  onDateFilterChange(value: { from: Date, until: Date }) {
     this.dateRange.next(value);
   }
 

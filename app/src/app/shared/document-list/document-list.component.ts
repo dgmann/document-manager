@@ -27,6 +27,8 @@ import {NotificationService} from '@app/core/notifications';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DocumentListComponent implements OnInit, AfterViewInit {
+  static readonly DRAG_TYPE = 'recordid';
+
   @ViewChild(MatSort) sort: MatSort;
 
   @Input() selectedIds: string[];
@@ -46,6 +48,7 @@ export class DocumentListComponent implements OnInit, AfterViewInit {
 
   displayedColumns = ['receivedAt', 'sender', 'numpages', 'comment', 'actions'];
   dataSource = new MatTableDataSource<Record>();
+  isDragging = false;
 
   constructor(private recordService: RecordService,
               private router: Router,
@@ -98,7 +101,13 @@ export class DocumentListComponent implements OnInit, AfterViewInit {
   }
 
   onDragStart(event: DragEvent, record: Record) {
-    event.dataTransfer.setData('recordId', record.id);
+    event.dataTransfer.setData(DocumentListComponent.DRAG_TYPE, record.id);
+    this.isDragging = true;
+  }
+
+  setDragOver(event: DragEvent, dragover: boolean) {
+    const target = event.currentTarget as HTMLElement;
+    target.setAttribute('dragover', dragover + '');
   }
 
   onDrop(event: DragEvent) {
@@ -116,6 +125,10 @@ export class DocumentListComponent implements OnInit, AfterViewInit {
       return;
     }
     this.recordService.append(sourceRecordId, targetRecordId);
+  }
+
+  onDragEnd(event: DragEvent) {
+    this.isDragging = false;
   }
 
   setStatus(event) {
@@ -151,5 +164,16 @@ export class DocumentListComponent implements OnInit, AfterViewInit {
 
   onDuplicateRecord(record: Record) {
     this.recordService.duplicate(record.id);
+  }
+
+  containsDragType(event: DragEvent): boolean {
+    if (event.dataTransfer.types) {
+      for (const type of event.dataTransfer.types) {
+        if (type === DocumentListComponent.DRAG_TYPE) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 }

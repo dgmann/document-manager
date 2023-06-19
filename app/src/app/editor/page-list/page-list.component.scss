@@ -15,6 +15,8 @@
 }
 
 .page-box {
+  display: flex;
+  flex: 0 0 30%;
   cursor: move;
 }
 
@@ -40,4 +42,24 @@
 
 .page-box.cdk-drop-list-dragging .page-box:not(.cdk-drag-placeholder) {
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.page-list {
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  box-sizing: border-box;
+  gap: 1em;
+  align-items:flex-start;
+  align-content:flex-start;
+}
+
+mat-card {
+
+  & > img {
+    object-fit: contain;
+    width: 100%;
+  }
 }

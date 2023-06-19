@@ -1,22 +1,35 @@
+@use '@angular/material' as mat;
 @import "theme-variables";
+@import "layout";
 @import "print";
 @import "global";
+
+:host {
+  @include flex-container();
+}
 
 .sub-heading {
   color: $primary;
 }
 
-.mat-subheading-2 {
+.mat-subtitle-1 {
   font-weight: 500;
 }
 
 .page-container {
-  height: 100%;
+  @include flex-container(row);
+  flex-wrap: wrap;
+  gap: 10px;
   overflow-y: scroll;
 }
 
+.filler {
+  @include flex-filling-element;
+}
+
 .page {
-  @include mat-elevation(8);
+  @include flex-element(20%);
+  @include mat.elevation(8);
   @include record-page();
   margin-bottom: 10px;
   min-width: 300px;
@@ -32,12 +45,13 @@
   justify-content: flex-end;
 }
 
+/* TODO(mdc-migration): The following rule targets internal classes of card that may no longer apply for the MDC version. */
 mat-card-header {
   border-bottom: 1px solid $accent-light;
 }
 
 @media print {
-  ::ng-deep .mat-tab-header, ::ng-deep .mat-card-header {
+  ::ng-deep .mat-mdc-tab-header, ::ng-deep .mat-mdc-card-header {
     display: none !important;
   }
 

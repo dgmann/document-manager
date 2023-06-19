@@ -15,25 +15,22 @@ function actionSanitizer(action) {
 }
 
 @NgModule({
-  imports: [
-    CommonModule,
-    HttpClientModule,
-    StoreModule.forRoot(reducers, {
-      metaReducers, runtimeChecks: {
-        strictStateImmutability: true,
-        strictActionImmutability: true
-      }
-    }),
-    !environment.production ? StoreDevtoolsModule.instrument({
-      maxAge: 25,
-      actionSanitizer
-    }) : [],
-    EffectsModule.forRoot([RecordEffects]),
-  ],
-  declarations: [EventSnackbarComponent],
-  entryComponents: [
-    EventSnackbarComponent
-  ],
+    imports: [
+        CommonModule,
+        HttpClientModule,
+        StoreModule.forRoot(reducers, {
+            metaReducers, runtimeChecks: {
+                strictStateImmutability: true,
+                strictActionImmutability: true
+            }
+        }),
+        !environment.production ? StoreDevtoolsModule.instrument({
+            maxAge: 25,
+            actionSanitizer
+        }) : [],
+        EffectsModule.forRoot([RecordEffects]),
+    ],
+    declarations: [EventSnackbarComponent]
 })
 export class CoreModule {
   constructor(@Optional() @SkipSelf() parentModule: CoreModule) {

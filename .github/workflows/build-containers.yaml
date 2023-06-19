@@ -42,7 +42,6 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: ${{ steps.image-name.outputs.image-name }}
-          labels:
           tags: |
             type=semver,pattern={{version}}
             type=ref,event=pr

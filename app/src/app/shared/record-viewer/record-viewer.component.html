@@ -1,10 +1,10 @@
-<div [fxLayout.gt-md]="viewMode" fxLayout="column" fxLayoutAlign="center" fxLayoutGap="10px">
-  <div *ngFor="let page of pages; let i = index; trackBy: trackByFn" class="page-container" fxFlex>
-    <mat-card class="page">
+<div class="container" [attr.viewmode]="viewMode">
+  <div *ngFor="let page of pages; let i = index; trackBy: trackByFn" class="page-container">
+    <mat-card appearance="outlined" class="page">
       <mat-card-header>
         <mat-card-title>Seite {{ i + 1 }}</mat-card-title>
         <mat-card-subtitle>von {{ pages.length }}</mat-card-subtitle>
-        <div fxFlex></div>
+        <div class="filler"></div>
         <div *ngIf="showQuickEdit">
           <button (click)="up(record.id, pages, i)" [disabled]="i == 0" color="primary" mat-icon-button>
             <mat-icon aria-label="up">arrow_upward</mat-icon>

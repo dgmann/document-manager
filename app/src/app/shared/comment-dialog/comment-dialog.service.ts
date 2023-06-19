@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {Record} from '@app/core/records';
 import {Observable} from 'rxjs';
+import { filter } from 'rxjs/operators';
 import {CommentDialogComponent} from './comment-dialog.component';
 
 @Injectable({
@@ -16,6 +17,6 @@ export class CommentDialogService {
       disableClose: true,
       data: record,
       width: '635px'
-    }).afterClosed();
+    }).afterClosed().pipe(filter(comment => comment !== undefined));
   }
 }

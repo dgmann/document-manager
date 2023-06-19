@@ -44,10 +44,10 @@ const filterRecords = (records: Record[], filter: Filter) => {
     result = result && difference(filter.tags, record.tags).length === 0;
 
     if (filter.from) {
-      result = result && record.date.isAfter(filter.from, 'day');
+      result = result && record.date >= filter.from;
     }
     if (filter.until) {
-      result = result && record.date.isBefore(filter.until, 'day');
+      result = result && record.date <= filter.until;
     }
 
     return result;

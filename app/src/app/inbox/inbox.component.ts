@@ -61,15 +61,14 @@ export class InboxComponent implements OnInit, OnDestroy {
   }
 
   onDragEnter(event: DragEvent) {
-    const element = event.target as HTMLElement;
-    if (element.id === 'inbox-document-list') {
+    if (this.containsFiles(event)) {
       this.isDragInProgress = true;
     }
   }
 
   onDragLeave(event: DragEvent) {
     const element = event.target as HTMLElement;
-    if (element.className === 'upload-symbol') {
+    if (element.classList.contains('drag-drop-overlay')) {
       this.isDragInProgress = false;
     }
   }
@@ -79,5 +78,16 @@ export class InboxComponent implements OnInit, OnDestroy {
       event.preventDefault();
       event.stopPropagation();
     }
+  }
+
+  containsFiles(event: DragEvent): boolean {
+    if (event.dataTransfer.types) {
+      for (const type of event.dataTransfer.types) {
+        if (type === 'Files') {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 }

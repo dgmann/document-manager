@@ -1,16 +1,21 @@
 import {Component, Inject} from '@angular/core';
-import {MAT_DIALOG_DATA} from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import {Record} from '@app/core/records';
 
 @Component({
   selector: 'app-comment-dialog',
   templateUrl: './comment-dialog.component.html',
-  styleUrls: ['./comment-dialog.component.css']
+  styleUrls: ['./comment-dialog.component.scss']
 })
 export class CommentDialogComponent {
   public comment: string;
 
-  constructor(@Inject(MAT_DIALOG_DATA) record: Record) {
+  constructor(public dialogRef: MatDialogRef<CommentDialogComponent>,
+              @Inject(MAT_DIALOG_DATA) record: Record) {
     this.comment = record.comment;
+  }
+
+  onCloseClick() {
+    this.dialogRef.close();
   }
 }

@@ -1,25 +1,27 @@
-<mat-sidenav-container fxFlexFill>
+<mat-sidenav-container>
   <mat-sidenav #sidenav mode="side">
-    <div fxLayout="column">
-      <app-record-filter [categories]="availableCategories$ | async" [tags]="availableTags$ | async"
-                         (change)="setFilter($event)"></app-record-filter>
-      <mat-card>
-        <a mat-flat-button color="primary" [href]="records$ | async | ids | pdfLink:(patient$ | async)?.name" target="_blank">
-          <mat-icon>picture_as_pdf</mat-icon>
-          Export
-        </a>
-      </mat-card>
+    <div class="sidenav-panel">
+      <div id="filter">
+        <app-record-filter [categories]="availableCategories$ | async" [tags]="availableTags$ | async"
+                           (change)="setFilter($event)"></app-record-filter>
+        <mat-card appearance="outlined">
+          <a mat-flat-button color="primary" [href]="records$ | async | ids | pdfLink:(patient$ | async)?.name" target="_blank">
+            <mat-icon>picture_as_pdf</mat-icon>
+            Export
+          </a>
+        </mat-card>
 
-    </div>
+      </div>
 
-    <div [hidden]="!sidenav.opened" fxFlex="40px">
-      <button (click)="sidenav.toggle()" aria-label="Open Filter" color="primary" mat-icon-button>
-        <mat-icon>menu_open</mat-icon>
-      </button>
+      <div class="sidenav-button" [hidden]="!sidenav.opened">
+        <button (click)="sidenav.toggle()" aria-label="Open Filter" color="primary" mat-icon-button>
+          <mat-icon>menu_open</mat-icon>
+        </button>
+      </div>
     </div>
   </mat-sidenav>
-  <mat-sidenav-content fxLayout="row">
-    <div [hidden]="sidenav.opened" fxFlex="40px">
+  <mat-sidenav-content>
+    <div [hidden]="sidenav.opened">
       <button (click)="sidenav.toggle()" aria-label="Open Filter" color="primary" mat-icon-button>
         <mat-icon>menu</mat-icon>
       </button>
@@ -31,24 +33,23 @@
                            (updateRecord)="onUpdateRecord($event)"
                            (deleteRecord)="onDeleteRecord($event)"
                            (openInEditor)="onOpenInEditor($event)"
-                           class="record-overview"
-                           fxFlex>
+                           class="record-overview">
     </app-multi-record-list>
 
-    <mat-card (@panelInOut.done)="onAnimationEvent($event)" (keydown.escape)="onDetailsPanelClose()" *ngIf="selectedRecord$ | async as selectedRecord"
-              [@panelInOut] class="record-details" fxFlex="65%" tabindex="0">
+    <mat-card appearance="outlined" (@panelInOut.done)="onAnimationEvent($event)" (keydown.escape)="onDetailsPanelClose()" *ngIf="selectedRecord$ | async as selectedRecord"
+              [@panelInOut] class="record-details" tabindex="0">
       <mat-card-header>
         <mat-card-title>
           <h2>{{ selectedRecord.category | category | async }}: {{ selectedRecord.date | date: 'mediumDate' }}</h2>
         </mat-card-title>
-        <div fxFlex></div>
+        <div class="filler"></div>
         <button (click)="onDetailsPanelClose()" mat-icon-button>
           <mat-icon aria-label="close">close</mat-icon>
         </button>
       </mat-card-header>
-      <div mat-card-image>
+      <mat-card-content>
         <app-record-viewer [record]="selectedRecord"></app-record-viewer>
-      </div>
+      </mat-card-content>
 
     </mat-card>
   </mat-sidenav-content>

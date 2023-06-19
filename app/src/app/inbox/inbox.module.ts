@@ -17,32 +17,29 @@ import {MatListModule} from '@angular/material/list';
 import {MatButtonModule} from '@angular/material/button';
 
 @NgModule({
-  imports: [
-    StoreModule.forFeature('inbox', reducers, {metaReducers}),
-    EffectsModule.forFeature([InboxEffects]),
-    InboxRouterModule,
-    MatSlideToggleModule,
-    MatProgressSpinnerModule,
-    MatBottomSheetModule,
-    SharedModule,
-    MatIconModule,
-    MatMenuModule,
-    MatListModule,
-    MatButtonModule
-  ],
-  declarations: [
-    InboxComponent,
-    ActionBarComponent
-  ],
-  exports: [
-    InboxComponent
-  ],
-  providers: [
-    ActionBarService
-  ],
-  entryComponents: [
-    ActionBarComponent
-  ]
+    imports: [
+        StoreModule.forFeature('inbox', reducers, { metaReducers }),
+        EffectsModule.forFeature([InboxEffects]),
+        InboxRouterModule,
+        MatSlideToggleModule,
+        MatProgressSpinnerModule,
+        MatBottomSheetModule,
+        SharedModule,
+        MatIconModule,
+        MatMenuModule,
+        MatListModule,
+        MatButtonModule
+    ],
+    declarations: [
+        InboxComponent,
+        ActionBarComponent
+    ],
+    exports: [
+        InboxComponent
+    ],
+    providers: [
+        ActionBarService
+    ]
 })
 export class InboxModule {
 }

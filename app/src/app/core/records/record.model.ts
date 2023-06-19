@@ -1,9 +1,7 @@
-import {Moment} from 'moment';
-
 export interface Record {
   id: string;
-  date: Moment;
-  receivedAt: Moment;
+  date: Date;
+  receivedAt: Date;
   comment: string;
   sender: string;
   pages: Page[];

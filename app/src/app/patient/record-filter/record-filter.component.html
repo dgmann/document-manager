@@ -1,22 +1,26 @@
-<div fxLayout="column" fxLayoutGap="0em">
-  <mat-card>
+<mat-card appearance="outlined">
+  <mat-card-header>
     <mat-card-title>Zeitraum</mat-card-title>
-    <mat-card-content>
-      <app-date-range-selector (dateRangeChange)="onDateFilterChange($event)"></app-date-range-selector>
-    </mat-card-content>
-  </mat-card>
+  </mat-card-header>
+  <mat-card-content>
+    <app-date-range-selector (dateRangeChange)="onDateFilterChange($event)"></app-date-range-selector>
+  </mat-card-content>
+</mat-card>
 
-  <mat-card>
+<mat-card appearance="outlined">
+  <mat-card-header>
     <mat-card-title>Fachrichtungen</mat-card-title>
-    <mat-card-content>
-      <app-category-list (selectCategories)="onSelectCategories($event)" [categories]="categories"></app-category-list>
-    </mat-card-content>
-  </mat-card>
+  </mat-card-header>
+  <mat-card-content>
+    <app-category-list (selectCategories)="onSelectCategories($event)" [categories]="categories"></app-category-list>
+  </mat-card-content>
+</mat-card>
 
-  <mat-card>
+<mat-card appearance="outlined">
+  <mat-card-header>
     <mat-card-title>Tags</mat-card-title>
-    <mat-card-content>
-      <app-tag-list (selectTag)="onSelectTags($event)" [tags]="tags"></app-tag-list>
-    </mat-card-content>
-  </mat-card>
-</div>
+  </mat-card-header>
+  <mat-card-content>
+    <app-tag-list (selectTag)="onSelectTags($event)" [tags]="tags"></app-tag-list>
+  </mat-card-content>
+</mat-card>

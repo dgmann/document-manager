@@ -1,8 +1,8 @@
 import {COMMA, ENTER} from '@angular/cdk/keycodes';
 import {ChangeDetectionStrategy, Component, ElementRef, forwardRef, Input, ViewChild} from '@angular/core';
-import {ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR} from '@angular/forms';
+import {ControlValueAccessor, UntypedFormControl, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {MatAutocomplete, MatAutocompleteSelectedEvent} from '@angular/material/autocomplete';
-import {MatChipInputEvent, MatChipList} from '@angular/material/chips';
+import {MatChipInputEvent, MatChipListbox} from '@angular/material/chips';
 import {difference} from 'lodash-es';
 import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
@@ -23,17 +23,17 @@ import {map, startWith} from 'rxjs/operators';
 export class AutocompleteChipsComponent implements ControlValueAccessor {
   @Input() options: string[];
   @ViewChild('chipInput', {static: true}) chipInput: ElementRef<HTMLInputElement>;
-  @ViewChild('chips', {static: true}) chips: MatChipList;
+  @ViewChild('chips', {static: true}) chips: MatChipListbox;
   @ViewChild('auto', { static: true }) autoComplete: MatAutocomplete;
 
   values: string[] = [];
-  formControl = new FormControl();
+  formControl = new UntypedFormControl();
 
   filteredOptions: Observable<string[]>;
   separatorKeysCodes = [ENTER, COMMA];
 
   propagateChange = (_: any) => {
-  };
+  }
 
   constructor() {
     this.filteredOptions = this.formControl.valueChanges.pipe(

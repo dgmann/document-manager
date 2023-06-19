@@ -12,12 +12,12 @@ import {
   Output,
   Self
 } from '@angular/core';
-import {ControlValueAccessor, FormControl, NgControl} from '@angular/forms';
+import {ControlValueAccessor, UntypedFormControl, NgControl} from '@angular/forms';
 import {MatAutocompleteSelectedEvent} from '@angular/material/autocomplete';
 import {MatFormFieldControl} from '@angular/material/form-field';
 import {ExternalApiService} from '@app/shared/document-edit-dialog/external-api.service';
 import {isEqual} from 'lodash-es';
-import {Observable, EMPTY, Subject} from 'rxjs';
+import { Observable, EMPTY, Subject, of } from 'rxjs';
 import {catchError, debounceTime, filter, map, startWith, switchMap} from 'rxjs/operators';
 import {Patient} from '@app/patient';
 
@@ -107,7 +107,7 @@ export class PatientSearchComponent implements OnInit, OnDestroy, ControlValueAc
   userAriaDescribedBy: string;
 
   searchResults: Observable<Patient[]>;
-  searchInput = new FormControl();
+  searchInput = new UntypedFormControl();
 
   onChange: (patient: Patient) => void = (p) => {};
   onTouched = () => {};
@@ -134,7 +134,7 @@ export class PatientSearchComponent implements OnInit, OnDestroy, ControlValueAc
           if (patientId) {
             return this.patientService.getPatientById(query).pipe(
               map(patient => [patient]),
-              catchError(err => EMPTY)
+              catchError(err => of<Patient[]>([{id: query, firstName: 'unknown', lastName: 'unknown', birthDate: new Date()}]))
             );
           } else {
             const patientQuery = this.parseQuery(query);

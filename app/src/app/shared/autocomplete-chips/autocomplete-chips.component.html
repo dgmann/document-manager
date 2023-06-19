@@ -1,10 +1,10 @@
-<mat-form-field fxFlexFill>
-  <mat-chip-list #chipList aria-label="Tag selection">
-    <mat-chip *ngFor="let tag of values" [selectable]="true"
+<mat-form-field>
+  <mat-chip-grid #chipList aria-label="Tag selection">
+    <mat-chip-row *ngFor="let tag of values"
               [removable]="true" (removed)="remove(tag)">
       {{tag}}
       <mat-icon matChipRemove>cancel</mat-icon>
-    </mat-chip>
+    </mat-chip-row>
     <input
         #chipInput
         (matChipInputTokenEnd)="add($event)"
@@ -14,7 +14,7 @@
         [matChipInputFor]="chipList"
         [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
         placeholder="Tags">
-  </mat-chip-list>
+  </mat-chip-grid>
   <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)" autoActiveFirstOption="true">
     <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
       {{ option }}

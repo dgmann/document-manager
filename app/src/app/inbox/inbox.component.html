@@ -1,8 +1,8 @@
 <app-split-panel>
   <div (dragenter)="onDragEnter($event)" (dragleave)="onDragLeave($event)" (dragover)="preventAll($event)"
        (drop)="onDrop($event)" *ngIf="!(isLoading$ | async); else loading" class="left-panel" id="inbox-document-list">
-    <div [hidden]="!isDragInProgress" class="drag-drop-overlay">
-      <div class="upload-symbol" fxLayout="column" fxLayoutAlign="center center">
+    <div [hidden]="!isDragInProgress" class="drag-drop-overlay centering-container">
+      <div class="upload-symbol">
         <mat-icon>publish</mat-icon>
         <h1>Upload</h1>
       </div>
@@ -16,7 +16,7 @@
 </app-split-panel>
 
 <ng-template #loading>
-  <div class="left-panel" fxLayout="row" fxLayoutAlign="center center">
+  <div class="left-panel centering-container">
     <mat-spinner></mat-spinner>
   </div>
 </ng-template>

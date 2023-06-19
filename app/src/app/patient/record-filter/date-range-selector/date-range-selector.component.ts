@@ -1,7 +1,5 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Output} from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
-import {Moment} from 'moment';
-import { distinctUntilChanged } from 'rxjs/operators';
+import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-date-range-selector',
@@ -10,10 +8,10 @@ import { distinctUntilChanged } from 'rxjs/operators';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DateRangeSelectorComponent {
-  @Output() dateRangeChange = new EventEmitter<{ from: Moment, until: Moment }>();
-  range = new FormGroup({
-    start: new FormControl(),
-    end: new FormControl()
+  @Output() dateRangeChange = new EventEmitter<{ from: Date, until: Date }>();
+  range = new UntypedFormGroup({
+    start: new UntypedFormControl(),
+    end: new UntypedFormControl()
   });
 
   constructor() {

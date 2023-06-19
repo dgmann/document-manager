@@ -1,4 +1,4 @@
-<div class="main-container mat-typography" fxLayout="column">
+<div class="main-container mat-typography">
   <mat-menu #appMenu="matMenu">
     <button mat-menu-item routerLink="/inbox" routerLinkActive="active">
       <mat-icon color="primary">mail_outline</mat-icon>
@@ -22,26 +22,24 @@
     </button>
   </mat-menu>
 
-  <nav fxFlex="64px" class="header" [attr.data-color]="navColor | async">
+  <nav class="header" [attr.data-color]="navColor | async">
     <mat-toolbar color="primary">
-      <div fxLayout="row" fxFlex="100%" fxLayoutAlign="center center">
+      <mat-toolbar-row>
         <button [matMenuTriggerFor]="appMenu" mat-icon-button>
           <mat-icon>more_vert</mat-icon>
         </button>
-        <h1 fxHide.lt-md="true">{{ title | async }}</h1>
-        <span fxFlex="20px"></span>
-        <div fxFlex="1 1 auto">
+        <h1>{{ title | async }}</h1>
+        <div class="navigation">
           <router-outlet name="navigation"></router-outlet>
         </div>
-        <mat-form-field appearance="standard">
-          <app-patient-search (ngModelChange)="onSelectPatient($event)" ngModel fxShow fxHide.lt-sm placeholder="Suche" [clearOnSubmit]="true"></app-patient-search>
+        <mat-form-field subscriptSizing="dynamic">
+          <app-patient-search (ngModelChange)="onSelectPatient($event)" ngModel placeholder="Suche" [clearOnSubmit]="true"></app-patient-search>
         </mat-form-field>
-
-      </div>
+      </mat-toolbar-row>
     </mat-toolbar>
   </nav>
 
-  <div class="body-container" fxFlex="calc(100% - 64px)">
+  <div class="body-container">
     <router-outlet></router-outlet>
   </div>
 </div>

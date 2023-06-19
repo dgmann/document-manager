@@ -80,6 +80,6 @@ export class RecordViewerComponent implements OnInit {
 }
 
 export enum RecordViewerViewMode {
-  SinglePagePerRow = 'column',
-  MultipagePerRow = 'row wrap'
+  SinglePagePerRow = 'single-page',
+  MultipagePerRow = 'multi-page'
 }

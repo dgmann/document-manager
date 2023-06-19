@@ -8,11 +8,10 @@ import {
   OnInit,
   ViewChild
 } from '@angular/core';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import * as moment from 'moment';
 import {Observable, of, ReplaySubject} from 'rxjs';
-import {defaultIfEmpty, filter, map, mergeMap, startWith, take} from 'rxjs/operators';
+import {filter, map, mergeMap, startWith, take} from 'rxjs/operators';
 import {Patient} from '@app/patient';
 
 
@@ -41,11 +40,11 @@ export class DocumentEditDialogComponent implements AfterViewInit, OnInit, OnDes
 
   filteredCategories: Observable<Category[]>;
 
-  editForm = new FormGroup({
-    patient: new FormControl(''),
-    date: new FormControl(moment()),
-    category: new FormControl(null, Validators.required),
-    tags: new FormControl()
+  editForm = new UntypedFormGroup({
+    patient: new UntypedFormControl(''),
+    date: new UntypedFormControl(Date()),
+    category: new UntypedFormControl(null, Validators.required),
+    tags: new UntypedFormControl()
   });
 
   constructor(public dialogRef: MatDialogRef<DocumentEditDialogComponent>,
@@ -73,7 +72,7 @@ export class DocumentEditDialogComponent implements AfterViewInit, OnInit, OnDes
     this.currentExternalPatient$ = this.patientService.getSelectedPatient();
 
     this.editForm.patchValue({
-      date: this.record.date || moment(),
+      date: this.record.date || new Date(),
       category: this.record.category,
       tags: this.record.tags
     });

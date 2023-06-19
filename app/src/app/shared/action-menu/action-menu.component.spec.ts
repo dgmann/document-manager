@@ -1,5 +1,5 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { provideMockConfigService } from '@app/core/config';
 import { PdfLinkPipe } from '@app/shared/pdf-link/pdf-link.pipe';
 
@@ -12,7 +12,7 @@ describe('ActionMenuComponent', () => {
   let component: ActionMenuComponent;
   let fixture: ComponentFixture<ActionMenuComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [MatMenuModule],
       declarations: [ActionMenuComponent, PdfLinkPipe],

@@ -1,4 +1,4 @@
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import {SplitPanelComponent} from './split-panel.component';
 
@@ -6,7 +6,7 @@ describe('SplitPanelComponent', () => {
   let component: SplitPanelComponent;
   let fixture: ComponentFixture<SplitPanelComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [SplitPanelComponent]
     })

@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SettingsComponent } from './settings.component';
 import {SettingsRouterModule} from '@app/settings/settings.routes';
-import {FlexLayoutModule} from '@angular/flex-layout';
 import {MatCardModule} from '@angular/material/card';
 import {MatListModule} from '@angular/material/list';
 import {MatFormFieldModule} from '@angular/material/form-field';
@@ -17,7 +16,6 @@ import {FormsModule} from '@angular/forms';
   imports: [
     CommonModule,
     SettingsRouterModule,
-    FlexLayoutModule,
     MatCardModule,
     MatListModule,
     MatFormFieldModule,

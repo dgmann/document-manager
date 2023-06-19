@@ -1,6 +1,6 @@
 import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
-import {Actions, Effect, ofType} from '@ngrx/effects';
+import {Actions, createEffect, ofType} from '@ngrx/effects';
 import {Action} from '@ngrx/store';
 import {of} from 'rxjs';
 import {catchError, map, switchMap} from 'rxjs/operators';
@@ -12,16 +12,14 @@ import {ConfigService} from '@app/core/config';
 @Injectable()
 export class PatientEffects {
 
-  @Effect()
-  selectLoadPatientEffect$ = this.actions$.pipe(
+  selectLoadPatientEffect$ = createEffect(() => this.actions$.pipe(
     ofType(PatientActionTypes.SelectPatientId),
     switchMap((action: SelectPatient) => this.http.get<Patient>(`${this.config.getApiUrl()}/patients/${action.payload.id}`)),
     map(data => new SetPatient({patient: data})),
     catchError(() => of(new SetPatient({patient: null})))
-  );
+  ));
 
-  @Effect()
-  selectLoadRecordsEffect$ = this.actions$.pipe(
+  selectLoadRecordsEffect$ = createEffect(() => this.actions$.pipe(
     ofType(PatientActionTypes.SelectPatientId),
     switchMap((action: SelectPatient) => this.http.get<Record[]>(`${this.config.getApiUrl()}/patients/${action.payload.id}/records`).pipe(
       switchMap(data => of<Action>(new LoadRecordsSuccess({records: data}), new SetPatientRecords({
@@ -30,7 +28,7 @@ export class PatientEffects {
       }))),
       catchError(err => of(new LoadRecordsFail({error: err})))
     ))
-  );
+  ));
 
   constructor(private actions$: Actions, private http: HttpClient, private config: ConfigService) {
   }

@@ -49,16 +49,16 @@ func NewDocument(title string, records []api.Record, images storage.ImageService
 			if record.Date != nil {
 				title = record.Date.Format("02.01.2006")
 			}
-			imagesForRecord, err := images.Get(record.Id.Hex())
+			imagesForRecord, err := images.Get(record.Id)
 			if err != nil {
-				return nil, fmt.Errorf("error fetching images for record %s: %w", record.Id.Hex(), err)
+				return nil, fmt.Errorf("error fetching images for record %s: %w", record.Id, err)
 			}
 			pages := make([]*processor.Image, len(record.Pages))
 			for i, page := range record.Pages {
 				if content, ok := imagesForRecord[page.Id]; ok {
 					pages[i] = &processor.Image{Format: content.Format, Content: content.Image}
 				} else {
-					return nil, fmt.Errorf("image %s of reocrd %s could not be found: %w", page.Id, record.Id.Hex(), err)
+					return nil, fmt.Errorf("image %s of reocrd %s could not be found: %w", page.Id, record.Id, err)
 				}
 			}
 			entry := &processor.Document{Title: title, Pages: pages}

@@ -2,7 +2,6 @@ package mongo
 
 import (
 	"context"
-	"encoding/hex"
 	"errors"
 	"github.com/dgmann/document-manager/api/internal/datastore/mock"
 	"github.com/dgmann/document-manager/api/pkg/api"
@@ -65,7 +64,7 @@ func TestDatabaseRepository_Find_InvalidId(t *testing.T) {
 	_, err := repository.Find(ctx, id)
 
 	collection.AssertExpectations(t)
-	assert.True(t, errors.Is(err, hex.ErrLength))
+	assert.True(t, errors.Is(err, primitive.ErrInvalidHex))
 }
 
 func TestDatabaseRepository_FindByPatient(t *testing.T) {

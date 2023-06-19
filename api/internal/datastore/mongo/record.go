@@ -94,9 +94,9 @@ func (r *RecordService) Create(ctx context.Context, data api.CreateRecord, image
 	if len(record.Pages) == 0 {
 		var pages []api.Page
 		for _, img := range images {
-			page := api.NewPage(img.Format)
+			page := datastore.NewPage(img.Format)
 
-			if err := r.Images.Write(storage.NewKeyedGenericResource(img.Image, img.Format, record.Id.Hex(), page.Id)); err != nil {
+			if err := r.Images.Write(storage.NewKeyedGenericResource(img.Image, img.Format, record.Id, page.Id)); err != nil {
 				return nil, err
 			}
 			pages = append(pages, *page)
@@ -109,8 +109,8 @@ func (r *RecordService) Create(ctx context.Context, data api.CreateRecord, image
 		return nil, err
 	}
 
-	if err := r.Pdfs.Write(storage.NewKeyedGenericResource(pdfBytes, "pdf", record.Id.Hex())); err != nil {
-		if e := r.Images.Delete(storage.NewKey(record.Id.Hex())); e != nil {
+	if err := r.Pdfs.Write(storage.NewKeyedGenericResource(pdfBytes, "pdf", record.Id)); err != nil {
+		if e := r.Images.Delete(storage.NewKey(record.Id)); e != nil {
 			err = fmt.Errorf("%s. %w", e, err)
 		}
 		return nil, fmt.Errorf("error storing pdf in filesystem. %w", err)
@@ -118,10 +118,10 @@ func (r *RecordService) Create(ctx context.Context, data api.CreateRecord, image
 
 	res, err := r.Records.InsertOne(ctx, record)
 	if err != nil {
-		if e := r.Images.Delete(storage.NewKey(record.Id.Hex())); e != nil {
+		if e := r.Images.Delete(storage.NewKey(record.Id)); e != nil {
 			err = fmt.Errorf("%s. %w", e, err)
 		}
-		if e := r.Pdfs.Delete(storage.NewKey(record.Id.Hex())); e != nil {
+		if e := r.Pdfs.Delete(storage.NewKey(record.Id)); e != nil {
 			err = fmt.Errorf("%s. %w", e, err)
 		}
 		return nil, fmt.Errorf("error storing pdf in database. %w", err)
@@ -131,7 +131,7 @@ func (r *RecordService) Create(ctx context.Context, data api.CreateRecord, image
 		return nil, fmt.Errorf("error finding newly created document in database. %w", err)
 	}
 
-	if err := r.Events.Send(ctx, api.New(api.RecordTopic, api.TypeCreated, created.Id.Hex(), created)); err != nil {
+	if err := r.Events.Send(ctx, api.New(api.RecordTopic, api.TypeCreated, created.Id, created)); err != nil {
 		log.WithError(err).Info("error sending event")
 	}
 	return created, nil
@@ -186,7 +186,7 @@ func (r *RecordService) Update(ctx context.Context, id string, record api.Record
 		return nil, err
 	}
 
-	if err := r.Events.Send(ctx, api.New(api.RecordTopic, api.TypeUpdated, updated.Id.Hex(), updated)); err != nil {
+	if err := r.Events.Send(ctx, api.New(api.RecordTopic, api.TypeUpdated, updated.Id, updated)); err != nil {
 		log.WithError(err).Info("error sending event")
 	}
 	return &updated, nil

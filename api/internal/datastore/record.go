@@ -8,6 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"io"
+	"time"
 )
 
 type RecordService interface {
@@ -101,4 +102,9 @@ func (options *QueryOptions) SetSkip(value int64) *QueryOptions {
 func (options *QueryOptions) SetLimit(value int64) *QueryOptions {
 	options.Limit = value
 	return options
+}
+
+func NewPage(format string) *api.Page {
+	id := primitive.NewObjectID().Hex()
+	return &api.Page{Id: id, Format: format, UpdatedAt: time.Now()}
 }

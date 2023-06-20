@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -10,6 +11,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"net/url"
 	"os"
 	"os/signal"
 	"syscall"
@@ -17,6 +19,7 @@ import (
 
 func main() {
 	mqttConString := os.Getenv("MQTT_BROKER")
+	apiUrl := os.Getenv("API_URL")
 
 	conn, err := net.Dial("tcp", mqttConString)
 	if err != nil {
@@ -54,28 +57,54 @@ func main() {
 		if e["type"] == "Deleted" {
 			return
 		}
-		record, ok := e["data"].(map[string]any)
-		if !ok {
-			log.Println("could not extract record")
+
+		recordId := e["id"].(string)
+		recordUrl, err := url.JoinPath(apiUrl, "records", recordId)
+		if err != nil {
+			log.Printf("error creating record request url: %s", err)
 			return
 		}
+		record, err := func() (data map[string]any, err error) {
+			recordResp, err := http.Get(recordUrl)
+			if err != nil {
+				return nil, fmt.Errorf("error fetching record: %s", err)
+			}
+			recordBody, err := io.ReadAll(recordResp.Body)
+			defer func(Body io.ReadCloser) {
+				closeErr := Body.Close()
+				if closeErr != nil && err == nil {
+					err = closeErr
+				}
+			}(recordResp.Body)
+			var record map[string]any
+			if err := json.Unmarshal(recordBody, &record); err != nil {
+				return nil, fmt.Errorf("error parsing record json: %s", err)
+			}
+			return record, nil
+		}()
+		if err != nil {
+			log.Println(err)
+			return
+		}
+
 		pages, ok := record["pages"].([]interface{})
 		if !ok {
 			log.Println("could not extract pages")
 			return
 		}
-		for _, p := range pages {
+		updatedPages := make([]map[string]any, len(pages))
+		for i, p := range pages {
 			page, ok := p.(map[string]any)
 			if !ok {
 				log.Println("could not extract page")
 				return
 			}
-			url, ok := page["url"].(string)
+			pageUrl, ok := page["url"].(string)
 			if !ok {
 				log.Println("could not extract url")
 				return
 			}
-			resp, err := http.Get(url)
+			resp, err := http.Get(pageUrl)
 			if err != nil {
 				log.Println(err)
 				return
@@ -93,8 +122,24 @@ func main() {
 			if err != nil {
 				log.Println(err)
 			}
-			fmt.Println(text)
+			updatedPages[i] = map[string]any{
+				"id":      page["id"],
+				"content": text,
+			}
 		}
+		updateUrl := recordUrl + "/pages"
+		var b bytes.Buffer
+		json.NewEncoder(&b)
+		updateResp, err := http.Post(updateUrl, "application/json", &b)
+		if err != nil {
+			log.Printf("error updating pages at %s: %s\n", updateUrl, err)
+		}
+		if err := updateResp.Body.Close(); err != nil {
+			log.Println(err)
+			return
+		}
+		log.Printf("updated pages of record %s\n", recordId)
+
 	})
 
 	if _, err := mqttClient.Connect(ctx); err != nil {

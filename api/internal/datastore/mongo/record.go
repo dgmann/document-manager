@@ -210,6 +210,9 @@ func (r *RecordService) UpdatePages(ctx context.Context, id string, updates []ap
 		if update.Rotate != 0 {
 			page.UpdatedAt = time.Now()
 		}
+		if len(update.Content) > 0 {
+			page.Content = update.Content
+		}
 		updated = append(updated, page)
 	}
 	return r.Update(ctx, id, api.Record{Pages: updated})

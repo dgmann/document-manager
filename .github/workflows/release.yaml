@@ -36,6 +36,6 @@ jobs:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           prerelease: false
           files: |
-            ./${{env.working-directory}}/m1-helper-32.zip
-            ./${{env.working-directory}}/m1-helper-64.zip
+            ${{env.working-directory}}/m1-helper-32.zip
+            ${{env.working-directory}}/m1-helper-64.zip
             ./docker-compose.yaml

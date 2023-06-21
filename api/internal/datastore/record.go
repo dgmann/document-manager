@@ -21,6 +21,11 @@ type RecordService interface {
 	UpdatePages(ctx context.Context, id string, updates []api.PageUpdate) (*api.Record, error)
 }
 
+type Record struct {
+	Id          primitive.ObjectID `bson:"_id"`
+	*api.Record `bson:"inline"`
+}
+
 type RecordQuery struct {
 	Status    api.Status
 	PatientId *string

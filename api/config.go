@@ -12,6 +12,7 @@ type Config struct {
 	PdfProcessorUrl  string
 	Database         datastore.DatabaseConfig
 	MQTTBroker       string
+	Port             string
 }
 
 func ConfigFromEnv() Config {
@@ -22,6 +23,7 @@ func ConfigFromEnv() Config {
 	dbName := envOrDefault("DB_NAME", "manager")
 	pdfProcessorUrl := envOrDefault("PDFPROCESSOR_URL", "127.0.0.1:9000")
 	mqttBroker := envOrDefault("MQTT_BROKER", "mqtt:1883")
+	port := envOrDefault("HTTP_PORT", "80")
 	return Config{
 		RecordDirectory:  recordDir,
 		ArchiveDirectory: archiveDir,
@@ -32,6 +34,7 @@ func ConfigFromEnv() Config {
 			Name: strings.TrimSpace(dbName),
 		},
 		MQTTBroker: mqttBroker,
+		Port:       port,
 	}
 }
 

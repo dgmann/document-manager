@@ -39,6 +39,7 @@ var (
 )
 
 type Server struct {
+	Port              string
 	HealthService     *status.HealthService
 	StatisticsService *status.StatisticsService
 	EventService      event.Subscriber
@@ -109,5 +110,5 @@ func (s *Server) Run() error {
 	r.Get(PathPrefix+"/status", health.Status)
 	r.Get(PathPrefix+"/statistics", statistics.Statistics)
 
-	return http.ListenAndServe(":80", r)
+	return http.ListenAndServe(":"+s.Port, r)
 }

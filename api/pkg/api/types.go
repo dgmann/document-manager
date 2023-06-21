@@ -93,38 +93,6 @@ type CreateRecord struct {
 	Pages      []Page
 }
 
-func NewRecord(data CreateRecord) *Record {
-	record := &Record{
-		Date:       nil,
-		ReceivedAt: time.Now(),
-		Comment:    data.Comment,
-		PatientId:  data.PatientId,
-		Sender:     data.Sender,
-		Tags:       &data.Tags,
-		Pages:      data.Pages,
-		Status:     &data.Status,
-		Category:   data.Category,
-		UpdatedAt:  time.Now(),
-	}
-	if !data.Date.IsZero() {
-		record.Date = &data.Date
-	}
-	if !data.ReceivedAt.IsZero() {
-		record.ReceivedAt = data.ReceivedAt
-	}
-	if len(*record.Tags) == 0 {
-		record.Tags = &[]string{}
-	}
-	if len(record.Pages) == 0 {
-		record.Pages = []Page{}
-	}
-	if record.Status.IsNone() {
-		status := StatusInbox
-		record.Status = &status
-	}
-	return record
-}
-
 type Page struct {
 	Id        string    `bson:"id" json:"id"`
 	Url       string    `json:"url"`

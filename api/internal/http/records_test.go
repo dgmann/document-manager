@@ -17,13 +17,14 @@ func TestRecordController_All(t *testing.T) {
 
 	mockRecordRepository := mock.NewRecordService()
 	controller := RecordController{records: mockRecordRepository}
-	record := api.NewRecord(api.CreateRecord{Sender: "mock", Status: api.StatusInbox})
-	mockRecordRepository.On("Query", req.Context(), datastore.NewRecordQuery(), datastore.NewQueryOptions()).Return([]api.Record{*record}, nil)
+	status := api.StatusInbox
+	record := api.Record{Sender: "mock", Status: &status}
+	mockRecordRepository.On("Query", req.Context(), datastore.NewRecordQuery(), datastore.NewQueryOptions()).Return([]api.Record{record}, nil)
 
 	controller.All(w, req)
 
 	assert.Equal(t, 200, w.Code)
-	assert.JSONEq(t, fmt.Sprintf(`[%s]`, buildJSONResponseForRecord(*record)), w.Body.String())
+	assert.JSONEq(t, fmt.Sprintf(`[%s]`, buildJSONResponseForRecord(record)), w.Body.String())
 }
 
 func buildJSONResponseForRecord(record api.Record) string {

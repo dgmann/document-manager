@@ -88,19 +88,28 @@ func (r *RecordService) Query(ctx context.Context, recordQuery *datastore.Record
 	return castToRecordSlice(ctx, cursor)
 }
 
-func (r *RecordService) Create(ctx context.Context, data api.CreateRecord, images []storage.Image, pdfData io.Reader) (*api.Record, error) {
-	record := api.NewRecord(data)
+func (r *RecordService) Create(ctx context.Context, data api.CreateRecord, images []storage.Image, pdfData io.Reader) (created *api.Record, resErr error) {
+	record := newRecord(data)
+	recordId := record.Id.Hex()
 
+	// ID IS not set here!
 	if len(record.Pages) == 0 {
 		var pages []api.Page
 		for _, img := range images {
 			page := datastore.NewPage(img.Format)
 
-			if err := r.Images.Write(storage.NewKeyedGenericResource(img.Image, img.Format, record.Id, page.Id)); err != nil {
+			if err := r.Images.Write(storage.NewKeyedGenericResource(img.Image, img.Format, recordId, page.Id)); err != nil {
 				return nil, err
 			}
 			pages = append(pages, *page)
 		}
+		defer func() {
+			if resErr != nil {
+				if e := r.Images.Delete(storage.NewKey(recordId)); e != nil {
+					log.Debugf("error deleting images during cleanup: %s", e)
+				}
+			}
+		}()
 		record.Pages = pages
 	}
 
@@ -109,24 +118,21 @@ func (r *RecordService) Create(ctx context.Context, data api.CreateRecord, image
 		return nil, err
 	}
 
-	if err := r.Pdfs.Write(storage.NewKeyedGenericResource(pdfBytes, "pdf", record.Id)); err != nil {
-		if e := r.Images.Delete(storage.NewKey(record.Id)); e != nil {
-			err = fmt.Errorf("%s. %w", e, err)
-		}
+	if err := r.Pdfs.Write(storage.NewKeyedGenericResource(pdfBytes, "pdf", recordId)); err != nil {
 		return nil, fmt.Errorf("error storing pdf in filesystem. %w", err)
 	}
+	defer func() {
+		if resErr != nil {
+			if e := r.Pdfs.Delete(storage.NewKey(recordId)); e != nil {
+				log.Debugf("error deleting pdf during cleanup: %s", e)
+			}
+		}
+	}()
 
-	res, err := r.Records.InsertOne(ctx, record)
-	if err != nil {
-		if e := r.Images.Delete(storage.NewKey(record.Id)); e != nil {
-			err = fmt.Errorf("%s. %w", e, err)
-		}
-		if e := r.Pdfs.Delete(storage.NewKey(record.Id)); e != nil {
-			err = fmt.Errorf("%s. %w", e, err)
-		}
+	if _, err := r.Records.InsertOne(ctx, record); err != nil {
 		return nil, fmt.Errorf("error storing pdf in database. %w", err)
 	}
-	created, err := r.findByObjectId(ctx, res.InsertedID.(primitive.ObjectID))
+	created, err = r.findByObjectId(ctx, record.Id)
 	if err != nil {
 		return nil, fmt.Errorf("error finding newly created document in database. %w", err)
 	}
@@ -135,6 +141,41 @@ func (r *RecordService) Create(ctx context.Context, data api.CreateRecord, image
 		log.WithError(err).Info("error sending event")
 	}
 	return created, nil
+}
+
+func newRecord(data api.CreateRecord) *datastore.Record {
+	record := &datastore.Record{
+		Id: primitive.NewObjectID(),
+		Record: &api.Record{
+			Date:       nil,
+			ReceivedAt: time.Now(),
+			Comment:    data.Comment,
+			PatientId:  data.PatientId,
+			Sender:     data.Sender,
+			Tags:       &data.Tags,
+			Pages:      data.Pages,
+			Status:     &data.Status,
+			Category:   data.Category,
+			UpdatedAt:  time.Now(),
+		},
+	}
+	if !data.Date.IsZero() {
+		record.Date = &data.Date
+	}
+	if !data.ReceivedAt.IsZero() {
+		record.ReceivedAt = data.ReceivedAt
+	}
+	if len(*record.Tags) == 0 {
+		record.Tags = &[]string{}
+	}
+	if len(record.Pages) == 0 {
+		record.Pages = []api.Page{}
+	}
+	if record.Status.IsNone() {
+		status := api.StatusInbox
+		record.Status = &status
+	}
+	return record
 }
 
 func (r *RecordService) Delete(ctx context.Context, id string) error {

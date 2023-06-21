@@ -75,6 +75,7 @@ func main() {
 	tagService := mongo.NewTagService(client.Records())
 
 	srv := http.Server{
+		Port:            config.Port,
 		EventService:    websocketService,
 		ImageService:    imageService,
 		TagService:      tagService,

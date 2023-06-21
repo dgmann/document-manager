@@ -42,8 +42,8 @@ services:
     networks: 
       - backend
     environment:
-      API_HOST: localhost
-      ENABLE_SSL: 'false'
+      API_HOST: ${API_HOST:-localhost}
+      ENABLE_SSL: ${ENABLE_SSL:-false}
     restart: unless-stopped
   ocr:
     image: 'ghcr.io/dgmann/document-manager/ocr:latest'

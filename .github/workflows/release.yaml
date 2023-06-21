@@ -1,0 +1,41 @@
+name: Create Release
+on:
+  push:
+    tags: [ 'v*.*.*' ]
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      working-directory: ./m1-helper
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v2
+        with:
+          go-version: '^1.14.0' # The Go version to download (if necessary) and use.
+      - name: "Compile"
+        working-directory: ${{env.working-directory}}
+        run: | 
+          GOOS=windows GOARCH=amd64 go build -ldflags="-s -w -H=windowsgui" -o m1-helper.exe .
+          GOOS=windows GOARCH=amd64 go build -ldflags="-s -w" -o m1-helper_console.exe .
+          zip --junk-paths m1-helper-64.zip *.exe
+          rm *.exe
+          GOOS=windows GOARCH=386 go build -ldflags="-s -w -H=windowsgui" -o m1-helper.exe .
+          GOOS=windows GOARCH=386 go build -ldflags="-s -w" -o m1-helper_console.exe .
+          zip --junk-paths m1-helper-32.zip *.exe
+          rm *.exe
+
+      - name: Create docker-compose.yaml
+        run: envsubst '${DOCUMENT_MANAGER_VERSION}' < deployment/docker-compose.yml > docker-compose.yaml
+        env:
+          DOCUMENT_MANAGER_VERSION: ${{ github.ref_name }}
+
+      - uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          prerelease: false
+          files: |
+            ./${{env.working-directory}}/m1-helper-32.zip
+            ./${{env.working-directory}}/m1-helper-64.zip
+            ./docker-compose.yaml

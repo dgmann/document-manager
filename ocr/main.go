@@ -102,6 +102,10 @@ func main() {
 				log.Println("could not extract page")
 				return
 			}
+			// If page content is already filled we do not need to scan it again
+			if content, ok := page["url"].(string); ok && len(content) > 0 {
+				continue
+			}
 			pageUrl, ok := page["url"].(string)
 			if !ok {
 				log.Println("could not extract url")

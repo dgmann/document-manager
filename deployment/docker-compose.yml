@@ -1,0 +1,101 @@
+version: '3'
+services:
+  db:
+    image: 'mongo:latest'
+    volumes:
+      - 'mongo:/data/db'
+    networks:
+      - backend
+    restart: unless-stopped
+  mqtt:
+    image: emqx:latest
+
+  gateway:
+    image: 'ghcr.io/dgmann/document-manager/gateway:${DOCUMENT_MANAGER_VERSION}'
+    ports:
+      - '80:80'
+    networks:
+      - backend
+    depends_on:
+      - api
+      - app
+      - m1-adapter
+    restart: unless-stopped
+
+  api:
+    image: 'ghcr.io/dgmann/document-manager/api:${DOCUMENT_MANAGER_VERSION}'
+    volumes:
+      - 'archive:/archive'
+      - 'records:/records'
+    networks:
+      - backend
+    environment:
+      DB_HOST: db
+      DB_NAME: manager
+      PDFPROCESSOR_URL: 'processor:9000'
+    depends_on:
+      - db
+      - processor
+    restart: unless-stopped
+  app:
+    image: 'ghcr.io/dgmann/document-manager/app:${DOCUMENT_MANAGER_VERSION}'
+    networks: 
+      - backend
+    environment:
+      API_HOST: localhost
+      ENABLE_SSL: 'false'
+    restart: unless-stopped
+  ocr:
+    image: 'ghcr.io/dgmann/document-manager/ocr:latest'
+    networks:
+      - backend
+    restart: unless-stopped
+    environment:
+      MQTT_BOKER: "mqtt:1883"
+  processor:
+    image: 'ghcr.io/dgmann/document-manager/pdf-processor:${DOCUMENT_MANAGER_VERSION}'
+    networks:
+      - backend
+    restart: unless-stopped
+
+  m1-adapter:
+    image: 'ghcr.io/dgmann/document-manager/m1-adapter:${DOCUMENT_MANAGER_VERSION}'
+    networks:
+      - backend
+    restart: unless-stopped
+
+  scan_watcher:
+    image: 'ghcr.io/dgmann/document-manager/directory-watcher:${DOCUMENT_MANAGER_VERSION}'
+    volumes:
+      - 'scans:/records'
+    networks:
+      - backend
+    environment:
+      DESTINATION: 'http://api/api'
+      PARSER: generic
+      SENDER: Scan
+    depends_on:
+      - api
+    restart: unless-stopped
+  fax_watcher:
+    image: 'ghcr.io/dgmann/document-manager/directory-watcher:${DOCUMENT_MANAGER_VERSION}'
+    volumes:
+      - 'fax:/records'
+    networks:
+      - backend
+    environment:
+      DESTINATION: 'http://api/api'
+      PARSER: fax
+    depends_on:
+      - api
+    restart: unless-stopped
+
+volumes:
+  archive: {}
+  fax: {}
+  mongo: {}
+  records: {}
+  scans: {}
+
+networks:
+  backend: {}

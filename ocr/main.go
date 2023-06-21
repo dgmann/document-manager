@@ -95,6 +95,8 @@ func main() {
 			log.Println("could not extract pages")
 			return
 		}
+		// tracks whether anything was changed and an update is required
+		needsUpdate := false
 		updatedPages := make([]map[string]any, len(pages))
 		for i, p := range pages {
 			page, ok := p.(map[string]any)
@@ -103,9 +105,13 @@ func main() {
 				return
 			}
 			// If page content is already filled we do not need to scan it again
-			if content, ok := page["url"].(string); ok && len(content) > 0 {
+			if content, ok := page["content"].(string); ok && len(content) > 0 {
+				updatedPages[i] = map[string]any{
+					"id": page["id"],
+				}
 				continue
 			}
+
 			pageUrl, ok := page["url"].(string)
 			if !ok {
 				log.Println("could not extract url")
@@ -129,10 +135,23 @@ func main() {
 			if err != nil {
 				log.Println(err)
 			}
+			// If text was empty we won't update it
+			if len(text) == 0 {
+				updatedPages[i] = map[string]any{
+					"id": page["id"],
+				}
+				continue
+			}
+
 			updatedPages[i] = map[string]any{
 				"id":      page["id"],
 				"content": text,
 			}
+			needsUpdate = true
+		}
+		if !needsUpdate {
+			log.Printf("skipping record %s as no page content was changed", recordId)
+			return
 		}
 		updateUrl := recordUrl + "/pages"
 		var b bytes.Buffer

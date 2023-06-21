@@ -14,6 +14,7 @@ import (
 	"net/url"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 )
 
@@ -131,13 +132,24 @@ func main() {
 		}
 		updateUrl := recordUrl + "/pages"
 		var b bytes.Buffer
-		json.NewEncoder(&b)
+		if err := json.NewEncoder(&b).Encode(updatedPages); err != nil {
+			log.Printf("error encoding page update request: %s", err)
+		}
 		updateResp, err := http.Post(updateUrl, "application/json", &b)
 		if err != nil {
 			log.Printf("error updating pages at %s: %s\n", updateUrl, err)
+			return
 		}
-		if err := updateResp.Body.Close(); err != nil {
-			log.Println(err)
+		defer func(Body io.ReadCloser) {
+			err := Body.Close()
+			if err != nil {
+				log.Println(err)
+			}
+		}(updateResp.Body)
+		if updateResp.StatusCode >= 400 {
+			buf := new(strings.Builder)
+			_, _ = io.Copy(buf, updateResp.Body)
+			log.Printf("error updating pages. Status Code: %d, error: %s\n", updateResp.StatusCode, buf.String())
 			return
 		}
 		log.Printf("updated pages of record %s\n", recordId)

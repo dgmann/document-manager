@@ -3,13 +3,15 @@ package event
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"github.com/dgmann/document-manager/api/pkg/api"
 	mqtt "github.com/eclipse/paho.golang/paho"
 	"net"
 )
 
 type MQTTEventSender struct {
-	client *mqtt.Client
+	client   *mqtt.Client
+	packetId uint16
 }
 
 func NewMQTTEventSender(conn net.Conn) *MQTTEventSender {
@@ -30,9 +32,12 @@ func (e *MQTTEventSender) Disconnect() error {
 func (e *MQTTEventSender) Send(ctx context.Context, event api.Event) error {
 	payload, _ := json.Marshal(event)
 	_, err := e.client.Publish(ctx, &mqtt.Publish{
-		Topic:   api.RecordTopic,
-		QoS:     byte(1),
-		Payload: payload,
+		PacketID: e.packetId,
+		Topic:    fmt.Sprintf("%s/%s", event.Topic, event.Id),
+		QoS:      1,
+		Payload:  payload,
+		Retain:   false,
 	})
+	e.packetId += 1
 	return err
 }

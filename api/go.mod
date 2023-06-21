@@ -4,7 +4,7 @@ require (
 	github.com/cskr/pubsub v1.0.2
 	github.com/dgmann/document-manager/pdf-processor/pkg/processor v0.0.0-20201219172655-8592d79ff120
 	github.com/eclipse/paho.golang v0.11.0
-	github.com/go-chi/chi v4.1.1+incompatible
+	github.com/go-chi/chi/v5 v5.0.8
 	github.com/go-chi/cors v1.1.1
 	github.com/gorilla/handlers v1.4.2
 	github.com/sirupsen/logrus v1.5.0

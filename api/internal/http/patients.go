@@ -3,7 +3,7 @@ package http
 import (
 	"github.com/dgmann/document-manager/api/internal/datastore"
 	"github.com/dgmann/document-manager/api/internal/storage"
-	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/v5"
 	"net/http"
 	"net/url"
 )

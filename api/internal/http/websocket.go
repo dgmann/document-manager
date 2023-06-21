@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"github.com/dgmann/document-manager/api/internal/event"
 	"github.com/dgmann/document-manager/api/pkg/api"
-	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/v5"
 	"github.com/sirupsen/logrus"
 	"gopkg.in/olahol/melody.v1"
 	"net/http"

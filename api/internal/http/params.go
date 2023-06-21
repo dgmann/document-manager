@@ -2,7 +2,7 @@ package http
 
 import (
 	"context"
-	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/v5"
 )
 
 func URLParamFromContext(ctx context.Context, key string) string {

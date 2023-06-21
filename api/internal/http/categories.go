@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/dgmann/document-manager/api/pkg/api"
-	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/v5"
 	"net/http"
 )
 

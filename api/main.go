@@ -56,7 +56,7 @@ func main() {
 	}
 
 	websocketService := event.NewWebsocketEventService()
-	conn, err := net.Dial("tcp", "mqtt:1883")
+	conn, err := net.Dial("tcp", config.MQTTBroker)
 	if err != nil {
 		log.WithError(err).Fatalln("error connecting to MQTT broker")
 	}

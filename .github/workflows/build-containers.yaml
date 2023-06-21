@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        path: ['api', 'app', 'gateway', 'directory-watcher', 'm1-adapter', 'pdf-processor']
+        path: ['api', 'app', 'gateway', 'directory-watcher', 'm1-adapter', 'pdf-processor', 'ocr']
 
     steps:
       - name: Checkout

@@ -58,9 +58,12 @@ func main() {
 	websocketService := event.NewWebsocketEventService()
 	conn, err := net.Dial("tcp", config.MQTTBroker)
 	if err != nil {
-		log.WithError(err).Fatalln("error connecting to MQTT broker")
+		log.WithError(err).Fatalf("error opening connection to %s\n", config.MQTTBroker)
 	}
 	mqttService := event.NewMQTTEventSender(conn)
+	if _, err := mqttService.Connect(ctx); err != nil {
+		log.WithError(err).Fatalln("error connecting to MQTT Broker")
+	}
 	defer func(mqttService *event.MQTTEventSender) {
 		err := mqttService.Disconnect()
 		if err != nil {

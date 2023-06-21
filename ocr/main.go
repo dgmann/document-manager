@@ -21,9 +21,11 @@ func main() {
 	mqttConString := os.Getenv("MQTT_BROKER")
 	apiUrl := os.Getenv("API_URL")
 
+	log.Printf("Using API URL %s\n", apiUrl)
+	log.Printf("Connecting to MQTT Broker at %s\n", mqttConString)
 	conn, err := net.Dial("tcp", mqttConString)
 	if err != nil {
-		log.Fatalf("error opening connection: %s\n", err)
+		log.Fatalf("error opening connection to %s: %s\n", mqttConString, err)
 	}
 	defer func(conn net.Conn) {
 		err := conn.Close()

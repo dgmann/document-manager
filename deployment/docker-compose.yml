@@ -9,6 +9,8 @@ services:
     restart: unless-stopped
   mqtt:
     image: emqx:latest
+    networks:
+      - backend
 
   gateway:
     image: 'ghcr.io/dgmann/document-manager/gateway:${DOCUMENT_MANAGER_VERSION}'
@@ -42,27 +44,34 @@ services:
     networks: 
       - backend
     environment:
-      API_HOST: ${API_HOST:-localhost}
+      API_HOST: ${API_HOST:-}
       ENABLE_SSL: ${ENABLE_SSL:-false}
     restart: unless-stopped
   ocr:
-    image: 'ghcr.io/dgmann/document-manager/ocr:latest'
+    image: 'ghcr.io/dgmann/document-manager/ocr:${DOCUMENT_MANAGER_VERSION}'
     networks:
       - backend
     restart: unless-stopped
     environment:
-      MQTT_BOKER: "mqtt:1883"
+      MQTT_BOKER: 'mqtt:1883'
+      API_URL: 'http://api/api'
   processor:
     image: 'ghcr.io/dgmann/document-manager/pdf-processor:${DOCUMENT_MANAGER_VERSION}'
     networks:
       - backend
     restart: unless-stopped
+    environment:
+      - EXTRACTOR=pdfcpu
 
   m1-adapter:
     image: 'ghcr.io/dgmann/document-manager/m1-adapter:${DOCUMENT_MANAGER_VERSION}'
     networks:
       - backend
     restart: unless-stopped
+    environment:
+      - DB_USERNAME=${M1_DB_USERNAME}
+      - DB_PASSWORD=${M1_DB_PASSWORD}
+      - DB_HOST=${M1_DB_HOST}
 
   scan_watcher:
     image: 'ghcr.io/dgmann/document-manager/directory-watcher:${DOCUMENT_MANAGER_VERSION}'

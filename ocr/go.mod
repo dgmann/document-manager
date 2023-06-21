@@ -1,4 +1,4 @@
-module ocr-service
+module ocr
 
 go 1.18
 

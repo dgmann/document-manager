@@ -8,5 +8,5 @@ use (
 	m1-helper
 	pdf-processor
 	pdf-processor/pkg/processor
-	ocr-service
+	ocr
 )

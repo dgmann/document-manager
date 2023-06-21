@@ -17,7 +17,7 @@ import (
 
 	"github.com/dgmann/document-manager/api/internal/pdf"
 	"github.com/dgmann/document-manager/api/internal/storage"
-	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/v5"
 )
 
 // swagger:response record

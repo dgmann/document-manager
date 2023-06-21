@@ -53,7 +53,7 @@ services:
       - backend
     restart: unless-stopped
     environment:
-      MQTT_BOKER: 'mqtt:1883'
+      MQTT_BROKER: "mqtt:1883"
       API_URL: 'http://api/api'
   processor:
     image: 'ghcr.io/dgmann/document-manager/pdf-processor:${DOCUMENT_MANAGER_VERSION}'

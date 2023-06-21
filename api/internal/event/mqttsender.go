@@ -14,15 +14,19 @@ type MQTTEventSender struct {
 	packetId uint16
 }
 
-func NewMQTTEventSender(conn net.Conn) *MQTTEventSender {
+func NewMQTTEventSender(conn net.Conn, clientId string) *MQTTEventSender {
 	client := mqtt.NewClient(mqtt.ClientConfig{
-		Conn: conn,
+		Conn:     conn,
+		ClientID: clientId,
 	})
 	return &MQTTEventSender{client: client}
 }
 
 func (e *MQTTEventSender) Connect(ctx context.Context) (*mqtt.Connack, error) {
-	return e.client.Connect(ctx, &mqtt.Connect{})
+	return e.client.Connect(ctx, &mqtt.Connect{
+		ClientID:  e.client.ClientID,
+		KeepAlive: 16,
+	})
 }
 
 func (e *MQTTEventSender) Disconnect() error {

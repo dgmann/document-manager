@@ -60,7 +60,7 @@ func main() {
 	if err != nil {
 		log.WithError(err).Fatalf("error opening connection to %s\n", config.MQTTBroker)
 	}
-	mqttService := event.NewMQTTEventSender(conn)
+	mqttService := event.NewMQTTEventSender(conn, "backend-api")
 	if _, err := mqttService.Connect(ctx); err != nil {
 		log.WithError(err).Fatalln("error connecting to MQTT Broker")
 	}

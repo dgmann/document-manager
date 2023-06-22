@@ -38,6 +38,7 @@ services:
       MQTT_BROKER: 'mqtt:1883'
     depends_on:
       - db
+      - mqtt
       - processor
     restart: unless-stopped
   app:
@@ -52,6 +53,9 @@ services:
     image: 'ghcr.io/dgmann/document-manager/ocr:${DOCUMENT_MANAGER_VERSION}'
     networks:
       - backend
+    depends_on:
+      - api
+      - mqtt
     restart: unless-stopped
     environment:
       MQTT_BROKER: 'mqtt:1883'

@@ -18,9 +18,20 @@ import (
 	"syscall"
 )
 
+type OCRRequest struct {
+	RecordId string `json:"recordId"`
+	Force    bool   `json:"force"`
+}
+
+const OCRRequestTopic = "ocrrequests"
+
 func main() {
 	mqttConString := os.Getenv("MQTT_BROKER")
 	apiUrl := os.Getenv("API_URL")
+	port := os.Getenv("HTTP_PORT")
+	if len(port) == 0 {
+		port = "8080"
+	}
 
 	log.Printf("Using API URL %s\n", apiUrl)
 	log.Printf("Connecting to MQTT Broker at %s\n", mqttConString)
@@ -50,7 +61,9 @@ func main() {
 
 	topic := "records/+"
 	mqttClient := NewMQTTSubscriber(conn, "ocr-service")
-	// Already spawns go routine
+
+	go RunHTTPServer(ctx, port, apiUrl, mqttClient)
+
 	mqttClient.Router().RegisterHandler(topic, func(publish *mqtt.Publish) {
 		var e map[string]any
 		if err := json.Unmarshal(publish.Payload, &e); err != nil {
@@ -61,8 +74,21 @@ func main() {
 			return
 		}
 
-		recordId := e["id"].(string)
-		recordUrl, err := url.JoinPath(apiUrl, "records", recordId)
+		if err := mqttClient.Publish(ctx, OCRRequestTopic, OCRRequest{RecordId: e["id"].(string)}); err != nil {
+			log.Printf("error publishing ocr request to MQTT topic: %s", err)
+			return
+		}
+	})
+
+	// Already spawns go routine
+	mqttClient.Router().RegisterHandler(OCRRequestTopic, func(publish *mqtt.Publish) {
+		var request OCRRequest
+		if err := json.Unmarshal(publish.Payload, &request); err != nil {
+			log.Println(err)
+			return
+		}
+
+		recordUrl, err := url.JoinPath(apiUrl, "records", request.RecordId)
 		if err != nil {
 			log.Printf("error creating record request url: %s", err)
 			return
@@ -105,7 +131,8 @@ func main() {
 				return
 			}
 			// If page content is already filled we do not need to scan it again
-			if content, ok := page["content"].(string); ok && len(content) > 0 {
+			// Force overrides this
+			if content, ok := page["content"].(string); (ok && len(content) > 0) || request.Force {
 				updatedPages[i] = map[string]any{
 					"id": page["id"],
 				}
@@ -150,7 +177,7 @@ func main() {
 			needsUpdate = true
 		}
 		if !needsUpdate {
-			log.Printf("skipping record %s as no page content was changed", recordId)
+			log.Printf("skipping record %s as no page content was changed", request.RecordId)
 			return
 		}
 		updateUrl := recordUrl + "/pages"
@@ -175,12 +202,15 @@ func main() {
 			log.Printf("error updating pages. Status Code: %d, error: %s\n", updateResp.StatusCode, buf.String())
 			return
 		}
-		log.Printf("updated pages of record %s\n", recordId)
+		log.Printf("updated pages of record %s\n", request.RecordId)
 
 	})
 
 	if _, err := mqttClient.Connect(ctx); err != nil {
 		log.Fatalf("error connecting to MQTT broker: %s\n", err)
+	}
+	if err := mqttClient.Subscribe(ctx, OCRRequestTopic); err != nil {
+		log.Fatalf("error subscribing to topic %s: %s\n", topic, err)
 	}
 	if err := mqttClient.Subscribe(ctx, topic); err != nil {
 		log.Fatalf("error subscribing to topic %s: %s\n", topic, err)

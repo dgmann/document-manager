@@ -2,7 +2,6 @@ package datastore
 
 import (
 	"context"
-	"fmt"
 	"github.com/dgmann/document-manager/api/internal/storage"
 	"github.com/dgmann/document-manager/api/pkg/api"
 	"go.mongodb.org/mongo-driver/bson"
@@ -14,7 +13,7 @@ import (
 type RecordService interface {
 	All(ctx context.Context) ([]api.Record, error)
 	Find(ctx context.Context, id string) (*api.Record, error)
-	Query(ctx context.Context, query *RecordQuery, queryOption ...*QueryOptions) ([]api.Record, error)
+	Query(ctx context.Context, query RecordQuery, queryOption ...*QueryOptions) ([]api.Record, error)
 	Create(ctx context.Context, data api.CreateRecord, images []storage.Image, pdfData io.Reader) (*api.Record, error)
 	Delete(ctx context.Context, id string) error
 	Update(ctx context.Context, id string, record api.Record) (*api.Record, error)
@@ -26,53 +25,55 @@ type Record struct {
 	*api.Record `bson:"inline"`
 }
 
-type RecordQuery struct {
-	Status    api.Status
-	PatientId *string
-	Ids       []string
-}
+type RecordQuery bson.D
 
-func NewRecordQuery() *RecordQuery {
-	return &RecordQuery{}
-}
+type RecordQueryFunc = func(query *RecordQuery)
 
-func (query *RecordQuery) SetStatus(status api.Status) *RecordQuery {
-	if status.IsValid() {
-		query.Status = status
+func NewRecordQuery(queryFuncs ...RecordQueryFunc) RecordQuery {
+	query := RecordQuery{}
+	for _, queryFunc := range queryFuncs {
+		queryFunc(&query)
 	}
 	return query
 }
 
-func (query *RecordQuery) SetPatientId(patientId string) *RecordQuery {
-	query.PatientId = &patientId
-	return query
-}
-
-func (query *RecordQuery) SetIds(ids []string) *RecordQuery {
-	query.Ids = ids
-	return query
-}
-
-func (query *RecordQuery) ToMap() (map[string]interface{}, error) {
-	result := make(map[string]interface{})
-	if !query.Status.IsNone() {
-		result["status"] = query.Status
+func WithStatus(status api.Status) RecordQueryFunc {
+	return func(query *RecordQuery) {
+		if status.IsValid() {
+			*query = append(*query, bson.E{Key: "status", Value: status})
+		}
 	}
-	if query.Ids != nil {
-		ids := make([]primitive.ObjectID, len(query.Ids))
-		for i, id := range query.Ids {
+}
+
+func WithPatientId(patientId string) RecordQueryFunc {
+	return func(query *RecordQuery) {
+		*query = append(*query, bson.E{Key: "patientId", Value: patientId})
+	}
+}
+
+func WithIds(queryIds []string) RecordQueryFunc {
+	return func(query *RecordQuery) {
+		ids := make([]primitive.ObjectID, len(queryIds))
+		for i, id := range queryIds {
 			oid, err := primitive.ObjectIDFromHex(id)
+			// Ignore invalid ones
 			if err != nil {
-				return nil, fmt.Errorf("invalid id %s: %w", id, err)
+				continue
 			}
 			ids[i] = oid
 		}
-		result["_id"] = bson.M{"$in": ids}
+		*query = append(*query, bson.E{Key: "_id", Value: bson.M{"$in": ids}})
 	}
-	if query.PatientId != nil {
-		result["patientId"] = *query.PatientId
+}
+
+func WithNoContent() RecordQueryFunc {
+	return func(query *RecordQuery) {
+		*query = append(*query, bson.E{Key: "pages.content", Value: bson.D{
+			{"$not", bson.D{
+				{"$nin", []interface{}{bson.TypeNull, ""}},
+			}},
+		}})
 	}
-	return result, nil
 }
 
 type QueryOptions struct {

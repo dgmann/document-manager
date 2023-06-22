@@ -49,7 +49,7 @@ func (controller *PatientController) Categories(w http.ResponseWriter, req *http
 
 func (controller *PatientController) Records(w http.ResponseWriter, req *http.Request) {
 	id := URLParamFromContext(req.Context(), "patientId")
-	records, err := controller.records.Query(req.Context(), datastore.NewRecordQuery().SetPatientId(id))
+	records, err := controller.records.Query(req.Context(), datastore.NewRecordQuery(datastore.WithPatientId(id)))
 	if err != nil {
 		NewErrorResponse(w, err, 400).WriteJSON()
 		return

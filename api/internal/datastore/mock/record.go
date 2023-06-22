@@ -25,7 +25,7 @@ func (mock *RecordService) Find(ctx context.Context, id string) (*api.Record, er
 	args := mock.Called(ctx, id)
 	return args.Get(0).(*api.Record), args.Error(1)
 }
-func (mock *RecordService) Query(ctx context.Context, query *datastore.RecordQuery, options ...*datastore.QueryOptions) ([]api.Record, error) {
+func (mock *RecordService) Query(ctx context.Context, query datastore.RecordQuery, options ...*datastore.QueryOptions) ([]api.Record, error) {
 	o := make([]interface{}, len(options)+2)
 	o[0] = ctx
 	o[1] = query

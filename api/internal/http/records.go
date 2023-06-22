@@ -49,7 +49,26 @@ func (controller *RecordController) Router() http.Handler {
 
 func (controller *RecordController) All(w http.ResponseWriter, req *http.Request) {
 	params := req.URL.Query()
-	query := datastore.NewRecordQuery().SetStatus(api.Status(params.Get("status")))
+	var queryOptions []datastore.RecordQueryFunc
+	if params.Has("status") {
+		status := api.Status(params.Get("status"))
+		if !status.IsValid() {
+			NewErrorResponse(w, fmt.Errorf("invalid status query: %s is not valid", status), http.StatusBadRequest).WriteJSON()
+			return
+		}
+		queryOptions = append(queryOptions, datastore.WithStatus(api.Status(params.Get("status"))))
+	}
+	if recordsIds, ok := req.URL.Query()["id"]; ok {
+		queryOptions = append(queryOptions, datastore.WithIds(recordsIds))
+	}
+	if patientKey := "patientId"; params.Has(patientKey) {
+		queryOptions = append(queryOptions, datastore.WithPatientId(params.Get(patientKey)))
+	}
+	if key := "nocontent"; params.Has(key) {
+		queryOptions = append(queryOptions, datastore.WithNoContent())
+	}
+	query := datastore.NewRecordQuery(queryOptions...)
+
 	skip, err := strconv.ParseInt(params.Get("skip"), 10, 64)
 	if err != nil {
 		skip = 0

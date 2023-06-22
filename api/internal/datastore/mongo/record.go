@@ -69,18 +69,13 @@ func (r *RecordService) findByObjectId(ctx context.Context, id primitive.ObjectI
 	return &record, nil
 }
 
-func (r *RecordService) Query(ctx context.Context, recordQuery *datastore.RecordQuery, queryOptions ...*datastore.QueryOptions) ([]api.Record, error) {
+func (r *RecordService) Query(ctx context.Context, recordQuery datastore.RecordQuery, queryOptions ...*datastore.QueryOptions) ([]api.Record, error) {
 	op := make([]*options.FindOptions, len(queryOptions))
 	for index, option := range queryOptions {
 		op[index] = options.Find().SetSkip(option.Skip).SetLimit(option.Limit).SetSort(option.Sort)
 	}
 
-	query, err := recordQuery.ToMap()
-	if err != nil {
-		return nil, err
-	}
-
-	cursor, err := r.Records.Find(ctx, query, op...)
+	cursor, err := r.Records.Find(ctx, recordQuery, op...)
 	if err != nil {
 		return nil, err
 	}

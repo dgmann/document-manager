@@ -52,7 +52,11 @@ func RunHTTPServer(ctx context.Context, port string, apiUrl string, mqttClient *
 			return
 		}
 
-		recordRequest, err := http.Get(recordUrl)
+		recordRequestUrl := recordUrl
+		if !job.Full {
+			recordRequestUrl += "?nocontent"
+		}
+		recordRequest, err := http.Get(recordRequestUrl)
 		if err != nil {
 			respond(http.StatusInternalServerError, map[string]any{"error": err.Error()})
 			return

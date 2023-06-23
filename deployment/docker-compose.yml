@@ -1,7 +1,7 @@
 version: '3'
 services:
   db:
-    image: 'mongo:latest'
+    image: 'mongo:6'
     volumes:
       - 'mongo:/data/db'
     networks:
@@ -9,6 +9,10 @@ services:
     restart: unless-stopped
   mqtt:
     image: emqx:latest
+    volumes:
+      - emqx-data:/opt/emqx/data
+      - emqx-etc:/opt/emqx/etc
+      - emqx-log:/opt/emqx/log
     networks:
       - backend
 
@@ -110,6 +114,9 @@ volumes:
   mongo: {}
   records: {}
   scans: {}
+  emqx-data: {}
+  emqx-etc: {}
+  emqx-log: {}
 
 networks:
   backend: {}

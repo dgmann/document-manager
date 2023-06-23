@@ -8,8 +8,8 @@ github.com/cskr/pubsub v1.0.2/go.mod h1:/8MzYXk/NJAz782G8RPkFzXTZVu63VotefPnR9TI
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
-github.com/dgmann/document-manager/pdf-processor/pkg/processor v0.0.0-20201219172655-8592d79ff120 h1:E5hTzACx/Kcj2OibMYt0Hyv+ZOfR8YnUZLZ4RkEwrUI=
-github.com/dgmann/document-manager/pdf-processor/pkg/processor v0.0.0-20201219172655-8592d79ff120/go.mod h1:QTLCPUOS2/Hz1j3vS1raPWYT0fz33Dem0SYWRgLerQk=
+github.com/dgmann/document-manager/pdf-processor/pkg/processor v1.0.0 h1:JXN2xqaUj+YYDj/mR8grhyItLmbaRhQHo6zqFrIbMWk=
+github.com/dgmann/document-manager/pdf-processor/pkg/processor v1.0.0/go.mod h1:QTLCPUOS2/Hz1j3vS1raPWYT0fz33Dem0SYWRgLerQk=
 github.com/eclipse/paho.golang v0.11.0 h1:6Avu5dkkCfcB61/y1vx+XrPQ0oAl4TPYtY0uw3HbQdM=
 github.com/eclipse/paho.golang v0.11.0/go.mod h1:rhrV37IEwauUyx8FHrvmXOKo+QRKng5ncoN1vJiJMcs=
 github.com/envoyproxy/go-control-plane v0.9.0/go.mod h1:YTl/9mNaCwkRvm6d1a2C3ymFceY/DCBVvsKhRF0iEA4=

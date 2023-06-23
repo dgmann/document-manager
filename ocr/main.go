@@ -46,17 +46,6 @@ func main() {
 		}
 	}(conn)
 
-	client := gosseract.NewClient()
-	defer func(client *gosseract.Client) {
-		err := client.Close()
-		if err != nil {
-
-		}
-	}(client)
-	if err := client.SetLanguage("deu", "eng"); err != nil {
-		log.Fatalln(err)
-	}
-
 	ctx, cancel := context.WithCancel(context.Background())
 
 	topic := "records/+"
@@ -121,6 +110,17 @@ func main() {
 			log.Println("could not extract pages")
 			return
 		}
+		client := gosseract.NewClient()
+		defer func(client *gosseract.Client) {
+			err := client.Close()
+			if err != nil {
+
+			}
+		}(client)
+		if err := client.SetLanguage("deu", "eng"); err != nil {
+			log.Fatalln(err)
+		}
+
 		// tracks whether anything was changed and an update is required
 		needsUpdate := false
 		updatedPages := make([]map[string]any, len(pages))
@@ -155,6 +155,7 @@ func main() {
 				log.Println(err)
 				return
 			}
+
 			if err != client.SetImageFromBytes(img) {
 				log.Println(err)
 			}

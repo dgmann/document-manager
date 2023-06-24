@@ -1,5 +1,19 @@
 version: '3'
 services:
+  ingress:
+    image: "traefik:3.0"
+    networks:
+      - backend
+    restart: unless-stopped
+    # Enables the web UI and tells Traefik to listen to Docker
+    command: --api.insecure=true --providers.docker
+    volumes:
+      # So that Traefik can listen to the Docker events
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "80:80"
+      - "8080:8080"
+
   db:
     image: 'mongo:6'
     volumes:
@@ -15,18 +29,14 @@ services:
       - emqx-log:/opt/emqx/log
     networks:
       - backend
+    labels:
+      - "traefik.http.routers.mqtt-ui.service=mqtt-ui"
+      - traefik.http.routers.mqtt-ui.rule=HostRegexp(`^mqtt\..+`)
+      - "traefik.http.services.mqtt-ui.loadbalancer.server.port=18083"
 
-  gateway:
-    image: 'ghcr.io/dgmann/document-manager/gateway:${DOCUMENT_MANAGER_VERSION}'
-    ports:
-      - '80:80'
-    networks:
-      - backend
-    depends_on:
-      - api
-      - app
-      - m1-adapter
-    restart: unless-stopped
+      - "traefik.http.routers.mqtt-ws.service=mqtt-ws"
+      - "traefik.http.routers.mqtt-ws.rule=PathPrefix(`/mqtt`)"
+      - "traefik.http.services.mqtt-ws.loadbalancer.server.port=8083"
 
   api:
     image: 'ghcr.io/dgmann/document-manager/api:${DOCUMENT_MANAGER_VERSION}'
@@ -45,6 +55,8 @@ services:
       - mqtt
       - processor
     restart: unless-stopped
+    labels:
+      - "traefik.http.routers.backend.rule=PathPrefix(`/api`)"
   app:
     image: 'ghcr.io/dgmann/document-manager/app:${DOCUMENT_MANAGER_VERSION}'
     networks: 
@@ -53,6 +65,8 @@ services:
       API_HOST: ${API_HOST:-}
       ENABLE_SSL: ${ENABLE_SSL:-false}
     restart: unless-stopped
+    labels:
+      - "traefik.http.routers.app.rule=PathPrefix(`/`)"
   ocr:
     image: 'ghcr.io/dgmann/document-manager/ocr:${DOCUMENT_MANAGER_VERSION}'
     networks:
@@ -64,6 +78,9 @@ services:
     environment:
       MQTT_BROKER: 'mqtt:1883'
       API_URL: 'http://api/api'
+    labels:
+      - "traefik.http.routers.ocr.rule=PathPrefix(`/ocr`)"
+      - "traefik.http.middlewares.stripprefix.stripprefix.prefixes=/ocr"
   processor:
     image: 'ghcr.io/dgmann/document-manager/pdf-processor:${DOCUMENT_MANAGER_VERSION}'
     networks:
@@ -81,6 +98,13 @@ services:
       - DB_USERNAME=${M1_DB_USERNAME}
       - DB_PASSWORD=${M1_DB_PASSWORD}
       - DB_HOST=${M1_DB_HOST}
+    labels:
+      - traefik.http.routers.patients.rule=PathRegexp(`^/api/patients(/[\d]*)?$$`)
+      - traefik.http.middlewares.patient.replacepathregex.regex=^/api/patients(/[\d]*)?
+      - traefik.http.middlewares.patient.replacepathregex.replacement=/patients$$1
+      - traefik.http.routers.patients.middlewares=patient@docker
+      - traefik.http.services.patient.loadbalancer.server.port=8080
+      - traefik.http.routers.patients.service=patient
 
   scan_watcher:
     image: 'ghcr.io/dgmann/document-manager/directory-watcher:${DOCUMENT_MANAGER_VERSION}'

@@ -28,9 +28,9 @@ RUN chmod +x /entrypoint.sh
 COPY --from=builder /m1-adapter /m1-adapter
 COPY --from=builder /usr/local/oracle/lib/oracle /usr/local/oracle/lib/oracle
 ENV LD_LIBRARY_PATH=/usr/local/oracle/lib/oracle/
-ENV PORT=80 DB_USERNAME="" DB_PASSWORD="" DB_HOST="" DB_PORT=1521 DB_NAME=M1DB
+ENV DB_USERNAME="" DB_PASSWORD="" DB_HOST="" DB_PORT=1521 DB_NAME=M1DB
 
-EXPOSE 80
+EXPOSE 8080
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["/m1-adapter"]

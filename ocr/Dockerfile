@@ -32,4 +32,6 @@ RUN apt-get update && apt-get install -y -qq lsb-release wget gnupg && \
 
 COPY --from=builder /ocr-service /app/ocr-service
 
+EXPOSE 8080
+
 CMD ["/app/ocr-service"]

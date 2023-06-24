@@ -81,6 +81,9 @@ services:
     labels:
       - "traefik.http.routers.ocr.rule=PathPrefix(`/ocr`)"
       - "traefik.http.middlewares.stripprefix.stripprefix.prefixes=/ocr"
+      - traefik.http.routers.ocr.middlewares=stripprefix@docker
+      - traefik.http.services.ocr.loadbalancer.server.port=8080
+      - traefik.http.routers.ocr.service=ocr
   processor:
     image: 'ghcr.io/dgmann/document-manager/pdf-processor:${DOCUMENT_MANAGER_VERSION}'
     networks:

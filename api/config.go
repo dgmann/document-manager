@@ -2,7 +2,9 @@ package main
 
 import (
 	"github.com/dgmann/document-manager/api/internal/datastore"
+	"math/rand"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -12,6 +14,7 @@ type Config struct {
 	PdfProcessorUrl  string
 	Database         datastore.DatabaseConfig
 	MQTTBroker       string
+	MQTTClientId     string
 	Port             string
 }
 
@@ -24,6 +27,7 @@ func ConfigFromEnv() Config {
 	pdfProcessorUrl := envOrDefault("PDFPROCESSOR_URL", "127.0.0.1:9000")
 	mqttBroker := envOrDefault("MQTT_BROKER", "mqtt:1883")
 	port := envOrDefault("HTTP_PORT", "80")
+	mqttClientId := envOrDefault("MQTT_CLIENT_ID", "backend-api-"+strconv.Itoa(rand.Int()))
 	return Config{
 		RecordDirectory:  recordDir,
 		ArchiveDirectory: archiveDir,
@@ -33,8 +37,9 @@ func ConfigFromEnv() Config {
 			Port: strings.TrimSpace(dbPort),
 			Name: strings.TrimSpace(dbName),
 		},
-		MQTTBroker: mqttBroker,
-		Port:       port,
+		MQTTBroker:   mqttBroker,
+		MQTTClientId: mqttClientId,
+		Port:         port,
 	}
 }
 

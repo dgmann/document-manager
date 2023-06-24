@@ -38,6 +38,10 @@ func (c *Client) Connect(ctx context.Context) error {
 	return c.Client.Ping(ctx, readpref.Primary())
 }
 
+func (c *Client) Disconnect(ctx context.Context) error {
+	return c.Client.Disconnect(ctx)
+}
+
 func (c *Client) Database() *mongo.Database {
 	return c.Client.Database(c.dbName)
 }

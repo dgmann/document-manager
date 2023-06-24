@@ -7,9 +7,9 @@ services:
     restart: unless-stopped
     # Enables the web UI and tells Traefik to listen to Docker
     command: --api.insecure=true --providers.docker
-    volumes:
+    volumes: []
       # So that Traefik can listen to the Docker events
-      - /var/run/docker.sock:/var/run/docker.sock
+      #- /var/run/docker.sock:/var/run/docker.sock
     ports:
       - "80:80"
       - "8080:8080"
@@ -29,6 +29,8 @@ services:
       - emqx-log:/opt/emqx/log
     networks:
       - backend
+    environment:
+      EMQX_MQTT__MAX_MQUEUE_LEN: "infinity"
     labels:
       - "traefik.http.routers.mqtt-ui.service=mqtt-ui"
       - traefik.http.routers.mqtt-ui.rule=HostRegexp(`^mqtt\..+`)
@@ -76,7 +78,7 @@ services:
       - mqtt
     restart: unless-stopped
     environment:
-      MQTT_BROKER: 'mqtt:1883'
+      MQTT_BROKER: 'mqtt://mqtt:1883'
       API_URL: 'http://api/api'
     labels:
       - "traefik.http.routers.ocr.rule=PathPrefix(`/ocr`)"

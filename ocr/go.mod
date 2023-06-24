@@ -7,4 +7,7 @@ require (
 	github.com/otiai10/gosseract/v2 v2.4.0
 )
 
-require golang.org/x/sync v0.0.0-20201207232520-09787c993a3a // indirect
+require (
+	github.com/gorilla/websocket v1.4.2 // indirect
+	golang.org/x/sync v0.0.0-20201207232520-09787c993a3a // indirect
+)

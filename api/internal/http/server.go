@@ -22,6 +22,7 @@
 package http
 
 import (
+	"context"
 	"github.com/dgmann/document-manager/api/internal/datastore"
 	"github.com/dgmann/document-manager/api/internal/event"
 	"github.com/dgmann/document-manager/api/internal/pdf"
@@ -49,6 +50,7 @@ type Server struct {
 	ArchiveService    storage.ArchiveService
 	TagService        datastore.TagService
 	PdfProcessor      pdf.Processor
+	server            *http.Server
 }
 
 func (s *Server) Run() error {
@@ -110,5 +112,11 @@ func (s *Server) Run() error {
 	r.Get(PathPrefix+"/status", health.Status)
 	r.Get(PathPrefix+"/statistics", statistics.Statistics)
 
-	return http.ListenAndServe(":"+s.Port, r)
+	server := &http.Server{Addr: ":" + s.Port, Handler: r}
+	s.server = server
+	return server.ListenAndServe()
+}
+
+func (s *Server) Shutdown(ctx context.Context) error {
+	return s.server.Shutdown(ctx)
 }

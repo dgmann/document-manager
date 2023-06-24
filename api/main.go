@@ -10,8 +10,10 @@ import (
 	"github.com/dgmann/document-manager/api/internal/status"
 	"github.com/dgmann/document-manager/api/internal/storage/filesystem"
 	log "github.com/sirupsen/logrus"
-	"net"
+	"net/url"
 	"os"
+	"os/signal"
+	"syscall"
 	"time"
 )
 
@@ -27,16 +29,20 @@ func main() {
 		log.Error(fmt.Errorf("error while creating tmp directory: %w", err))
 		return
 	}
-
 	log.WithFields(log.Fields{"host": config.Database.Host, "port": config.Database.Port, "database": config.Database.Name}).Info("connecting to database")
-	client := mongo.NewClient(config.Database)
-	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
-	defer cancel()
-	if err := client.Connect(ctx); err != nil {
-		log.WithError(err).Error("database cannot be reached")
-	}
+	ctx, cancel := context.WithCancel(context.Background())
 
-	if err := client.CreateIndexes(context.Background()); err != nil {
+	client := func() *mongo.Client {
+		client := mongo.NewClient(config.Database)
+		ctx, cancel := context.WithTimeout(ctx, 2*time.Second)
+		defer cancel()
+		if err := client.Connect(ctx); err != nil {
+			log.WithError(err).Error("database cannot be reached")
+		}
+		return client
+	}()
+
+	if err := client.CreateIndexes(ctx); err != nil {
 		log.WithError(err).Error("error setting indices")
 	}
 
@@ -56,20 +62,19 @@ func main() {
 	}
 
 	websocketService := event.NewWebsocketEventService()
-	conn, err := net.Dial("tcp", config.MQTTBroker)
+
+	mqttBrokerUrl, err := url.Parse(config.MQTTBroker)
 	if err != nil {
 		log.WithError(err).Fatalf("error opening connection to %s\n", config.MQTTBroker)
 	}
-	mqttService := event.NewMQTTEventSender(conn, "backend-api")
-	if _, err := mqttService.Connect(ctx); err != nil {
-		log.WithError(err).Fatalln("error connecting to MQTT Broker")
-	}
-	defer func(mqttService *event.MQTTEventSender) {
-		err := mqttService.Disconnect()
-		if err != nil {
-			log.Warnln(err)
+	mqttService := func() *event.MQTTEventSender {
+		mqttService := event.NewMQTTEventSender(mqttBrokerUrl, config.MQTTClientId)
+		if err := mqttService.Connect(ctx); err != nil {
+			log.WithError(err).Fatalln("error connecting to MQTT Broker")
 		}
-	}(mqttService)
+		return mqttService
+	}()
+
 	eventService := event.NewMultiEventSender(websocketService, mqttService)
 
 	tagService := mongo.NewTagService(client.Records())
@@ -99,10 +104,32 @@ func main() {
 		}),
 	}
 
+	go func() {
+		if err := srv.Run(); err != nil {
+			log.WithError(err).Error("error starting http server")
+		}
+	}()
 	log.Info("server startup completed")
-	if err := srv.Run(); err != nil {
-		log.WithError(err).Error("error starting http server")
-	}
+
+	signalChan := make(chan os.Signal, 1)
+	signal.Notify(
+		signalChan,
+		syscall.SIGHUP,  // kill -SIGHUP XXXX
+		syscall.SIGINT,  // kill -SIGINT XXXX or Ctrl+c
+		syscall.SIGQUIT, // kill -SIGQUIT XXXX
+	)
+	go func() {
+		<-signalChan
+		log.Print("os.Interrupt - shutting down...\n")
+		func() {
+			ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+			defer cancel()
+			_ = srv.Shutdown(ctx)
+			_ = mqttService.Disconnect(ctx)
+		}()
+		cancel()
+	}()
+	<-ctx.Done()
 }
 
 func ensureTmpDirectory() error {

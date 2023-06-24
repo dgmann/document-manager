@@ -18,9 +18,9 @@ type RecordResponse struct {
 	Id string `json:"id"`
 }
 
-func RunHTTPServer(ctx context.Context, port string, apiUrl string, mqttClient *MQTTClient) {
-	srv := &http.Server{Addr: ":" + port}
-	recordUrl, err := url.JoinPath(apiUrl, "records")
+func RunHTTPServer(ctx context.Context, config Config, publishChan chan<- OCRRequest) {
+	srv := &http.Server{Addr: ":" + config.HttpPort}
+	recordUrl, err := url.JoinPath(config.ApiUrl, "records")
 	if err != nil {
 		log.Println(err)
 	}
@@ -69,9 +69,7 @@ func RunHTTPServer(ctx context.Context, port string, apiUrl string, mqttClient *
 		}
 
 		for _, record := range recordResponse {
-			if err := mqttClient.Publish(ctx, OCRRequestTopic, OCRRequest{RecordId: record.Id, Force: job.Full}); err != nil {
-				return
-			}
+			publishChan <- OCRRequest{RecordId: record.Id, Force: job.Full}
 		}
 
 		respond(http.StatusAccepted, map[string]any{"message": fmt.Sprintf("published %d ocr requests", len(recordResponse))})

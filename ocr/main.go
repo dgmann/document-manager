@@ -33,17 +33,17 @@ func main() {
 	ocrRequestPublishChan := make(chan OCRRequest)
 	defer close(ocrRequestPublishChan)
 
-	subscriber := NewSubscriber(ctx, config.Broker, config.ClientId, []Subscription{
+	client := NewMQTTClient(ctx, config.Broker, config.ClientId, []Subscription{
 		{Topic: RecordsTopic, SubscribeOptions: paho.SubscribeOptions{QoS: 1}, Handler: handleBackendEvent(ocrRequestPublishChan)},
 		{Topic: OCRRequestTopic, SubscribeOptions: paho.SubscribeOptions{QoS: 1}, Handler: handlerOCRRequest(config.ApiUrl)},
 	})
-	if err := subscriber.Connect(ctx); err != nil {
+	if err := client.Connect(ctx); err != nil {
 		log.Fatalf("error connecting subscriber: %s", err)
 	}
 
 	go RunHTTPServer(ctx, config, ocrRequestPublishChan)
 	go func() {
-		err := subscriber.Run(ctx, OCRRequestTopic, ocrRequestPublishChan)
+		err := client.Run(ctx, OCRRequestTopic, ocrRequestPublishChan)
 		if err != nil {
 			log.Fatalf("publisher error: %s", err)
 		}
@@ -64,7 +64,7 @@ func main() {
 		func() {
 			ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 			defer cancel()
-			_ = subscriber.Disconnect(ctx)
+			_ = client.Disconnect(ctx)
 		}()
 		cancel()
 	}()

@@ -1,0 +1,196 @@
+baseURL: http://something-fresh.org/
+languageCode: de-de
+title: DocumentManager
+
+module:
+  # uncomment line below for local development of module
+  # workspace: hugo.work
+  imports:
+    - path: github.com/StefMa/hugo-fresh
+
+
+googleAnalytics: # Put in your tracking code without quotes like this: UA-XXX for universal tracking or G-XXX analytics v4 tracking
+# Disables warnings
+disableKinds:
+- taxonomy
+- taxonomyTerm
+markup:
+  goldmark:
+    renderer:
+      unsafe: true # Allows you to write raw html in your md files
+
+params:
+  # Open graph allows easy social sharing. If you don't want it you can set it to false or just delete the variable
+  openGraph: true
+  # Used as meta data; describe your site to make Google Bots happy
+  description:
+  # Preloader ensures images are loaded before displaying to the user. If you don't want it uncomment to set it to false
+  # preloader: false
+  navbarlogo:
+  # Logo (from static/images/logos/___)
+    image: logos/dm.png
+    link: /
+    # Default width/height. Uncomment if you need to change
+    width: 48
+    height: 48
+  font:
+    name: "Open Sans"
+    sizes: [400,600]
+  hero:
+    # Main hero title
+    title: Speichern. Katalogisieren. Finden.
+    # Hero subtitle (optional)
+    subtitle: Das digitale Dokumentenverwaltungssystem speziell für Ärzte
+    # Button text
+    buttontext: Get started
+    # Where the main hero button links to
+    buttonlink: "#"
+    # Hero image (from static/images/___)
+    image: illustrations/worker.svg
+    # Footer logos (from static/images/logos/clients/*.svg)
+    # urls are optional
+    clientlogos: []
+  # Customizable navbar. For a dropdown, add a "sublinks" list.
+  navbar:
+  - title: Features
+    url: /#section1
+  - title: Pricing
+    url: /
+  sidebar:
+    # Logo (from /images/logos/___.svg)
+    logo: fresh-square
+    sections:
+    - title: User
+      icon: user
+      links:
+      - text: Profile
+        url: /
+      - text: Account
+        url: /
+      - text: Settings
+        url: /
+    - title: Messages
+      icon: envelope
+      links:
+      - text: Inbox
+        url: /
+      - text: Compose
+        url: /
+    - title: Images
+      icon: image
+      links:
+      - text: Library
+        url: /
+      - text: Upload
+        url: /
+    - title: Settings
+      icon: cog
+      links:
+      - text: User settings
+        url: /
+      - text: App settings
+        url: /
+  section1:
+    title: Features
+    subtitle: ""
+    tiles:
+    - title: Browserbasiert
+      icon: mouse-globe
+      text: Unterstützt einer Vielzahl von Plattformen
+      url: /
+      buttonText: Get started
+    - title: Speziell für Ärzte
+      icon: laptop-cloud
+      text: Angepasste Workflows auf die Bedürfnisse von Arztpraxen
+      url: /
+      buttonText: Get started
+    - title: Komfortabel
+      icon: plug-cloud
+      text: Desktop Addon für schnellen Patientenzugriff
+      url: /
+      buttonText: Get started
+  section2:
+    title: Sie sind hier, weil Sie noch nicht die perfekte Lösung gefunden haben
+    subtitle: Wir schon
+    features:
+    - title: Kategorisieren von Befunden
+      text: Kategorisieren Sie ihre Befunde nach ihren Vorstellungen, z.B. nach Fachrichtungen. Das ermöglicht es Ihnen, den richtigen Befund auf Anhieb zu finden. Oder erstellen Sie automatisch ein PDF mit allen Befunden einer Kategorie, z.B. für Überweisungen.
+      # Icon (from /images/illustrations/icons/___.svg)
+      icon: laptop-globe
+    - title: Individuelle Tags
+      text: Spezifizieren Sie den Inhalt eines Befundes genauer mit Hilfe von individuellen Tags.
+      icon: doc-sync
+    - title: Bearbeiten von Befunden
+      text: Digitale Befunde sind nicht immer perfekt. Bearbeiten Sie diese nach! Drehen, löschen, umordnen. Sogar das Zusammenführen mehrer Befunde ist im DocumentManager möglich.
+      icon: mobile-feed
+  section3:
+    title: One platform
+    subtitle: To rule them all
+    image: illustrations/mockups/app-mockup.png
+    buttonText: Get started
+    buttonLink: "#"
+  section4:
+    title: Our Clients love us!
+    subtitle: Lorem ipsum sit dolor amet is a dummy text used by typography industry
+    clients:
+    - name: Irma Walters
+      quote: Lorem ipsum dolor sit amet, elit deleniti dissentias quo eu, hinc minim appetere te usu, ea case duis scribentur has. Duo te consequat elaboraret, has quando suavitate at.
+      job: Accountant
+      img: 1
+    - name: John Bradley
+      quote: Lorem ipsum dolor sit amet, elit deleniti dissentias quo eu, hinc minim appetere te usu, ea case duis scribentur has. Duo te consequat elaboraret, has quando suavitate at.
+      job: Financial Analyst
+      img: 2
+    - name: Gary Blackman
+      quote: Lorem ipsum dolor sit amet, elit deleniti dissentias quo eu, hinc minim appetere te usu, ea case duis scribentur has. Duo te consequat elaboraret, has quando suavitate at.
+      job: HR Manager
+      img: 3
+  section5:
+    title: Drop us a line or two
+    subtitle: We'd love to hear from you
+    buttonText: Send Message
+    # action: https://formspree.io/f/<form_id>
+    # method: POST
+  footer:
+    # Logo (from /images/logos/___)
+    logo: fresh-white-alt.svg
+    # Social Media Title
+    socialmediatitle: Follow Us
+    # Social media links (GitHub, Twitter, etc.). All are optional.
+    socialmedia:
+    - link: https://github.com/dgmann/document-manager
+      # Icons are from Font Awesome
+      icon: github
+    bulmalogo: true
+    quicklinks:
+      column1:
+        title: "Product"
+        links:
+        - text: Discover features
+          link: /
+        - text: Why choose our product?
+          link: /
+        - text: Compare features
+          link: /
+        - text: Our roadmap
+          link: /
+        - text: AGB
+          link: /agb
+      column2:
+        title: "Docs"
+        links:
+        - text: Get started
+          link: /
+        - text: User guides
+          link: /
+        - text: Admin guide
+          link: /
+        - text: Developers
+          link: /
+      column3:
+        title: "Blog"
+        links:
+        - text: Latest news
+          link: /blog/first
+        - text: Tech articles
+          link: /blog/second

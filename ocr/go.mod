@@ -3,8 +3,9 @@ module ocr
 go 1.18
 
 require (
+	github.com/dgmann/gosseract v0.0.0-20230627193324-cbec72f385cc
 	github.com/eclipse/paho.golang v0.11.0
-	github.com/otiai10/gosseract/v2 v2.4.0
+
 )
 
 require (

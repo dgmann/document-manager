@@ -52,7 +52,7 @@ services:
       DB_HOST: db
       DB_NAME: manager
       PDFPROCESSOR_URL: 'processor:9000'
-      MQTT_BROKER: 'mqtt:1883'
+      MQTT_BROKER: 'mqtt://mqtt:1883'
     depends_on:
       - db
       - mqtt

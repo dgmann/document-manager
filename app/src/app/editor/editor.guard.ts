@@ -1,11 +1,11 @@
 import {Injectable} from '@angular/core';
-import {ActivatedRouteSnapshot, CanActivate, RouterStateSnapshot} from '@angular/router';
+import { ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import {of} from 'rxjs';
 import {catchError, filter, switchMap, take, tap} from 'rxjs/operators';
 import {RecordService} from '@app/core/records';
 
 @Injectable()
-export class EditorGuard implements CanActivate {
+export class EditorGuard  {
   constructor(private recordService: RecordService) {
   }
 

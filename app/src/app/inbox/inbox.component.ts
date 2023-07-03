@@ -4,7 +4,7 @@ import {map} from 'rxjs/operators';
 import {Record} from '@app/core/records';
 import {InboxService} from './inbox.service';
 import {ActionBarService} from '@app/inbox/action-bar';
-import {untilDestroyed} from 'ngx-take-until-destroy';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-inbox',
@@ -31,7 +31,7 @@ export class InboxComponent implements OnInit, OnDestroy {
       .pipe(map(records => records && records[0] || undefined));
     this.selectedIds = this.inboxService.selectedIds$;
     this.inboxService.selectedIds$
-      .pipe(map(ids => ids.length > 1), untilDestroyed(this))
+      .pipe(map(ids => ids.length > 1), takeUntilDestroyed())
       .subscribe(isMultiselect => {
         if (isMultiselect) {
           if (!this.actionBar.isOpen) {

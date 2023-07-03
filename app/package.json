@@ -7,8 +7,7 @@
     "build": "ng build --configuration production",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e",
-    "postinstall": "ngcc"
+    "e2e": "ng e2e"
   },
   "private": true,
   "dependencies": {
@@ -29,7 +28,6 @@
     "@ngrx/store-devtools": "^16.0.1",
     "date-fns": "^2.30.0",
     "lodash-es": "latest",
-    "ngx-take-until-destroy": "^5.4.0",
     "rxjs": "~6.6.3",
     "tslib": "^2.0.0",
     "zone.js": "~0.13.1"

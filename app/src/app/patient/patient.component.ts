@@ -6,7 +6,7 @@ import {Record, RecordService} from '@app/core/records';
 import {PatientService} from './patient.service';
 import {Patient} from './store/patient.model';
 import {Filter} from './store/patient.reducer';
-import {untilDestroyed} from 'ngx-take-until-destroy';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {Category, CategoryService} from '@app/core/categories';
 import {EditResult} from '../shared';
 import {animate, AnimationEvent, style, transition, trigger} from '@angular/animations';
@@ -49,7 +49,7 @@ export class PatientComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.route.params
-        .pipe(untilDestroyed(this))
+        .pipe(takeUntilDestroyed())
         .subscribe(params => this.patientService.selectPatient(params.id));
 
     this.records$ = this.patientService.filteredPatientRecord$;

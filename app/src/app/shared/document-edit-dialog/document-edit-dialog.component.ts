@@ -18,7 +18,7 @@ import {Patient} from '@app/patient';
 import {Record} from '@app/core/records';
 import {TagService} from '@app/core/tags';
 import {Category, CategoryService} from '@app/core/categories';
-import {untilDestroyed} from 'ngx-take-until-destroy';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {EditResult} from './edit-result.model';
 import {ExternalApiService} from './external-api.service';
 
@@ -58,7 +58,7 @@ export class DocumentEditDialogComponent implements AfterViewInit, OnInit, OnDes
 
   ngOnInit() {
     this.categoryService.load();
-    this.categoryService.categories.pipe(untilDestroyed(this)).subscribe(categories => this.categories = categories);
+    this.categoryService.categories.pipe(takeUntilDestroyed()).subscribe(categories => this.categories = categories);
 
     this.filteredCategories = this.editForm.get('category').valueChanges
       .pipe(

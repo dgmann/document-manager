@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import { Component, DestroyRef, inject, OnDestroy, OnInit } from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Observable} from 'rxjs';
 import {filter, switchMap} from 'rxjs/operators';
@@ -39,6 +39,8 @@ export class PatientComponent implements OnInit, OnDestroy {
   public availableCategories$: Observable<Category[]>;
   public availableTags$: Observable<string[]>;
 
+  destroyRef = inject(DestroyRef);
+
   constructor(private recordService: RecordService,
               private patientService: PatientService,
               private categoryService: CategoryService,
@@ -49,7 +51,7 @@ export class PatientComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.route.params
-        .pipe(takeUntilDestroyed())
+        .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe(params => this.patientService.selectPatient(params.id));
 
     this.records$ = this.patientService.filteredPatientRecord$;

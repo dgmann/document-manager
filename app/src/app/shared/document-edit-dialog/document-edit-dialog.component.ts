@@ -35,6 +35,7 @@ export class DocumentEditDialogComponent implements AfterViewInit, OnInit, OnDes
   public currentExternalPatient$: Observable<Patient>;
   public selectedPatient$: Observable<Patient>;
 
+  private categories$: Observable<Category[]>;
   public categories: Category[];
   public tags: Observable<string[]>;
 
@@ -54,11 +55,12 @@ export class DocumentEditDialogComponent implements AfterViewInit, OnInit, OnDes
               public tagService: TagService) {
     this.record = Object.assign({}, record);
     this.record.tags = record.tags.slice();
+    this.categories$ = this.categoryService.categories.pipe(takeUntilDestroyed());
   }
 
   ngOnInit() {
     this.categoryService.load();
-    this.categoryService.categories.pipe(takeUntilDestroyed()).subscribe(categories => this.categories = categories);
+    this.categories$.subscribe(categories => this.categories = categories);
 
     this.filteredCategories = this.editForm.get('category').valueChanges
       .pipe(

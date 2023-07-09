@@ -2,6 +2,7 @@
 
 :host {
   @include flex-container();
+  max-width: 100%;
 }
 
 mat-sidenav-container {

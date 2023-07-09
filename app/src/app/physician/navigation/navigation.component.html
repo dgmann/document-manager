@@ -1,12 +1,12 @@
-<button mat-button routerLink="./review" routerLinkActive="mat-raised-button">
+<button mat-button [routerLink]="['/physician', 'review']" routerLinkActive="mat-mdc-raised-button">
   Review
   <span class="badge">{{ reviewCount | async }}</span>
 </button>
-<button mat-button routerLink="./escalated" routerLinkActive="mat-raised-button">
+<button mat-button [routerLink]="['/physician', 'escalated']" routerLinkActive="mat-mdc-raised-button">
   Eskaliert
   <span class="badge">{{ escalatedCount | async }}</span>
 </button>
-<button mat-button routerLink="./other" routerLinkActive="mat-raised-button">
+<button mat-button [routerLink]="['/physician', 'other']" routerLinkActive="mat-mdc-raised-button">
   Sonstiges
   <span class="badge">{{ otherCount | async }}</span>
 </button>

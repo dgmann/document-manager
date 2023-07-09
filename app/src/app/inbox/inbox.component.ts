@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, OnDestroy, OnInit} from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnDestroy, OnInit } from '@angular/core';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {Record} from '@app/core/records';
@@ -17,6 +17,7 @@ export class InboxComponent implements OnInit, OnDestroy {
   selectedRecord$: Observable<Record>;
   selectedIds: Observable<string[]>;
   isLoading$: Observable<boolean>;
+  destroyRef = inject(DestroyRef);
 
   isDragInProgress = false;
 
@@ -31,7 +32,7 @@ export class InboxComponent implements OnInit, OnDestroy {
       .pipe(map(records => records && records[0] || undefined));
     this.selectedIds = this.inboxService.selectedIds$;
     this.inboxService.selectedIds$
-      .pipe(map(ids => ids.length > 1), takeUntilDestroyed())
+      .pipe(map(ids => ids.length > 1), takeUntilDestroyed(this.destroyRef))
       .subscribe(isMultiselect => {
         if (isMultiselect) {
           if (!this.actionBar.isOpen) {

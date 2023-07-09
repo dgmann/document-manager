@@ -22,10 +22,13 @@ export class PatientEffects {
   selectLoadRecordsEffect$ = createEffect(() => this.actions$.pipe(
     ofType(PatientActionTypes.SelectPatientId),
     switchMap((action: SelectPatient) => this.http.get<Record[]>(`${this.config.getApiUrl()}/patients/${action.payload.id}/records`).pipe(
-      switchMap(data => of<Action>(new LoadRecordsSuccess({records: data}), new SetPatientRecords({
-        id: action.payload.id,
-        recordIds: data.map(r => r.id)
-      }))),
+      switchMap(data => [
+        new LoadRecordsSuccess({records: data}),
+        new SetPatientRecords({
+          id: action.payload.id,
+          recordIds: data.map(r => r.id)
+        })
+      ]),
       catchError(err => of(new LoadRecordsFail({error: err})))
     ))
   ));

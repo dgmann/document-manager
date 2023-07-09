@@ -2,6 +2,6 @@
 <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete" (optionSelected)="onSelectPatient($event)"
                   [displayWith]="displayFn">
   <mat-option *ngFor="let result of searchResults | async" [value]="result">
-    {{ result.lastName + ', ' + result.firstName }}
+    {{ result.lastName + ', ' + result.firstName }} ({{ result.birthDate | date }})
   </mat-option>
 </mat-autocomplete>

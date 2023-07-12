@@ -1,3 +1,9 @@
+@import "layout";
+
+:host {
+  @include flex-container();
+}
+
 .container {
   display: flex;
   flex: 0 0 100%;
@@ -7,14 +13,10 @@
 }
 
 app-page-list {
-  flex: 1 1 100%;
+  flex: 1;
+  min-height: 0;
 }
 
 .button-row {
-  flex: 1;
-}
-
-:host {
-  display: flex;
-  flex: 0 0 100%;
+  flex: 0 0 40px;
 }

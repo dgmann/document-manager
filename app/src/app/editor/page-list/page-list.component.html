@@ -1,8 +1,17 @@
-<div cdkDropList cdkDropListOrientation="horizontal" class="page-list" (cdkDropListDropped)="drop($event)">
-  <div cdkDrag cdkDragLockAxis="x" class="page-box" *ngFor="let page of pages;"
+<div cdkDropListGroup class="page-list" [ngStyle]="{ '--box-width': boxWidth }">
+  <div
+    cdkDropList
+    (cdkDropListEntered)="onDropListEntered($event)"
+    (cdkDropListDropped)="onDropListDropped()"
+  ></div>
+
+  <div cdkDropList
+       (cdkDropListEntered)="onDropListEntered($event)"
+       (cdkDropListDropped)="onDropListDropped()"
+       class="page-box" *ngFor="let page of pages;"
        [ngClass]="'rotate-' + page.rotate">
 
-    <mat-card appearance="outlined">
+    <mat-card cdkDrag appearance="outlined">
       <mat-card-header>
         <button (click)="rotate(page, -90)" color="primary" mat-icon-button>
           <mat-icon aria-label="rotate-left">rotate_left</mat-icon>

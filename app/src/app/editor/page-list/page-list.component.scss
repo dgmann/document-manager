@@ -89,7 +89,7 @@
 
 
 mat-card {
-  width: 400px;
+  width: var(--box-width, 400px);
 
   & > img {
     object-fit: contain;

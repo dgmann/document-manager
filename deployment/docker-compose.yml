@@ -43,6 +43,8 @@ services:
 
   otel-collector:
     image: otel/opentelemetry-collector-contrib
+    networks:
+      - backend
 
   api:
     image: 'ghcr.io/dgmann/document-manager/api:${DOCUMENT_MANAGER_VERSION}'

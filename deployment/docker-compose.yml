@@ -56,6 +56,7 @@ services:
       DB_NAME: manager
       PDFPROCESSOR_URL: 'processor:9000'
       MQTT_BROKER: 'mqtt://mqtt:1883'
+      OTEL_COLLECTOR_URL: 'otel-collector:4317'
     depends_on:
       - db
       - mqtt
@@ -97,6 +98,7 @@ services:
     restart: unless-stopped
     environment:
       - EXTRACTOR=pdfcpu
+      - OTEL_COLLECTOR_URL=otel-collector:4317
 
   m1-adapter:
     image: 'ghcr.io/dgmann/document-manager/m1-adapter:${DOCUMENT_MANAGER_VERSION}'

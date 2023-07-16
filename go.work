@@ -9,4 +9,5 @@ use (
 	pdf-processor
 	pdf-processor/pkg/processor
 	ocr
+	pkg
 )

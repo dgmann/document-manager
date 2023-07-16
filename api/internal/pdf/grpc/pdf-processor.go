@@ -7,12 +7,14 @@ import (
 	"github.com/dgmann/document-manager/api/internal/datastore"
 	"github.com/dgmann/document-manager/api/internal/pdf"
 	"github.com/dgmann/document-manager/api/pkg/api"
+	"google.golang.org/grpc/credentials/insecure"
 	"io"
 	"io/ioutil"
 
 	"github.com/dgmann/document-manager/api/internal/storage"
 	"github.com/dgmann/document-manager/pdf-processor/pkg/processor"
 	"github.com/sirupsen/logrus"
+	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/connectivity"
 	"google.golang.org/grpc/status"
@@ -28,8 +30,10 @@ type PdfProcessor struct {
 func NewPDFProcessor(baseUrl string, images storage.ImageService, cateogories datastore.CategoryService) (*PdfProcessor, error) {
 	conn, err := grpc.Dial(
 		baseUrl,
-		grpc.WithInsecure(),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(1024*1024*300), grpc.MaxCallSendMsgSize(1024*1024*300)),
+		grpc.WithUnaryInterceptor(otelgrpc.UnaryClientInterceptor()),
+		grpc.WithStreamInterceptor(otelgrpc.StreamClientInterceptor()),
 	)
 	if err != nil {
 		return nil, err
@@ -47,7 +51,7 @@ func (p *PdfProcessor) Convert(ctx context.Context, f io.Reader, opts *pdf.Conve
 		opts = &pdf.ConvertOptions{}
 	}
 
-	b, err := ioutil.ReadAll(f)
+	b, err := io.ReadAll(f)
 	if err != nil {
 		return nil, fmt.Errorf("error reading pdf to convert. %w", err)
 	}

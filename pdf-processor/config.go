@@ -5,16 +5,19 @@ import (
 )
 
 type Config struct {
-	Extractor  string
-	Rasterizer string
+	Extractor        string
+	Rasterizer       string
+	OtelCollectorUrl string
 }
 
 func ConfigFromEnv() Config {
 	extractor := envOrDefault("EXTRACTOR", "unipdf")
 	rasterizer := envOrDefault("RASTERIZER", "poppler")
+	otelCollectorUrl := envOrDefault("OTEL_COLLECTOR_URL", "")
 	return Config{
-		Extractor:  extractor,
-		Rasterizer: rasterizer,
+		Extractor:        extractor,
+		Rasterizer:       rasterizer,
+		OtelCollectorUrl: otelCollectorUrl,
 	}
 }
 

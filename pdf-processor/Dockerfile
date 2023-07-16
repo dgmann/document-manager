@@ -5,7 +5,7 @@ RUN apk add --no-cache \
     update-ms-fonts && \
     fc-cache -f
 
-FROM golang:1.15 as builder
+FROM golang:1.20 as builder
 
 RUN apt-get update && \
     apt-get install -q -y wget build-essential pkg-config poppler-utils git g++ libjpeg-dev libpng-dev libtiff-dev libgif-dev ghostscript libgs-dev --no-install-recommends && \

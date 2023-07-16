@@ -32,6 +32,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 	"github.com/gorilla/handlers"
+	"github.com/riandyrn/otelchi"
 	"net/http"
 )
 
@@ -50,12 +51,14 @@ type Server struct {
 	ArchiveService    storage.ArchiveService
 	TagService        datastore.TagService
 	PdfProcessor      pdf.Processor
+	ServiceName       string
 	server            *http.Server
 }
 
 func (s *Server) Run() error {
 	r := chi.NewRouter()
 
+	r.Use(otelchi.Middleware(s.ServiceName, otelchi.WithChiRoutes(r)))
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.RedirectSlashes)

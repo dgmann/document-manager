@@ -41,6 +41,9 @@ services:
       - "traefik.http.routers.mqtt-ws.rule=PathPrefix(`/mqtt`)"
       - "traefik.http.services.mqtt-ws.loadbalancer.server.port=8083"
 
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib
+
   api:
     image: 'ghcr.io/dgmann/document-manager/api:${DOCUMENT_MANAGER_VERSION}'
     volumes:

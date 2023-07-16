@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 
 	"github.com/dgmann/document-manager/pdf-processor/pkg/image"
@@ -33,7 +32,7 @@ func (g *GRPCServer) ConvertPdfToImage(pdfFile *processor.Pdf, sender processor.
 		converter = g.converterFactory.Rasterizer()
 	}
 
-	file, err := ioutil.TempFile("", "pdf-*.pdf")
+	file, err := os.CreateTemp("", "pdf-*.pdf")
 	if err != nil {
 		return fmt.Errorf("error creating temp file: %w", err)
 	}

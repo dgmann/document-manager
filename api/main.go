@@ -9,7 +9,9 @@ import (
 	"github.com/dgmann/document-manager/api/internal/pdf/grpc"
 	"github.com/dgmann/document-manager/api/internal/status"
 	"github.com/dgmann/document-manager/api/internal/storage/filesystem"
+	"github.com/dgmann/document-manager/pkg/opentelemetry"
 	log "github.com/sirupsen/logrus"
+	"go.opentelemetry.io/contrib/instrumentation/runtime"
 	"net/url"
 	"os"
 	"os/signal"
@@ -23,14 +25,25 @@ func init() {
 	log.SetLevel(log.DebugLevel)
 }
 
+const ServiceName = "backend"
+
 func main() {
 	config := ConfigFromEnv()
+	ctx, cancel := context.WithCancel(context.Background())
+
+	otlProvider, err := opentelemetry.NewProvider(ctx, ServiceName, config.OtelCollectorUrl)
+	if err != nil {
+		log.WithError(err).Warnln("error creating OpenTelemetry exporter")
+	}
+	if err := runtime.Start(runtime.WithMinimumReadMemStatsInterval(time.Second)); err != nil {
+		log.WithError(err).Warnln("error initializing runtime metrics")
+	}
+
 	if err := ensureTmpDirectory(); err != nil {
 		log.Error(fmt.Errorf("error while creating tmp directory: %w", err))
 		return
 	}
 	log.WithFields(log.Fields{"host": config.Database.Host, "port": config.Database.Port, "database": config.Database.Name}).Info("connecting to database")
-	ctx, cancel := context.WithCancel(context.Background())
 
 	client := func() *mongo.Client {
 		client := mongo.NewClient(config.Database)
@@ -102,6 +115,7 @@ func main() {
 		StatisticsService: status.NewStatisticsService(status.Providers{
 			"archiveStorage": archiveService,
 		}),
+		ServiceName: ServiceName,
 	}
 
 	go func() {
@@ -124,8 +138,15 @@ func main() {
 		func() {
 			ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 			defer cancel()
-			_ = srv.Shutdown(ctx)
-			_ = mqttService.Disconnect(ctx)
+			if err := srv.Shutdown(ctx); err != nil {
+				log.Printf("error shutting down http server: %s", err)
+			}
+			if err := mqttService.Disconnect(ctx); err != nil {
+				log.Printf("error disconnecting MQTT: %s", err)
+			}
+			if err := otlProvider.Shutdown(ctx); err != nil {
+				log.Printf("error shutting down tracer provider: %s", err)
+			}
 		}()
 		cancel()
 	}()

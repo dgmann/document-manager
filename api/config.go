@@ -16,6 +16,7 @@ type Config struct {
 	MQTTBroker       string
 	MQTTClientId     string
 	Port             string
+	OtelCollectorUrl string
 }
 
 func ConfigFromEnv() Config {
@@ -28,6 +29,7 @@ func ConfigFromEnv() Config {
 	mqttBroker := envOrDefault("MQTT_BROKER", "mqtt:1883")
 	port := envOrDefault("HTTP_PORT", "80")
 	mqttClientId := envOrDefault("MQTT_CLIENT_ID", "backend-api-"+strconv.Itoa(rand.Int()))
+	otelCollectorUrl := envOrDefault("OTEL_COLLECTOR_URL", "")
 	return Config{
 		RecordDirectory:  recordDir,
 		ArchiveDirectory: archiveDir,
@@ -37,9 +39,10 @@ func ConfigFromEnv() Config {
 			Port: strings.TrimSpace(dbPort),
 			Name: strings.TrimSpace(dbName),
 		},
-		MQTTBroker:   mqttBroker,
-		MQTTClientId: mqttClientId,
-		Port:         port,
+		MQTTBroker:       mqttBroker,
+		MQTTClientId:     mqttClientId,
+		Port:             port,
+		OtelCollectorUrl: otelCollectorUrl,
 	}
 }
 

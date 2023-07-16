@@ -1,7 +1,10 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"github.com/dgmann/document-manager/pkg/opentelemetry"
+	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"net"
 	"net/http"
 	_ "net/http/pprof"
@@ -23,6 +26,14 @@ func main() {
 		log.Println(http.ListenAndServe(":8080", nil))
 	}()
 	config := ConfigFromEnv()
+	ctx := context.Background()
+	otlProvider, err := opentelemetry.NewProvider(ctx, "pdf-processor", config.OtelCollectorUrl)
+	if err != nil {
+		log.WithError(err).Warnln("error creating OpenTelemetry exporter")
+	}
+	defer func(otlProvider *opentelemetry.Provider, ctx context.Context) {
+		_ = otlProvider.Shutdown(ctx)
+	}(otlProvider, ctx)
 
 	extractors, rasterizers := initProcessors()
 
@@ -44,7 +55,12 @@ func main() {
 		log.Fatalf("failed to open socket: %v", err)
 	}
 	log.Info("Starting gRPC Server")
-	grpcServer := grpc.NewServer(grpc.MaxRecvMsgSize(1024*1024*300), grpc.MaxSendMsgSize(1024*1024*300))
+	grpcServer := grpc.NewServer(
+		grpc.MaxRecvMsgSize(1024*1024*300),
+		grpc.MaxSendMsgSize(1024*1024*300),
+		grpc.UnaryInterceptor(otelgrpc.UnaryServerInterceptor()),
+		grpc.StreamInterceptor(otelgrpc.StreamServerInterceptor()),
+	)
 	processor.RegisterPdfProcessorServer(grpcServer, NewGRPCServer(converter, rotator, creator))
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Error(err)

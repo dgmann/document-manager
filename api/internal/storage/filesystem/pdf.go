@@ -35,9 +35,9 @@ func (f *ArchiveService) Set(resource storage.KeyedResource) error {
 	return f.Write(resource)
 }
 
-func (f *DiskStorage) NumberOfElements() (int, error) {
+func (s *DiskStorage) NumberOfElements() (int, error) {
 	count := 0
-	err := f.ForEach(storage.NewKey("/"), func(resource storage.KeyedResource, err error) error {
+	err := s.ForEach(storage.NewKey("/"), func(resource storage.KeyedResource, err error) error {
 		if err != nil {
 			return err
 		}

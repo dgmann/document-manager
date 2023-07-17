@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/dgmann/document-manager/api/internal/storage"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -45,30 +44,35 @@ func NewDiskStorage(directory string) (*DiskStorage, error) {
 }
 
 // Get retrieves a copy of the specified resource from the file system.
-func (f *DiskStorage) Get(resource storage.Locatable) (*storage.GenericResource, error) {
-	loc := f.Locate(resource)
-	file, err := f.storage.Open(loc)
+func (s *DiskStorage) Get(resource storage.Locatable) (resourceWithData *storage.GenericResource, err error) {
+	loc := s.Locate(resource)
+	openedFile, err := s.storage.Open(loc)
 	if err != nil {
 		return nil, err
 	}
-	defer file.Close()
+	defer func(f file) {
+		closeErr := f.Close()
+		if err == nil {
+			err = closeErr
+		}
+	}(openedFile)
 
-	data, err := ioutil.ReadAll(file)
+	data, err := io.ReadAll(openedFile)
 	if err != nil {
 		return nil, err
 	}
-	resourceWithData := storage.NewKeyedGenericResource(data, resource.Format(), resource.Key()...)
+	resourceWithData = storage.NewKeyedGenericResource(data, resource.Format(), resource.Key()...)
 	return resourceWithData, nil
 }
 
 // Delete deletes the specified Locatable from the file system.
-func (f *DiskStorage) Delete(resource storage.Locatable) error {
+func (s *DiskStorage) Delete(resource storage.Locatable) error {
 	var err error
-	loc := f.Locate(resource)
+	loc := s.Locate(resource)
 	if len(resource.Format()) > 0 {
-		err = f.storage.Remove(loc)
+		err = s.storage.Remove(loc)
 	} else {
-		err = f.storage.RemoveAll(loc)
+		err = s.storage.RemoveAll(loc)
 	}
 	if !os.IsNotExist(err) {
 		return err
@@ -78,25 +82,25 @@ func (f *DiskStorage) Delete(resource storage.Locatable) error {
 
 // Write writes the specified resource to the file system.
 // It creates the files if it does not exist yet.
-func (f *DiskStorage) Write(resource storage.KeyedResource) (err error) {
-	if err := f.ensureResourceLocation(resource); err != nil {
+func (s *DiskStorage) Write(resource storage.KeyedResource) (err error) {
+	if err := s.ensureResourceLocation(resource); err != nil {
 		return err
 	}
 
-	loc := f.Locate(resource)
-	file, err := f.storage.Create(loc)
+	loc := s.Locate(resource)
+	newFile, err := s.storage.Create(loc)
 	if err != nil {
 		return fmt.Errorf("error creating file %s: %w", loc, err)
 	}
-	defer func() {
-		cerr := file.Close()
+	defer func(f file) {
+		closeErr := f.Close()
 		if err == nil {
-			err = cerr
+			err = closeErr
 		}
-	}()
+	}(newFile)
 
-	if _, err = file.Write(resource.Data()); err != nil {
-		return f.storage.Remove(loc)
+	if _, err = newFile.Write(resource.Data()); err != nil {
+		return s.storage.Remove(loc)
 	}
 
 	return nil
@@ -105,20 +109,20 @@ func (f *DiskStorage) Write(resource storage.KeyedResource) (err error) {
 type ForEachFunc func(resource storage.KeyedResource, err error) error
 
 // ForEach executes the provided function for each stored element.
-func (f *DiskStorage) ForEach(keyed storage.Keyed, forEachFn ForEachFunc) error {
-	p := f.locate(keyed)
-	return f.storage.Walk(p, func(currentPath string, info os.FileInfo, err error) error {
+func (s *DiskStorage) ForEach(keyed storage.Keyed, forEachFn ForEachFunc) error {
+	p := s.locate(keyed)
+	return s.storage.Walk(p, func(currentPath string, info os.FileInfo, err error) error {
 		if !info.IsDir() {
 			ext := filepath.Ext(info.Name())
 			abs := strings.TrimSuffix(currentPath, ext)
-			rel, err := filepath.Rel(f.Root, abs)
+			rel, err := filepath.Rel(s.Root, abs)
 			if err != nil {
 				return err
 			}
 
 			keys := strings.Split(rel, string(filepath.Separator))
 			resource := storage.NewKeyedGenericResource(nil, ext, keys...)
-			withData, err := f.Get(resource)
+			withData, err := s.Get(resource)
 			if err != nil {
 				return fmt.Errorf("error reading resource %s: %w", filepath.Join(resource.Key()...), err)
 			}
@@ -129,26 +133,26 @@ func (f *DiskStorage) ForEach(keyed storage.Keyed, forEachFn ForEachFunc) error 
 }
 
 // Check returns the health status of the file system.
-func (f *DiskStorage) Check(ctx context.Context) (string, error) {
-	if _, err := f.storage.Stat(f.Root); err != nil {
+func (s *DiskStorage) Check(ctx context.Context) (string, error) {
+	if _, err := s.storage.Stat(s.Root); err != nil {
 		return "", err
 	}
 	return "pass", nil
 }
 
 // ModTime returns the time at which the element was last changed.
-func (f *DiskStorage) ModTime(resource storage.KeyedResource) (time.Time, error) {
-	fp := f.Locate(resource)
-	fileInfo, err := f.storage.Stat(fp)
+func (s *DiskStorage) ModTime(resource storage.KeyedResource) (time.Time, error) {
+	fp := s.Locate(resource)
+	fileInfo, err := s.storage.Stat(fp)
 	if err != nil {
 		return time.Now(), err
 	}
 	return fileInfo.ModTime(), nil
 }
 
-// LocateResource returns the location of the specified Locatable.
-func (f *DiskStorage) Locate(resource storage.Locatable) string {
-	dir := f.locate(resource)
+// Locate returns the location of the specified Locatable.
+func (s *DiskStorage) Locate(resource storage.Locatable) string {
+	dir := s.locate(resource)
 	if len(resource.Format()) > 0 {
 		format := normalizeExtension(resource.Format())
 		return fmt.Sprintf("%s.%s", dir, format)
@@ -156,9 +160,9 @@ func (f *DiskStorage) Locate(resource storage.Locatable) string {
 	return dir
 }
 
-// Locate returns the location of the specified Keyed element
-func (f *DiskStorage) locate(keyed storage.Keyed) string {
-	keySlice := append([]string{f.Root}, keyed.Key()...)
+// locate returns the location of the specified Keyed element.
+func (s *DiskStorage) locate(keyed storage.Keyed) string {
+	keySlice := append([]string{s.Root}, keyed.Key()...)
 	return filepath.Join(keySlice...)
 }
 
@@ -169,22 +173,22 @@ func normalizeExtension(extension string) string {
 	return extension
 }
 
-// ensureResourceLocation ensures the the directory structure required to store the KeyedResource is in place.
-func (f *DiskStorage) ensureResourceLocation(keyed storage.KeyedResource) error {
-	loc := f.Locate(keyed)
+// ensureResourceLocation ensures the directory structure required to store the KeyedResource is in place.
+func (s *DiskStorage) ensureResourceLocation(keyed storage.KeyedResource) error {
+	loc := s.Locate(keyed)
 	dir := filepath.Dir(loc)
-	return f.ensureLocation(dir)
+	return s.ensureLocation(dir)
 }
 
-// ensureResourceLocation ensures the the directory structure required to store the Keyed is in place.
-func (f *DiskStorage) ensureKeyedLocation(keyed storage.Keyed) error {
-	dir := f.locate(keyed)
-	return f.ensureLocation(dir)
+// ensureResourceLocation ensures the directory structure required to store the Keyed is in place.
+func (s *DiskStorage) ensureKeyedLocation(keyed storage.Keyed) error {
+	dir := s.locate(keyed)
+	return s.ensureLocation(dir)
 }
 
-func (f *DiskStorage) ensureLocation(dir string) error {
-	if _, err := f.storage.Stat(dir); os.IsNotExist(err) {
-		err = f.storage.MkdirAll(dir, os.ModePerm)
+func (s *DiskStorage) ensureLocation(dir string) error {
+	if _, err := s.storage.Stat(dir); os.IsNotExist(err) {
+		err = s.storage.MkdirAll(dir, os.ModePerm)
 		if err != nil {
 			return fmt.Errorf("could not create directory %s: %w", dir, err)
 		}

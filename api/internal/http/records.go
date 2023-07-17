@@ -20,9 +20,6 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-// swagger:response record
-type record = api.Record
-
 type RecordController struct {
 	records      datastore.RecordService
 	images       storage.ImageService

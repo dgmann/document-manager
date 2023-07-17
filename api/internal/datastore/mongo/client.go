@@ -8,6 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
+	"go.opentelemetry.io/contrib/instrumentation/go.mongodb.org/mongo-driver/mongo/otelmongo"
 )
 
 const (
@@ -29,7 +30,10 @@ func NewClient(config datastore.DatabaseConfig) *Client {
 }
 
 func (c *Client) Connect(ctx context.Context) error {
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI(c.uri))
+	opts := options.Client().
+		ApplyURI(c.uri).
+		SetMonitor(otelmongo.NewMonitor())
+	client, err := mongo.Connect(ctx, opts)
 	if err != nil {
 		return err
 	}

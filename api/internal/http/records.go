@@ -6,8 +6,13 @@ import (
 	"errors"
 	"fmt"
 	"github.com/dgmann/document-manager/api/internal/datastore"
+	otelutil "github.com/dgmann/document-manager/api/internal/opentelemetry"
 	"github.com/dgmann/document-manager/api/pkg/api"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
+	oteltrace "go.opentelemetry.io/otel/trace"
 	"io"
+	"mime/multipart"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -136,7 +141,9 @@ func (controller *RecordController) Create(w http.ResponseWriter, req *http.Requ
 		NewErrorResponse(w, fmt.Errorf("no file found. Please specify a pdf file in the field: pdf. %w", err), http.StatusBadRequest).WriteJSON()
 		return
 	}
-	defer file.Close()
+	defer func(file multipart.File) {
+		_ = file.Close()
+	}(file)
 
 	var opts *pdf.ConvertOptions
 	if method == pdf.EXTRACT.String() {
@@ -209,7 +216,7 @@ func (controller *RecordController) Duplicate(w http.ResponseWriter, req *http.R
 		return
 	}
 
-	file, err := controller.pdfs.Get(id)
+	file, err := controller.pdfs.Get(req.Context(), id)
 	if err != nil {
 		NewErrorResponse(w, err, http.StatusInternalServerError).WriteJSON()
 		return
@@ -227,7 +234,7 @@ func (controller *RecordController) Duplicate(w http.ResponseWriter, req *http.R
 		return
 	}
 
-	err = controller.images.Copy(recordToDuplicate.Id, copiedRecord.Id)
+	err = controller.images.Copy(req.Context(), recordToDuplicate.Id, copiedRecord.Id)
 	if err != nil {
 		NewErrorResponse(w, err, http.StatusInternalServerError).WriteJSON()
 		return
@@ -240,7 +247,7 @@ func (controller *RecordController) Duplicate(w http.ResponseWriter, req *http.R
 func (controller *RecordController) Reset(w http.ResponseWriter, req *http.Request) {
 	id := URLParamFromContext(req.Context(), "recordId")
 	method := req.URL.Query().Get("method")
-	f, err := controller.pdfs.Get(id)
+	f, err := controller.pdfs.Get(req.Context(), id)
 	if err != nil {
 		NewErrorResponse(w, err, http.StatusNotFound).WriteJSON()
 		return
@@ -296,7 +303,7 @@ func (controller *RecordController) Append(w http.ResponseWriter, req *http.Requ
 
 	pages := append(targetRecord.Pages, recordToAppend.Pages...)
 
-	err = controller.images.Copy(idToAppend, targetId)
+	err = controller.images.Copy(req.Context(), idToAppend, targetId)
 	if err != nil {
 		NewErrorResponse(w, err, http.StatusBadRequest).WriteJSON()
 		return
@@ -321,6 +328,12 @@ func (controller *RecordController) Page(w http.ResponseWriter, req *http.Reques
 	}
 
 	imageId := URLParamFromContext(req.Context(), "imageId")
+
+	_, span := otel.Tracer(tracerName).Start(req.Context(), "ServePage", oteltrace.WithAttributes(
+		attribute.String(otelutil.Key(otelutil.AppNamespace, "record", "id"), id),
+		attribute.String(otelutil.Key(otelutil.AppNamespace, "image.id"), imageId),
+	))
+	defer span.End()
 	for _, page := range rec.Pages {
 		if page.Id == imageId {
 			p := controller.images.Locate(storage.NewLocator(page.Format, id, imageId))
@@ -328,7 +341,7 @@ func (controller *RecordController) Page(w http.ResponseWriter, req *http.Reques
 			return
 		}
 	}
-	NewErrorResponse(w, errors.New("page not found"), 404).WriteJSON()
+	NewErrorResponse(w, errors.New("record page not found"), 404).WriteJSON()
 }
 
 func (controller *RecordController) UpdatePages(w http.ResponseWriter, req *http.Request) {
@@ -340,7 +353,7 @@ func (controller *RecordController) UpdatePages(w http.ResponseWriter, req *http
 
 	id := URLParamFromContext(req.Context(), "recordId")
 
-	images, err := controller.images.Get(id)
+	images, err := controller.images.Get(req.Context(), id)
 	if err != nil {
 		NewErrorResponse(w, err, http.StatusBadRequest).WriteJSON()
 		return

@@ -1,6 +1,7 @@
 package grpc
 
 import (
+	"context"
 	"fmt"
 	"github.com/dgmann/document-manager/api/pkg/api"
 	"sort"
@@ -11,7 +12,7 @@ import (
 	"github.com/dgmann/document-manager/pdf-processor/pkg/processor"
 )
 
-func NewDocument(title string, records []api.Record, images storage.ImageService, categories []api.Category) (*processor.Document, error) {
+func NewDocument(ctx context.Context, title string, records []api.Record, images storage.ImageService, categories []api.Category) (*processor.Document, error) {
 	recordsGroupedByCategory := make(map[string][]api.Record)
 	categoryMap := createCategoryLookupMap(categories)
 	for _, record := range records {
@@ -49,7 +50,7 @@ func NewDocument(title string, records []api.Record, images storage.ImageService
 			if record.Date != nil {
 				title = record.Date.Format("02.01.2006")
 			}
-			imagesForRecord, err := images.Get(record.Id)
+			imagesForRecord, err := images.Get(ctx, record.Id)
 			if err != nil {
 				return nil, fmt.Errorf("error fetching images for record %s: %w", record.Id, err)
 			}

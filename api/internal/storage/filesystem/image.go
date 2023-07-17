@@ -1,14 +1,16 @@
 package filesystem
 
 import (
-	"fmt"
+	"context"
 	"github.com/dgmann/document-manager/api/internal/storage"
-	"io"
-	"os"
+	otelcontrib "go.opentelemetry.io/contrib"
+	"go.opentelemetry.io/otel"
+	oteltrace "go.opentelemetry.io/otel/trace"
 )
 
 type ImageService struct {
 	*DiskStorage
+	tracer oteltrace.Tracer
 }
 
 func NewImageService(directory string) (*ImageService, error) {
@@ -16,13 +18,17 @@ func NewImageService(directory string) (*ImageService, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &ImageService{DiskStorage: repository}, nil
+	tracer := otel.GetTracerProvider().Tracer(
+		tracerName,
+		oteltrace.WithInstrumentationVersion(otelcontrib.SemVersion()),
+	)
+	return &ImageService{DiskStorage: repository, tracer: tracer}, nil
 }
 
-func (f *ImageService) Get(id string) (map[string]*storage.Image, error) {
+func (f *ImageService) Get(ctx context.Context, id string) (map[string]*storage.Image, error) {
 	images := make(map[string]*storage.Image, 0)
 	p := storage.NewKey(id)
-	err := f.ForEach(p, func(resource storage.KeyedResource, err error) error {
+	err := f.ForEach(ctx, p, func(resource storage.KeyedResource, err error) error {
 		fileName := resource.Key()[len(resource.Key())-1]
 		images[fileName] = storage.NewImage(resource.Data(), resource.Format())
 		return err
@@ -33,76 +39,10 @@ func (f *ImageService) Get(id string) (map[string]*storage.Image, error) {
 	return images, nil
 }
 
-func (f *ImageService) Copy(fromId string, toId string) error {
-	sourceFolder := f.Locate(storage.NewKey(fromId))
-	destinationFolder := f.Locate(storage.NewKey(toId))
-	return copyFolder(sourceFolder, destinationFolder)
+func (f *ImageService) Copy(ctx context.Context, fromId string, toId string) error {
+	return f.CopyFolder(ctx, storage.NewKey(fromId), storage.NewKey(toId))
 }
 
 func (f *ImageService) Path(locatable storage.Locatable) string {
 	return f.Locate(locatable)
-}
-
-func copyFolder(source string, dest string) (err error) {
-	sourceinfo, err := os.Stat(source)
-	if err != nil {
-		return err
-	}
-
-	err = os.MkdirAll(dest, sourceinfo.Mode())
-	if err != nil {
-		return err
-	}
-
-	directory, _ := os.Open(source)
-
-	objects, err := directory.Readdir(-1)
-
-	for _, obj := range objects {
-		sourcefilepointer := source + "/" + obj.Name()
-
-		destinationfilepointer := dest + "/" + obj.Name()
-
-		if obj.IsDir() {
-			err = copyFolder(sourcefilepointer, destinationfilepointer)
-			if err != nil {
-				fmt.Println(err)
-			}
-		} else {
-			err = copyFile(sourcefilepointer, destinationfilepointer)
-			if err != nil {
-				fmt.Println(err)
-			}
-		}
-
-	}
-	return
-}
-
-func copyFile(source string, dest string) (err error) {
-	sourcefile, err := os.Open(source)
-	if err != nil {
-		return
-	}
-
-	defer sourcefile.Close()
-
-	destfile, err := os.Create(dest)
-	if err != nil {
-		return
-	}
-
-	defer func() {
-		cerr := destfile.Close()
-		if err == nil {
-			err = cerr
-		}
-	}()
-
-	if _, err = io.Copy(destfile, sourcefile); err == nil {
-		if sourceinfo, statErr := os.Stat(source); statErr != nil {
-			err = os.Chmod(dest, sourceinfo.Mode())
-		}
-	}
-	return
 }

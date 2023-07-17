@@ -139,7 +139,7 @@ func (p *PdfProcessor) Create(ctx context.Context, title string, records []api.R
 	client := processor.NewPdfProcessorClient(p.conn)
 
 	categories, err := p.categories.All(ctx)
-	doc, err := NewDocument(title, records, p.images, categories)
+	doc, err := NewDocument(ctx, title, records, p.images, categories)
 	if err != nil {
 		return nil, err
 	}

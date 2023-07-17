@@ -1,6 +1,8 @@
 package storage
 
+import "context"
+
 type ArchiveService interface {
-	Get(id string) (KeyedResource, error)
+	Get(ctx context.Context, id string) (KeyedResource, error)
 	ResourceWriter
 }

@@ -3,7 +3,11 @@ package filesystem
 import (
 	"context"
 	"fmt"
+	otelutil "github.com/dgmann/document-manager/api/internal/opentelemetry"
 	"github.com/dgmann/document-manager/api/internal/storage"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
+	oteltrace "go.opentelemetry.io/otel/trace"
 	"io"
 	"os"
 	"path/filepath"
@@ -44,8 +48,14 @@ func NewDiskStorage(directory string) (*DiskStorage, error) {
 }
 
 // Get retrieves a copy of the specified resource from the file system.
-func (s *DiskStorage) Get(resource storage.Locatable) (resourceWithData *storage.GenericResource, err error) {
+func (s *DiskStorage) Get(ctx context.Context, resource storage.Locatable) (resourceWithData *storage.GenericResource, err error) {
+	ctx, span := otel.Tracer(tracerName).Start(ctx, "Get", oteltrace.WithAttributes(
+		attribute.StringSlice(otelutil.Key(otelutil.AppNamespace, traceNamespace, "resource", "key"), resource.Key()),
+	))
+	defer span.End()
+
 	loc := s.Locate(resource)
+	span.SetAttributes(attribute.String(otelutil.Key(otelutil.AppNamespace, traceNamespace, "resource", "location"), loc))
 	openedFile, err := s.storage.Open(loc)
 	if err != nil {
 		return nil, err
@@ -109,7 +119,7 @@ func (s *DiskStorage) Write(resource storage.KeyedResource) (err error) {
 type ForEachFunc func(resource storage.KeyedResource, err error) error
 
 // ForEach executes the provided function for each stored element.
-func (s *DiskStorage) ForEach(keyed storage.Keyed, forEachFn ForEachFunc) error {
+func (s *DiskStorage) ForEach(ctx context.Context, keyed storage.Keyed, forEachFn ForEachFunc) error {
 	p := s.locate(keyed)
 	return s.storage.Walk(p, func(currentPath string, info os.FileInfo, err error) error {
 		if !info.IsDir() {
@@ -122,7 +132,7 @@ func (s *DiskStorage) ForEach(keyed storage.Keyed, forEachFn ForEachFunc) error 
 
 			keys := strings.Split(rel, string(filepath.Separator))
 			resource := storage.NewKeyedGenericResource(nil, ext, keys...)
-			withData, err := s.Get(resource)
+			withData, err := s.Get(ctx, resource)
 			if err != nil {
 				return fmt.Errorf("error reading resource %s: %w", filepath.Join(resource.Key()...), err)
 			}
@@ -194,4 +204,99 @@ func (s *DiskStorage) ensureLocation(dir string) error {
 		}
 	}
 	return nil
+}
+
+func (s *DiskStorage) CopyFolder(ctx context.Context, source storage.Locatable, dest storage.Locatable) error {
+	ctx, span := otel.Tracer(tracerName).Start(ctx, "Copy", oteltrace.WithAttributes(
+		attribute.StringSlice(otelutil.Key(otelutil.AppNamespace, traceNamespace, "resource", "key"), source.Key()),
+		attribute.StringSlice(otelutil.Key(otelutil.AppNamespace, traceNamespace, "destination.key"), dest.Key()),
+	))
+	defer span.End()
+
+	sourceFolder := s.Locate(source)
+	destinationFolder := s.Locate(dest)
+	span.SetAttributes(attribute.String(otelutil.Key(otelutil.AppNamespace, traceNamespace, "resource", "location"), sourceFolder))
+	span.SetAttributes(attribute.String(otelutil.Key(otelutil.AppNamespace, traceNamespace, "destination", "location"), destinationFolder))
+	return copyFolder(ctx, sourceFolder, destinationFolder)
+}
+
+func copyFolder(ctx context.Context, source string, dest string) (err error) {
+	ctx, span := otel.Tracer(tracerName).Start(ctx, "CopyFolder", oteltrace.WithAttributes(
+		attribute.String(otelutil.Key(otelutil.AppNamespace, traceNamespace, "source.location"), source),
+		attribute.String(otelutil.Key(otelutil.AppNamespace, traceNamespace, "destination.location"), dest),
+	))
+	defer span.End()
+
+	sourceinfo, err := os.Stat(source)
+	if err != nil {
+		return err
+	}
+
+	err = os.MkdirAll(dest, sourceinfo.Mode())
+	if err != nil {
+		return err
+	}
+
+	directory, _ := os.Open(source)
+
+	objects, err := directory.Readdir(-1)
+
+	for _, obj := range objects {
+		sourcefilepointer := source + "/" + obj.Name()
+
+		destinationfilepointer := dest + "/" + obj.Name()
+
+		if obj.IsDir() {
+			err = copyFolder(ctx, sourcefilepointer, destinationfilepointer)
+			if err != nil {
+				fmt.Println(err)
+			}
+		} else {
+			err = copyFile(ctx, sourcefilepointer, destinationfilepointer)
+			if err != nil {
+				fmt.Println(err)
+			}
+		}
+
+	}
+	return
+}
+
+func copyFile(ctx context.Context, source string, dest string) (err error) {
+	ctx, span := otel.Tracer(tracerName).Start(ctx, "CopyFile", oteltrace.WithAttributes(
+		attribute.String(otelutil.Key(otelutil.AppNamespace, traceNamespace, "source"), source),
+		attribute.String(otelutil.Key(otelutil.AppNamespace, traceNamespace, "destination"), dest),
+	))
+	defer span.End()
+
+	sourcefile, err := os.Open(source)
+	if err != nil {
+		return
+	}
+
+	defer func(sourcefile *os.File) {
+		cerr := sourcefile.Close()
+		if err == nil {
+			err = cerr
+		}
+	}(sourcefile)
+
+	destfile, err := os.Create(dest)
+	if err != nil {
+		return
+	}
+
+	defer func() {
+		cerr := destfile.Close()
+		if err == nil {
+			err = cerr
+		}
+	}()
+
+	if _, err = io.Copy(destfile, sourcefile); err == nil {
+		if sourceinfo, statErr := os.Stat(source); statErr != nil {
+			err = os.Chmod(dest, sourceinfo.Mode())
+		}
+	}
+	return
 }

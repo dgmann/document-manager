@@ -1,5 +1,7 @@
 package storage
 
+import "context"
+
 type Image struct {
 	Image  []byte `json:"image"`
 	Format string `json:"format"`
@@ -11,7 +13,7 @@ func NewImage(img []byte, imageType string) *Image {
 
 type ImageService interface {
 	ResourceWriter
-	Get(id string) (map[string]*Image, error)
+	Get(ctx context.Context, id string) (map[string]*Image, error)
 	Locate(locatable Locatable) string
-	Copy(fromId string, toId string) error
+	Copy(ctx context.Context, fromId string, toId string) error
 }

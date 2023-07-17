@@ -1,6 +1,7 @@
 package filesystem
 
 import (
+	"context"
 	"github.com/dgmann/document-manager/api/internal/storage"
 )
 
@@ -26,18 +27,18 @@ func (dir RecordDirectory) Key() []string {
 	return []string{dir.recordId}
 }
 
-func (f *ArchiveService) Get(id string) (storage.KeyedResource, error) {
+func (f *ArchiveService) Get(ctx context.Context, id string) (storage.KeyedResource, error) {
 	resource := storage.NewKeyedGenericResource(nil, PDFFileExtension, id)
-	return f.DiskStorage.Get(resource)
+	return f.DiskStorage.Get(ctx, resource)
 }
 
 func (f *ArchiveService) Set(resource storage.KeyedResource) error {
 	return f.Write(resource)
 }
 
-func (s *DiskStorage) NumberOfElements() (int, error) {
+func (s *DiskStorage) NumberOfElements(ctx context.Context) (int, error) {
 	count := 0
-	err := s.ForEach(storage.NewKey("/"), func(resource storage.KeyedResource, err error) error {
+	err := s.ForEach(ctx, storage.NewKey("/"), func(resource storage.KeyedResource, err error) error {
 		if err != nil {
 			return err
 		}

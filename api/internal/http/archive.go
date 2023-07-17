@@ -1,6 +1,7 @@
 package http
 
 import (
+	"context"
 	"github.com/dgmann/document-manager/api/internal/storage"
 	"net/http"
 )
@@ -10,7 +11,7 @@ type ArchiveController struct {
 }
 
 type getter interface {
-	Get(id string) (storage.KeyedResource, error)
+	Get(ctx context.Context, id string) (storage.KeyedResource, error)
 }
 
 func NewArchiveController(pdf getter) *ArchiveController {
@@ -19,7 +20,7 @@ func NewArchiveController(pdf getter) *ArchiveController {
 
 func (a *ArchiveController) One(w http.ResponseWriter, req *http.Request) {
 	id := URLParamFromContext(req.Context(), "recordId")
-	file, err := a.pdfs.Get(id)
+	file, err := a.pdfs.Get(req.Context(), id)
 	if err != nil {
 		NewErrorResponse(w, err, http.StatusNotFound)
 		return

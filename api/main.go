@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"github.com/dgmann/document-manager/api/internal/datastore/mongo"
 	"github.com/dgmann/document-manager/api/internal/event"
 	"github.com/dgmann/document-manager/api/internal/http"
@@ -11,6 +10,7 @@ import (
 	"github.com/dgmann/document-manager/api/internal/storage/filesystem"
 	"github.com/dgmann/document-manager/pkg/opentelemetry"
 	log "github.com/sirupsen/logrus"
+	"github.com/uptrace/opentelemetry-go-extra/otellogrus"
 	"go.opentelemetry.io/contrib/instrumentation/runtime"
 	"net/url"
 	"os"
@@ -22,7 +22,14 @@ import (
 func init() {
 	log.SetFormatter(&log.TextFormatter{})
 	log.SetOutput(os.Stdout)
-	log.SetLevel(log.DebugLevel)
+	log.SetLevel(log.InfoLevel)
+	log.AddHook(otellogrus.NewHook(otellogrus.WithLevels(
+		log.PanicLevel,
+		log.FatalLevel,
+		log.ErrorLevel,
+		log.WarnLevel,
+		log.InfoLevel,
+	)))
 }
 
 const ServiceName = "backend"
@@ -33,61 +40,65 @@ func main() {
 
 	otlProvider, err := opentelemetry.NewProvider(ctx, ServiceName, config.OtelCollectorUrl)
 	if err != nil {
-		log.WithError(err).Warnln("error creating OpenTelemetry exporter")
+		log.WithContext(ctx).WithError(err).Warnln("error creating OpenTelemetry exporter")
 	}
 	if err := runtime.Start(runtime.WithMinimumReadMemStatsInterval(time.Second)); err != nil {
-		log.WithError(err).Warnln("error initializing runtime metrics")
+		log.WithContext(ctx).WithError(err).Warnln("error initializing runtime metrics")
 	}
 
 	if err := ensureTmpDirectory(); err != nil {
-		log.Error(fmt.Errorf("error while creating tmp directory: %w", err))
+		log.WithContext(ctx).WithError(err).Error("error while creating tmp directory")
 		return
 	}
-	log.WithFields(log.Fields{"host": config.Database.Host, "port": config.Database.Port, "database": config.Database.Name}).Info("connecting to database")
+	log.WithContext(ctx).
+		WithFields(log.Fields{"host": config.Database.Host, "port": config.Database.Port, "database": config.Database.Name}).
+		Info("connecting to database")
 
 	client := func() *mongo.Client {
 		client := mongo.NewClient(config.Database)
 		ctx, cancel := context.WithTimeout(ctx, 2*time.Second)
 		defer cancel()
 		if err := client.Connect(ctx); err != nil {
-			log.WithError(err).Error("database cannot be reached")
+			log.WithContext(ctx).WithError(err).Error("database cannot be reached")
 		}
 		return client
 	}()
 
 	if err := client.CreateIndexes(ctx); err != nil {
-		log.WithError(err).Error("error setting indices")
+		log.WithContext(ctx).WithError(err).Error("error setting indices")
 	}
 
 	imageService, err := filesystem.NewImageService(config.RecordDirectory)
 	if err != nil {
-		log.WithError(err).Error("error creating image service")
+		log.WithContext(ctx).WithError(err).Error("error creating image service")
+		return
 	}
 	archiveService, err := filesystem.NewArchiveService(config.ArchiveDirectory)
 	if err != nil {
-		log.WithError(err).Error("error creating archive service")
+		log.WithContext(ctx).WithError(err).Error("error creating archive service")
+		return
 	}
 	categoryService := mongo.NewCategoryService(mongo.NewCollection(client.Categories()), mongo.NewCollection(client.Records()))
 
 	pdfProcessor, err := grpc.NewPDFProcessor(config.PdfProcessorUrl, imageService, categoryService)
 	if err != nil {
-		log.WithError(err).Error("error connecting to pdf processor service")
+		log.WithContext(ctx).WithError(err).Error("error connecting to pdf processor service")
+		return
 	}
 
 	websocketService := event.NewWebsocketEventService()
-
 	mqttBrokerUrl, err := url.Parse(config.MQTTBroker)
 	if err != nil {
-		log.WithError(err).Fatalf("error opening connection to %s\n", config.MQTTBroker)
+		log.WithContext(ctx).WithError(err).Errorln("error opening connection to %s", config.MQTTBroker)
+		return
 	}
 	mqttService := func() *event.MQTTEventSender {
 		mqttService := event.NewMQTTEventSender(mqttBrokerUrl, config.MQTTClientId)
 		if err := mqttService.Connect(ctx); err != nil {
-			log.WithError(err).Fatalln("error connecting to MQTT Broker")
+			log.WithContext(ctx).WithError(err).Fatalln("error connecting to MQTT Broker")
 		}
 		return mqttService
 	}()
-
 	eventService := event.NewMultiEventSender(websocketService, mqttService)
 
 	tagService := mongo.NewTagService(client.Records())
@@ -120,7 +131,7 @@ func main() {
 
 	go func() {
 		if err := srv.Run(); err != nil {
-			log.WithError(err).Error("error starting http server")
+			log.WithContext(ctx).WithError(err).Error("error starting http server")
 		}
 	}()
 	log.Info("server startup completed")

@@ -6,18 +6,16 @@ import (
 	"fmt"
 	"github.com/dgmann/document-manager/api/internal/datastore"
 	"github.com/dgmann/document-manager/api/internal/pdf"
-	"github.com/dgmann/document-manager/api/pkg/api"
-	"google.golang.org/grpc/credentials/insecure"
-	"io"
-	"io/ioutil"
-
 	"github.com/dgmann/document-manager/api/internal/storage"
+	"github.com/dgmann/document-manager/api/pkg/api"
 	"github.com/dgmann/document-manager/pdf-processor/pkg/processor"
 	"github.com/sirupsen/logrus"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/connectivity"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/status"
+	"io"
 )
 
 type PdfProcessor struct {
@@ -122,7 +120,7 @@ func receive(stream processor.PdfProcessor_ConvertPdfToImageClient) ([]storage.I
 }
 
 func (p *PdfProcessor) Rotate(ctx context.Context, image io.Reader, degrees int) (*storage.Image, error) {
-	b, err := ioutil.ReadAll(image)
+	b, err := io.ReadAll(image)
 	if err != nil {
 		return nil, err
 	}

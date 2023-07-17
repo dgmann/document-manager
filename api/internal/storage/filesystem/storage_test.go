@@ -2,6 +2,7 @@ package filesystem
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"github.com/dgmann/document-manager/api/internal/storage"
 	"github.com/stretchr/testify/assert"
@@ -108,7 +109,7 @@ func TestRepository_Get(t *testing.T) {
 	filesystem.On("Open", filename).Return(fileMock, nil)
 	fileMock.On("Read", mock.Anything).Return()
 
-	res, err := repository.Get(resource)
+	res, err := repository.Get(context.Background(), resource)
 	assert.Nil(t, err)
 	assert.Equal(t, []string{"1"}, res.Key())
 	assert.Equal(t, "png", res.Format())

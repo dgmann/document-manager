@@ -41,24 +41,14 @@ var (
 )
 
 type Server struct {
-	Port              string
-	HealthService     *status.HealthService
-	StatisticsService *status.StatisticsService
-	EventService      event.Subscriber
-	RecordService     datastore.RecordService
-	ImageService      storage.ImageService
-	CategoryService   datastore.CategoryService
-	ArchiveService    storage.ArchiveService
-	TagService        datastore.TagService
-	PdfProcessor      pdf.Processor
-	ServiceName       string
-	server            *http.Server
+	mux    *chi.Mux
+	server *http.Server
 }
 
-func (s *Server) Run() error {
+func NewServer(serviceName string, options ...ControllerOption) *Server {
 	r := chi.NewRouter()
 
-	r.Use(otelchi.Middleware(s.ServiceName, otelchi.WithChiRoutes(r)))
+	r.Use(otelchi.Middleware(serviceName, otelchi.WithChiRoutes(r)))
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.RedirectSlashes)
@@ -73,28 +63,6 @@ func (s *Server) Run() error {
 		MaxAge:           300,
 	}).Handler)
 
-	recordController := &RecordController{
-		records:      s.RecordService,
-		images:       s.ImageService,
-		pdfs:         s.ArchiveService,
-		pdfProcessor: s.PdfProcessor,
-	}
-	patientController := &PatientController{
-		records:    s.RecordService,
-		categories: s.CategoryService,
-		tags:       s.TagService,
-		images:     s.ImageService,
-	}
-	categoryController := &CategoryController{
-		categories: s.CategoryService,
-	}
-
-	health := HealthController{s.HealthService}
-	statistics := StatisticsController{s.StatisticsService}
-	tagController := NewTagController(s.TagService)
-	archiveController := NewArchiveController(s.ArchiveService)
-	exportController := NewExporterController(s.PdfProcessor, s.RecordService)
-
 	r.Get("/", func(w http.ResponseWriter, req *http.Request) {
 		http.Redirect(w, req, req.URL.String()+"api", http.StatusMovedPermanently)
 	})
@@ -103,23 +71,101 @@ func (s *Server) Run() error {
 		NewBinaryResponseWithStatus(w, []byte("Document Storage API"), 200).Write()
 	})
 
-	r.Mount(PathPrefix+"/notifications", getWebsocketHandler(s.EventService))
-	r.Mount(PathPrefix+"/records", recordController.Router())
-	r.Mount(PathPrefix+"/patients", patientController.Router())
-	r.Mount(PathPrefix+"/categories", categoryController.Router())
-	r.Get(PathPrefix+"/tags", tagController.All)
-	r.Get(PathPrefix+"/archive/{recordId}", archiveController.One)
-	r.Get(PathPrefix+"/export", exportController.Export)
-
 	r.Mount(PathPrefix+"/debug", middleware.Profiler())
-	r.Get(PathPrefix+"/status", health.Status)
-	r.Get(PathPrefix+"/statistics", statistics.Statistics)
 
-	server := &http.Server{Addr: ":" + s.Port, Handler: r}
+	// Register Controllers
+	for _, opt := range options {
+		opt(r)
+	}
+
+	return &Server{
+		mux: r,
+	}
+}
+
+func (s *Server) Run(port string) error {
+	server := &http.Server{Addr: ":" + port, Handler: s.mux}
 	s.server = server
 	return server.ListenAndServe()
 }
 
 func (s *Server) Shutdown(ctx context.Context) error {
 	return s.server.Shutdown(ctx)
+}
+
+type ControllerOption = func(rootMux *chi.Mux)
+
+func WithRecordController(recordService datastore.RecordService, imageService storage.ImageService, archiveService storage.ArchiveService, pdfProcessor pdf.Processor) ControllerOption {
+	return func(rootMux *chi.Mux) {
+		recordController := &RecordController{
+			records:      recordService,
+			images:       imageService,
+			pdfs:         archiveService,
+			pdfProcessor: pdfProcessor,
+		}
+		rootMux.Mount(PathPrefix+"/records", recordController.Router())
+	}
+}
+
+func WithPatientController(recordService datastore.RecordService, imageService storage.ImageService, categoryService datastore.CategoryService, tagService datastore.TagService) ControllerOption {
+	return func(rootMux *chi.Mux) {
+		patientController := &PatientController{
+			records:    recordService,
+			categories: categoryService,
+			tags:       tagService,
+			images:     imageService,
+		}
+		rootMux.Mount(PathPrefix+"/patients", patientController.Router())
+	}
+}
+
+func WithCategoryController(service datastore.CategoryService) ControllerOption {
+	return func(rootMux *chi.Mux) {
+		categoryController := &CategoryController{
+			categories: service,
+		}
+		rootMux.Mount(PathPrefix+"/categories", categoryController.Router())
+	}
+}
+
+func WithTagController(tagService datastore.TagService) ControllerOption {
+	return func(rootMux *chi.Mux) {
+		tagController := &TagController{tags: tagService}
+		rootMux.Get(PathPrefix+"/tags", tagController.All)
+	}
+}
+
+func WithArchiveController(archiveService PdfGetter) ControllerOption {
+	return func(rootMux *chi.Mux) {
+		archiveController := &ArchiveController{pdfs: archiveService}
+		rootMux.Get(PathPrefix+"/archive/{recordId}", archiveController.One)
+	}
+}
+
+func WithHealthController(healthService *status.HealthService) ControllerOption {
+	return func(rootMux *chi.Mux) {
+		healthController := HealthController{healthService: healthService}
+		rootMux.Get(PathPrefix+"/status", healthController.Status)
+	}
+}
+
+func WithStatisticController(statisticsService *status.StatisticsService) ControllerOption {
+	return func(rootMux *chi.Mux) {
+		statisticsController := StatisticsController{statisticService: statisticsService}
+		rootMux.Get(PathPrefix+"/statistics", statisticsController.Statistics)
+	}
+}
+
+func WithExportController(recordService datastore.RecordService, pdfCreator pdf.Creator) ControllerOption {
+	return func(rootMux *chi.Mux) {
+		exportController := &ExporterController{creator: pdfCreator, records: recordService}
+		rootMux.Get(PathPrefix+"/export", exportController.Export)
+	}
+}
+
+func WithNotificationController(eventService event.Subscriber) ControllerOption {
+	return func(rootMux *chi.Mux) {
+		webSocketController := &WebsocketController{Subscriber: eventService}
+		rootMux.Mount(PathPrefix+"/notifications", webSocketController.getWebsocketHandler())
+	}
 }

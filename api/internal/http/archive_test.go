@@ -15,7 +15,7 @@ type MockPdfRepository struct {
 	mock.Mock
 }
 
-func (m *MockPdfRepository) Get(id string) (storage.KeyedResource, error) {
+func (m *MockPdfRepository) Get(ctx context.Context, id string) (storage.KeyedResource, error) {
 	args := m.Called(id)
 	return args.Get(0).(storage.KeyedResource), args.Error(1)
 }

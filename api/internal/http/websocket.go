@@ -11,7 +11,11 @@ import (
 	"sync"
 )
 
-func getWebsocketHandler(subscriber event.Subscriber) http.Handler {
+type WebsocketController struct {
+	Subscriber event.Subscriber
+}
+
+func (w *WebsocketController) getWebsocketHandler() http.Handler {
 	r := chi.NewRouter()
 	m := melody.New()
 	ws := NewWebSocketService()
@@ -33,7 +37,7 @@ func getWebsocketHandler(subscriber event.Subscriber) http.Handler {
 		ws.RemoveClient(s)
 	})
 
-	go publishEvents(m, subscriber)
+	go publishEvents(m, w.Subscriber)
 	return r
 }
 

@@ -59,7 +59,7 @@ func main() {
 		ctx, cancel := context.WithTimeout(ctx, 2*time.Second)
 		defer cancel()
 		if err := client.Connect(ctx); err != nil {
-			log.WithContext(ctx).WithError(err).Error("database cannot be reached")
+			log.WithContext(ctx).WithError(err).Fatalln("database cannot be reached")
 		}
 		return client
 	}()
@@ -89,7 +89,7 @@ func main() {
 	websocketService := event.NewWebsocketEventService()
 	mqttBrokerUrl, err := url.Parse(config.MQTTBroker)
 	if err != nil {
-		log.WithContext(ctx).WithError(err).Errorln("error opening connection to %s", config.MQTTBroker)
+		log.WithContext(ctx).WithError(err).Errorf("error opening connection to %s\n", config.MQTTBroker)
 		return
 	}
 	mqttService := func() *event.MQTTEventSender {
@@ -103,34 +103,36 @@ func main() {
 
 	tagService := mongo.NewTagService(client.Records())
 
-	srv := http.Server{
-		Port:            config.Port,
-		EventService:    websocketService,
-		ImageService:    imageService,
-		TagService:      tagService,
-		CategoryService: categoryService,
-		ArchiveService:  archiveService,
-		RecordService: mongo.NewRecordService(mongo.RecordServiceConfig{
-			Records: mongo.NewCollection(client.Records()),
-			Events:  eventService,
-			Images:  imageService,
-			Pdfs:    archiveService,
-		}),
-		PdfProcessor: pdfProcessor,
-		HealthService: status.NewHealthService(status.HealthCheckables{
-			"database":       client,
-			"pdfProcessor":   pdfProcessor,
-			"archiveStorage": archiveService,
-			"recordStorage":  imageService,
-		}),
-		StatisticsService: status.NewStatisticsService(status.Providers{
-			"archiveStorage": archiveService,
-		}),
-		ServiceName: ServiceName,
-	}
+	recordService := mongo.NewRecordService(mongo.RecordServiceConfig{
+		Records: mongo.NewCollection(client.Records()),
+		Events:  eventService,
+		Images:  imageService,
+		Pdfs:    archiveService,
+	})
+	healthService := status.NewHealthService(status.HealthCheckables{
+		"database":       client,
+		"pdfProcessor":   pdfProcessor,
+		"archiveStorage": archiveService,
+		"recordStorage":  imageService,
+	})
+	statisticsService := status.NewStatisticsService(status.Providers{
+		"archiveStorage": archiveService,
+	})
+	srv := http.NewServer(
+		ServiceName,
+		http.WithRecordController(recordService, imageService, archiveService, pdfProcessor),
+		http.WithPatientController(recordService, imageService, categoryService, tagService),
+		http.WithCategoryController(categoryService),
+		http.WithTagController(tagService),
+		http.WithArchiveController(archiveService),
+		http.WithHealthController(healthService),
+		http.WithStatisticController(statisticsService),
+		http.WithExportController(recordService, pdfProcessor),
+		http.WithNotificationController(websocketService),
+	)
 
 	go func() {
-		if err := srv.Run(); err != nil {
+		if err := srv.Run(config.Port); err != nil {
 			log.WithContext(ctx).WithError(err).Error("error starting http server")
 		}
 	}()

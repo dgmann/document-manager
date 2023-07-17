@@ -7,15 +7,11 @@ import (
 )
 
 type ArchiveController struct {
-	pdfs getter
+	pdfs PdfGetter
 }
 
-type getter interface {
+type PdfGetter interface {
 	Get(ctx context.Context, id string) (storage.KeyedResource, error)
-}
-
-func NewArchiveController(pdf getter) *ArchiveController {
-	return &ArchiveController{pdfs: pdf}
 }
 
 func (a *ArchiveController) One(w http.ResponseWriter, req *http.Request) {

@@ -13,10 +13,6 @@ type ExporterController struct {
 	records datastore.RecordService
 }
 
-func NewExporterController(creator pdf.Creator, records datastore.RecordService) *ExporterController {
-	return &ExporterController{creator: creator, records: records}
-}
-
 func (t *ExporterController) Export(w http.ResponseWriter, req *http.Request) {
 	recordsIds, ok := req.URL.Query()["id"]
 	if !ok {

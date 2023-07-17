@@ -9,10 +9,6 @@ type TagController struct {
 	tags datastore.TagService
 }
 
-func NewTagController(repository datastore.TagService) *TagController {
-	return &TagController{tags: repository}
-}
-
 func (t *TagController) All(w http.ResponseWriter, req *http.Request) {
 	tags, err := t.tags.All(req.Context())
 	if err != nil {

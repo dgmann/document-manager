@@ -51,3 +51,12 @@ func (m *Collection) Distinct(ctx context.Context, fieldName string, filter inte
 	args := m.Called(params...)
 	return args.Get(0).([]interface{}), args.Error(1)
 }
+
+func (m *Collection) FindOneAndUpdate(ctx context.Context, filter interface{}, update interface{}, opts ...*options.FindOneAndUpdateOptions) datastore.Decodable {
+	params := []interface{}{ctx, filter, update}
+	for _, opt := range opts {
+		params = append(params, opt)
+	}
+	args := m.Called(params...)
+	return args.Get(0).(datastore.Decodable)
+}

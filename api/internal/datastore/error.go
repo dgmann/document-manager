@@ -18,6 +18,14 @@ func (e *NotFoundError) Error() string {
 	return fmt.Sprintf("could not find ID %s in collection %s", e.Id, e.Collection)
 }
 
+func (e *NotFoundError) Is(tgt error) bool {
+	target, ok := tgt.(*NotFoundError)
+	if !ok {
+		return false
+	}
+	return e.Id == target.Id && e.Collection == target.Collection
+}
+
 func (e *NotFoundError) Unwrap() error {
 	return e.Err
 }

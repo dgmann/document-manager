@@ -5,13 +5,26 @@ import (
 	"time"
 )
 
-type Category struct {
-	Id   string `bson:"_id,omitempty" json:"id"`
-	Name string `bson:"name,omitempty" json:"name"`
+type MatchType string
+
+const (
+	MatchTypeNone  = ""
+	MatchTypeRegex = "regex"
+)
+
+type MatchConfig struct {
+	Type       MatchType `bson:"type,omitempty" json:"type"`
+	Expression string    `bson:"expression,omitempty" json:"expression"`
 }
 
-func NewCategory(id, name string) *Category {
-	return &Category{Id: id, Name: name}
+type Category struct {
+	Id    string      `bson:"_id,omitempty" json:"id"`
+	Name  string      `bson:"name,omitempty" json:"name"`
+	Match MatchConfig `bson:"match,omitempty" json:"match"`
+}
+
+func NewCategory(id, name string, matchConfig MatchConfig) *Category {
+	return &Category{Id: id, Name: name, Match: matchConfig}
 }
 
 type Record struct {

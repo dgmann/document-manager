@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/dgmann/document-manager/api/internal/datastore"
 	"github.com/dgmann/document-manager/api/pkg/api"
+	"go.mongodb.org/mongo-driver/mongo/options"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -20,6 +21,7 @@ type CategoryService struct {
 type categoryCollection interface {
 	finder
 	oneInserter
+	oneFinderUpdater
 }
 
 func NewCategoryService(categories categoryCollection, records distinctFinder) *CategoryService {
@@ -72,9 +74,20 @@ func (c *CategoryService) FindByPatient(ctx context.Context, id string) ([]api.C
 	return castToCategorySlice(ctx, cursor)
 }
 
-func (c *CategoryService) Add(ctx context.Context, id, category string) error {
-	_, err := c.categories.InsertOne(ctx, api.NewCategory(id, category))
+func (c *CategoryService) Add(ctx context.Context, category *api.Category) error {
+	_, err := c.categories.InsertOne(ctx, category)
 	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (c *CategoryService) Update(ctx context.Context, category *api.Category) error {
+	res := c.categories.FindOneAndUpdate(ctx, bson.M{"_id": category.Id}, bson.M{"$set": category}, options.FindOneAndUpdate().SetReturnDocument(options.After))
+	if err := res.Err(); err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return datastore.NewNotFoundError(category.Id, Categories, err)
+		}
 		return err
 	}
 	return nil

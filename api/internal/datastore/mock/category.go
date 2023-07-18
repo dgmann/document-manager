@@ -15,7 +15,12 @@ func (m *CategoryService) All(ctx context.Context) ([]api.Category, error) {
 	return args.Get(0).([]api.Category), args.Error(1)
 }
 
-func (m *CategoryService) Add(ctx context.Context, id, category string) error {
-	args := m.Called(ctx, id, category)
+func (m *CategoryService) Add(ctx context.Context, category *api.Category) error {
+	args := m.Called(ctx, category)
+	return args.Error(0)
+}
+
+func (m *CategoryService) Update(ctx context.Context, category *api.Category) error {
+	args := m.Called(ctx, category)
 	return args.Error(0)
 }

@@ -9,5 +9,6 @@ type CategoryService interface {
 	All(ctx context.Context) ([]api.Category, error)
 	Find(ctx context.Context, id string) (*api.Category, error)
 	FindByPatient(ctx context.Context, id string) ([]api.Category, error)
-	Add(ctx context.Context, id, category string) error
+	Add(ctx context.Context, category *api.Category) error
+	Update(ctx context.Context, category *api.Category) error
 }

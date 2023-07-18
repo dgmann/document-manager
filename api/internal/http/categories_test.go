@@ -32,8 +32,8 @@ func TestCategoryController_All(t *testing.T) {
 func TestCategoryController_Create(t *testing.T) {
 	controller, mockCategoryRepository := createTestController()
 
-	category := api.Category{Id: "cat", Name: "Category"}
-	mockCategoryRepository.On("Add", mock.Anything, category.Id, category.Name).Return(nil)
+	category := &api.Category{Id: "cat", Name: "Category"}
+	mockCategoryRepository.On("Add", mock.Anything, category).Return(nil)
 
 	body, _ := json.Marshal(category)
 	req := httptest.NewRequest("POST", "/", bytes.NewBuffer(body))

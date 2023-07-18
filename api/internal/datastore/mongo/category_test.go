@@ -96,9 +96,10 @@ func TestDatabaseRepository_Add(t *testing.T) {
 
 	ctx := context.Background()
 
-	collection.On("InsertOne", ctx, api.NewCategory(id, name)).Once().Return(&mongo.InsertOneResult{InsertedID: id}, nil)
+	category := api.NewCategory(id, name, api.MatchConfig{})
+	collection.On("InsertOne", ctx, category).Once().Return(&mongo.InsertOneResult{InsertedID: id}, nil)
 
-	err := repository.Add(ctx, id, name)
+	err := repository.Add(ctx, category)
 
 	collection.AssertExpectations(t)
 	assert.Nil(t, err, "no error expected")

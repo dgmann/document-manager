@@ -2,18 +2,15 @@ package main
 
 import (
 	"context"
+	"github.com/dgmann/document-manager/api/pkg/client"
 	"github.com/eclipse/paho.golang/paho"
 	"log"
+	"ocr/internal/ocr/tesseract"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 )
-
-type OCRRequest struct {
-	RecordId string `json:"recordId"`
-	Force    bool   `json:"force"`
-}
 
 const (
 	RecordsTopic    = "records/+"
@@ -32,18 +29,31 @@ func main() {
 
 	ocrRequestPublishChan := make(chan OCRRequest)
 	defer close(ocrRequestPublishChan)
+	// TODO: consume the messages from this channel
+	categorizationRequestChan := make(chan CategorizationRequest)
+	defer close(categorizationRequestChan)
 
-	client := NewMQTTClient(ctx, config.Broker, config.ClientId, []Subscription{
-		{Topic: RecordsTopic, SubscribeOptions: paho.SubscribeOptions{QoS: 1}, Handler: handleBackendEvent(ocrRequestPublishChan)},
-		{Topic: OCRRequestTopic, SubscribeOptions: paho.SubscribeOptions{QoS: 1}, Handler: handlerOCRRequest(config.ApiUrl)},
+	apiClient, err := client.NewHTTPClient(config.ApiUrl, 3*time.Second)
+	if err != nil {
+		log.Fatalf("error creating API Client: %s", err)
+	}
+	handler := &Handler{OCRClient: tesseract.NewClient(), ApiClient: apiClient}
+	defer func(h *Handler) {
+		if err := h.Close(); err != nil {
+			log.Printf("error closing tesseract: %s\n", err)
+		}
+	}(handler)
+	mqttClient := NewMQTTClient(ctx, config.Broker, config.ClientId, []Subscription{
+		{Topic: RecordsTopic, SubscribeOptions: paho.SubscribeOptions{QoS: 1}, Handler: backendEventHandler(ocrRequestPublishChan, categorizationRequestChan)},
+		{Topic: OCRRequestTopic, SubscribeOptions: paho.SubscribeOptions{QoS: 1}, Handler: handler.OCRRequestHandler()},
 	})
-	if err := client.Connect(ctx); err != nil {
+	if err := mqttClient.Connect(ctx); err != nil {
 		log.Fatalf("error connecting subscriber: %s", err)
 	}
 
 	go RunHTTPServer(ctx, config, ocrRequestPublishChan)
 	go func() {
-		err := client.Run(ctx, OCRRequestTopic, ocrRequestPublishChan)
+		err := Publish(ctx, mqttClient, OCRRequestTopic, ocrRequestPublishChan)
 		if err != nil {
 			log.Fatalf("publisher error: %s", err)
 		}
@@ -64,7 +74,7 @@ func main() {
 		func() {
 			ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 			defer cancel()
-			_ = client.Disconnect(ctx)
+			_ = mqttClient.Disconnect(ctx)
 		}()
 		cancel()
 	}()

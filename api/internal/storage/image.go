@@ -13,7 +13,7 @@ func NewImage(img []byte, imageType string) *Image {
 
 type ImageService interface {
 	ResourceWriter
-	Get(ctx context.Context, id string) (map[string]*Image, error)
-	Locate(locatable Locatable) string
+	ResourceLocator
+	GetByRecordId(ctx context.Context, id string) (map[string]*Image, error)
 	Copy(ctx context.Context, fromId string, toId string) error
 }

@@ -46,6 +46,7 @@ func (controller *RecordController) Router() http.Handler {
 
 	r.Get("/{recordId}/pages/{imageId}", controller.Page)
 	r.Post("/{recordId}/pages", controller.UpdatePages)
+	r.Put("/{recordId}/pages", controller.UpdatePages)
 	return r
 }
 
@@ -341,7 +342,7 @@ func (controller *RecordController) Page(w http.ResponseWriter, req *http.Reques
 			return
 		}
 	}
-	NewErrorResponse(w, errors.New("record page not found"), 404).WriteJSON()
+	NewErrorResponse(w, errors.New("record page not found"), http.StatusNotFound).WriteJSON()
 }
 
 func (controller *RecordController) UpdatePages(w http.ResponseWriter, req *http.Request) {
@@ -353,7 +354,7 @@ func (controller *RecordController) UpdatePages(w http.ResponseWriter, req *http
 
 	id := URLParamFromContext(req.Context(), "recordId")
 
-	images, err := controller.images.Get(req.Context(), id)
+	images, err := controller.images.GetByRecordId(req.Context(), id)
 	if err != nil {
 		NewErrorResponse(w, err, http.StatusBadRequest).WriteJSON()
 		return

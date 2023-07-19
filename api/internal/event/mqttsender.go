@@ -12,12 +12,12 @@ import (
 	"time"
 )
 
-type MQTTEventSender struct {
+type MQTTEventSender[T any] struct {
 	Cfg autopaho.ClientConfig
 	cm  *autopaho.ConnectionManager
 }
 
-func NewMQTTEventSender(broker *url.URL, clientId string) *MQTTEventSender {
+func NewMQTTEventSender[T any](broker *url.URL, clientId string) *MQTTEventSender[T] {
 	cliCfg := autopaho.ClientConfig{
 		BrokerUrls:        []*url.URL{broker},
 		KeepAlive:         30,
@@ -37,10 +37,10 @@ func NewMQTTEventSender(broker *url.URL, clientId string) *MQTTEventSender {
 			},
 		},
 	}
-	return &MQTTEventSender{Cfg: cliCfg}
+	return &MQTTEventSender[T]{Cfg: cliCfg}
 }
 
-func (m *MQTTEventSender) Connect(ctx context.Context) error {
+func (m *MQTTEventSender[T]) Connect(ctx context.Context) error {
 	cm, err := autopaho.NewConnection(ctx, m.Cfg)
 	if err != nil {
 		return err
@@ -49,11 +49,11 @@ func (m *MQTTEventSender) Connect(ctx context.Context) error {
 	return nil
 }
 
-func (m *MQTTEventSender) Disconnect(ctx context.Context) error {
+func (m *MQTTEventSender[T]) Disconnect(ctx context.Context) error {
 	return m.cm.Disconnect(ctx)
 }
 
-func (m *MQTTEventSender) Send(ctx context.Context, event api.Event) error {
+func (m *MQTTEventSender[T]) Send(ctx context.Context, event api.Event[T]) error {
 	err := m.cm.AwaitConnection(ctx)
 	if err != nil { // Should only happen when context is cancelled
 		return fmt.Errorf("publisher done (AwaitConnection: %w)", err)

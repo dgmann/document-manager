@@ -6,15 +6,15 @@ import (
 	"github.com/dgmann/document-manager/api/pkg/api"
 )
 
-type MultiEventSender struct {
-	senders []Sender
+type MultiEventSender[T any] struct {
+	senders []Sender[T]
 }
 
-func NewMultiEventSender(senders ...Sender) *MultiEventSender {
-	return &MultiEventSender{senders: senders}
+func NewMultiEventSender[T any](senders ...Sender[T]) *MultiEventSender[T] {
+	return &MultiEventSender[T]{senders: senders}
 }
 
-func (e *MultiEventSender) Send(ctx context.Context, event api.Event) error {
+func (e *MultiEventSender[T]) Send(ctx context.Context, event api.Event[T]) error {
 	var errs []error
 	for _, sender := range e.senders {
 		if err := sender.Send(ctx, event); err != nil {

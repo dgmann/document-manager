@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"context"
 	"os"
 	"strings"
 )
@@ -8,6 +9,16 @@ import (
 type ResourceWriter interface {
 	Deleter
 	Writer
+}
+
+type ResourceReadWriter interface {
+	Deleter
+	Writer
+	Getter
+}
+
+type ResourceLocator interface {
+	Locate(locatable Locatable) string
 }
 
 type KeyedResource interface {
@@ -39,6 +50,10 @@ type Writer interface {
 
 type Deleter interface {
 	Delete(resource Locatable) error
+}
+
+type Getter interface {
+	Get(ctx context.Context, resource Locatable) (resourceWithData *GenericResource, err error)
 }
 
 type Statter interface {

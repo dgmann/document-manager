@@ -79,8 +79,8 @@ type Subscription struct {
 	Handler paho.MessageHandler
 }
 
-func (m *MQTTClient) Run(ctx context.Context, topic string, ocrRequestChan <-chan OCRRequest) error {
-	for msg := range ocrRequestChan {
+func Publish[T any](ctx context.Context, m *MQTTClient, topic string, messages <-chan T) error {
+	for msg := range messages {
 		// AwaitConnection will return immediately if connection is up; adding this call stops publication whilst
 		// connection is unavailable.
 		err := m.cm.AwaitConnection(ctx)

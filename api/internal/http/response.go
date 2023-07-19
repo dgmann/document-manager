@@ -2,7 +2,10 @@ package http
 
 import (
 	"encoding/json"
+	"mime"
 	"net/http"
+	"strconv"
+	"time"
 )
 
 func NewResponse(writer http.ResponseWriter, data interface{}) *DataResponse {
@@ -19,18 +22,17 @@ func NewErrorResponse(writer http.ResponseWriter, err error, code int) *ErrorRes
 	return &ErrorResponse{Response: response, Error: err.Error()}
 }
 
-// Generic HTTP Response
-// swagger:ignore
+// Response serves as the base and most generic form of response
 type Response struct {
 	StatusCode int
-	writer     http.ResponseWriter `json:"-"`
+	writer     http.ResponseWriter
 }
 
-// Data HTTP Response
-//
-// A DataResponse is a Response which provides additional data as a payload.
-//
-// swagger:response
+func (r *Response) Write() {
+	r.writer.WriteHeader(r.StatusCode)
+}
+
+// DataResponse extends Response a generic payload.
 type DataResponse struct {
 	Response
 	Data interface{}
@@ -40,11 +42,7 @@ func (r *DataResponse) WriteJSON() {
 	writeJSON(r.writer, r.Data, r.StatusCode)
 }
 
-// Binary HTTP Response
-//
-// A BinaryResponse is a Response which returns binary data.
-//
-// swagger:response
+// BinaryResponse extends Response with a binary data payload.
 type BinaryResponse struct {
 	Response
 	Data []byte
@@ -55,6 +53,21 @@ func NewBinaryResponseWithStatus(writer http.ResponseWriter, data []byte, code i
 	return &BinaryResponse{Response: response, Data: data}
 }
 
+func (r *BinaryResponse) SetContentTypeFromExtension(ex string) *BinaryResponse {
+	mimeType := mime.TypeByExtension(ex)
+	r.writer.Header().Set("Content-Type", mimeType)
+	return r
+}
+
+func (r *BinaryResponse) SetEtag(etag string) *BinaryResponse {
+	r.writer.Header().Set("ETag", etag)
+	return r
+}
+
+func ETag(t time.Time) string {
+	return strconv.FormatInt(t.UTC().Unix(), 10)
+}
+
 func (r *BinaryResponse) Write() {
 	if _, err := r.writer.Write(r.Data); err != nil {
 		r.writer.WriteHeader(500)
@@ -63,11 +76,7 @@ func (r *BinaryResponse) Write() {
 	r.writer.WriteHeader(r.StatusCode)
 }
 
-// Error HTTP Response
-//
-// A ErrorResponse indicates an error and provides the error message.
-//
-// swagger:response
+// ErrorResponse indicates an error and provides the error message.
 type ErrorResponse struct {
 	Response
 	Error string

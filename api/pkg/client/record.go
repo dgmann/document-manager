@@ -48,6 +48,15 @@ func (c *RecordClient) Create(create *NewRecord) (*api.Record, error) {
 	return ToPointer(HandleResponse[api.Record](res))
 }
 
+func (c *RecordClient) Update(record *api.Record) (*api.Record, error) {
+	res, err := c.PutJson(fmt.Sprintf("records/%s", record.Id), record)
+	if err != nil {
+		return nil, err
+	}
+
+	return ToPointer(HandleResponse[api.Record](res))
+}
+
 func (c *RecordClient) UpdatePages(recordId string, updatedPages []api.PageUpdate) (*api.Record, error) {
 	res, err := c.PutJson(fmt.Sprintf("records/%s/pages", recordId), updatedPages)
 	if err != nil {

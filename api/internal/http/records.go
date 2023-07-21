@@ -38,6 +38,7 @@ func (controller *RecordController) Router() http.Handler {
 	r.Get("/{recordId}", controller.One)
 	r.Post("/", controller.Create)
 	r.Patch("/{recordId}", controller.Update)
+	r.Put("/{recordId}", controller.Update)
 	r.Delete("/{recordId}", controller.Delete)
 
 	r.Post("/{recordId}/duplicate", controller.Duplicate)

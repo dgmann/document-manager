@@ -13,8 +13,9 @@ import (
 )
 
 const (
-	RecordsTopic    = "records/+"
-	OCRRequestTopic = "ocrrequests"
+	RecordsTopic               = "records/+"
+	OCRRequestTopic            = "ocrrequests"
+	CategorizationRequestTopic = "categorizationrequests"
 )
 
 func main() {
@@ -46,6 +47,7 @@ func main() {
 	mqttClient := NewMQTTClient(ctx, config.Broker, config.ClientId, []Subscription{
 		{Topic: RecordsTopic, SubscribeOptions: paho.SubscribeOptions{QoS: 1}, Handler: backendEventHandler(ocrRequestPublishChan, categorizationRequestChan)},
 		{Topic: OCRRequestTopic, SubscribeOptions: paho.SubscribeOptions{QoS: 1}, Handler: handler.OCRRequestHandler()},
+		{Topic: CategorizationRequestTopic, SubscribeOptions: paho.SubscribeOptions{QoS: 1}, Handler: handler.CategorizationRequestHandler()},
 	})
 	if err := mqttClient.Connect(ctx); err != nil {
 		log.Fatalf("error connecting subscriber: %s", err)
@@ -55,7 +57,13 @@ func main() {
 	go func() {
 		err := Publish(ctx, mqttClient, OCRRequestTopic, ocrRequestPublishChan)
 		if err != nil {
-			log.Fatalf("publisher error: %s", err)
+			log.Fatalf("OCRRequest publisher error: %s", err)
+		}
+	}()
+	go func() {
+		err := Publish(ctx, mqttClient, CategorizationRequestTopic, categorizationRequestChan)
+		if err != nil {
+			log.Fatalf("CategorizationRequest publisher error: %s", err)
 		}
 	}()
 

@@ -10,6 +10,9 @@ type MatchType string
 const (
 	MatchTypeNone  = ""
 	MatchTypeRegex = "regex"
+	MatchTypeExact = "exact"
+	MatchTypeAll   = "all"
+	MatchTypeAny   = "any"
 )
 
 type MatchConfig struct {

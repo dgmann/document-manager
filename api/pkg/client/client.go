@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"net/url"
@@ -11,8 +12,9 @@ import (
 )
 
 type HTTPClient struct {
-	client  *httpClient
-	Records *RecordClient
+	client     *httpClient
+	Records    *RecordClient
+	Categories *CategoryClient
 }
 
 func NewHTTPClient(uri string, timeout time.Duration) (*HTTPClient, error) {
@@ -29,7 +31,10 @@ func NewHTTPClient(uri string, timeout time.Duration) (*HTTPClient, error) {
 	records := &RecordClient{
 		httpClient: c,
 	}
-	return &HTTPClient{client: c, Records: records}, nil
+	categories := &CategoryClient{
+		httpClient: c,
+	}
+	return &HTTPClient{client: c, Records: records, Categories: categories}, nil
 }
 
 type Category struct {
@@ -37,7 +42,11 @@ type Category struct {
 	Name string `bson:"name,omitempty" json:"name"`
 }
 
-var ErrAlreadyExists = errors.New("resource already exists")
+var (
+	ErrAlreadyExists = errors.New("resource already exists")
+	ErrNotFound      = errors.New("resource not found")
+	ErrGeneric       = errors.New("error handling response")
+)
 
 type httpClient struct {
 	Url    *url.URL
@@ -69,28 +78,41 @@ func (c *httpClient) PutJson(endpoint string, payload interface{}) (*http.Respon
 	return c.Client.Do(req)
 }
 
-func (c *httpClient) GetJson(endpoint string, out interface{}) error {
+func (c *httpClient) GetJson(endpoint string) (*http.Response, error) {
 	p := c.Url.JoinPath(endpoint)
-	res, err := c.Client.Get(p.String())
-	if err != nil {
-		return err
-	}
-	defer func(Body io.ReadCloser) {
-		closeErr := Body.Close()
-		if closeErr != nil && err == nil {
-			err = closeErr
-		}
-	}(res.Body)
-
-	return json.NewDecoder(res.Body).Decode(out)
+	return c.Client.Get(p.String())
 }
 
-func ParseJsonBody(res *http.Response, out interface{}) (err error) {
+func ParseJsonBody(res io.ReadCloser, out interface{}) (err error) {
 	defer func(Body io.ReadCloser) {
 		closeErr := Body.Close()
 		if err == nil {
 			err = closeErr
 		}
-	}(res.Body)
-	return json.NewDecoder(res.Body).Decode(out)
+	}(res)
+	return json.NewDecoder(res).Decode(out)
+}
+
+func HandleResponse[T any](res *http.Response) (T, error) {
+	var result T
+	if res.StatusCode == http.StatusOK || res.StatusCode == http.StatusCreated {
+		err := ParseJsonBody(res.Body, &result)
+		return result, err
+	}
+	var resBody map[string]interface{}
+	if err := ParseJsonBody(res.Body, &resBody); err != nil {
+		return result, err
+	}
+	if res.StatusCode == http.StatusNotFound {
+		return result, fmt.Errorf("%w: %+v", ErrNotFound, resBody)
+	}
+	if res.StatusCode == http.StatusConflict {
+		return result, fmt.Errorf("%w: %+v", ErrAlreadyExists, resBody)
+	}
+
+	return result, fmt.Errorf("%w: status %d, %+v", ErrGeneric, res.StatusCode, resBody)
+}
+
+func ToPointer[T any](in T, err error) (*T, error) {
+	return &in, err
 }

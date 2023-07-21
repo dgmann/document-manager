@@ -3,7 +3,10 @@ package client
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
+	"fmt"
 	"github.com/dgmann/document-manager/api/pkg/api"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -48,4 +51,48 @@ func TestHttpUploader_Upload_Failed(t *testing.T) {
 	}
 	_, err = client.Records.Create(&record)
 	assert.Error(t, err)
+}
+
+func TestHandleResponse(t *testing.T) {
+	type args struct {
+		res *http.Response
+	}
+	type testCase[T any] struct {
+		name    string
+		args    args
+		want    T
+		wantErr assert.ErrorAssertionFunc
+	}
+	tests := []testCase[api.Category]{
+		{"Status: 200", args{mockResponse(http.StatusOK, api.Category{Id: "1"})}, api.Category{Id: "1"}, func(t assert.TestingT, err error, i ...interface{}) bool {
+			return false
+		}},
+		{"Status: 404", args{mockResponse(http.StatusNotFound, api.Category{})}, api.Category{}, func(t assert.TestingT, err error, i ...interface{}) bool {
+			return !errors.Is(err, ErrNotFound)
+		}},
+		{"Status: 409", args{mockResponse(http.StatusConflict, api.Category{})}, api.Category{}, func(t assert.TestingT, err error, i ...interface{}) bool {
+			return !errors.Is(err, ErrAlreadyExists)
+		}},
+		{"Status: Any Error", args{mockResponse(http.StatusInternalServerError, api.Category{})}, api.Category{}, func(t assert.TestingT, err error, i ...interface{}) bool {
+			return !errors.Is(err, ErrGeneric)
+		}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := HandleResponse[api.Category](tt.args.res)
+			if !tt.wantErr(t, err, fmt.Sprintf("HandleResponse(%v)", tt.args.res)) {
+				return
+			}
+			assert.Equalf(t, tt.want, got, "HandleResponse(%v)", tt.args.res)
+		})
+	}
+}
+
+func mockResponse(statusCode int, payload interface{}) *http.Response {
+	body := new(bytes.Buffer)
+	_ = json.NewEncoder(body).Encode(payload)
+	return &http.Response{
+		StatusCode: statusCode,
+		Body:       io.NopCloser(body),
+	}
 }

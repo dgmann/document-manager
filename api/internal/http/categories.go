@@ -17,6 +17,7 @@ type CategoryController struct {
 func (controller *CategoryController) Router() http.Handler {
 	r := chi.NewRouter()
 	r.Get("/", controller.All)
+	r.Get("/{categoryId}", controller.Find)
 	r.Post("/", controller.Create)
 	r.Put("/", controller.Update)
 	return r
@@ -24,6 +25,7 @@ func (controller *CategoryController) Router() http.Handler {
 
 type categoryRepository interface {
 	All(ctx context.Context) ([]api.Category, error)
+	Find(ctx context.Context, id string) (*api.Category, error)
 	Add(ctx context.Context, category *api.Category) error
 	Update(ctx context.Context, category *api.Category) error
 }
@@ -35,6 +37,16 @@ func (controller *CategoryController) All(w http.ResponseWriter, req *http.Reque
 		return
 	}
 	NewResponse(w, categories).WriteJSON()
+}
+
+func (controller *CategoryController) Find(w http.ResponseWriter, req *http.Request) {
+	id := URLParamFromContext(req.Context(), "categoryId")
+	category, err := controller.categories.Find(req.Context(), id)
+	if err != nil {
+		NewErrorResponse(w, err, http.StatusBadRequest).WriteJSON()
+		return
+	}
+	NewResponse(w, category).WriteJSON()
 }
 
 func (controller *CategoryController) Create(w http.ResponseWriter, req *http.Request) {

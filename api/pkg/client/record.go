@@ -6,7 +6,6 @@ import (
 	"github.com/dgmann/document-manager/api/pkg/api"
 	"io"
 	"mime/multipart"
-	"net/http"
 	"time"
 )
 
@@ -26,11 +25,11 @@ type RecordClient struct {
 }
 
 func (c *RecordClient) Get(id string) (*api.Record, error) {
-	var record api.Record
-	if err := c.GetJson("records/"+id, &record); err != nil {
+	res, err := c.GetJson("records/" + id)
+	if err != nil {
 		return nil, err
 	}
-	return &record, nil
+	return ToPointer(HandleResponse[api.Record](res))
 }
 
 func (c *RecordClient) Create(create *NewRecord) (*api.Record, error) {
@@ -46,15 +45,7 @@ func (c *RecordClient) Create(create *NewRecord) (*api.Record, error) {
 		return nil, err
 	}
 
-	if res.StatusCode == http.StatusCreated {
-		var record api.Record
-		err := ParseJsonBody(res, &record)
-		return &record, err
-	}
-
-	var resBody map[string]interface{}
-	_ = ParseJsonBody(res, &resBody)
-	return nil, fmt.Errorf("status: %d, message: %+v", res.StatusCode, resBody)
+	return ToPointer(HandleResponse[api.Record](res))
 }
 
 func (c *RecordClient) UpdatePages(recordId string, updatedPages []api.PageUpdate) (*api.Record, error) {
@@ -63,15 +54,7 @@ func (c *RecordClient) UpdatePages(recordId string, updatedPages []api.PageUpdat
 		return nil, err
 	}
 
-	if res.StatusCode == http.StatusOK {
-		var record api.Record
-		err := ParseJsonBody(res, &record)
-		return &record, err
-	}
-
-	var resBody map[string]interface{}
-	_ = ParseJsonBody(res, &resBody)
-	return nil, fmt.Errorf("status: %d, message: %+v", res.StatusCode, resBody)
+	return ToPointer(HandleResponse[api.Record](res))
 }
 
 func createParamMap(create *NewRecord) map[string]string {

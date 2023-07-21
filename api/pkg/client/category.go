@@ -1,28 +1,33 @@
 package client
 
 import (
-	"fmt"
-	"net/http"
+	"github.com/dgmann/document-manager/api/pkg/api"
 )
 
 type CategoryClient struct {
 	*httpClient
 }
 
-func (c *CategoryClient) Create(category *Category) error {
+func (c *CategoryClient) Create(category *Category) (*api.Category, error) {
 	res, err := c.PostJson("categories", category)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	var body map[string]interface{}
-	if err := ParseJsonBody(res, &body); err != nil {
-		return err
+	return ToPointer(HandleResponse[api.Category](res))
+}
+
+func (c *CategoryClient) Get(id string) (*api.Category, error) {
+	res, err := c.GetJson("categories/" + id)
+	if err != nil {
+		return nil, err
 	}
-	if res.StatusCode == http.StatusCreated {
-		return nil
+	return ToPointer(HandleResponse[api.Category](res))
+}
+
+func (c *CategoryClient) All() ([]api.Category, error) {
+	res, err := c.GetJson("categories")
+	if err != nil {
+		return nil, err
 	}
-	if res.StatusCode == http.StatusConflict {
-		return fmt.Errorf("category %s could not be created: %w", category.Id, ErrAlreadyExists)
-	}
-	return fmt.Errorf("status code: %d, body: %+v", res.StatusCode, body)
+	return HandleResponse[[]api.Category](res)
 }

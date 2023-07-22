@@ -56,7 +56,7 @@ type httpClient struct {
 func (c *httpClient) PostJson(endpoint string, payload interface{}) (*http.Response, error) {
 	body := new(bytes.Buffer)
 	if err := json.NewEncoder(body).Encode(payload); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error encoding body to json: %w", err)
 	}
 
 	p := c.Url.JoinPath(endpoint)
@@ -66,21 +66,45 @@ func (c *httpClient) PostJson(endpoint string, payload interface{}) (*http.Respo
 func (c *httpClient) PutJson(endpoint string, payload interface{}) (*http.Response, error) {
 	body := new(bytes.Buffer)
 	if err := json.NewEncoder(body).Encode(payload); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error encoding body to json: %w", err)
 	}
 
 	p := c.Url.JoinPath(endpoint)
 	req, err := http.NewRequest(http.MethodPut, p.String(), body)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error creating http request: %w", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
-	return c.Client.Do(req)
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error making request: %w", err)
+	}
+	return resp, nil
 }
 
 func (c *httpClient) GetJson(endpoint string) (*http.Response, error) {
 	p := c.Url.JoinPath(endpoint)
 	return c.Client.Get(p.String())
+}
+
+func HandleResponse[T any](res *http.Response) (T, error) {
+	var result T
+	if res.StatusCode == http.StatusOK || res.StatusCode == http.StatusCreated {
+		err := ParseJsonBody(res.Body, &result)
+		return result, fmt.Errorf("error parsing json body: %w", err)
+	}
+	var resBody map[string]interface{}
+	if err := ParseJsonBody(res.Body, &resBody); err != nil {
+		return result, fmt.Errorf("error parsing json body: %w", err)
+	}
+	if res.StatusCode == http.StatusNotFound {
+		return result, fmt.Errorf("%w: %+v", ErrNotFound, resBody)
+	}
+	if res.StatusCode == http.StatusConflict {
+		return result, fmt.Errorf("%w: %+v", ErrAlreadyExists, resBody)
+	}
+
+	return result, fmt.Errorf("%w: status %d, %+v", ErrGeneric, res.StatusCode, resBody)
 }
 
 func ParseJsonBody(res io.ReadCloser, out interface{}) (err error) {
@@ -91,26 +115,6 @@ func ParseJsonBody(res io.ReadCloser, out interface{}) (err error) {
 		}
 	}(res)
 	return json.NewDecoder(res).Decode(out)
-}
-
-func HandleResponse[T any](res *http.Response) (T, error) {
-	var result T
-	if res.StatusCode == http.StatusOK || res.StatusCode == http.StatusCreated {
-		err := ParseJsonBody(res.Body, &result)
-		return result, err
-	}
-	var resBody map[string]interface{}
-	if err := ParseJsonBody(res.Body, &resBody); err != nil {
-		return result, err
-	}
-	if res.StatusCode == http.StatusNotFound {
-		return result, fmt.Errorf("%w: %+v", ErrNotFound, resBody)
-	}
-	if res.StatusCode == http.StatusConflict {
-		return result, fmt.Errorf("%w: %+v", ErrAlreadyExists, resBody)
-	}
-
-	return result, fmt.Errorf("%w: status %d, %+v", ErrGeneric, res.StatusCode, resBody)
 }
 
 func ToPointer[T any](in T, err error) (*T, error) {

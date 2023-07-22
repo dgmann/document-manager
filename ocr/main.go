@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/dgmann/document-manager/api/pkg/client"
 	"github.com/eclipse/paho.golang/paho"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"ocr/internal/ocr/tesseract"
 	"os"
 	"os/signal"
@@ -23,14 +23,13 @@ func main() {
 	if err != nil {
 		log.Fatalln(config)
 	}
-	log.Printf("Using API URL %s\n", config.ApiUrl)
-	log.Printf("Connecting to MQTT Broker at %s\n", config.Broker)
+	log.Printf("Using API URL %s", config.ApiUrl)
+	log.Printf("Connecting to MQTT Broker at %s", config.Broker)
 
 	ctx, cancel := context.WithCancel(context.Background())
 
 	ocrRequestPublishChan := make(chan OCRRequest)
 	defer close(ocrRequestPublishChan)
-	// TODO: consume the messages from this channel
 	categorizationRequestChan := make(chan CategorizationRequest)
 	defer close(categorizationRequestChan)
 
@@ -66,8 +65,6 @@ func main() {
 			log.Fatalf("CategorizationRequest publisher error: %s", err)
 		}
 	}()
-
-	log.Println("listening...")
 
 	signalChan := make(chan os.Signal, 1)
 	signal.Notify(

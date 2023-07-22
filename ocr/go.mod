@@ -3,7 +3,7 @@ module ocr
 go 1.20
 
 require (
-	github.com/dgmann/document-manager/api v0.0.0-20230721164105-4c085c0b83ea
+	github.com/dgmann/document-manager/api v0.0.0-20230722075940-b7073e87a78a
 	github.com/dgmann/gosseract v0.0.0-20230627193324-cbec72f385cc
 	github.com/eclipse/paho.golang v0.11.0
 	github.com/sirupsen/logrus v1.9.3

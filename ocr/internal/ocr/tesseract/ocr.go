@@ -64,8 +64,6 @@ func (c *Client) CheckOrientation(pages []ocr.PageWithContent) ([]api.PageUpdate
 }
 
 func (c *Client) ExtractText(pages []ocr.PageWithContent) ([]api.PageUpdate, error) {
-
-	needsUpdate := false
 	updatedPages := make([]api.PageUpdate, len(pages))
 	for i, p := range pages {
 		updatedPages[i] = api.PageUpdate{Id: p.Id}
@@ -89,10 +87,6 @@ func (c *Client) ExtractText(pages []ocr.PageWithContent) ([]api.PageUpdate, err
 		}
 
 		updatedPages[i].Content = &text
-		needsUpdate = true
-	}
-	if !needsUpdate {
-		return nil, nil
 	}
 	return updatedPages, nil
 }

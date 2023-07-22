@@ -4,8 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	log "github.com/sirupsen/logrus"
 	"io"
-	"log"
 	"net/http"
 	"net/url"
 )
@@ -22,12 +22,12 @@ func RunHTTPServer(ctx context.Context, config Config, publishChan chan<- OCRReq
 	srv := &http.Server{Addr: ":" + config.HttpPort}
 	recordUrl, err := url.JoinPath(config.ApiUrl, "records")
 	if err != nil {
-		log.Println(err)
+		log.Errorln(err)
 	}
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if _, err := w.Write([]byte("OCR Service")); err != nil {
-			log.Printf(err.Error())
+			log.Errorln(err)
 		}
 	})
 
@@ -85,6 +85,7 @@ func RunHTTPServer(ctx context.Context, config Config, publishChan chan<- OCRReq
 		}
 	}()
 
+	log.Infof("HTTP server started on port %s\n", config.HttpPort)
 	if err := srv.ListenAndServe(); err != nil {
 		log.Println(err)
 	}

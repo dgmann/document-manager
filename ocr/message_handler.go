@@ -6,8 +6,8 @@ import (
 	"github.com/dgmann/document-manager/api/pkg/api"
 	"github.com/dgmann/document-manager/api/pkg/client"
 	mqtt "github.com/eclipse/paho.golang/paho"
+	log "github.com/sirupsen/logrus"
 	"io"
-	"log"
 	"net/http"
 	"ocr/internal/ocr"
 	"regexp"
@@ -36,10 +36,11 @@ func backendEventHandler(ocrRequestChan chan<- OCRRequest, categorizationChan ch
 	return func(publish *mqtt.Publish) {
 		var e api.Event[*api.Record]
 		if err := json.Unmarshal(publish.Payload, &e); err != nil {
-			log.Println(err)
+			log.Errorln(err)
 			return
 		}
 		if e.Type == api.EventTypeDeleted {
+			log.Infof("skipping event for record: %s. Type: Deleted\n", e.Id)
 			return
 		}
 		record := e.Data
@@ -47,6 +48,7 @@ func backendEventHandler(ocrRequestChan chan<- OCRRequest, categorizationChan ch
 		// Go through all pages and if any pages does not have a content, issue a OCRRequest
 		for _, p := range record.Pages {
 			if p.Content == nil {
+				log.Infof("page without content found. Issue OCR request for record: %s", record.Id)
 				ocrRequestChan <- OCRRequest{
 					RecordId: record.Id,
 					Force:    false,
@@ -56,6 +58,7 @@ func backendEventHandler(ocrRequestChan chan<- OCRRequest, categorizationChan ch
 		}
 
 		if record.Category == nil || len(*record.Category) == 0 {
+			log.Infof("Record: %s does not contain a category yet. Issue categorization request", record.Id)
 			categorizationChan <- CategorizationRequest{Record: record}
 			return
 		}
@@ -66,13 +69,13 @@ func (h *Handler) OCRRequestHandler() mqtt.MessageHandler {
 	return func(publish *mqtt.Publish) {
 		var request OCRRequest
 		if err := json.Unmarshal(publish.Payload, &request); err != nil {
-			log.Println(err)
+			log.Errorf("error parsing OCRRequest: %s", err)
 			return
 		}
 
 		record, err := h.ApiClient.Records.Get(request.RecordId)
 		if err != nil {
-			log.Println(err)
+			log.Errorln(err)
 			return
 		}
 
@@ -87,13 +90,13 @@ func (h *Handler) OCRRequestHandler() mqtt.MessageHandler {
 
 			resp, err := http.Get(page.Url)
 			if err != nil {
-				log.Println(err)
+				log.Errorln(err)
 				return
 			}
 			img, err := io.ReadAll(resp.Body)
 			_ = resp.Body.Close()
 			if err != nil {
-				log.Println(err)
+				log.Errorln(err)
 				return
 			}
 			pagesToProcess[i].Image = img
@@ -102,13 +105,13 @@ func (h *Handler) OCRRequestHandler() mqtt.MessageHandler {
 		// tracks whether anything was changed and an update is required
 		pagesToUpdate, err := h.OCRClient.CheckOrientation(pagesToProcess)
 		if err != nil {
-			log.Println(err)
+			log.Errorln(err)
 			return
 		}
 		// if the pages need to be updated, update them first
 		if len(pagesToUpdate) != 0 {
 			if _, err := h.ApiClient.Records.UpdatePages(request.RecordId, pagesToUpdate); err != nil {
-				log.Println(err)
+				log.Errorln(err)
 			}
 			log.Printf("updated pages of record %s\n", request.RecordId)
 			return
@@ -116,17 +119,17 @@ func (h *Handler) OCRRequestHandler() mqtt.MessageHandler {
 
 		pagesToUpdate, err = h.OCRClient.ExtractText(pagesToProcess)
 		if err != nil {
-			log.Println(err)
+			log.Errorln(err)
 			return
 		}
 		if len(pagesToUpdate) != 0 {
 			if _, err := h.ApiClient.Records.UpdatePages(request.RecordId, pagesToUpdate); err != nil {
-				log.Println(err)
+				log.Errorln(err)
 			}
 			log.Printf("updated pages of record %s\n", request.RecordId)
 			return
 		}
-		log.Printf("skipping record %s as no page content was changed", request.RecordId)
+		log.Warningf("skipping record %s as no page content was changed", request.RecordId)
 	}
 }
 
@@ -134,9 +137,10 @@ func (h *Handler) CategorizationRequestHandler() mqtt.MessageHandler {
 	return func(publish *mqtt.Publish) {
 		var request CategorizationRequest
 		if err := json.Unmarshal(publish.Payload, &request); err != nil {
-			log.Println(err)
+			log.Errorf("error parsing categorization request: %s", err)
 			return
 		}
+		log.WithField("recordId", request.Record.Id).Debugln("categorization request received")
 		contents := make([]string, len(request.Record.Pages))
 		for i, page := range request.Record.Pages {
 			contents[i] = *page.Content
@@ -145,14 +149,21 @@ func (h *Handler) CategorizationRequestHandler() mqtt.MessageHandler {
 
 		categories, err := h.ApiClient.Categories.All()
 		if err != nil {
-			log.Println(err)
+			log.Errorf("error fetching categories: %s", err)
 			return
 		}
 		for _, category := range categories {
 			if match(textToSearch, category.Match) {
 				request.Record.Category = &category.Id
+				if _, err := h.ApiClient.Records.Update(request.Record); err != nil {
+					log.WithError(err).Errorf("error categorizing record %s as %s\n", request.Record.Id, category.Name)
+					return
+				}
+				log.Infof("categorized record %s as %s\n", request.Record.Id, category.Name)
+				return
 			}
 		}
+		log.Infoln("categorization failed. No matching category found.")
 	}
 }
 

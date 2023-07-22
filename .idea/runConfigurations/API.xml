@@ -3,10 +3,9 @@
     <module name="document-manager" />
     <working_directory value="$PROJECT_DIR$/api" />
     <envs>
-      <env name="ARCHIVE_DIR" value="~/archive" />
-      <env name="DB_HOST" value="docker.gassmann.local" />
+      <env name="MQTT_BROKER" value="mqtt://localhost:1883" />
       <env name="PDFPROCESSOR_URL" value="localhost:9000" />
-      <env name="RECORD_DIR" value="~/records" />
+      <env name="HTTP_PORT" value="8081" />
     </envs>
     <kind value="DIRECTORY" />
     <package value="github.com/dgmann/document-manager/api" />

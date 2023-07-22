@@ -1,264 +1,223 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/dgmann/gosseract"
+	"github.com/dgmann/document-manager/api/pkg/api"
+	"github.com/dgmann/document-manager/api/pkg/client"
 	mqtt "github.com/eclipse/paho.golang/paho"
+	log "github.com/sirupsen/logrus"
 	"io"
-	"log"
 	"net/http"
-	"net/url"
+	"ocr/internal/ocr"
+	"regexp"
 	"strings"
 )
 
-func handleBackendEvent(publishChan chan<- OCRRequest) mqtt.MessageHandler {
+type OCRRequest struct {
+	RecordId string `json:"recordId"`
+	Force    bool   `json:"force"`
+}
+
+type CategorizationRequest struct {
+	Record *api.Record `json:"record"`
+}
+
+type Handler struct {
+	OCRClient ocr.Client
+	ApiClient *client.HTTPClient
+}
+
+func (h *Handler) Close() error {
+	return h.OCRClient.Close()
+}
+
+func backendEventHandler(ocrRequestChan chan<- OCRRequest, categorizationChan chan<- CategorizationRequest) mqtt.MessageHandler {
 	return func(publish *mqtt.Publish) {
-		var e map[string]any
+		var e api.Event[*api.Record]
 		if err := json.Unmarshal(publish.Payload, &e); err != nil {
-			log.Println(err)
+			log.Errorln(err)
 			return
 		}
-		if e["type"] == "Deleted" {
+		if e.Type == api.EventTypeDeleted {
+			log.Infof("skipping event for record: %s. Type: Deleted\n", e.Id)
 			return
+		}
+		record := e.Data
+
+		// Go through all pages and if any pages does not have a content, issue a OCRRequest
+		for _, p := range record.Pages {
+			if p.Content == nil {
+				log.Infof("page without content found. Issue OCR request for record: %s", record.Id)
+				ocrRequestChan <- OCRRequest{
+					RecordId: record.Id,
+					Force:    false,
+				}
+				return
+			}
 		}
 
-		publishChan <- OCRRequest{RecordId: e["id"].(string)}
+		if record.Category == nil || len(*record.Category) == 0 {
+			log.Infof("Record: %s does not contain a category yet. Issue categorization request", record.Id)
+			categorizationChan <- CategorizationRequest{Record: record}
+			return
+		}
 	}
 }
 
-type PageWithContent struct {
-	Id    string
-	Image []byte
-}
-
-func handlerOCRRequest(apiUrl string) mqtt.MessageHandler {
+func (h *Handler) OCRRequestHandler() mqtt.MessageHandler {
 	return func(publish *mqtt.Publish) {
 		var request OCRRequest
 		if err := json.Unmarshal(publish.Payload, &request); err != nil {
-			log.Println(err)
+			log.Errorf("error parsing OCRRequest: %s", err)
 			return
 		}
 
-		recordUrl, err := url.JoinPath(apiUrl, "records", request.RecordId)
+		record, err := h.ApiClient.Records.Get(request.RecordId)
 		if err != nil {
-			log.Printf("error creating record request url: %s", err)
-			return
-		}
-		record, err := func() (data map[string]any, err error) {
-			recordResp, err := http.Get(recordUrl)
-			if err != nil {
-				return nil, fmt.Errorf("error fetching record: %s", err)
-			}
-			recordBody, err := io.ReadAll(recordResp.Body)
-			defer func(Body io.ReadCloser) {
-				closeErr := Body.Close()
-				if closeErr != nil && err == nil {
-					err = closeErr
-				}
-			}(recordResp.Body)
-			var record map[string]any
-			if err := json.Unmarshal(recordBody, &record); err != nil {
-				return nil, fmt.Errorf("error parsing record json: %s", err)
-			}
-			return record, nil
-		}()
-		if err != nil {
-			log.Println(err)
+			log.Errorln(err)
 			return
 		}
 
-		pages, ok := record["pages"].([]interface{})
-		if !ok {
-			log.Println("could not extract pages")
-			return
-		}
-
-		pagesToProcess := make([]PageWithContent, len(pages))
-
-		for i, p := range pages {
-			page, ok := p.(map[string]any)
-			if !ok {
-				log.Println("could not extract page")
-				return
-			}
+		pagesToProcess := make([]ocr.PageWithContent, len(record.Pages))
+		for i, page := range record.Pages {
+			pagesToProcess[i] = ocr.PageWithContent{Id: page.Id, Image: []byte{}}
 			// If page content is already filled we do not need to scan it again
 			// Force overrides this
-			if content, ok := page["content"].(string); ok && len(content) > 0 && !request.Force {
-				pagesToProcess[i] = PageWithContent{Id: page["id"].(string), Image: []byte{}}
+			if page.Content != nil && !request.Force {
 				continue
 			}
 
-			pageUrl, ok := page["url"].(string)
-			if !ok {
-				log.Println("could not extract url")
-				return
-			}
-			resp, err := http.Get(pageUrl)
+			resp, err := http.Get(page.Url)
 			if err != nil {
-				log.Println(err)
+				log.Errorln(err)
 				return
 			}
 			img, err := io.ReadAll(resp.Body)
 			_ = resp.Body.Close()
 			if err != nil {
-				log.Println(err)
+				log.Errorln(err)
 				return
 			}
-			pagesToProcess[i] = PageWithContent{Id: page["id"].(string), Image: img}
+			pagesToProcess[i].Image = img
 		}
 
 		// tracks whether anything was changed and an update is required
-		updatedPages, err := checkOrientation(pagesToProcess)
+		pagesToUpdate, err := h.OCRClient.CheckOrientation(pagesToProcess)
 		if err != nil {
-			log.Println(err)
+			log.Errorln(err)
 			return
 		}
-		if len(updatedPages) != 0 {
-			if err := updatePages(recordUrl, updatedPages); err != nil {
-				log.Println(err)
+		// if the pages need to be updated, update them first
+		if len(pagesToUpdate) != 0 {
+			if _, err := h.ApiClient.Records.UpdatePages(request.RecordId, pagesToUpdate); err != nil {
+				log.Errorln(err)
 			}
 			log.Printf("updated pages of record %s\n", request.RecordId)
 			return
 		}
 
-		updatedPages, err = extractText(pagesToProcess)
+		pagesToUpdate, err = h.OCRClient.ExtractText(pagesToProcess)
 		if err != nil {
-			log.Println(err)
+			log.Errorln(err)
 			return
 		}
-		if len(updatedPages) != 0 {
-			if err := updatePages(recordUrl, updatedPages); err != nil {
-				log.Println(err)
+		if len(pagesToUpdate) != 0 {
+			if _, err := h.ApiClient.Records.UpdatePages(request.RecordId, pagesToUpdate); err != nil {
+				log.Errorln(err)
 			}
 			log.Printf("updated pages of record %s\n", request.RecordId)
 			return
 		}
-		log.Printf("skipping record %s as no page content was changed", request.RecordId)
+		log.Warningf("skipping record %s as no page content was changed", request.RecordId)
 	}
 }
 
-func checkOrientation(pages []PageWithContent) ([]map[string]any, error) {
-	client := gosseract.NewClient()
-	defer func(client *gosseract.Client) {
-		err := client.Close()
+func (h *Handler) CategorizationRequestHandler() mqtt.MessageHandler {
+	return func(publish *mqtt.Publish) {
+		var request CategorizationRequest
+		if err := json.Unmarshal(publish.Payload, &request); err != nil {
+			log.Errorf("error parsing categorization request: %s", err)
+			return
+		}
+		log.WithField("recordId", request.Record.Id).Debugln("categorization request received")
+		contents := make([]string, len(request.Record.Pages))
+		for i, page := range request.Record.Pages {
+			contents[i] = *page.Content
+		}
+		textToSearch := strings.Join(contents, "\n")
+
+		categories, err := h.ApiClient.Categories.All()
 		if err != nil {
-			log.Printf("error closing tesseract: %s\n", err)
+			log.Errorf("error fetching categories: %s", err)
+			return
 		}
-	}(client)
-
-	needsUpdate := false
-	updatedPages := make([]map[string]any, len(pages))
-	for i, p := range pages {
-		updatedPages[i] = map[string]any{
-			"id": p.Id,
+		for _, category := range categories {
+			if match(textToSearch, category.Match) {
+				request.Record.Category = &category.Id
+				if _, err := h.ApiClient.Records.Update(request.Record); err != nil {
+					log.WithError(err).Errorf("error categorizing record %s as %s\n", request.Record.Id, category.Name)
+					return
+				}
+				log.Infof("categorized record %s as %s\n", request.Record.Id, category.Name)
+				return
+			}
 		}
-
-		// If there is no image to process, nothing to do
-		if len(p.Image) == 0 {
-			continue
-		}
-
-		if err := client.SetImageFromBytes(p.Image); err != nil {
-			return nil, err
-		}
-		if err := client.SetLanguage("osd"); err != nil {
-			log.Fatalln(err)
-		}
-		if err := client.SetPageSegMode(gosseract.PSM_OSD_ONLY); err != nil {
-			log.Fatalln()
-		}
-		osdResult, err := client.DetectOrientationScript()
-		if err != nil {
-			return nil, err
-		}
-		if osdResult.OrientationDegree == 0 {
-			continue
-		}
-		log.Printf("page %s is rotated %d degree with confidence %f. Correcting orientation.", p.Id, osdResult.OrientationDegree, osdResult.OrientationConfidence)
-		needsUpdate = true
-		updatedPages[i] = map[string]any{
-			"id":     p.Id,
-			"rotate": osdResult.OrientationDegree * -1,
-		}
+		log.Infoln("categorization failed. No matching category found.")
 	}
-	if !needsUpdate {
-		return nil, nil
-	}
-	return updatedPages, nil
 }
 
-func extractText(pages []PageWithContent) ([]map[string]any, error) {
-	client := gosseract.NewClient()
-	defer func(client *gosseract.Client) {
-		err := client.Close()
-		if err != nil {
-			log.Printf("error closing tesseract: %s\n", err)
-		}
-	}(client)
-
-	needsUpdate := false
-	updatedPages := make([]map[string]any, len(pages))
-	for i, p := range pages {
-		updatedPages[i] = map[string]any{
-			"id": p.Id,
-		}
-
-		// If there is no image to process, we just append the page without modification
-		if len(p.Image) == 0 {
-			continue
-		}
-		if err := client.SetImageFromBytes(p.Image); err != nil {
-			return nil, err
-		}
-		if err := client.SetLanguage("deu", "eng"); err != nil {
-			log.Fatalln(err)
-		}
-		if err := client.SetPageSegMode(gosseract.PSM_AUTO); err != nil {
-			log.Fatalln(err)
-		}
-		text, err := client.Text()
-		if err != nil {
-			return nil, err
-		}
-		// If text was empty we won't update it
-		if len(text) == 0 {
-			continue
-		}
-
-		updatedPages[i] = map[string]any{
-			"id":      p.Id,
-			"content": text,
-		}
-		needsUpdate = true
-	}
-	if !needsUpdate {
-		return nil, nil
-	}
-	return updatedPages, nil
-}
-
-func updatePages(recordUrl string, updatedPages []map[string]any) error {
-	updateUrl := recordUrl + "/pages"
-	var b bytes.Buffer
-	if err := json.NewEncoder(&b).Encode(updatedPages); err != nil {
-		return fmt.Errorf("error encoding page update request: %s", err)
-	}
-	updateResp, err := http.Post(updateUrl, "application/json", &b)
-	if err != nil {
-		return fmt.Errorf("error updating pages at %s: %s\n", updateUrl, err)
-	}
-	defer func(Body io.ReadCloser) {
-		err := Body.Close()
+func match(content string, matchConfig api.MatchConfig) bool {
+	switch matchConfig.Type {
+	case api.MatchTypeExact:
+		matched, err := regexp.MatchString(fmt.Sprintf(`\b%s\b`, regexp.QuoteMeta(matchConfig.Expression)), content)
 		if err != nil {
 			log.Println(err)
 		}
-	}(updateResp.Body)
-	if updateResp.StatusCode >= 400 {
-		buf := new(strings.Builder)
-		_, _ = io.Copy(buf, updateResp.Body)
-		return fmt.Errorf("error updating pages. Status Code: %d, error: %s\n", updateResp.StatusCode, buf.String())
+		return matched
+	case api.MatchTypeRegex:
+		matched, err := regexp.MatchString(matchConfig.Expression, content)
+		if err != nil {
+			log.Println(err)
+		}
+		return matched
+	case api.MatchTypeAll:
+		parts := splitStringEx(matchConfig.Expression)
+		for _, part := range parts {
+			withoutQuotes := strings.ReplaceAll(part, `"`, "")
+			matched, err := regexp.MatchString(fmt.Sprintf(`\b%s\b`, regexp.QuoteMeta(withoutQuotes)), content)
+			if err != nil {
+				log.Println(err)
+			}
+			if !matched {
+				return false
+			}
+		}
+		return true
+	case api.MatchTypeAny:
+		parts := splitStringEx(matchConfig.Expression)
+		for _, part := range parts {
+			withoutQuotes := strings.ReplaceAll(part, `"`, "")
+			matched, err := regexp.MatchString(fmt.Sprintf(`\b%s\b`, regexp.QuoteMeta(withoutQuotes)), content)
+			if err != nil {
+				log.Println(err)
+			}
+			if matched {
+				return true
+			}
+		}
+		return false
 	}
-	return nil
+	return false
+}
+
+// splitStringEx splits a string on whitespace but keeps words grouped inside quotes
+func splitStringEx(content string) []string {
+	quoted := false
+	return strings.FieldsFunc(content, func(r rune) bool {
+		if r == '"' {
+			quoted = !quoted
+		}
+		return !quoted && r == ' '
+	})
 }

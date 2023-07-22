@@ -8,6 +8,7 @@ import (
 	"github.com/dgmann/document-manager/api/internal/pdf/grpc"
 	"github.com/dgmann/document-manager/api/internal/status"
 	"github.com/dgmann/document-manager/api/internal/storage/filesystem"
+	"github.com/dgmann/document-manager/api/pkg/api"
 	"github.com/dgmann/document-manager/pkg/opentelemetry"
 	log "github.com/sirupsen/logrus"
 	"github.com/uptrace/opentelemetry-go-extra/otellogrus"
@@ -86,20 +87,20 @@ func main() {
 		return
 	}
 
-	websocketService := event.NewWebsocketEventService()
+	websocketService := event.NewWebsocketEventService[*api.Record]()
 	mqttBrokerUrl, err := url.Parse(config.MQTTBroker)
 	if err != nil {
 		log.WithContext(ctx).WithError(err).Errorf("error opening connection to %s\n", config.MQTTBroker)
 		return
 	}
-	mqttService := func() *event.MQTTEventSender {
-		mqttService := event.NewMQTTEventSender(mqttBrokerUrl, config.MQTTClientId)
+	mqttService := func() *event.MQTTEventSender[*api.Record] {
+		mqttService := event.NewMQTTEventSender[*api.Record](mqttBrokerUrl, config.MQTTClientId)
 		if err := mqttService.Connect(ctx); err != nil {
 			log.WithContext(ctx).WithError(err).Fatalln("error connecting to MQTT Broker")
 		}
 		return mqttService
 	}()
-	eventService := event.NewMultiEventSender(websocketService, mqttService)
+	eventService := event.NewMultiEventSender[*api.Record](websocketService, mqttService)
 
 	tagService := mongo.NewTagService(client.Records())
 

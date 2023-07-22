@@ -50,7 +50,7 @@ func NewDocument(ctx context.Context, title string, records []api.Record, images
 			if record.Date != nil {
 				title = record.Date.Format("02.01.2006")
 			}
-			imagesForRecord, err := images.Get(ctx, record.Id)
+			imagesForRecord, err := images.GetByRecordId(ctx, record.Id)
 			if err != nil {
 				return nil, fmt.Errorf("error fetching images for record %s: %w", record.Id, err)
 			}

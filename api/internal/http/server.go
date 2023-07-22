@@ -135,7 +135,7 @@ func WithTagController(tagService datastore.TagService) ControllerOption {
 	}
 }
 
-func WithArchiveController(archiveService PdfGetter) ControllerOption {
+func WithArchiveController(archiveService storage.ResourceLocator) ControllerOption {
 	return func(rootMux *chi.Mux) {
 		archiveController := &ArchiveController{pdfs: archiveService}
 		rootMux.Get(PathPrefix+"/archive/{recordId}", archiveController.One)

@@ -42,7 +42,7 @@ func (w *WebsocketController) getWebsocketHandler() http.Handler {
 }
 
 func publishEvents(m *melody.Melody, subscriber event.Subscriber) {
-	events := subscriber.Subscribe(api.TypeCreated, api.TypeDeleted, api.TypeUpdated)
+	events := subscriber.Subscribe(api.EventTypeCreated, api.EventTypeDeleted, api.EventTypeUpdated)
 	for e := range events {
 		data, _ := json.Marshal(e)
 		err := m.Broadcast(data)

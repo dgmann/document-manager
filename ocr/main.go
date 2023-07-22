@@ -2,22 +2,20 @@ package main
 
 import (
 	"context"
+	"github.com/dgmann/document-manager/api/pkg/client"
 	"github.com/eclipse/paho.golang/paho"
-	"log"
+	log "github.com/sirupsen/logrus"
+	"ocr/internal/ocr/tesseract"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 )
 
-type OCRRequest struct {
-	RecordId string `json:"recordId"`
-	Force    bool   `json:"force"`
-}
-
 const (
-	RecordsTopic    = "records/+"
-	OCRRequestTopic = "ocrrequests"
+	RecordsTopic               = "records/+"
+	OCRRequestTopic            = "ocrrequests"
+	CategorizationRequestTopic = "categorizationrequests"
 )
 
 func main() {
@@ -25,31 +23,48 @@ func main() {
 	if err != nil {
 		log.Fatalln(config)
 	}
-	log.Printf("Using API URL %s\n", config.ApiUrl)
-	log.Printf("Connecting to MQTT Broker at %s\n", config.Broker)
+	log.Printf("Using API URL %s", config.ApiUrl)
+	log.Printf("Connecting to MQTT Broker at %s", config.Broker)
 
 	ctx, cancel := context.WithCancel(context.Background())
 
 	ocrRequestPublishChan := make(chan OCRRequest)
 	defer close(ocrRequestPublishChan)
+	categorizationRequestChan := make(chan CategorizationRequest)
+	defer close(categorizationRequestChan)
 
-	client := NewMQTTClient(ctx, config.Broker, config.ClientId, []Subscription{
-		{Topic: RecordsTopic, SubscribeOptions: paho.SubscribeOptions{QoS: 1}, Handler: handleBackendEvent(ocrRequestPublishChan)},
-		{Topic: OCRRequestTopic, SubscribeOptions: paho.SubscribeOptions{QoS: 1}, Handler: handlerOCRRequest(config.ApiUrl)},
+	apiClient, err := client.NewHTTPClient(config.ApiUrl, 3*time.Second)
+	if err != nil {
+		log.Fatalf("error creating API Client: %s", err)
+	}
+	handler := &Handler{OCRClient: tesseract.NewClient(), ApiClient: apiClient}
+	defer func(h *Handler) {
+		if err := h.Close(); err != nil {
+			log.Printf("error closing tesseract: %s\n", err)
+		}
+	}(handler)
+	mqttClient := NewMQTTClient(ctx, config.Broker, config.ClientId, []Subscription{
+		{Topic: RecordsTopic, SubscribeOptions: paho.SubscribeOptions{QoS: 1}, Handler: backendEventHandler(ocrRequestPublishChan, categorizationRequestChan)},
+		{Topic: OCRRequestTopic, SubscribeOptions: paho.SubscribeOptions{QoS: 1}, Handler: handler.OCRRequestHandler()},
+		{Topic: CategorizationRequestTopic, SubscribeOptions: paho.SubscribeOptions{QoS: 1}, Handler: handler.CategorizationRequestHandler()},
 	})
-	if err := client.Connect(ctx); err != nil {
+	if err := mqttClient.Connect(ctx); err != nil {
 		log.Fatalf("error connecting subscriber: %s", err)
 	}
 
 	go RunHTTPServer(ctx, config, ocrRequestPublishChan)
 	go func() {
-		err := client.Run(ctx, OCRRequestTopic, ocrRequestPublishChan)
+		err := Publish(ctx, mqttClient, OCRRequestTopic, ocrRequestPublishChan)
 		if err != nil {
-			log.Fatalf("publisher error: %s", err)
+			log.Fatalf("OCRRequest publisher error: %s", err)
 		}
 	}()
-
-	log.Println("listening...")
+	go func() {
+		err := Publish(ctx, mqttClient, CategorizationRequestTopic, categorizationRequestChan)
+		if err != nil {
+			log.Fatalf("CategorizationRequest publisher error: %s", err)
+		}
+	}()
 
 	signalChan := make(chan os.Signal, 1)
 	signal.Notify(
@@ -64,7 +79,7 @@ func main() {
 		func() {
 			ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 			defer cancel()
-			_ = client.Disconnect(ctx)
+			_ = mqttClient.Disconnect(ctx)
 		}()
 		cancel()
 	}()

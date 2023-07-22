@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/eclipse/paho.golang/autopaho"
 	"github.com/eclipse/paho.golang/paho"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"net/url"
 	"time"
 )
@@ -32,10 +32,10 @@ func NewMQTTClient(ctx context.Context, broker *url.URL, clientId string, subscr
 					return options
 				}(),
 			}); err != nil {
-				log.Printf("failed to subscribe (%s). This is likely to mean no messages will be received.", err)
+				log.Errorf("failed to subscribe (%s). This is likely to mean no messages will be received.", err)
 				return
 			}
-			log.Println("mqtt subscription made")
+			log.Info("mqtt subscription made")
 		},
 		OnConnectError: func(err error) { log.Printf("error whilst attempting connection: %s\n", err) },
 		ClientConfig: paho.ClientConfig{
@@ -50,9 +50,9 @@ func NewMQTTClient(ctx context.Context, broker *url.URL, clientId string, subscr
 			OnClientError: func(err error) { log.Printf("server requested disconnect: %s\n", err) },
 			OnServerDisconnect: func(d *paho.Disconnect) {
 				if d.Properties != nil {
-					log.Printf("server requested disconnect: %s\n", d.Properties.ReasonString)
+					log.Infof("server requested disconnect: %s\n", d.Properties.ReasonString)
 				} else {
-					log.Printf("server requested disconnect; reason code: %d\n", d.ReasonCode)
+					log.Infof("server requested disconnect; reason code: %d\n", d.ReasonCode)
 				}
 			},
 		},
@@ -79,8 +79,8 @@ type Subscription struct {
 	Handler paho.MessageHandler
 }
 
-func (m *MQTTClient) Run(ctx context.Context, topic string, ocrRequestChan <-chan OCRRequest) error {
-	for msg := range ocrRequestChan {
+func Publish[T any](ctx context.Context, m *MQTTClient, topic string, messages <-chan T) error {
+	for msg := range messages {
 		// AwaitConnection will return immediately if connection is up; adding this call stops publication whilst
 		// connection is unavailable.
 		err := m.cm.AwaitConnection(ctx)

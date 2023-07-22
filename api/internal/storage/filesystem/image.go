@@ -25,7 +25,7 @@ func NewImageService(directory string) (*ImageService, error) {
 	return &ImageService{DiskStorage: repository, tracer: tracer}, nil
 }
 
-func (f *ImageService) Get(ctx context.Context, id string) (map[string]*storage.Image, error) {
+func (f *ImageService) GetByRecordId(ctx context.Context, id string) (map[string]*storage.Image, error) {
 	images := make(map[string]*storage.Image, 0)
 	p := storage.NewKey(id)
 	err := f.ForEach(ctx, p, func(resource storage.KeyedResource, err error) error {
@@ -41,8 +41,4 @@ func (f *ImageService) Get(ctx context.Context, id string) (map[string]*storage.
 
 func (f *ImageService) Copy(ctx context.Context, fromId string, toId string) error {
 	return f.CopyFolder(ctx, storage.NewKey(fromId), storage.NewKey(toId))
-}
-
-func (f *ImageService) Path(locatable storage.Locatable) string {
-	return f.Locate(locatable)
 }

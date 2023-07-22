@@ -6,9 +6,9 @@ import (
 )
 
 type Subscriber interface {
-	Subscribe(t ...api.Type) chan interface{}
+	Subscribe(t ...api.EventType) chan interface{}
 }
 
-type Sender interface {
-	Send(ctx context.Context, event api.Event) error
+type Sender[T any] interface {
+	Send(ctx context.Context, event api.Event[T]) error
 }

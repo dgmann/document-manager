@@ -10,6 +10,9 @@ type MatchType string
 const (
 	MatchTypeNone  = ""
 	MatchTypeRegex = "regex"
+	MatchTypeExact = "exact"
+	MatchTypeAll   = "all"
+	MatchTypeAny   = "any"
 )
 
 type MatchConfig struct {
@@ -39,7 +42,7 @@ type Record struct {
 	Pages       []Page     `bson:"pages,omitempty" json:"pages"`
 	Status      *Status    `bson:"status,omitempty" json:"status"`
 	UpdatedAt   time.Time  `bson:"updatedAt"`
-	ArchivedPDF string
+	ArchivedPDF string     `json:"archivedPDF"`
 }
 
 func (r *Record) MarshalJSON() ([]byte, error) {
@@ -53,7 +56,7 @@ func (r *Record) MarshalJSON() ([]byte, error) {
 		"category":    r.Category,
 		"tags":        r.Tags,
 		"pages":       r.Pages,
-		"status":      statusToString(r.Status),
+		"status":      r.Status.String(),
 		"archivedPDF": r.ArchivedPDF,
 		"updatedAt":   r.UpdatedAt,
 	}
@@ -79,13 +82,6 @@ func toString(val *string) string {
 	return *val
 }
 
-func statusToString(val *Status) string {
-	if val == nil {
-		return ""
-	}
-	return string(*val)
-}
-
 func formatTime(toFormat *time.Time) *string {
 	if toFormat == nil {
 		return nil
@@ -109,7 +105,7 @@ type CreateRecord struct {
 type Page struct {
 	Id        string    `bson:"id" json:"id"`
 	Url       string    `json:"url"`
-	Content   string    `bson:"content" json:"content"`
+	Content   *string   `bson:"content,omitempty" json:"content"`
 	Format    string    `bson:"format" json:"format"`
 	UpdatedAt time.Time `bson:"updatedAt" json:"updatedAt"`
 }
@@ -127,7 +123,7 @@ func (p *Page) Clone() *Page {
 type PageUpdate struct {
 	Id      string  `json:"id"`
 	Rotate  float64 `json:"rotate,omitempty"`
-	Content string  `json:"content,omitempty"`
+	Content *string `json:"content,omitempty"`
 }
 
 type Status string
@@ -141,36 +137,49 @@ const (
 	StatusDone      Status = "done"
 )
 
-func (s Status) IsNone() bool {
-	return s == StatusNone
+func (s *Status) IsNone() bool {
+	status := s.Status()
+	return status == StatusNone
 }
 
-func (s Status) IsValid() bool {
-	return s == StatusNone || s == StatusInbox || s == StatusEscalated || s == StatusReview || s == StatusOther || s == StatusDone
+func (s *Status) IsValid() bool {
+	status := s.Status()
+	return status == StatusNone || status == StatusInbox || status == StatusEscalated || status == StatusReview || status == StatusOther || status == StatusDone
 }
 
-type Type string
-
-const (
-	TypeCreated Type = "CREATE"
-	TypeUpdated      = "UPDATE"
-	TypeDeleted      = "DELETE"
-)
-
-type Event struct {
-	Type      Type        `json:"type"`
-	Topic     Topic       `json:"topic"`
-	Timestamp time.Time   `json:"timestamp"`
-	Id        string      `json:"id"`
-	Data      interface{} `json:"data"`
+func (s *Status) String() string {
+	return string(s.Status())
 }
+
+func (s *Status) Status() Status {
+	if s == nil {
+		return StatusNone
+	}
+	return *s
+}
+
+type EventType string
 
 type Topic string
 
 const RecordTopic = "records"
 
-func New(topic Topic, eventType Type, id string, data interface{}) Event {
-	return Event{
+const (
+	EventTypeCreated EventType = "CREATE"
+	EventTypeUpdated           = "UPDATE"
+	EventTypeDeleted           = "DELETE"
+)
+
+type Event[T any] struct {
+	Type      EventType `json:"type"`
+	Topic     Topic     `json:"topic"`
+	Timestamp time.Time `json:"timestamp"`
+	Id        string    `json:"id"`
+	Data      T         `json:"data"`
+}
+
+func NewEvent[T any](topic Topic, eventType EventType, id string, data T) Event[T] {
+	return Event[T]{
 		Type:      eventType,
 		Timestamp: time.Now(),
 		Id:        id,

@@ -31,7 +31,7 @@ type recordCollection interface {
 
 type RecordServiceConfig struct {
 	Records recordCollection
-	Events  event.Sender
+	Events  event.Sender[*api.Record]
 	Images  storage.ResourceWriter
 	Pdfs    storage.ResourceWriter
 }
@@ -132,7 +132,7 @@ func (r *RecordService) Create(ctx context.Context, data api.CreateRecord, image
 		return nil, fmt.Errorf("error finding newly created document in database. %w", err)
 	}
 
-	if err := r.Events.Send(ctx, api.New(api.RecordTopic, api.TypeCreated, created.Id, created)); err != nil {
+	if err := r.Events.Send(ctx, api.NewEvent(api.RecordTopic, api.EventTypeCreated, created.Id, created)); err != nil {
 		log.WithError(err).Info("error sending event")
 	}
 	return created, nil
@@ -196,7 +196,7 @@ func (r *RecordService) Delete(ctx context.Context, id string) error {
 		return datastore.NewNotFoundError(id, Records, err)
 	}
 
-	if err := r.Events.Send(ctx, api.New(api.RecordTopic, api.TypeDeleted, id, nil)); err != nil {
+	if err := r.Events.Send(ctx, api.NewEvent[*api.Record](api.RecordTopic, api.EventTypeDeleted, id, nil)); err != nil {
 		log.WithError(err).Info("error sending event")
 	}
 	return err
@@ -207,10 +207,12 @@ func (r *RecordService) Update(ctx context.Context, id string, record api.Record
 	if err != nil {
 		return nil, datastore.NewNotFoundError(id, Records, err)
 	}
+	// Unset record.Id as it is an immutable field
+	record.Id = ""
 	record.UpdatedAt = time.Now()
 	// TODO: Remove deleted pages from the file system
 	res := r.Records.FindOneAndUpdate(ctx, bson.M{"_id": key}, bson.M{"$set": record}, options.FindOneAndUpdate().SetReturnDocument(options.After))
-	if res.Err() != nil {
+	if err := res.Err(); res.Err() != nil {
 		return nil, err
 	}
 	var updated api.Record
@@ -222,7 +224,7 @@ func (r *RecordService) Update(ctx context.Context, id string, record api.Record
 		return nil, err
 	}
 
-	if err := r.Events.Send(ctx, api.New(api.RecordTopic, api.TypeUpdated, updated.Id, updated)); err != nil {
+	if err := r.Events.Send(ctx, api.NewEvent(api.RecordTopic, api.EventTypeUpdated, updated.Id, &updated)); err != nil {
 		log.WithError(err).Info("error sending event")
 	}
 	return &updated, nil
@@ -246,7 +248,7 @@ func (r *RecordService) UpdatePages(ctx context.Context, id string, updates []ap
 		if update.Rotate != 0 {
 			page.UpdatedAt = time.Now()
 		}
-		if len(update.Content) > 0 {
+		if update.Content != nil && len(*update.Content) > 0 {
 			page.Content = update.Content
 		}
 		updated = append(updated, page)

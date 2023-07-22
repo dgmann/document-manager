@@ -207,10 +207,12 @@ func (r *RecordService) Update(ctx context.Context, id string, record api.Record
 	if err != nil {
 		return nil, datastore.NewNotFoundError(id, Records, err)
 	}
+	// Unset record.Id as it is an immutable field
+	record.Id = ""
 	record.UpdatedAt = time.Now()
 	// TODO: Remove deleted pages from the file system
 	res := r.Records.FindOneAndUpdate(ctx, bson.M{"_id": key}, bson.M{"$set": record}, options.FindOneAndUpdate().SetReturnDocument(options.After))
-	if res.Err() != nil {
+	if err := res.Err(); res.Err() != nil {
 		return nil, err
 	}
 	var updated api.Record

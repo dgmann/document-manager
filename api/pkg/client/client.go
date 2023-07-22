@@ -90,8 +90,10 @@ func (c *httpClient) GetJson(endpoint string) (*http.Response, error) {
 func HandleResponse[T any](res *http.Response) (T, error) {
 	var result T
 	if res.StatusCode == http.StatusOK || res.StatusCode == http.StatusCreated {
-		err := ParseJsonBody(res.Body, &result)
-		return result, fmt.Errorf("error parsing json body: %w", err)
+		if err := ParseJsonBody(res.Body, &result); err != nil {
+			return result, fmt.Errorf("error parsing json body: %w", err)
+		}
+		return result, nil
 	}
 	var resBody map[string]interface{}
 	if err := ParseJsonBody(res.Body, &resBody); err != nil {

@@ -31,10 +31,11 @@ export class CategoryService {
     return this.http.get<Category[]>(`${this.config.getApiUrl()}/patients/${id}/categories`);
   }
 
-  public add(id: string, category: string) {
-    return this.http.post(`${this.config.getApiUrl()}/categories`, {
-      id,
-      name: category
-    });
+  public add(category: Category) {
+    return this.http.post(`${this.config.getApiUrl()}/categories`, category);
+  }
+
+  public update(category: Category) {
+    return this.http.put(`${this.config.getApiUrl()}/categories`, category);
   }
 }

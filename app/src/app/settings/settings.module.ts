@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
 import { SettingsComponent } from './settings.component';
 import {SettingsRouterModule} from '@app/settings/settings.routes';
 import {MatCardModule} from '@angular/material/card';
@@ -21,7 +22,8 @@ import {FormsModule} from '@angular/forms';
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
-    FormsModule
+    FormsModule,
+    MatIconModule
   ]
 })
 export class SettingsModule { }

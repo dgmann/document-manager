@@ -4,22 +4,18 @@
   </mat-card-header>
   <mat-card-content>
     <mat-list>
-      <mat-list-item *ngFor="let category of categories$ | async"> {{ category.name }} </mat-list-item>
+      <mat-list-item *ngFor="let category of categories$ | async">
+        {{ category.name }}
+        <button mat-icon-button (click)="edit(category)">
+          <mat-icon>edit</mat-icon>
+        </button>
+      </mat-list-item>
     </mat-list>
   </mat-card-content>
-  <mat-card-actions>
-    <form (ngSubmit)="addCategory(categoryForm)"
-          class="add-form"
-          #categoryForm="ngForm">
-      <mat-form-field>
-        <input ngModel matInput name="id" placeholder="Kürzel">
-      </mat-form-field>
-
-      <mat-form-field>
-        <input ngModel matInput name="name" placeholder="Fachrichtung">
-      </mat-form-field>
-
-      <button type="submit" mat-button>Hinzufügen</button>
-    </form>
+  <mat-card-actions align="end">
+    <button mat-button (click)="add()" color="primary">
+      Hinzufügen
+      <mat-icon>add</mat-icon>
+    </button>
   </mat-card-actions>
 </mat-card>

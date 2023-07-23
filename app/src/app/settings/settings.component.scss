@@ -22,3 +22,9 @@ mat-card {
   @include flex-centering-container(row);
   gap: 10px;
 }
+
+mat-list-item {
+  button {
+    float: right;
+  }
+}

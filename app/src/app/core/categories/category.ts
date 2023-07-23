@@ -11,6 +11,8 @@ export interface MatchConfig {
 
 export enum MatchType {
   None= "",
+  All = "all",
+  Any = "any",
   Exact = "exact",
   Regex = "regex",
 }

@@ -1,4 +1,4 @@
-import { NgForOf, TitleCasePipe } from '@angular/common';
+import { NgForOf } from '@angular/common';
 import { Component, Inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -14,13 +14,21 @@ import { Category, MatchType } from '@app/core/categories';
   templateUrl: './category-dialog.component.html',
   styleUrls: ['./category-dialog.component.scss'],
   standalone: true,
-  imports: [MatDialogModule, MatFormFieldModule, MatInputModule, FormsModule, MatButtonModule, MatSelectModule, TitleCasePipe, NgForOf, MatCheckboxModule],
+  imports: [MatDialogModule, MatFormFieldModule, MatInputModule, FormsModule, MatButtonModule, MatSelectModule, NgForOf, MatCheckboxModule],
 })
 export class CategoryDialogComponent {
-  typeOptions: string[] = [
-    MatchType.Exact,
-    MatchType.Regex,
+  typeOptions: {type: MatchType, display: string}[] = [
+    {type: MatchType.All, display: "Alle Wörter"},
+    {type: MatchType.Any, display: "Irgendein Wort"},
+    {type: MatchType.Exact, display: "Exakt"},
+    {type: MatchType.Regex, display: "Regex"},
   ];
+  typeDescriptions = {
+    [MatchType.All]: "Dokument enthält alle Wörter (getrennt durch Leerzeichen)",
+    [MatchType.Any]: "Dokument enthält irgendeines der Wörter (getrennt durch Leerzeichen)",
+    [MatchType.Exact]: "Dokument enthält exakt die Zeichenfolge",
+    [MatchType.Regex]: "Dokument passt zu dem Ausdruck",
+  }
 
   category: Category = {id: "", name: "", match: {type: MatchType.None, expression: ""}}
 

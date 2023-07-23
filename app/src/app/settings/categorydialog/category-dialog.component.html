@@ -19,10 +19,11 @@
   <mat-form-field>
     <mat-label>Zuweisungsalgorithmus</mat-label>
     <mat-select [disabled]="category.match.type == MatchType.None" [(value)]="category.match.type">
-      <mat-option *ngFor="let option of typeOptions" [value]="option">
-        {{option | titlecase}}
+      <mat-option *ngFor="let option of typeOptions" [value]="option.type">
+        {{option.display}}
       </mat-option>
     </mat-select>
+    <label>{{ typeDescriptions[category.match.type] }}</label>
   </mat-form-field>
   <mat-form-field>
     <mat-label>Zuweisungsmuster</mat-label>

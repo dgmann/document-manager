@@ -42,11 +42,11 @@ export class CategoryDialogComponent {
 
   protected readonly MatchType = MatchType;
 
-  disableMatch(checked: boolean) {
+  automatchingChecked(checked: boolean) {
     if (checked) {
-      this.category.match.type = MatchType.None;
-    } else {
       this.category.match.type = MatchType.Exact;
+    } else {
+      this.category.match.type = MatchType.None;
     }
   }
 }

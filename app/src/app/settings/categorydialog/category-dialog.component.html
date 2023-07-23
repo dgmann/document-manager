@@ -11,8 +11,8 @@
   </mat-form-field>
 
   <mat-checkbox class="auto-matching"
-                [checked]="category.match.type == MatchType.None"
-                (change)="disableMatch($event.checked)">
+                [checked]="category.match.type !== MatchType.None"
+                (change)="automatchingChecked($event.checked)">
     Auto-Matching
   </mat-checkbox>
 

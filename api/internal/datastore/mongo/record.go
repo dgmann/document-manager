@@ -62,7 +62,7 @@ func (r *RecordService) findByObjectId(ctx context.Context, id primitive.ObjectI
 
 	if err := res.Decode(&record); err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			return nil, datastore.NewNotFoundError(id.Hex(), Records, err)
+			return nil, datastore.NewNotFoundError(id.Hex(), Records, datastore.ErrNoDocuments)
 		}
 		return nil, err
 	}
@@ -202,7 +202,7 @@ func (r *RecordService) Delete(ctx context.Context, id string) error {
 	return err
 }
 
-func (r *RecordService) Update(ctx context.Context, id string, record api.Record) (*api.Record, error) {
+func (r *RecordService) Update(ctx context.Context, id string, record api.Record, updateOptions ...datastore.UpdateOption) (*api.Record, error) {
 	key, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return nil, datastore.NewNotFoundError(id, Records, err)
@@ -211,16 +211,20 @@ func (r *RecordService) Update(ctx context.Context, id string, record api.Record
 	record.Id = ""
 	record.UpdatedAt = time.Now()
 	// TODO: Remove deleted pages from the file system
-	res := r.Records.FindOneAndUpdate(ctx, bson.M{"_id": key}, bson.M{"$set": record}, options.FindOneAndUpdate().SetReturnDocument(options.After))
+	query := bson.M{"_id": key}
+	for _, opts := range updateOptions {
+		opts(query)
+	}
+	res := r.Records.FindOneAndUpdate(ctx, query, bson.M{"$set": record}, options.FindOneAndUpdate().SetReturnDocument(options.After))
 	if err := res.Err(); res.Err() != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return nil, datastore.ErrNoDocuments
+		}
 		return nil, err
 	}
-	var updated api.Record
 
+	var updated api.Record
 	if err := res.Decode(&updated); err != nil {
-		if errors.Is(err, mongo.ErrNoDocuments) {
-			return nil, datastore.NewNotFoundError(id, Records, err)
-		}
 		return nil, err
 	}
 

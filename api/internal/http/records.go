@@ -2,6 +2,7 @@ package http
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -107,7 +108,7 @@ func (controller *RecordController) One(w http.ResponseWriter, req *http.Request
 	}
 
 	withUrl := SetURLForRecord(result, url.URL{Scheme: req.URL.Scheme, Host: req.Host})
-	NewResponse(w, withUrl).WriteJSON()
+	NewResponse(w, withUrl).SetEtag(NewEtag(result.UpdatedAt)).WriteJSON()
 }
 
 func (controller *RecordController) Create(w http.ResponseWriter, req *http.Request) {
@@ -171,6 +172,8 @@ func (controller *RecordController) Create(w http.ResponseWriter, req *http.Requ
 	NewResponseWithStatus(w, withUrl, http.StatusCreated).WriteJSON()
 }
 
+// Update updates a Records
+// It supports an If-Modified header containing the Etag received from a previous request
 func (controller *RecordController) Update(w http.ResponseWriter, req *http.Request) {
 	var body api.Record
 
@@ -184,14 +187,41 @@ func (controller *RecordController) Update(w http.ResponseWriter, req *http.Requ
 		return
 	}
 
-	id := URLParamFromContext(req.Context(), "recordId")
-	updated, err := controller.records.Update(req.Context(), id, body)
-	if err != nil {
-		var e *datastore.NotFoundError
-		statusCode := http.StatusBadRequest
-		if errors.As(err, &e) {
-			statusCode = http.StatusNotFound
+	updated, statusCode, err := func(ctx context.Context, header http.Header) (updated *api.Record, statusCode int, err error) {
+		var opts []datastore.UpdateOption
+		id := URLParamFromContext(ctx, "recordId")
+		etag, err := EtagFromHeader(header)
+		if err == nil {
+			opts = append(opts, datastore.IfNotModifiedSince(etag))
+			// Check if document exists and immediately return 404 if not.
+			// As we use the Etag value to query for the document we want to update, a datastore.ErrNoDocuments would not tell us why the document was not found.
+			// It could have been either because the _id does not exist or the timestamp did not match.
+			// By first checking whether the id does not exist, we know later that it was due to the timestamp.
+			if _, err := controller.records.Find(ctx, id); err != nil && errors.Is(err, datastore.ErrNoDocuments) {
+				return nil, http.StatusNotFound, err
+			}
+			// If now a datastore.ErrNoDocuments, we can change it to a http.StatusPreconditionFailed error
+			defer func() {
+				if err != nil && errors.Is(err, datastore.ErrNoDocuments) {
+					statusCode = http.StatusPreconditionFailed
+					err = errors.New("ETag precondition failed")
+				}
+			}()
+		} else if err != nil && !errors.Is(err, ErrNoEtagHeader) {
+			return nil, http.StatusBadRequest, err
 		}
+		updated, err = controller.records.Update(ctx, id, body, opts...)
+		if err != nil {
+			statusCode := http.StatusBadRequest
+			if errors.Is(err, datastore.ErrNoDocuments) {
+				statusCode = http.StatusNotFound
+			}
+			return nil, statusCode, err
+		}
+		return updated, http.StatusOK, nil
+	}(req.Context(), req.Header)
+
+	if err != nil {
 		NewErrorResponse(w, err, statusCode).WriteJSON()
 		return
 	}

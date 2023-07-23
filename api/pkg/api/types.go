@@ -41,7 +41,7 @@ type Record struct {
 	Tags        *[]string  `bson:"tags,omitempty" json:"tags"`
 	Pages       []Page     `bson:"pages,omitempty" json:"pages"`
 	Status      *Status    `bson:"status,omitempty" json:"status"`
-	UpdatedAt   time.Time  `bson:"updatedAt"`
+	UpdatedAt   time.Time  `bson:"updatedAt" json:"updatedAt"`
 	ArchivedPDF string     `json:"archivedPDF"`
 }
 

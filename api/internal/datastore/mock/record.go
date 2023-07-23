@@ -43,7 +43,7 @@ func (mock *RecordService) Delete(ctx context.Context, id string) error {
 	args := mock.Called(ctx, id)
 	return args.Error(0)
 }
-func (mock *RecordService) Update(ctx context.Context, id string, record api.Record) (*api.Record, error) {
+func (mock *RecordService) Update(ctx context.Context, id string, record api.Record, updateOptions ...datastore.UpdateOption) (*api.Record, error) {
 	args := mock.Called(ctx, id, record)
 	return args.Get(0).(*api.Record), args.Error(1)
 }

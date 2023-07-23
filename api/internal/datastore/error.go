@@ -1,6 +1,7 @@
 package datastore
 
 import (
+	"errors"
 	"fmt"
 )
 
@@ -9,6 +10,8 @@ type NotFoundError struct {
 	Id         string
 	Err        error
 }
+
+var ErrNoDocuments = errors.New("no results found")
 
 func NewNotFoundError(Id string, Collection string, Error error) *NotFoundError {
 	return &NotFoundError{Id: Id, Collection: Collection, Err: Error}

@@ -2,6 +2,8 @@ package http
 
 import (
 	"encoding/json"
+	"errors"
+	"fmt"
 	"mime"
 	"net/http"
 	"strconv"
@@ -28,6 +30,11 @@ type Response struct {
 	writer     http.ResponseWriter
 }
 
+func (r *Response) SetEtag(etag ETag) *Response {
+	r.writer.Header().Set(etag.Header())
+	return r
+}
+
 func (r *Response) Write() {
 	r.writer.WriteHeader(r.StatusCode)
 }
@@ -40,6 +47,11 @@ type DataResponse struct {
 
 func (r *DataResponse) WriteJSON() {
 	writeJSON(r.writer, r.Data, r.StatusCode)
+}
+
+func (r *DataResponse) SetEtag(etag ETag) *DataResponse {
+	r.Response.SetEtag(etag)
+	return r
 }
 
 // BinaryResponse extends Response with a binary data payload.
@@ -59,13 +71,34 @@ func (r *BinaryResponse) SetContentTypeFromExtension(ex string) *BinaryResponse 
 	return r
 }
 
-func (r *BinaryResponse) SetEtag(etag string) *BinaryResponse {
-	r.writer.Header().Set("ETag", etag)
-	return r
+type ETag struct {
+	time time.Time
 }
 
-func ETag(t time.Time) string {
-	return strconv.FormatInt(t.UTC().Unix(), 10)
+func NewEtag(t time.Time) ETag {
+	return ETag{time: t}
+}
+
+func (e ETag) String() string {
+	return strconv.FormatInt(e.time.UTC().UnixNano(), 10)
+}
+
+func (e ETag) Header() (string, string) {
+	return "ETag", e.String()
+}
+
+var ErrNoEtagHeader = errors.New("no If-Match header found")
+
+func EtagFromHeader(header http.Header) (time.Time, error) {
+	value := header.Get("If-Match")
+	if len(value) == 0 {
+		return time.Time{}, ErrNoEtagHeader
+	}
+	timestamp, err := strconv.ParseInt(value, 10, 64)
+	if err != nil {
+		return time.Time{}, fmt.Errorf("error parsing If-Match header: %w", err)
+	}
+	return time.Unix(0, timestamp), nil
 }
 
 func (r *BinaryResponse) Write() {

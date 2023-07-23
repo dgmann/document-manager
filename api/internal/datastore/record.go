@@ -16,7 +16,7 @@ type RecordService interface {
 	Query(ctx context.Context, query RecordQuery, queryOption ...*QueryOptions) ([]api.Record, error)
 	Create(ctx context.Context, data api.CreateRecord, images []storage.Image, pdfData io.Reader) (*api.Record, error)
 	Delete(ctx context.Context, id string) error
-	Update(ctx context.Context, id string, record api.Record) (*api.Record, error)
+	Update(ctx context.Context, id string, record api.Record, updateOptions ...UpdateOption) (*api.Record, error)
 	UpdatePages(ctx context.Context, id string, updates []api.PageUpdate) (*api.Record, error)
 }
 
@@ -108,6 +108,14 @@ func (options *QueryOptions) SetSkip(value int64) *QueryOptions {
 func (options *QueryOptions) SetLimit(value int64) *QueryOptions {
 	options.Limit = value
 	return options
+}
+
+type UpdateOption = func(query bson.M)
+
+func IfNotModifiedSince(modified time.Time) UpdateOption {
+	return func(query bson.M) {
+		query["updatedAt"] = modified
+	}
 }
 
 func NewPage(format string) *api.Page {

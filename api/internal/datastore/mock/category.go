@@ -24,3 +24,8 @@ func (m *CategoryService) Update(ctx context.Context, category *api.Category) er
 	args := m.Called(ctx, category)
 	return args.Error(0)
 }
+
+func (m *CategoryService) Find(ctx context.Context, id string) (*api.Category, error) {
+	args := m.Called(ctx, id)
+	return args.Get(0).(*api.Category), args.Error(1)
+}

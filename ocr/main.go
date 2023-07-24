@@ -6,6 +6,7 @@ import (
 	"github.com/dgmann/document-manager/pkg/opentelemetry"
 	"github.com/eclipse/paho.golang/paho"
 	log "github.com/sirupsen/logrus"
+	"go.opentelemetry.io/contrib/instrumentation/runtime"
 	"ocr/internal/ocr/tesseract"
 	"os"
 	"os/signal"
@@ -32,6 +33,9 @@ func main() {
 	otlProvider, err := opentelemetry.NewProvider(ctx, "ocr", config.OtelCollectorUrl)
 	if err != nil {
 		log.WithError(err).Warnln("error creating OpenTelemetry exporter")
+	}
+	if err := runtime.Start(runtime.WithMinimumReadMemStatsInterval(time.Second)); err != nil {
+		log.WithContext(ctx).WithError(err).Warnln("error initializing runtime metrics")
 	}
 
 	ocrRequestPublishChan := make(chan OCRRequest)

@@ -5,9 +5,11 @@ import (
 	"fmt"
 	"github.com/dgmann/document-manager/pkg/opentelemetry"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
+	"go.opentelemetry.io/contrib/instrumentation/runtime"
 	"net"
 	"net/http"
 	_ "net/http/pprof"
+	"time"
 
 	"github.com/dgmann/document-manager/pdf-processor/pkg/pdf/unipdf"
 	"github.com/dgmann/document-manager/pdf-processor/pkg/processor"
@@ -36,6 +38,9 @@ func main() {
 			_ = otlProvider.Shutdown(ctx)
 		}
 	}(otlProvider, ctx)
+	if err := runtime.Start(runtime.WithMinimumReadMemStatsInterval(time.Second)); err != nil {
+		log.WithContext(ctx).WithError(err).Warnln("error initializing runtime metrics")
+	}
 
 	extractors, rasterizers := initProcessors()
 

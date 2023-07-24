@@ -8,6 +8,7 @@ require (
 	github.com/dgmann/gosseract v0.0.0-20230627193324-cbec72f385cc
 	github.com/eclipse/paho.golang v0.11.0
 	github.com/sirupsen/logrus v1.9.3
+	go.opentelemetry.io/contrib/instrumentation/runtime v0.42.0
 	go.opentelemetry.io/otel v1.16.0
 	go.opentelemetry.io/otel/metric v1.16.0
 

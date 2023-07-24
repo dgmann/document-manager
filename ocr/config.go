@@ -9,10 +9,11 @@ import (
 )
 
 type Config struct {
-	Broker   *url.URL
-	ApiUrl   string
-	HttpPort string
-	ClientId string
+	Broker           *url.URL
+	ApiUrl           string
+	HttpPort         string
+	ClientId         string
+	OtelCollectorUrl string
 }
 
 func getConfig() (Config, error) {
@@ -31,9 +32,10 @@ func getConfig() (Config, error) {
 		clientId = "ocr-service-" + strconv.Itoa(rand.Int())
 	}
 	return Config{
-		Broker:   mqttConString,
-		ApiUrl:   apiUrl,
-		HttpPort: port,
-		ClientId: clientId,
+		Broker:           mqttConString,
+		ApiUrl:           apiUrl,
+		HttpPort:         port,
+		ClientId:         clientId,
+		OtelCollectorUrl: os.Getenv("OTEL_COLLECTOR_URL"),
 	}, nil
 }

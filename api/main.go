@@ -158,8 +158,10 @@ func main() {
 			if err := mqttService.Disconnect(ctx); err != nil {
 				log.Printf("error disconnecting MQTT: %s", err)
 			}
-			if err := otlProvider.Shutdown(ctx); err != nil {
-				log.Printf("error shutting down tracer provider: %s", err)
+			if otlProvider != nil {
+				if err := otlProvider.Shutdown(ctx); err != nil {
+					log.Printf("error shutting down tracer provider: %s", err)
+				}
 			}
 		}()
 		cancel()

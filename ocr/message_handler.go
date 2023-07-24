@@ -1,12 +1,16 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"github.com/dgmann/document-manager/api/pkg/api"
 	"github.com/dgmann/document-manager/api/pkg/client"
 	mqtt "github.com/eclipse/paho.golang/paho"
 	log "github.com/sirupsen/logrus"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/metric"
 	"io"
 	"net/http"
 	"ocr/internal/ocr"
@@ -134,36 +138,51 @@ func (h *Handler) OCRRequestHandler() mqtt.MessageHandler {
 }
 
 func (h *Handler) CategorizationRequestHandler() mqtt.MessageHandler {
+	categorizationCount, err := otel.Meter("github.com/dgmann/document-manager/ocr").Int64Counter("app.categorizations.count")
+	if err != nil {
+		log.Warningf("error creating categorization count metric: %w", err)
+	}
 	return func(publish *mqtt.Publish) {
-		var request CategorizationRequest
-		if err := json.Unmarshal(publish.Payload, &request); err != nil {
-			log.Errorf("error parsing categorization request: %s", err)
-			return
-		}
-		log.WithField("recordId", request.Record.Id).Debugln("categorization request received")
-		contents := make([]string, len(request.Record.Pages))
-		for i, page := range request.Record.Pages {
-			contents[i] = *page.Content
-		}
-		textToSearch := strings.Join(contents, "\n")
-
-		categories, err := h.ApiClient.Categories.All()
-		if err != nil {
-			log.Errorf("error fetching categories: %s", err)
-			return
-		}
-		for _, category := range categories {
-			if match(textToSearch, category.Match) {
-				request.Record.Category = &category.Id
-				if _, err := h.ApiClient.Records.Update(request.Record); err != nil {
-					log.WithError(err).Errorf("error categorizing record %s as %s\n", request.Record.Id, category.Name)
-					return
+		err := func(publish *mqtt.Publish) (err error) {
+			defer func() {
+				if err != nil {
+					categorizationCount.Add(context.TODO(), 1, metric.WithAttributeSet(attribute.NewSet(attribute.String("state", "error"))))
 				}
-				log.Infof("categorized record %s as %s\n", request.Record.Id, category.Name)
-				return
+			}()
+			var request CategorizationRequest
+			if err := json.Unmarshal(publish.Payload, &request); err != nil {
+				return fmt.Errorf("error parsing categorization request: %s", err)
 			}
+			log.WithField("recordId", request.Record.Id).Debugln("categorization request received")
+			contents := make([]string, len(request.Record.Pages))
+			for i, page := range request.Record.Pages {
+				contents[i] = *page.Content
+			}
+			textToSearch := strings.Join(contents, "\n")
+
+			categories, err := h.ApiClient.Categories.All()
+			if err != nil {
+				return fmt.Errorf("error fetching categories: %s", err)
+			}
+			for _, category := range categories {
+				if match(textToSearch, category.Match) {
+					request.Record.Category = &category.Id
+					if _, err := h.ApiClient.Records.Update(request.Record); err != nil {
+						return fmt.Errorf("error categorizing record %s as %s\n", request.Record.Id, category.Name)
+					}
+					log.Infof("categorized record %s as %s\n", request.Record.Id, category.Name)
+					categorizationCount.Add(context.TODO(), 1, metric.WithAttributeSet(attribute.NewSet(attribute.String("state", "success"), attribute.String("category", category.Name))))
+					return nil
+				}
+			}
+			log.Infoln("categorization failed. No matching category found.")
+			categorizationCount.Add(context.TODO(), 1, metric.WithAttributeSet(attribute.NewSet(attribute.String("state", "nomatch"))))
+			return nil
+		}(publish)
+		if err != nil {
+			log.Error(err)
+			return
 		}
-		log.Infoln("categorization failed. No matching category found.")
 	}
 }
 

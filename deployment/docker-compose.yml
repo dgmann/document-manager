@@ -87,6 +87,7 @@ services:
     environment:
       MQTT_BROKER: 'mqtt://mqtt:1883'
       API_URL: 'http://api/api'
+      OTEL_COLLECTOR_URL: 'otel-collector:4317'
     labels:
       - "traefik.http.routers.ocr.rule=PathPrefix(`/ocr`)"
       - "traefik.http.middlewares.stripprefix.stripprefix.prefixes=/ocr"

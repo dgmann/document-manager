@@ -19,7 +19,6 @@ require (
 	go.opentelemetry.io/contrib/instrumentation/runtime v0.42.0
 	go.opentelemetry.io/otel v1.16.0
 	go.opentelemetry.io/otel/trace v1.16.0
-	golang.org/x/net v0.10.0
 	google.golang.org/grpc v1.56.2
 	gopkg.in/olahol/melody.v1 v1.0.0-20170518105555-d52139073376
 )
@@ -54,6 +53,7 @@ require (
 	go.opentelemetry.io/otel/sdk/metric v0.39.0 // indirect
 	go.opentelemetry.io/proto/otlp v0.19.0 // indirect
 	golang.org/x/crypto v0.1.0 // indirect
+	golang.org/x/net v0.10.0 // indirect
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
 	golang.org/x/sys v0.9.0 // indirect
 	golang.org/x/text v0.9.0 // indirect

@@ -11,7 +11,7 @@ type Config struct {
 }
 
 func ConfigFromEnv() Config {
-	extractor := envOrDefault("EXTRACTOR", "unipdf")
+	extractor := envOrDefault("EXTRACTOR", "pdfcpu")
 	rasterizer := envOrDefault("RASTERIZER", "poppler")
 	otelCollectorUrl := envOrDefault("OTEL_COLLECTOR_URL", "")
 	return Config{

@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"github.com/dgmann/document-manager/api/pkg/client"
+	"github.com/dgmann/document-manager/pkg/opentelemetry"
 	"github.com/eclipse/paho.golang/paho"
 	log "github.com/sirupsen/logrus"
 	"ocr/internal/ocr/tesseract"
@@ -27,6 +28,11 @@ func main() {
 	log.Printf("Connecting to MQTT Broker at %s", config.Broker)
 
 	ctx, cancel := context.WithCancel(context.Background())
+
+	otlProvider, err := opentelemetry.NewProvider(ctx, "ocr", config.OtelCollectorUrl)
+	if err != nil {
+		log.WithError(err).Warnln("error creating OpenTelemetry exporter")
+	}
 
 	ocrRequestPublishChan := make(chan OCRRequest)
 	defer close(ocrRequestPublishChan)
@@ -80,6 +86,9 @@ func main() {
 			ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 			defer cancel()
 			_ = mqttClient.Disconnect(ctx)
+			if otlProvider != nil {
+				_ = otlProvider.Shutdown(ctx)
+			}
 		}()
 		cancel()
 	}()

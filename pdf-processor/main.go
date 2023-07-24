@@ -32,7 +32,9 @@ func main() {
 		log.WithError(err).Warnln("error creating OpenTelemetry exporter")
 	}
 	defer func(otlProvider *opentelemetry.Provider, ctx context.Context) {
-		_ = otlProvider.Shutdown(ctx)
+		if otlProvider != nil {
+			_ = otlProvider.Shutdown(ctx)
+		}
 	}(otlProvider, ctx)
 
 	extractors, rasterizers := initProcessors()

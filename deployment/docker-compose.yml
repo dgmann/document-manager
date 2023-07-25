@@ -1,3 +1,8 @@
+x-logging-driver: &logging
+  driver: "fluentd"
+  options:
+    fluentd-address: localhost:24224
+
 version: '3'
 services:
   ingress:
@@ -45,6 +50,9 @@ services:
     image: otel/opentelemetry-collector-contrib
     networks:
       - backend
+    ports:
+      - "24224:24224"
+      - "24224:24224/udp"
 
   api:
     image: 'ghcr.io/dgmann/document-manager/api:${DOCUMENT_MANAGER_VERSION}'
@@ -66,6 +74,7 @@ services:
     restart: unless-stopped
     labels:
       - "traefik.http.routers.backend.rule=PathPrefix(`/api`)"
+    logging: *logging
   app:
     image: 'ghcr.io/dgmann/document-manager/app:${DOCUMENT_MANAGER_VERSION}'
     networks: 
@@ -94,6 +103,7 @@ services:
       - traefik.http.routers.ocr.middlewares=stripprefix@docker
       - traefik.http.services.ocr.loadbalancer.server.port=8080
       - traefik.http.routers.ocr.service=ocr
+    logging: *logging
   processor:
     image: 'ghcr.io/dgmann/document-manager/pdf-processor:${DOCUMENT_MANAGER_VERSION}'
     networks:
@@ -102,6 +112,7 @@ services:
     environment:
       - EXTRACTOR=pdfcpu
       - OTEL_COLLECTOR_URL=otel-collector:4317
+    logging: *logging
 
   m1-adapter:
     image: 'ghcr.io/dgmann/document-manager/m1-adapter:${DOCUMENT_MANAGER_VERSION}'

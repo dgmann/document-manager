@@ -12,8 +12,8 @@ import (
 )
 
 const (
-	Categories = "categories"
-	Records    = "records"
+	CollectionCategories = "categories"
+	CollectionRecords    = "records"
 )
 
 type Client struct {
@@ -51,11 +51,11 @@ func (c *Client) Database() *mongo.Database {
 }
 
 func (c *Client) Records() *mongo.Collection {
-	return c.Database().Collection("records")
+	return c.Database().Collection(CollectionRecords)
 }
 
 func (c *Client) Categories() *mongo.Collection {
-	return c.Database().Collection("categories")
+	return c.Database().Collection(CollectionCategories)
 }
 
 func (c *Client) CreateIndexes(ctx context.Context) error {

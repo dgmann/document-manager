@@ -47,7 +47,7 @@ func (r *RecordService) All(ctx context.Context) ([]api.Record, error) {
 func (r *RecordService) Find(ctx context.Context, id string) (*api.Record, error) {
 	res, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		return nil, datastore.NewNotFoundError(id, Records, err)
+		return nil, datastore.NewNotFoundError(id, CollectionRecords, err)
 	}
 	return r.findByObjectId(ctx, res)
 }
@@ -62,7 +62,7 @@ func (r *RecordService) findByObjectId(ctx context.Context, id primitive.ObjectI
 
 	if err := res.Decode(&record); err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			return nil, datastore.NewNotFoundError(id.Hex(), Records, datastore.ErrNoDocuments)
+			return nil, datastore.NewNotFoundError(id.Hex(), CollectionRecords, datastore.ErrNoDocuments)
 		}
 		return nil, err
 	}
@@ -186,14 +186,14 @@ func (r *RecordService) Delete(ctx context.Context, id string) error {
 
 	key, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		return datastore.NewNotFoundError(id, Records, err)
+		return datastore.NewNotFoundError(id, CollectionRecords, err)
 	}
 	res, err := r.Records.DeleteOne(ctx, bson.M{"_id": key})
 	if err != nil {
 		return fmt.Errorf("while deleting record %s. %w", id, err)
 	}
 	if res.DeletedCount == 0 {
-		return datastore.NewNotFoundError(id, Records, err)
+		return datastore.NewNotFoundError(id, CollectionRecords, err)
 	}
 
 	if err := r.Events.Send(ctx, api.NewEvent[*api.Record](api.RecordTopic, api.EventTypeDeleted, id, nil)); err != nil {
@@ -205,7 +205,7 @@ func (r *RecordService) Delete(ctx context.Context, id string) error {
 func (r *RecordService) Update(ctx context.Context, id string, record api.Record, updateOptions ...datastore.UpdateOption) (*api.Record, error) {
 	key, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		return nil, datastore.NewNotFoundError(id, Records, err)
+		return nil, datastore.NewNotFoundError(id, CollectionRecords, err)
 	}
 	// Unset record.Id as it is an immutable field
 	record.Id = ""

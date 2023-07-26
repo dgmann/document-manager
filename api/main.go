@@ -21,7 +21,10 @@ import (
 )
 
 func init() {
-	log.SetFormatter(&log.TextFormatter{})
+	formatter := &log.TextFormatter{}
+	formatter.FullTimestamp = true
+	formatter.TimestampFormat = time.RFC3339Nano
+	log.SetFormatter(formatter)
 	log.SetOutput(os.Stdout)
 	log.SetLevel(log.InfoLevel)
 	log.AddHook(otellogrus.NewHook(otellogrus.WithLevels(
@@ -130,6 +133,7 @@ func main() {
 		http.WithStatisticController(statisticsService),
 		http.WithExportController(recordService, pdfProcessor),
 		http.WithNotificationController(websocketService),
+		http.WithCounterController(mongo.NewCounter(client)),
 	)
 
 	go func() {

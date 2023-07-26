@@ -6,6 +6,7 @@ import (
 	"github.com/dgmann/document-manager/pkg/opentelemetry"
 	"github.com/eclipse/paho.golang/paho"
 	log "github.com/sirupsen/logrus"
+	"github.com/uptrace/opentelemetry-go-extra/otellogrus"
 	"go.opentelemetry.io/contrib/instrumentation/runtime"
 	"ocr/internal/ocr/tesseract"
 	"os"
@@ -19,6 +20,22 @@ const (
 	OCRRequestTopic            = "ocrrequests"
 	CategorizationRequestTopic = "categorizationrequests"
 )
+
+func init() {
+	formatter := &log.TextFormatter{}
+	formatter.FullTimestamp = true
+	formatter.TimestampFormat = time.RFC3339Nano
+	log.SetFormatter(formatter)
+	log.SetOutput(os.Stdout)
+	log.SetLevel(log.InfoLevel)
+	log.AddHook(otellogrus.NewHook(otellogrus.WithLevels(
+		log.PanicLevel,
+		log.FatalLevel,
+		log.ErrorLevel,
+		log.WarnLevel,
+		log.InfoLevel,
+	)))
+}
 
 func main() {
 	config, err := getConfig()

@@ -45,7 +45,7 @@ func (c *CategoryService) Find(ctx context.Context, id string) (*api.Category, e
 
 	key, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		return nil, datastore.NewNotFoundError(id, Categories, err)
+		return nil, datastore.NewNotFoundError(id, CollectionCategories, err)
 	}
 	res := c.categories.FindOne(ctx, bson.M{"_id": key})
 	if res.Err() != nil {
@@ -53,7 +53,7 @@ func (c *CategoryService) Find(ctx context.Context, id string) (*api.Category, e
 	}
 	if err := res.Decode(&category); err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			return nil, datastore.NewNotFoundError(id, Categories, err)
+			return nil, datastore.NewNotFoundError(id, CollectionCategories, err)
 		}
 		return nil, err
 	}
@@ -86,7 +86,7 @@ func (c *CategoryService) Update(ctx context.Context, category *api.Category) er
 	res := c.categories.FindOneAndUpdate(ctx, bson.M{"_id": category.Id}, bson.M{"$set": category}, options.FindOneAndUpdate().SetReturnDocument(options.After))
 	if err := res.Err(); err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			return datastore.NewNotFoundError(category.Id, Categories, err)
+			return datastore.NewNotFoundError(category.Id, CollectionCategories, err)
 		}
 		return err
 	}

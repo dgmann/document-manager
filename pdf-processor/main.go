@@ -4,11 +4,13 @@ import (
 	"context"
 	"fmt"
 	"github.com/dgmann/document-manager/pkg/opentelemetry"
+	"github.com/uptrace/opentelemetry-go-extra/otellogrus"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"go.opentelemetry.io/contrib/instrumentation/runtime"
 	"net"
 	"net/http"
 	_ "net/http/pprof"
+	"os"
 	"time"
 
 	"github.com/dgmann/document-manager/pdf-processor/pkg/pdf/unipdf"
@@ -22,6 +24,22 @@ import (
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 )
+
+func init() {
+	formatter := &log.TextFormatter{}
+	formatter.FullTimestamp = true
+	formatter.TimestampFormat = time.RFC3339Nano
+	log.SetFormatter(formatter)
+	log.SetOutput(os.Stdout)
+	log.SetLevel(log.InfoLevel)
+	log.AddHook(otellogrus.NewHook(otellogrus.WithLevels(
+		log.PanicLevel,
+		log.FatalLevel,
+		log.ErrorLevel,
+		log.WarnLevel,
+		log.InfoLevel,
+	)))
+}
 
 func main() {
 	go func() {

@@ -169,3 +169,17 @@ func WithNotificationController(eventService event.Subscriber) ControllerOption 
 		rootMux.Mount(PathPrefix+"/notifications", webSocketController.getWebsocketHandler())
 	}
 }
+
+func WithCounterController(counter datastore.Counter) ControllerOption {
+	return func(rootMux *chi.Mux) {
+		rootMux.Get(PathPrefix+"/counts/{resource}", func(writer http.ResponseWriter, req *http.Request) {
+			resource := URLParamFromContext(req.Context(), "resource")
+			count, err := counter.Count(req.Context(), resource)
+			if err != nil {
+				NewErrorResponse(writer, err, http.StatusInternalServerError).WriteJSON()
+				return
+			}
+			NewResponse(writer, count).WriteJSON()
+		})
+	}
+}

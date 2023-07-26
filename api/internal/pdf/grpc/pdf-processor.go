@@ -89,7 +89,7 @@ func convertAuto(ctx context.Context, client processor.PdfProcessorClient, b []b
 	}
 	images, err := receive(stream)
 	if st := status.Convert(err); st.Code() == 400 { // Extraction failed, try rasterize
-		logrus.Info(err.Error() + ". Retrying with rasterization")
+		logrus.WithContext(ctx).Info(err.Error() + ". Retrying with rasterization")
 		stream, err = client.ConvertPdfToImage(ctx, &processor.Pdf{
 			Content: b,
 			Method:  processor.Pdf_RASTERIZE,

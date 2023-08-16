@@ -53,6 +53,10 @@ func (c *Client) CheckOrientation(pages []ocr.PageWithContent) ([]api.PageUpdate
 		if osdResult.OrientationDegree == 0 {
 			continue
 		}
+		if osdResult.OrientationConfidence < 10.0 {
+			logrus.Infof("orientation confidence too low. Confidence: %f.\n", osdResult.OrientationConfidence)
+			continue
+		}
 		logrus.Infof("page %s is rotated %d degree with confidence %f. Correcting orientation.\n", p.Id, osdResult.OrientationDegree, osdResult.OrientationConfidence)
 		needsUpdate = true
 		updatedPages[i].Rotate = float64(osdResult.OrientationDegree * -1)

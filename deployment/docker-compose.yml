@@ -7,17 +7,28 @@ version: '3'
 services:
   ingress:
     image: "traefik:3.0"
+    depends_on:
+      - otel-collector
     networks:
       - backend
     restart: unless-stopped
     # Enables the web UI and tells Traefik to listen to Docker
-    command: --api.insecure=true --providers.docker
+    command: 
+      - --api.insecure=true
+      - --providers.docker
+      - --tracing.openTelemetry.address=otel-collector:4317
+      - --tracing.openTelemetry.insecure=true
+      - --tracing.openTelemetry.grpc=true
+      - --metrics.openTelemetry.address=otel-collector:4317
+      - --metrics.openTelemetry.insecure=true
+      - --metrics.openTelemetry.grpc=true
     volumes:
       # So that Traefik can listen to the Docker events
-      - /var/run/docker.sock:/var/run/docker.sock
+     - /var/run/docker.sock:/var/run/docker.sock
     ports:
       - "80:80"
       - "8080:8080"
+    logging: *logging
 
   db:
     image: 'mongo:6'
@@ -68,6 +79,7 @@ services:
       MQTT_BROKER: 'mqtt://mqtt:1883'
       OTEL_COLLECTOR_URL: 'otel-collector:4317'
     depends_on:
+      - otel-collector
       - db
       - mqtt
       - processor
@@ -90,6 +102,7 @@ services:
     networks:
       - backend
     depends_on:
+      - otel-collector
       - api
       - mqtt
     restart: unless-stopped
@@ -106,6 +119,8 @@ services:
     logging: *logging
   processor:
     image: 'ghcr.io/dgmann/document-manager/pdf-processor:${DOCUMENT_MANAGER_VERSION}'
+    depends_on:
+      - otel-collector
     networks:
       - backend
     restart: unless-stopped
@@ -144,6 +159,8 @@ services:
     depends_on:
       - api
     restart: unless-stopped
+    labels:
+      - traefik.enable=false
   fax_watcher:
     image: 'ghcr.io/dgmann/document-manager/directory-watcher:${DOCUMENT_MANAGER_VERSION}'
     volumes:
@@ -156,6 +173,8 @@ services:
     depends_on:
       - api
     restart: unless-stopped
+    labels:
+      - traefik.enable=false
 
 volumes:
   archive: {}

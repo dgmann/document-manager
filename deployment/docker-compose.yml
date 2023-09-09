@@ -62,8 +62,8 @@ services:
     networks:
       - backend
     ports:
-      - "24224:24224"
-      - "24224:24224/udp"
+      - "24224:24224" # fluentd
+      - "24224:24224/udp" # fluentd
 
   api:
     image: 'ghcr.io/dgmann/document-manager/api:${DOCUMENT_MANAGER_VERSION}'

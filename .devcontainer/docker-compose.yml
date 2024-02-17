@@ -22,6 +22,8 @@ services:
     - SYS_PTRACE
     security_opt:
     - seccomp:unconfined
+    networks:
+      - observability
 
   db:
     image: 'mongo:6'
@@ -43,6 +45,50 @@ services:
 
   otel-collector:
     image: otel/opentelemetry-collector-contrib
+    command: [ "--config=/etc/otel-collector.yaml" ]
+    network_mode: service:app
+    volumes:
+      - ./config/otel-collector.yaml:/etc/otel-collector.yaml
+
+  # To eventually offload to Tempo...
+  tempo:
+    image: grafana/tempo:latest
+    command: [ "-config.file=/etc/tempo.yaml" ]
+    volumes:
+      - ./config/tempo.yaml:/etc/tempo.yaml
+      - tempo-data:/tmp/tempo
+    ports:
+      - "14268"  # jaeger ingest
+      - "3200"   # tempo
+      - "4317"  # otlp grpc
+      - "4318"  # otlp http
+      - "9411"   # zipkin
+    networks:
+      - observability
+
+  prometheus:
+    image: prom/prometheus:latest
+    command:
+      - --config.file=/etc/prometheus.yaml
+      - --web.enable-remote-write-receiver
+      - --enable-feature=exemplar-storage
+      - --enable-feature=otlp-write-receiver
+    volumes:
+      - ./config/prometheus.yaml:/etc/prometheus.yaml
+    ports:
+      - "9090:9090"
+    networks:
+      - observability
+
+  grafana:
+    image: grafana/grafana:10.1.1
+    volumes:
+      - ./config/grafana-datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_DISABLE_LOGIN_FORM=true
+      - GF_FEATURE_TOGGLES_ENABLE=traceqlEditor
     network_mode: service:app
 
 volumes:
@@ -51,3 +97,7 @@ volumes:
   emqx-etc: {}
   emqx-log: {}
   data: {}
+  tempo-data: {}
+
+networks:
+  observability: {}

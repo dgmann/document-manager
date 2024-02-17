@@ -51,3 +51,5 @@ fabric.properties
 
 # Override
 docker-compose.override.yml
+
+/**/__debug_*

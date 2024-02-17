@@ -8,6 +8,10 @@
     "service": "app",
 	"workspaceFolder": "/workspaces",
 
+    "features": {
+        "ghcr.io/devcontainers/features/node": {}
+    },
+
     // Configure tool-specific properties.
     "customizations": {
         // Configure properties specific to VS Code.
@@ -19,10 +23,10 @@
 				"Angular.ng-template"
 			]
         }
-    }
+    },
 
     // Use 'forwardPorts' to make a list of ports inside the container available locally.
-    ,"forwardPorts": [
+    "forwardPorts": [
         3000 // Grafana
     ]
 

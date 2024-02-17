@@ -1,0 +1,31 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "ng serve",
+        "type": "npm",
+        "script": "start",
+        "problemMatcher": [],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        },
+        "options": {
+            "cwd": "${workspaceFolder}/app"
+        }
+      },
+      {
+        "label": "ng test",
+        "type": "npm",
+        "script": "test",
+        "problemMatcher": [],
+        "group": {
+          "kind": "test",
+          "isDefault": true
+        },
+        "options": {
+            "cwd": "${workspaceFolder}/app"
+        }
+      }
+    ]
+  }

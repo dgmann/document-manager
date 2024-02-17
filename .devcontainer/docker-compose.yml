@@ -1,0 +1,53 @@
+version: '3'
+services:
+
+  app:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - VARIANT=1.22-bookworm
+    volumes:
+      - ../:/workspaces:cache
+      - data:/data
+    environment:
+      - ARCHIVE_DIR=/data/archive
+      - RECORD_DIR=/data/records
+      - MQTT_BROKER=mqtt://localhost:1883
+      - OTEL_COLLECTOR_URL=localhost:4317
+      - API_URL=http://localhost/api
+    # Overrides default command so things don't shut down after the process ends.
+    command: sleep infinity
+    cap_add:
+    - SYS_PTRACE
+    security_opt:
+    - seccomp:unconfined
+
+  db:
+    image: 'mongo:6'
+    volumes:
+      - 'mongo:/data/db'
+    restart: unless-stopped
+    network_mode: service:app
+
+  mqtt:
+    image: emqx:latest
+    volumes:
+      - emqx-data:/opt/emqx/data
+      - emqx-etc:/opt/emqx/etc
+      - emqx-log:/opt/emqx/log
+    network_mode: service:app
+    environment:
+      EMQX_MQTT__MAX_MQUEUE_LEN: "infinity"
+      EMQX_FORCE_SHUTDOWN__MAX_HEAP_SIZE: "200MB" # Default is 32MB. Higher heap size allows mqueue to grow larger. Can be tuned to fit the system
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib
+    network_mode: service:app
+
+volumes:
+  mongo: {}
+  emqx-data: {}
+  emqx-etc: {}
+  emqx-log: {}
+  data: {}

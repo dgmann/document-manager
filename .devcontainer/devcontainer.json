@@ -4,13 +4,9 @@
 	"name": "Go",
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
 	
-	"build": {
-        "dockerfile": "./Dockerfile",
-        "context": "../",
-        "args": {
-            "VARIANT": "1.22-bookworm"
-        }
-    },
+    "dockerComposeFile": "docker-compose.yml",
+    "service": "app",
+	"workspaceFolder": "/workspaces",
 
     // Configure tool-specific properties.
     "customizations": {

@@ -20,3 +20,6 @@ RUN apt update && apt-get install -y -qq \
   libgif-dev \
   ghostscript \
   libgs-dev
+
+RUN mkdir -p /data \
+ && chown -R vscode /data

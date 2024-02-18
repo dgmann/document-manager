@@ -53,3 +53,4 @@ fabric.properties
 docker-compose.override.yml
 
 /**/__debug_*
+pdf-upload-dir/

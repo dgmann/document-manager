@@ -5,6 +5,17 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "File Watcher",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/directory-watcher",
+            "env": {
+                "DIRECTORY": "${workspaceFolder}/pdf-upload-dir",
+                "DESTINATION": "http://localhost:8181/api"
+            }
+        },
+        {
             "name": "Pdf-Processor",
             "type": "go",
             "request": "launch",
@@ -37,7 +48,7 @@
     "compounds": [
         {
             "name": "All",
-            "configurations": ["Pdf-Processor", "API", "OCR", "Run & debug App"]
+            "configurations": ["Pdf-Processor", "API", "OCR", "Run & debug App", "File Watcher"]
         }
     ]
 }

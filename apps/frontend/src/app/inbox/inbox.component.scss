@@ -1,0 +1,53 @@
+@import "theme-variables";
+@import "layout";
+@import "drag-drop";
+
+:host {
+  @include flex-container();
+}
+
+app-split-panel {
+  @include flex-container(row);
+}
+
+#inbox-document-list {
+  @include flex-container(column);
+}
+
+.centering-container {
+  @include flex-centering-container(column);
+}
+
+.right-panel {
+  @include flex-filling-element;
+}
+
+.drag-drop-overlay {
+  position: absolute;
+  background: $accent-light;
+  border: 5px dashed $accent;
+  box-sizing: border-box;
+  height: 100%;
+  width: 100%;
+  z-index: 101;
+  opacity: 0.6;
+
+  &[hidden] {
+    display: none !important;
+  }
+
+  // To overlay all containing elements
+  @include drop-zone;
+}
+
+.upload-symbol {
+  mat-icon {
+    font-size: 4rem;
+    height: 60px;
+    width: 60px;
+  }
+}
+
+app-document-list {
+  @include flex-filling-element;
+}

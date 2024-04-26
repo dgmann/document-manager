@@ -1,0 +1,38 @@
+<h2 mat-dialog-title>Informationen</h2>
+<mat-dialog-content>
+  <form #form id="document-edit-dialog-form" [formGroup]="editForm" (ngSubmit)="onSubmit()">
+
+    <div class="first-row">
+      <mat-form-field floatLabel="always" [hintLabel]="selectedPatient$ | async | patient: 'long'">
+        <mat-label>Patient</mat-label>
+        <app-patient-search formControlName="patient" [tabindex]="tabIndex | async"
+                            [placeholder]="currentExternalPatient$ | async | patient"></app-patient-search>
+      </mat-form-field>
+      <mat-form-field floatLabel="always">
+        <mat-label>Befund Datum</mat-label>
+        <input matInput formControlName="date" [tabindex]="tabIndex | async" [matDatepicker]="picker" required>
+        <mat-datepicker-toggle #datepickertoogle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field>
+        <input type="text" placeholder="Fachrichtung" aria-label="Fachrichtung" matInput formControlName="category"
+               [matAutocomplete]="auto">
+        <mat-autocomplete autoActiveFirstOption="true" #auto="matAutocomplete" [displayWith]="displayFn">
+          <mat-option *ngFor="let option of filteredCategories | async" [value]="option">
+            {{option.name}}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+    </div>
+
+    <app-autocomplete-chips formControlName="tags" [options]="tags | async"></app-autocomplete-chips>
+
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button mat-dialog-close>Abbrechen</button>
+  <button mat-button type="submit" form="document-edit-dialog-form"
+          [disabled]="editForm.invalid">Speichern
+  </button>
+</mat-dialog-actions>

@@ -1,0 +1,38 @@
+<div class="container">
+  <app-page-list [pages]="pages"></app-page-list>
+
+  <div *ngIf="record$ | async as record" class="button-row">
+
+    <button mat-button (click)="saveRecord(record.id)">
+      <mat-icon aria-label="save">save</mat-icon>
+      <span>Speichern</span>
+    </button>
+
+    <button mat-button (click)="reset(record.id)">
+      <mat-icon aria-label="cached">cached</mat-icon>
+      <span>Orginal wiederherstellen</span>
+      <mat-icon [matMenuTriggerFor]="menu" (click)="$event.stopPropagation()">more_vert</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu">
+      <button mat-menu-item (click)="reset(record.id, 'extract')">
+        <mat-icon>photo_library</mat-icon>
+        <span>Extrahieren</span>
+      </button>
+      <button mat-menu-item (click)="reset(record.id, 'rasterize')">
+        <mat-icon>image</mat-icon>
+        <span>Rasterisieren</span>
+      </button>
+    </mat-menu>
+
+    <button mat-button (click)="discard(record.pages)">
+      <mat-icon aria-label="delete">delete</mat-icon>
+      <span>Verwerfen</span>
+    </button>
+
+    <button mat-button (click)="cancel()">
+      <mat-icon aria-label="other">cancel</mat-icon>
+      <span>Abbrechen</span>
+    </button>
+
+  </div>
+</div>

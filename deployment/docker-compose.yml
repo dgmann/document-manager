@@ -88,7 +88,7 @@ services:
       - "traefik.http.routers.backend.rule=PathPrefix(`/api`)"
     logging: *logging
   app:
-    image: 'ghcr.io/dgmann/document-manager/app:${DOCUMENT_MANAGER_VERSION}'
+    image: 'ghcr.io/dgmann/document-manager/frontend:${DOCUMENT_MANAGER_VERSION}'
     networks: 
       - backend
     environment:

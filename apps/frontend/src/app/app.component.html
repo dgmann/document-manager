@@ -1,0 +1,45 @@
+<div class="main-container mat-typography">
+  <mat-menu #appMenu="matMenu">
+    <button mat-menu-item routerLink="/inbox" routerLinkActive="active">
+      <mat-icon color="primary">mail_outline</mat-icon>
+      <span>Inbox</span>
+    </button>
+    <button mat-menu-item routerLink="/physician" routerLinkActive="active">
+      <mat-icon color="primary">supervisor_account</mat-icon>
+      <span>Arzt</span>
+    </button>
+    <button mat-menu-item (click)=navigateToCurrentPatient()>
+      <mat-icon color="primary">face</mat-icon>
+      <span>Patient</span>
+    </button>
+    <button mat-menu-item routerLink="/history" routerLinkActive="active">
+      <mat-icon color="primary">history</mat-icon>
+      <span>Verlauf</span>
+    </button>
+    <button mat-menu-item routerLink="/settings" routerLinkActive="active">
+      <mat-icon color="primary">settings</mat-icon>
+      <span>Einstellungen</span>
+    </button>
+  </mat-menu>
+
+  <nav class="header" [attr.data-color]="navColor | async">
+    <mat-toolbar color="primary">
+      <mat-toolbar-row>
+        <button [matMenuTriggerFor]="appMenu" mat-icon-button>
+          <mat-icon>more_vert</mat-icon>
+        </button>
+        <h1>{{ title | async }}</h1>
+        <div class="navigation">
+          <router-outlet name="navigation"></router-outlet>
+        </div>
+        <mat-form-field subscriptSizing="dynamic">
+          <app-patient-search (ngModelChange)="onSelectPatient($event)" ngModel placeholder="Suche" [clearOnSubmit]="true"></app-patient-search>
+        </mat-form-field>
+      </mat-toolbar-row>
+    </mat-toolbar>
+  </nav>
+
+  <div class="body-container">
+    <router-outlet></router-outlet>
+  </div>
+</div>

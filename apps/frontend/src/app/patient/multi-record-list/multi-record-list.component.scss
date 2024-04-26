@@ -1,0 +1,69 @@
+@use '@angular/material' as mat;
+@import "theme-variables";
+@import "layout";
+@import "print";
+@import "global";
+
+:host {
+  @include flex-container();
+}
+
+.sub-heading {
+  color: $primary;
+}
+
+.mat-subtitle-1 {
+  font-weight: 500;
+}
+
+.page-container {
+  @include flex-container(row);
+  flex-wrap: wrap;
+  gap: 10px;
+  overflow-y: scroll;
+}
+
+.filler {
+  @include flex-filling-element;
+}
+
+.page {
+  @include flex-element(20%);
+  @include mat.elevation(8);
+  @include record-page();
+  margin-bottom: 10px;
+  min-width: 300px;
+
+  &[selected] {
+    background-color: $accent-light;
+  }
+}
+
+.action-button-bar {
+  overflow: hidden;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* TODO(mdc-migration): The following rule targets internal classes of card that may no longer apply for the MDC version. */
+mat-card-header {
+  border-bottom: 1px solid $accent-light;
+}
+
+@media print {
+  ::ng-deep .mat-mdc-tab-header, ::ng-deep .mat-mdc-card-header {
+    display: none !important;
+  }
+
+  .action-button-bar {
+    display: none;
+  }
+
+  .page-container {
+    @include print-record-page-container();
+  }
+
+  .page {
+    @include print-record-page();
+  }
+}

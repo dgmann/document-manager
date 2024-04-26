@@ -1,0 +1,25 @@
+@use '@angular/material' as mat;
+
+// Define the palettes for your theme using the Material Design palettes available in palette.scss
+$app-primary: mat.define-palette(mat.$indigo-palette);
+$app-accent: mat.define-palette(mat.$grey-palette);
+$app-warn: mat.define-palette(mat.$deep-orange-palette);
+
+// Custom Sass colors vars (will be available in all the project)
+$primary: mat.get-color-from-palette($app-primary);
+$accent: mat.get-color-from-palette($app-accent);
+$warn: mat.get-color-from-palette($app-warn);
+
+$primary-lighter: mat.get-color-from-palette($app-primary, "lighter");
+$accent-lighter: mat.get-color-from-palette($app-accent, "lighter");
+$accent-light: mat.get-color-from-palette($app-accent, 300);
+
+$document-manager-app-theme: mat.define-light-theme((
+  color: (
+    primary: $app-primary,
+    accent: $app-accent,
+    warn: $app-warn
+  ),
+  typography: mat.define-typography-config(),
+  density: 0,
+));

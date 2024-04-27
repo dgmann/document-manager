@@ -1,0 +1,29 @@
+@import "layout";
+
+.container {
+  @include flex-container(row);
+  gap: 10px;
+}
+
+@media (max-width: 1000px) {
+  .container {
+    flex-direction: column;
+  }
+}
+
+.scroll-column {
+  overflow-y: auto;
+  will-change: transform;
+  display: flex;
+}
+
+.left-side {
+  flex: 1 1 500px;
+  min-width: 500px;
+  max-width: 700px;
+}
+
+.right-side {
+  flex: 1 1 50%;
+  min-width: 500px;
+}

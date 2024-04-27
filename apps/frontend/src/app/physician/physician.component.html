@@ -1,0 +1,8 @@
+<app-split-panel>
+  <div class="left-panel">
+    <router-outlet></router-outlet>
+  </div>
+  <div class="right-panel">
+    <app-record-viewer [record]="selectedRecord | async"></app-record-viewer>
+  </div>
+</app-split-panel>

@@ -1,9 +1,0 @@
-@import "layout";
-
-mat-dialog-content {
-  @include flex-container();
-
-  mat-form-field {
-    @include flex-filling-element;
-  }
-}

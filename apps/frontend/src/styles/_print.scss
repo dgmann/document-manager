@@ -1,0 +1,27 @@
+@mixin print-record-page-container() {
+  position: relative !important;
+  display: block !important;
+}
+
+@mixin print-record-page() {
+  border: 2px solid white;
+  flex: none !important;
+  box-sizing: initial !important;
+
+  position: relative !important;
+  background: white !important;
+  display: block !important;
+  margin: 0 !important;
+  box-shadow: none;
+  max-height: 100% !important;
+  max-width: 100% !important;
+
+  page-break-before: auto;
+  page-break-after: auto;
+  page-break-inside: avoid;
+
+  img {
+    max-height: 100%;
+    max-width: 100%;
+  }
+}

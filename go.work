@@ -1,13 +1,13 @@
 go 1.20
 
 use (
-	api
+	apps/api
 	apiclient
-	directory-watcher
-	m1-adapter
-	m1-helper
-	pdf-processor
-	pdf-processor/pkg/processor
-	ocr
+	apps/directory-watcher
+	apps/m1-adapter
+	apps/m1-helper
+	apps/pdf-processor
+	apps/pdf-processor/pkg/processor
+	apps/ocr
 	pkg
 )

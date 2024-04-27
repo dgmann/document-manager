@@ -1,0 +1,9 @@
+@import "layout";
+
+:host {
+  @include flex-container();
+}
+
+app-document-list {
+  @include flex-filling-element;
+}

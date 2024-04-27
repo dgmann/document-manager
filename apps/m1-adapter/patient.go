@@ -1,4 +1,4 @@
-package m1
+package main
 
 import "time"
 

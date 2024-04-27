@@ -2,18 +2,17 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
-	"github.com/dgmann/document-manager/m1-adapter/m1"
 	"log"
 	"net/http"
 	"os"
 	"path"
+	"strconv"
 )
 
 var username string
 var password string
 var host string
-var port string
+var port int
 var dbname string
 
 func init() {
@@ -32,9 +31,14 @@ func init() {
 		panic("invalid host: " + host)
 	}
 
-	port = getEnv("DB_PORT", "1521")
-	if len(port) == 0 {
-		panic("invalid port: " + port)
+	portString := getEnv("DB_PORT", "1521")
+	if len(portString) == 0 {
+		panic("invalid port: " + portString)
+	}
+	var err error
+	port, err = strconv.Atoi(portString)
+	if err != nil {
+		panic("invalid port: " + portString + ", error: " + err.Error())
 	}
 
 	dbname = getEnv("DB_NAME", "M1DB")
@@ -44,9 +48,8 @@ func init() {
 }
 
 func main() {
-	dsn := fmt.Sprintf("%s/%s@%s:%s/%s", username, password, host, port, dbname)
-	log.Println("Connecting to ", dsn)
-	adapter := m1.NewDatabaseAdapter(dsn)
+	log.Printf("Connecting to %s:%d, SID: %s\n", host, port, dbname)
+	adapter := NewDatabaseAdapter(host, port, dbname, username, password)
 	err := adapter.Connect()
 	if err != nil {
 		log.Fatalf("Error connecting to database: %s", err)
@@ -63,7 +66,7 @@ func main() {
 	http.HandleFunc("/patients", func(writer http.ResponseWriter, request *http.Request) {
 		firstname := request.URL.Query().Get("firstname")
 		lastname := request.URL.Query().Get("lastname")
-		var pats []*m1.Patient
+		var pats []*Patient
 		var err error
 
 		if firstname != "" || lastname != "" {

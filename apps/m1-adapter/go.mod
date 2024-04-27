@@ -2,7 +2,7 @@ module github.com/dgmann/document-manager/m1-adapter
 
 require (
 	github.com/alexsergivan/transliterator v1.0.0
-	github.com/mattn/go-oci8 v0.0.0-20191029050031-9c5d7cd922fc
+	github.com/sijms/go-ora/v2 v2.8.14
 )
 
-go 1.13
+go 1.20

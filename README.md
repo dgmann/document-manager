@@ -1,4 +1,4 @@
-<p align="center"><img src="https://raw.githubusercontent.com/dgmann/document-manager/master/app/src/assets/icons/icon-512x512.png" alt="DocumentManager" height="265"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/dgmann/document-manager/master/apps/frontend/src/assets/icons/icon-512x512.png" alt="DocumentManager" height="265"></p>
 <h1 align="center">DocumentManager</h1>
 <p align="center">A system for managing medical records.</p>
 

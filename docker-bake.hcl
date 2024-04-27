@@ -32,7 +32,7 @@ target "go-apps" {
   inherits = ["_go-app"]
   dockerfile = "docker/go.Dockerfile"
   matrix = {
-    service = ["api", "directory-watcher"]
+    service = ["api", "directory-watcher", "m1-adapter"]
   }
   args = {
     SERVICE = service
@@ -44,14 +44,6 @@ target "pdf-processor" {
   dockerfile = "apps/pdf-processor/Dockerfile"
   args = {
     SERVICE = "pdf-processor"
-  }
-}
-
-target "m1-adapter" {
-  inherits = ["_go-app"]
-  dockerfile = "apps/m1-adapter/Dockerfile"
-  args = {
-    SERVICE = "m1-adapter"
   }
 }
 

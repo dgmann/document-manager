@@ -1,11 +1,12 @@
-package m1
+package main
 
 import (
 	"database/sql"
 	"fmt"
-	"github.com/alexsergivan/transliterator"
-	_ "github.com/mattn/go-oci8"
 	"strings"
+
+	"github.com/alexsergivan/transliterator"
+	go_ora "github.com/sijms/go-ora/v2"
 )
 
 type Adapter interface {
@@ -17,12 +18,19 @@ type DatabaseAdapter struct {
 	trans            *transliterator.Transliterator
 }
 
-func NewDatabaseAdapter(connectionString string) *DatabaseAdapter {
+func NewDatabaseAdapterFromDSN(connectionString string) *DatabaseAdapter {
+	return &DatabaseAdapter{connectionString: connectionString, trans: transliterator.NewTransliterator(nil)}
+}
+
+func NewDatabaseAdapter(server string, port int, sid string, user string, password string) *DatabaseAdapter {
+	connectionString := go_ora.BuildUrl(server, port, "", user, password, map[string]string{
+		"SID": sid,
+	})
 	return &DatabaseAdapter{connectionString: connectionString, trans: transliterator.NewTransliterator(nil)}
 }
 
 func (a *DatabaseAdapter) Connect() error {
-	db, err := sql.Open("oci8", a.connectionString)
+	db, err := sql.Open("oracle", a.connectionString)
 	if err != nil {
 		return err
 	}

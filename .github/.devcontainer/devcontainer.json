@@ -1,0 +1,18 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/go
+{
+	"name": "DocumentManager",
+	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+	
+    "build": {
+        "dockerfile": "Dockerfile",
+        "args": {
+            "VARIANT": "1.22-bookworm"
+        }
+    },
+
+    "features": {
+        "ghcr.io/devcontainers/features/node": {},
+        "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+    }
+}

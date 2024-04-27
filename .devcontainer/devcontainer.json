@@ -22,7 +22,9 @@
 				"golang.Go",
 				"ms-azuretools.vscode-docker",
 				"Angular.ng-template",
-				"HashiCorp.HCL"
+				"HashiCorp.HCL",
+				"github.vscode-github-actions",
+				"GitHub.vscode-pull-request-github"
 			]
         }
     },

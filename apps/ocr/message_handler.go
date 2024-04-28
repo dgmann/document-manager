@@ -4,6 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
+	"net/http"
+	"ocr/internal/ocr"
+	"regexp"
+	"strings"
+
 	"github.com/dgmann/document-manager/api/pkg/api"
 	"github.com/dgmann/document-manager/api/pkg/client"
 	mqtt "github.com/eclipse/paho.golang/paho"
@@ -11,11 +17,6 @@ import (
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
-	"io"
-	"net/http"
-	"ocr/internal/ocr"
-	"regexp"
-	"strings"
 )
 
 type OCRRequest struct {
@@ -140,7 +141,7 @@ func (h *Handler) OCRRequestHandler() mqtt.MessageHandler {
 func (h *Handler) CategorizationRequestHandler() mqtt.MessageHandler {
 	categorizationCount, err := otel.Meter("github.com/dgmann/document-manager/ocr").Int64Counter("app.categorizations.count")
 	if err != nil {
-		log.Warningf("error creating categorization count metric: %w", err)
+		log.Warningf("error creating categorization count metric: %s", err)
 	}
 	return func(publish *mqtt.Publish) {
 		err := func(publish *mqtt.Publish) (err error) {

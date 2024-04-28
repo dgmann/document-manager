@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import {CommentDialogComponent} from './comment-dialog.component';
-import {MAT_DIALOG_DATA, MatDialogModule} from '@angular/material/dialog';
+import {MAT_DIALOG_DATA, MatDialogModule, MatDialogRef} from '@angular/material/dialog';
 import {CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 
@@ -16,7 +16,11 @@ describe('CommentDialogComponent', () => {
         MatDialogModule
       ],
       providers: [
-        {provide: MAT_DIALOG_DATA, useValue: {}}
+        {provide: MAT_DIALOG_DATA, useValue: {}},
+        {
+          provide: MatDialogRef,
+          useValue: {}
+        },
       ],
       declarations: [CommentDialogComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]

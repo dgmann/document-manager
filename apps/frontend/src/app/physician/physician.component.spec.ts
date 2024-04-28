@@ -1,11 +1,10 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import {PhysicianComponent} from './physician.component';
-import {RouterTestingModule} from '@angular/router/testing';
 import {CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
 import {PhysicianService} from './physician.service';
 import {of} from 'rxjs';
-import createSpy = jasmine.createSpy;
+import { RouterModule } from '@angular/router';
 
 describe('PhysicianComponent', () => {
   let component: PhysicianComponent;
@@ -14,7 +13,7 @@ describe('PhysicianComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [
-        RouterTestingModule
+        RouterModule.forRoot([])
       ],
       declarations: [
         PhysicianComponent
@@ -23,8 +22,8 @@ describe('PhysicianComponent', () => {
         provide: PhysicianService, useValue: {
           selectedRecords$: of(),
           selectedIds$: of(),
-          load: createSpy(),
-          selectIds: createSpy()
+          load: jest.fn(),
+          selectIds: jest.fn()
         }
       }
       ],

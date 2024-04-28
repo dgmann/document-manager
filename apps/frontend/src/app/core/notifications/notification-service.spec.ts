@@ -1,5 +1,4 @@
 import {NotificationService} from './notification-service';
-import createSpyObj = jasmine.createSpyObj;
 
 describe('NotificationService', () => {
   let service: NotificationService;
@@ -7,8 +6,13 @@ describe('NotificationService', () => {
   let ngZone;
 
   beforeEach(() => {
-    snackBarService = createSpyObj(['openFromComponent']);
-    ngZone = createSpyObj(['runOutsideAngular', 'run']);
+    snackBarService = {
+      openFromComponent: jest.fn()
+    };
+    ngZone = {
+      runOutsideAngular: jest.fn(),
+      run: jest.fn()
+    };
     service = new NotificationService(snackBarService, ngZone);
   });
 

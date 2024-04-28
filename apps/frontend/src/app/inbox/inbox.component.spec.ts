@@ -1,8 +1,6 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import {MatBottomSheetModule} from '@angular/material/bottom-sheet';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
-import {ActionBarService} from '@app/inbox/action-bar';
-import { InboxModule } from '@app/inbox/inbox.module';
 import { provideMockStore } from '@ngrx/store/testing';
 
 import {InboxComponent} from './inbox.component';
@@ -10,11 +8,9 @@ import {InboxService} from './inbox.service';
 import {of} from 'rxjs';
 import {SharedModule} from '../shared';
 import {RecordService} from '../core/records';
-import {RouterTestingModule} from '@angular/router/testing';
 import {CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import createSpy = jasmine.createSpy;
-import createSpyObj = jasmine.createSpyObj;
+import { RouterModule } from '@angular/router';
 
 describe('InboxComponent', () => {
   let component: InboxComponent;
@@ -25,7 +21,7 @@ describe('InboxComponent', () => {
     TestBed.configureTestingModule({
       imports: [
         SharedModule,
-        RouterTestingModule,
+        RouterModule,
         NoopAnimationsModule,
         MatBottomSheetModule,
         MatSnackBarModule,
@@ -38,14 +34,16 @@ describe('InboxComponent', () => {
           selectedIds$: of([]),
           selectedRecords$: of([]),
           isMultiSelect$: of(false),
-          loadRecords: createSpy('loadRecords'),
-          upload: createSpy('upload'),
-          selectIds: createSpy('selectIds'),
-          deleteSelectedRecords: createSpy('deleteSelectedRecords'),
-          updateSelectedRecords: createSpy('updateSelectedRecords')
+          loadRecords: jest.fn(),
+          upload: jest.fn(),
+          selectIds: jest.fn(),
+          deleteSelectedRecords: jest.fn(),
+          updateSelectedRecords: jest.fn()
         },
       },
-        {provide: RecordService, useValue: createSpyObj('RecordService', ['updatePages'])}
+        {provide: RecordService, useValue: {
+          updatePages: jest.fn()
+        }}
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();

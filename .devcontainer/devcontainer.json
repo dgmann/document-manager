@@ -24,7 +24,8 @@
 				"Angular.ng-template",
 				"HashiCorp.HCL",
 				"github.vscode-github-actions",
-				"GitHub.vscode-pull-request-github"
+				"GitHub.vscode-pull-request-github",
+				"firsttris.vscode-jest-runner"
 			]
         }
     },

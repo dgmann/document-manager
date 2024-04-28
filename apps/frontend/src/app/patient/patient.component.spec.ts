@@ -8,10 +8,9 @@ import {CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
 import {RecordService} from '@app/core/records';
 import {PatientService} from './patient.service';
 import {CategoryService} from '@app/core/categories';
-import {RouterTestingModule} from '@angular/router/testing';
 import {of} from 'rxjs';
-import createSpy = jasmine.createSpy;
 import {SharedModule} from '@app/shared';
+import { RouterModule } from '@angular/router';
 
 describe('PatientComponent', () => {
   let component: PatientComponent;
@@ -20,7 +19,7 @@ describe('PatientComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [
-        RouterTestingModule,
+        RouterModule.forRoot([]),
         HttpClientTestingModule,
         SharedModule,
         NoopAnimationsModule
@@ -35,14 +34,14 @@ describe('PatientComponent', () => {
             selectedPatient$: of(),
             selectedRecord$: of(),
             selectedId$: of(),
-            selectPatient: createSpy(),
-            selectCategory: createSpy()
+            selectPatient: jest.fn(),
+            selectCategory: jest.fn()
           }
         },
         {
           provide: CategoryService, useValue: {
             categoryMap: of(),
-            load: createSpy()
+            load: jest.fn()
           }
         },
         { provide: ConfigService, useValue: {getApiUrl: () => 'http://test.com'}}

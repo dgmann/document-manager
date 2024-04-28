@@ -7,9 +7,9 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatCardModule} from '@angular/material/card';
 import {MatIconModule} from '@angular/material/icon';
 import {RecordService} from '../core/records';
-import {RouterTestingModule} from '@angular/router/testing';
 import {of} from 'rxjs';
-import createSpy = jasmine.createSpy;
+import { RouterModule } from '@angular/router';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 describe('EditorComponent', () => {
   let component: EditorComponent;
@@ -22,7 +22,8 @@ describe('EditorComponent', () => {
         MatButtonModule,
         MatIconModule,
         MatMenuModule,
-        RouterTestingModule
+        RouterModule.forRoot([]),
+        DragDropModule
       ],
       declarations: [
         EditorComponent,
@@ -31,9 +32,9 @@ describe('EditorComponent', () => {
       providers: [
         {
           provide: RecordService, useValue: {
-            find: createSpy().and.returnValue(of({pages: []})),
-            updatePages: createSpy(),
-            getInvalidIds: createSpy()
+            find: jest.fn().mockReturnValue(of({pages: []})),
+            updatePages: jest.fn(),
+            getInvalidIds: jest.fn()
           }
         }
       ]

@@ -9,6 +9,7 @@
     "forceConsistentCasingInFileNames": true,
     "module": "ES2022",
     "moduleResolution": "node",
+    "esModuleInterop": true,
     "importHelpers": true,
     "target": "ES2022",
     "typeRoots": [

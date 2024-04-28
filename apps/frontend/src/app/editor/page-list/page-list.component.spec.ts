@@ -4,6 +4,7 @@ import {PageListComponent} from './page-list.component';
 import {MatButtonModule} from '@angular/material/button';
 import {MatCardModule} from '@angular/material/card';
 import {MatIconModule} from '@angular/material/icon';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 describe('PageListComponent', () => {
   let component: PageListComponent;
@@ -15,6 +16,7 @@ describe('PageListComponent', () => {
         MatCardModule,
         MatButtonModule,
         MatIconModule,
+        DragDropModule
       ],
       declarations: [PageListComponent]
     })

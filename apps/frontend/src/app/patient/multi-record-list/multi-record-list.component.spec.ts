@@ -5,7 +5,6 @@ import {MultiRecordListComponent} from './multi-record-list.component';
 import {MatCardModule} from '@angular/material/card';
 import {MatIconModule} from '@angular/material/icon';
 import {DocumentEditDialogService} from '@app/shared';
-import createSpyObj = jasmine.createSpyObj;
 
 describe('MultiRecordListComponent', () => {
   let component: MultiRecordListComponent;
@@ -20,7 +19,9 @@ describe('MultiRecordListComponent', () => {
       ],
       declarations: [MultiRecordListComponent],
       providers: [
-        {provide: DocumentEditDialogService, useValue: createSpyObj(['open'])}
+        {provide: DocumentEditDialogService, useValue: {
+          open: jest.fn()
+        }}
       ]
     })
       .compileComponents();

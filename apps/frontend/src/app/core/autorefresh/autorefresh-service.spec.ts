@@ -1,9 +1,7 @@
 import {AutorefreshService} from './autorefresh-service';
 import {NotificationMessage, NotificationMessageType, NotificationTopic} from '../notifications/websocket-service';
 import {ActionType, RecordEvent} from '../notifications/notification-service';
-import {DeleteRecordSuccess} from '@app/core/records';
 import {of, throwError} from 'rxjs';
-import createSpyObj = jasmine.createSpyObj;
 
 describe('AutoRefreshService', () => {
   let service: AutorefreshService;
@@ -13,13 +11,19 @@ describe('AutoRefreshService', () => {
   let configService;
 
   beforeEach(() => {
-    notificationService = createSpyObj(['publish']);
-    websocketService = createSpyObj(['create']);
-    websocketService.create.and.returnValue(of(null));
-    store = createSpyObj(['pipe', 'dispatch']);
-    configService = jasmine.createSpyObj('ConfigService', {
-      getNotificationWebsocketUrl: 'http://test.com'
-    });
+    notificationService = {
+      publish: jest.fn()
+    };
+    websocketService = {
+      create: jest.fn().mockReturnValue(of(null))
+    };
+    store = {
+      pipe: jest.fn(),
+      dispatch: jest.fn()
+    };
+    configService = {
+      getNotificationWebsocketUrl: jest.fn().mockReturnValue('http://test.com')
+    };
     service = new AutorefreshService(store, websocketService, notificationService, configService);
   });
 

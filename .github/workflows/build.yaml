@@ -9,6 +9,10 @@ env:
   IMAGE_REPOSITORY: "dgmann/document-manager"
   IMAGE_REGISTRY: "ghcr.io"
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+  
 jobs:
   prepare:
     runs-on: ubuntu-latest

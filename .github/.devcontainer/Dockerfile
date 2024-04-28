@@ -19,7 +19,11 @@ RUN apt update && apt-get install -y -qq \
   libtiff-dev \
   libgif-dev \
   ghostscript \
-  libgs-dev
+  libgs-dev \
+  # M1 Helper
+  gcc \
+  libgtk-3-dev \
+  libayatana-appindicator3-dev
 
 RUN mkdir -p /data \
  && chown -R vscode /data

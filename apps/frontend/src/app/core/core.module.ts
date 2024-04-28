@@ -27,7 +27,7 @@ function actionSanitizer(action) {
         !environment.production ? StoreDevtoolsModule.instrument({
             maxAge: 25,
             actionSanitizer
-        }) : [],
+        , connectInZone: true}) : [],
         EffectsModule.forRoot([RecordEffects]),
     ],
     declarations: [EventSnackbarComponent]

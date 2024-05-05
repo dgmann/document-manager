@@ -10,7 +10,10 @@
 
     "features": {
         "ghcr.io/devcontainers/features/node": {},
-        "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+        "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+        "ghcr.io/devcontainers/features/hugo:1": {
+            "extended": true
+        }
     },
 
     // Configure tool-specific properties.

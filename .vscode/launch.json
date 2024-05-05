@@ -43,8 +43,8 @@
             "mode": "auto",
             "program": "${workspaceFolder}/apps/m1-adapter"
         }, {
-            "name": "Run & debug App",
-            "type": "chrome",
+            "name": "Frontend",
+            "type": "firefox",
             "request": "launch",
             "url": "http://localhost:4200/",
             "webRoot": "${workspaceFolder}/apps/frontend",
@@ -54,7 +54,7 @@
     "compounds": [
         {
             "name": "All",
-            "configurations": ["Pdf-Processor", "API", "OCR", "Run & debug App", "File Watcher"]
+            "configurations": ["Pdf-Processor", "API", "OCR", "Frontend", "File Watcher"]
         }
     ]
 }

@@ -1,9 +1,17 @@
 name: Build
 
 on:
-  push:
-    tags: ['v*.*.*']
-  pull_request: {}
+  workflow_call:
+    inputs:
+      tag:
+        required: false
+        type: string
+        description: "A Tag for publishing the artifacts"
+    outputs:
+      artifact-id:
+        description: "Name of the artifact which can be used to download it"
+        value: ${{ jobs.upload_artifacts.outputs.artifact-id }}
+  pull_request:
 
 env:
   IMAGE_REPOSITORY: "dgmann/document-manager"
@@ -12,6 +20,10 @@ env:
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
+
+permissions:
+  contents: read
+  packages: write
   
 jobs:
   prepare:
@@ -70,7 +82,7 @@ jobs:
         with:
           registry: ${{ env.IMAGE_REGISTRY }}
           username: ${{ github.actor }}
-          password: ${{ secrets.CR_PAT }} # Use PAT to allow dgmann/document-manager as namespace
+          password: ${{ secrets.GITHUB_TOKEN }} # Use PAT to allow dgmann/document-manager as namespace
 
 
       - name: Image Name
@@ -87,6 +99,7 @@ jobs:
           tags: |
             type=semver,pattern={{version}}
             type=ref,event=pr
+            type=raw,enable=${{ inputs.tag != '' }},value=${{ inputs.tag }}
 
       - name: Build and push
         uses: docker/bake-action@v4
@@ -107,13 +120,21 @@ jobs:
           name: output-${{ matrix.target }}
           path: ${{ matrix.upload-path }}
   
-  release:
+  upload_artifacts:
     needs: build
     runs-on: ubuntu-latest
-    if: github.ref_type == 'tag'
+    outputs:
+      artifact-id: ${{ steps.artifact.outputs.artifact-id }}
     steps:
     - name: Checkout
       uses: actions/checkout@v4
+    
+    - name: Create docker-compose.yaml
+      run: |
+        mkdir out
+        envsubst '${DOCUMENT_MANAGER_VERSION}' < deployment/docker-compose.yml > out/docker-compose.yaml
+      env:
+        DOCUMENT_MANAGER_VERSION: ${{ github.ref_name }}
 
     - name: Download All Artifacts
       uses: actions/download-artifact@v4
@@ -121,16 +142,9 @@ jobs:
         path: out
         pattern: output-*
         merge-multiple: true
-    
-    - name: Create docker-compose.yaml
-      run: envsubst '${DOCUMENT_MANAGER_VERSION}' < deployment/docker-compose.yml > docker-compose.yaml
-      env:
-        DOCUMENT_MANAGER_VERSION: ${{ github.ref_name }}
 
-    - uses: "marvinpinto/action-automatic-releases@latest"
+    - uses: actions/upload-artifact@v4
+      id: artifact
       with:
-        repo_token: "${{ secrets.GITHUB_TOKEN }}"
-        prerelease: false
-        files: |
-          out/*
-          ./docker-compose.yaml
+        name: artifact
+        path: out/*

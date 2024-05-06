@@ -4,7 +4,7 @@ import (
 	"os"
 	"time"
 
-	client "github.com/dgmann/document-manager/apiclient"
+	"github.com/dgmann/document-manager/api/pkg/client"
 	"github.com/dgmann/document-manager/directory-watcher/parser"
 	"github.com/dgmann/document-manager/directory-watcher/watcher"
 	"github.com/namsral/flag"
@@ -39,7 +39,11 @@ func init() {
 
 func main() {
 	w := watcher.NewDirectoryWatcher(scanInterval, retryCount)
-	uploader := client.NewHttpUploader(destination, time.Second*time.Duration(timeout))
+	uploader, err := client.NewHTTPClient(destination, time.Second*time.Duration(timeout))
+	if err != nil {
+		log.Panicf("error creating API client: %s", err)
+		return
+	}
 	var p parser.Parser
 	if pars == "fax" {
 		p = &parser.Fax{}
@@ -60,7 +64,7 @@ func main() {
 			continue
 		}
 		record.File = f
-		err = uploader.CreateRecord(record.NewRecord)
+		_, err = uploader.Records.Create(record.NewRecord)
 		f.Close()
 		if err != nil {
 			log.WithField("path", record.PdfPath).WithField("error", err).Errorf("error uploading record")

@@ -4,13 +4,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/dgmann/document-manager/apiclient"
+	"github.com/dgmann/document-manager/api/pkg/client"
 )
 
 type Fax struct {
 }
 
-func (f *Fax) Parse(fileName string) *apiclient.NewRecord {
+func (f *Fax) Parse(fileName string) *client.NewRecord {
 	sender := ""
 	receviedAt := time.Now()
 	toParse := strings.TrimSuffix(fileName, ".pdf")
@@ -27,7 +27,7 @@ func (f *Fax) Parse(fileName string) *apiclient.NewRecord {
 		}
 	}
 
-	return &apiclient.NewRecord{
+	return &client.NewRecord{
 		Sender:     sender,
 		ReceivedAt: receviedAt,
 	}

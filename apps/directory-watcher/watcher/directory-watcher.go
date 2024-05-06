@@ -3,12 +3,11 @@ package watcher
 import (
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path"
 	"time"
 
-	client "github.com/dgmann/document-manager/apiclient"
+	"github.com/dgmann/document-manager/api/pkg/client"
 	"github.com/dgmann/document-manager/directory-watcher/parser"
 	log "github.com/sirupsen/logrus"
 )
@@ -47,7 +46,7 @@ func (w *DirectoryWatcher) Close() {
 func (w *DirectoryWatcher) Watch(dir string, parser parser.Parser) <-chan *NewRecord {
 	go func() {
 		for range w.ticker.C {
-			files, err := ioutil.ReadDir(dir)
+			files, err := os.ReadDir(dir)
 			if err != nil {
 				log.Errorf("error reading directory %s: %s", dir, err)
 				continue

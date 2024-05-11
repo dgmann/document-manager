@@ -96,6 +96,7 @@ jobs:
             type=semver,pattern={{version}}
             type=ref,event=pr
             type=raw,enable=${{ inputs.tag != '' }},value=${{ inputs.tag }}
+            type=raw,value=latest,enable=${{ inputs.tag != '' }}
 
       - name: Build and push
         uses: docker/bake-action@v4

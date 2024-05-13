@@ -56,6 +56,7 @@ func (a *DatabaseAdapter) GetAllPatients() ([]*Patient, error) {
 								JOIN M1TELNR telnr on adress.ADRSS_ID = telnr.ADRSS_ID
 								LEFT OUTER JOIN M1WOHN wohn on adress.Wohn_ID = wohn.Wohn_ID
 								LEFT OUTER JOIN M1ORT wohnort on wohn.ORT_ID = wohnort.ORT_ID
+								WHERE pat.PATID_EXT IS NOT NULL
 								ORDER BY pat.NAME, pat.VORNAME`)
 	if err != nil {
 		return nil, err

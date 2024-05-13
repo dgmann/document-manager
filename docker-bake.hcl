@@ -1,5 +1,5 @@
 group "default" {
-    targets = ["go-apps", "pdf-processor", "m1-adapter", "m1-helper"]
+    targets = ["go-apps", "pdf-processor", "m1-adapter", "m1-helper", "frontend"]
 }
 
 group "cache" {

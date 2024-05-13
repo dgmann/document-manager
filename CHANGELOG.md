@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.8.0](https://github.com/dgmann/document-manager/compare/v1.7.1...v1.8.0) (2024-05-13)
+
+
+### Features
+
+* **m1-adapter:** enable fuzzy search ([a7826b9](https://github.com/dgmann/document-manager/commit/a7826b967c99e3fc3a508d540f4db1eb9dcb4d15))
+
+
+### Bug Fixes
+
+* automatically build artifacts ([a593c58](https://github.com/dgmann/document-manager/commit/a593c58e2dff0aabf8f228a1c61a9c0d91484015))
+* **m1-adapter:** change similarity to &gt;= ([ab1d3f7](https://github.com/dgmann/document-manager/commit/ab1d3f75ef214eaf7077b6b0dfbd1e091da477bb))
+
 ## [1.7.1](https://github.com/dgmann/document-manager/compare/v1.7.0...v1.7.1) (2024-05-13)
 
 

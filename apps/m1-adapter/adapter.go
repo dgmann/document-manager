@@ -98,7 +98,7 @@ func (a *DatabaseAdapter) FindPatientsFuzzy(firstname, lastname string, similari
 	name := fmt.Sprintf("%s,%s", lastname, firstname)
 	name = a.trans.Transliterate(name, "de")
 
-	whereClause := "WHERE UTL_MATCH.JARO_WINKLER_SIMILARITY(pat.PATSNAME, UPPER(:name)) > :similarity"
+	whereClause := "WHERE UTL_MATCH.JARO_WINKLER_SIMILARITY(pat.PATSNAME, UPPER(:name)) >= :similarity"
 	params := []any{
 		name, // required for the select statement part
 		name,

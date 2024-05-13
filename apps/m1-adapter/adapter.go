@@ -4,12 +4,24 @@ import (
 	"database/sql"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/alexsergivan/transliterator"
 	go_ora "github.com/sijms/go-ora/v2"
 )
 
-type Adapter interface {
+type Patient struct {
+	Id        string     `json:"id"`
+	FirstName string     `json:"firstName"`
+	LastName  string     `json:"lastName"`
+	BirthDate *time.Time `json:"birthDate"`
+	Address   Address    `json:"address"`
+}
+
+type Address struct {
+	Street  *string `json:"street"`
+	ZipCode *string `json:"zipCode"`
+	City    *string `json:"city"`
 }
 
 type DatabaseAdapter struct {
@@ -18,14 +30,14 @@ type DatabaseAdapter struct {
 	trans            *transliterator.Transliterator
 }
 
-func NewDatabaseAdapterFromDSN(connectionString string) *DatabaseAdapter {
-	return &DatabaseAdapter{connectionString: connectionString, trans: transliterator.NewTransliterator(nil)}
-}
-
 func NewDatabaseAdapter(server string, port int, sid string, user string, password string) *DatabaseAdapter {
 	connectionString := go_ora.BuildUrl(server, port, "", user, password, map[string]string{
 		"SID": sid,
 	})
+	return NewDatabaseAdapterFromDSN((connectionString))
+}
+
+func NewDatabaseAdapterFromDSN(connectionString string) *DatabaseAdapter {
 	return &DatabaseAdapter{connectionString: connectionString, trans: transliterator.NewTransliterator(nil)}
 }
 
@@ -42,61 +54,95 @@ func (a *DatabaseAdapter) Close() error {
 	return a.db.Close()
 }
 
+const query = `
+Select Distinct
+pat.PATID_EXT as PatID,
+pat.Name as Nachname,
+pat.Vorname as Vorname,
+pat.GebDatum as GebDatum,
+wohn.WOHN_PLZ as PLZ,
+wohn.WOHN_STR as Strasse,
+wohnort.ORT_NAME as Ort
+From M1PATNT pat
+JOIN M1ADRSS adress on pat.Entty_id = adress.entty_ID
+JOIN M1TELNR telnr on adress.ADRSS_ID = telnr.ADRSS_ID
+LEFT OUTER JOIN M1WOHN wohn on adress.Wohn_ID = wohn.Wohn_ID
+LEFT OUTER JOIN M1ORT wohnort on wohn.ORT_ID = wohnort.ORT_ID
+%s
+ORDER BY pat.NAME, pat.VORNAME
+`
+
 func (a *DatabaseAdapter) GetAllPatients() ([]*Patient, error) {
-	rows, err := a.db.Query(`Select Distinct
-								pat.PATID_EXT as PatID,
-								pat.Name as Nachname,
-								pat.Vorname as Vorname,
-								pat.GebDatum as GebDatum,
-								wohn.WOHN_PLZ as PLZ,
-								wohn.WOHN_STR as Strasse,
-								wohnort.ORT_NAME as Ort
-								From M1PATNT pat
-								JOIN M1ADRSS adress on pat.Entty_id = adress.entty_ID
-								JOIN M1TELNR telnr on adress.ADRSS_ID = telnr.ADRSS_ID
-								LEFT OUTER JOIN M1WOHN wohn on adress.Wohn_ID = wohn.Wohn_ID
-								LEFT OUTER JOIN M1ORT wohnort on wohn.ORT_ID = wohnort.ORT_ID
-								WHERE pat.PATID_EXT IS NOT NULL
-								ORDER BY pat.NAME, pat.VORNAME`)
+	rows, err := a.db.Query(fmt.Sprintf(query, "WHERE pat.PATID_EXT IS NOT NULL"))
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	var patients = make([]*Patient, 0)
-	for rows.Next() {
-		patient, err := rowToPatient(rows)
-		if err != nil {
-			return nil, err
-		}
-		patients = append(patients, patient)
-	}
-	return patients, nil
+	return rowsToPatient(rows)
 }
 
 func (a *DatabaseAdapter) FindPatientsByName(firstname, lastname string) ([]*Patient, error) {
 	name := fmt.Sprintf("%s%%,%s%%", lastname, firstname)
 	name = a.trans.Transliterate(name, "de")
-	rows, err := a.db.Query(`Select Distinct
-								pat.PATID_EXT as PatID,
-								pat.Name as Nachname,
-								pat.Vorname as Vorname,
-								pat.GebDatum as GebDatum,
-								wohn.WOHN_PLZ as PLZ,
-								wohn.WOHN_STR as Strasse,
-								wohnort.ORT_NAME as Ort
-								From M1PATNT pat
-								JOIN M1ADRSS adress on pat.Entty_id = adress.entty_ID
-								JOIN M1TELNR telnr on adress.ADRSS_ID = telnr.ADRSS_ID
-								LEFT OUTER JOIN M1WOHN wohn on adress.Wohn_ID = wohn.Wohn_ID
-								LEFT OUTER JOIN M1ORT wohnort on wohn.ORT_ID = wohnort.ORT_ID
-								WHERE pat.PATSNAME like UPPER(:name)
-								ORDER BY pat.NAME, pat.VORNAME`, name)
+	rows, err := a.db.Query(fmt.Sprintf(query, "WHERE pat.PATSNAME like UPPER(:name)"), name)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
+	return rowsToPatient(rows)
+}
+
+func (a *DatabaseAdapter) FindPatientsFuzzy(firstname, lastname string, similarity int, birthDate *time.Time) ([]*Patient, error) {
+	name := fmt.Sprintf("%s,%s", lastname, firstname)
+	name = a.trans.Transliterate(name, "de")
+
+	whereClause := "WHERE UTL_MATCH.JARO_WINKLER_SIMILARITY(pat.PATSNAME, UPPER(:name)) > :similarity"
+	params := []any{
+		name, // required for the select statement part
+		name,
+		similarity,
+	}
+	if birthDate != nil {
+		whereClause = whereClause + " AND pat.GebDatum = :birthDate"
+		params = append(params, birthDate)
+	}
+
+	fuzzyQuery := fmt.Sprintf(`
+	Select Distinct
+	pat.PATID_EXT as PatID,
+	pat.Name as Nachname,
+	pat.Vorname as Vorname,
+	pat.GebDatum as GebDatum,
+	wohn.WOHN_PLZ as PLZ,
+	wohn.WOHN_STR as Strasse,
+	wohnort.ORT_NAME as Ort,
+	UTL_MATCH.JARO_WINKLER_SIMILARITY(pat.PATSNAME, UPPER(:name)) as similarity
+	From M1PATNT pat
+	JOIN M1ADRSS adress on pat.Entty_id = adress.entty_ID
+	JOIN M1TELNR telnr on adress.ADRSS_ID = telnr.ADRSS_ID
+	LEFT OUTER JOIN M1WOHN wohn on adress.Wohn_ID = wohn.Wohn_ID
+	LEFT OUTER JOIN M1ORT wohnort on wohn.ORT_ID = wohnort.ORT_ID
+	%s
+	ORDER BY similarity DESC, pat.NAME, pat.VORNAME
+	`, whereClause)
+
+	rows, err := a.db.Query(fuzzyQuery, params...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	return rowsToPatient(rows)
+}
+
+func (a *DatabaseAdapter) GetPatient(id string) (*Patient, error) {
+	row := a.db.QueryRow(fmt.Sprintf(query, "WHERE pat.PATID_EXT = :id"), id)
+	return rowToPatient(row)
+}
+
+func rowsToPatient(rows *sql.Rows) ([]*Patient, error) {
 	var patients = make([]*Patient, 0)
 	for rows.Next() {
 		patient, err := rowToPatient(rows)
@@ -106,25 +152,6 @@ func (a *DatabaseAdapter) FindPatientsByName(firstname, lastname string) ([]*Pat
 		patients = append(patients, patient)
 	}
 	return patients, nil
-}
-
-func (a *DatabaseAdapter) GetPatient(id string) (*Patient, error) {
-	row := a.db.QueryRow(`Select Distinct
-								pat.PATID_EXT as PatID,
-								pat.Name as Nachname,
-								pat.Vorname as Vorname,
-								pat.GebDatum as GebDatum,
-								wohn.WOHN_PLZ as PLZ,
-								wohn.WOHN_STR as Strasse,
-								wohnort.ORT_NAME as Ort
-								From M1PATNT pat
-								JOIN M1ADRSS adress on pat.Entty_id = adress.entty_ID
-								JOIN M1TELNR telnr on adress.ADRSS_ID = telnr.ADRSS_ID
-								LEFT OUTER JOIN M1WOHN wohn on adress.Wohn_ID = wohn.Wohn_ID
-								LEFT OUTER JOIN M1ORT wohnort on wohn.ORT_ID = wohnort.ORT_ID
-								WHERE pat.PATID_EXT = :id
-								ORDER BY pat.NAME, pat.VORNAME`, id)
-	return rowToPatient(row)
 }
 
 type Scanable interface {
@@ -134,6 +161,7 @@ type Scanable interface {
 func rowToPatient(row Scanable) (*Patient, error) {
 	patient := Patient{}
 	address := Address{}
+	similarity := 0
 	err := row.Scan(
 		&patient.Id,
 		&patient.LastName,
@@ -141,7 +169,9 @@ func rowToPatient(row Scanable) (*Patient, error) {
 		&patient.BirthDate,
 		&address.ZipCode,
 		&address.Street,
-		&address.City)
+		&address.City,
+		&similarity,
+	)
 	patient.Address = address
 	patient.FirstName = strings.TrimSpace(patient.FirstName)
 	patient.LastName = strings.TrimSpace(patient.LastName)

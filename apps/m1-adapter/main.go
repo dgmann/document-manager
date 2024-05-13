@@ -7,6 +7,7 @@ import (
 	"os"
 	"path"
 	"strconv"
+	"time"
 )
 
 var username string
@@ -66,10 +67,33 @@ func main() {
 	http.HandleFunc("/patients", func(writer http.ResponseWriter, request *http.Request) {
 		firstname := request.URL.Query().Get("firstname")
 		lastname := request.URL.Query().Get("lastname")
+		fuzzy := request.URL.Query().Has("fuzzy")
+
 		var pats []*Patient
 		var err error
 
-		if firstname != "" || lastname != "" {
+		if firstname != "" && lastname != "" && fuzzy {
+			similarity := 90
+			if similarityString := request.URL.Query().Get("similarity"); similarityString != "" {
+				similarity, err = strconv.Atoi(similarityString)
+				if err != nil {
+					writeJSON(writer, response{"error": err.Error()}, http.StatusBadRequest)
+					return
+				}
+			}
+
+			var birthDate *time.Time
+			if birthDateString := request.URL.Query().Get("birthDate"); birthDateString != "" {
+				birthDateResult, err := time.Parse(birthDateString, time.RFC3339)
+				if err != nil {
+					writeJSON(writer, response{"error": err.Error()}, http.StatusBadRequest)
+					return
+				}
+				birthDate = &birthDateResult
+			}
+
+			pats, err = adapter.FindPatientsFuzzy(firstname, lastname, similarity, birthDate)
+		} else if firstname != "" || lastname != "" {
 			pats, err = adapter.FindPatientsByName(firstname, lastname)
 		} else {
 			pats, err = adapter.GetAllPatients()
@@ -106,8 +130,8 @@ func getEnv(key, fallback string) string {
 type response map[string]interface{}
 
 func writeJSON(writer http.ResponseWriter, data interface{}, code int) {
-	writer.WriteHeader(code)
 	writer.Header().Add("Content-Type", "application/json; charset=utf-8")
+	writer.WriteHeader(code)
 	if err := json.NewEncoder(writer).Encode(data); err != nil {
 		writer.WriteHeader(500)
 	}

@@ -9,8 +9,11 @@ on:
         description: "A Tag for publishing the artifacts"
     outputs:
       artifact-id:
-        description: "Name of the artifact which can be used to download it"
+        description: "Name of the artifact which can be used with the REST API"
         value: ${{ jobs.upload_artifacts.outputs.artifact-id }}
+      artifact-name:
+        description: "Name of the artifact which can be used to download it"
+        value: artifacts
   workflow_dispatch:
     inputs:
       tag:
@@ -143,7 +146,7 @@ jobs:
         mkdir out
         envsubst '${DOCUMENT_MANAGER_VERSION}' < deployment/docker-compose.yml > out/docker-compose.yaml
       env:
-        DOCUMENT_MANAGER_VERSION: ${{ github.ref_name }}
+        DOCUMENT_MANAGER_VERSION: ${{ inputs.tag || github.ref_name }}
 
     - name: Download All Artifacts
       uses: actions/download-artifact@v4
@@ -155,5 +158,5 @@ jobs:
     - uses: actions/upload-artifact@v4
       id: artifact
       with:
-        name: artifact
+        name: artifacts
         path: out/*

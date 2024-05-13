@@ -24,7 +24,7 @@ jobs:
 
   build:
     needs: [release-please]
-    if: ${{ needs.release-please.outputs.releases_created == 'true' }}
+    if: ${{ needs.release-please.outputs.releases_created }}
     uses: dgmann/document-manager/.github/workflows/build.yaml@main
     with:
       tag: ${{ needs.release-please.outputs.tag_name }}
@@ -32,7 +32,7 @@ jobs:
 
   upload:
     needs: [build, release-please]
-    if: ${{ needs.release-please.outputs.releases_created == 'true' }}
+    if: ${{ needs.release-please.outputs.releases_created }}
     runs-on: ubuntu-latest
     steps:
       - name: Download All Artifacts

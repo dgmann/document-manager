@@ -29,3 +29,16 @@ jobs:
     with:
       tag: ${{ needs.release-please.outputs.tag_name }}
     secrets: inherit
+
+  upload:
+    needs: [build, release-please]
+    if: ${{ needs.release-please.outputs.releases_created == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download All Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.release-please.outputs.artifact-id }}
+          path: out
+      - run: |
+          gh release upload ${{ needs.release-please.outputs.tag_name }} out/*

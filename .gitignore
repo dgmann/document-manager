@@ -54,3 +54,4 @@ docker-compose.override.yml
 
 /**/__debug_*
 pdf-upload-dir/
+.venv

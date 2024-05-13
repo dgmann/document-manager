@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.1](https://github.com/dgmann/document-manager/compare/v1.8.0...v1.8.1) (2024-05-13)
+
+
+### Bug Fixes
+
+* **deploy:** correct version in released docker-compose.yaml ([46fb0e7](https://github.com/dgmann/document-manager/commit/46fb0e730f1c2689d8be7a4a3846bbf29a96ccf7))
+
 ## [1.8.0](https://github.com/dgmann/document-manager/compare/v1.7.1...v1.8.0) (2024-05-13)
 
 

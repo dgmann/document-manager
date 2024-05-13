@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.1](https://github.com/dgmann/document-manager/compare/v1.7.0...v1.7.1) (2024-05-13)
+
+
+### Bug Fixes
+
+* **m1-adapter:** filter patients without id ([5237fc5](https://github.com/dgmann/document-manager/commit/5237fc5967cbf060a140cdbe6132ea8b07de1657))
+
 ## [1.7.0](https://github.com/dgmann/document-manager/compare/v1.6.4...v1.7.0) (2024-05-13)
 
 

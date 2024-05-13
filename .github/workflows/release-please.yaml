@@ -13,8 +13,8 @@ jobs:
   release-please:
     runs-on: ubuntu-latest
     outputs:
-      releases_created: ${{ steps.release.releases_created }}
-      tag_name: ${{ steps.release.tag_name }}
+      releases_created: ${{ steps.release.outputs.releases_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
     steps:
       - uses: google-github-actions/release-please-action@v4
         id: release
@@ -38,7 +38,7 @@ jobs:
       - name: Download All Artifacts
         uses: actions/download-artifact@v4
         with:
-          name: ${{ needs.release-please.outputs.artifact-id }}
+          name: ${{ needs.build.outputs.artifact-id }}
           path: out
       - run: |
           gh release upload ${{ needs.release-please.outputs.tag_name }} out/*

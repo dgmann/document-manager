@@ -1,10 +1,12 @@
 package parser
 
 import (
+	"log/slog"
 	"strings"
 	"time"
 
 	"github.com/dgmann/document-manager/api/pkg/client"
+	"github.com/dgmann/document-manager/pkg/log"
 )
 
 type Fax struct {
@@ -21,7 +23,7 @@ func (f *Fax) Parse(fileName string) *client.NewRecord {
 
 		result, err := time.Parse("02.01.06_15.04", dateSender[0])
 		if err != nil {
-			println(err)
+			log.Logger.Info("failed to parse filename", log.ErrAttr(err), slog.String("parser", "fax"), slog.String("file", fileName))
 		} else {
 			receviedAt = result
 		}

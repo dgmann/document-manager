@@ -4,7 +4,7 @@ require (
 	github.com/MakeNowJust/hotkey v0.0.0-20200628032113-41fa0caa507a
 	github.com/getlantern/systray v1.2.2
 	github.com/kardianos/service v0.0.0-20181115005516-4c239ee84e7b
-	golang.org/x/text v0.9.0
+	golang.org/x/text v0.16.0
 )
 
 require (
@@ -18,8 +18,8 @@ require (
 	github.com/kardianos/osext v0.0.0-20170510131534-ae77be60afb1 // indirect
 	github.com/lxn/win v0.0.0-20210218163916-a377121e959e // indirect
 	github.com/oxtoacart/bpool v0.0.0-20190530202638-03653db5a59c // indirect
-	github.com/stretchr/testify v1.8.3 // indirect
-	golang.org/x/sys v0.9.0 // indirect
+	github.com/stretchr/testify v1.9.0 // indirect
+	golang.org/x/sys v0.21.0 // indirect
 )
 
 go 1.20

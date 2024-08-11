@@ -11,7 +11,7 @@ target "docker-metadata-action" {}
 target "_go" {
   context = "."
   args = {
-    GO_VERSION = "1.20"
+    GO_VERSION = "1.22"
   }
 }
 

@@ -4,11 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net/url"
+	"time"
+
 	"github.com/eclipse/paho.golang/autopaho"
 	"github.com/eclipse/paho.golang/paho"
 	log "github.com/sirupsen/logrus"
-	"net/url"
-	"time"
 )
 
 type MQTTClient struct {
@@ -24,10 +25,10 @@ func NewMQTTClient(ctx context.Context, broker *url.URL, clientId string, subscr
 		OnConnectionUp: func(cm *autopaho.ConnectionManager, connAck *paho.Connack) {
 			log.Println("mqtt connection up")
 			if _, err := cm.Subscribe(ctx, &paho.Subscribe{
-				Subscriptions: func() map[string]paho.SubscribeOptions {
-					options := make(map[string]paho.SubscribeOptions)
+				Subscriptions: func() []paho.SubscribeOptions {
+					var options []paho.SubscribeOptions
 					for _, sub := range subscriptions {
-						options[sub.Topic] = sub.SubscribeOptions
+						options = append(options, sub.SubscribeOptions)
 					}
 					return options
 				}(),

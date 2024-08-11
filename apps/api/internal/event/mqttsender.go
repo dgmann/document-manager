@@ -4,12 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net/url"
+	"time"
+
 	"github.com/dgmann/document-manager/api/pkg/api"
 	"github.com/eclipse/paho.golang/autopaho"
 	"github.com/eclipse/paho.golang/paho"
 	log "github.com/sirupsen/logrus"
-	"net/url"
-	"time"
 )
 
 type MQTTEventSender[T any] struct {
@@ -24,7 +25,6 @@ func NewMQTTEventSender[T any](broker *url.URL, clientId string) *MQTTEventSende
 		ConnectRetryDelay: 10 * time.Second,
 		OnConnectionUp:    func(*autopaho.ConnectionManager, *paho.Connack) { log.Println("MQTT Event Sender: connection up") },
 		OnConnectError:    func(err error) { log.Errorf("error whilst attempting connection: %s\n", err) },
-		Debug:             paho.NOOPLogger{},
 		ClientConfig: paho.ClientConfig{
 			ClientID:      clientId,
 			OnClientError: func(err error) { log.Errorf("server requested disconnect: %s\n", err) },

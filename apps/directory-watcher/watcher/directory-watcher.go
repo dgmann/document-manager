@@ -1,15 +1,15 @@
 package watcher
 
 import (
-	"errors"
 	"fmt"
+	"log/slog"
 	"os"
 	"path"
 	"time"
 
 	"github.com/dgmann/document-manager/api/pkg/client"
 	"github.com/dgmann/document-manager/directory-watcher/parser"
-	log "github.com/sirupsen/logrus"
+	"github.com/dgmann/document-manager/pkg/log"
 )
 
 type NewRecord struct {
@@ -48,7 +48,7 @@ func (w *DirectoryWatcher) Watch(dir string, parser parser.Parser) <-chan *NewRe
 		for range w.ticker.C {
 			files, err := os.ReadDir(dir)
 			if err != nil {
-				log.Errorf("error reading directory %s: %s", dir, err)
+				logger.Error("error reading directory", log.ErrAttr(err), slog.String("directory", dir))
 				continue
 			}
 
@@ -69,9 +69,9 @@ func (w *DirectoryWatcher) Watch(dir string, parser parser.Parser) <-chan *NewRe
 
 func (w *DirectoryWatcher) Done(record *NewRecord) {
 	if err := w.remove(record); err != nil {
-		log.WithField("error", err).WithField("path", record.PdfPath).Infof("could not remove processed record")
+		logger.With(slog.String("file", record.PdfPath)).Info("could not remove processed record", log.ErrAttr(err))
 	} else {
-		log.WithField("path", record.PdfPath).Infof("record sucessfully processed")
+		logger.With(slog.String("file", record.PdfPath)).Info("record sucessfully processed")
 	}
 }
 
@@ -81,10 +81,10 @@ func (w *DirectoryWatcher) Error(record *NewRecord) {
 		go func(record *NewRecord) {
 			time.Sleep(2 * time.Second)
 			w.recordChannel <- record
-			log.WithField("path", record.PdfPath).Info("requeue record")
+			logger.With(slog.String("file", record.PdfPath)).Info("requeue record")
 		}(record)
 	} else {
-		log.WithField("path", record.PdfPath).WithField("retryCount", w.retryCount).Info("retry counter exceeded")
+		logger.With(slog.String("file", record.PdfPath), slog.Int("retryCount", w.retryCount)).Info("retry counter exceeded")
 	}
 }
 
@@ -100,7 +100,7 @@ func (w *DirectoryWatcher) add(record *NewRecord) {
 
 func (w *DirectoryWatcher) remove(record *NewRecord) error {
 	if _, ok := w.watchedFiles[record.PdfPath]; !ok {
-		return errors.New(fmt.Sprintf("record %s not found", record.PdfPath))
+		return fmt.Errorf("record %s not found", record.PdfPath)
 	}
 
 	if err := os.Remove(record.PdfPath); err != nil {

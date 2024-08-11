@@ -2,6 +2,5 @@
 ARG GO_VERSION
 FROM golang:${GO_VERSION} as dev
 WORKDIR /src
-COPY go.work go.work.sum ./
-COPY --parents **/go.mod **/go.sum ./
+COPY go.mod go.sum ./
 RUN --mount=type=cache,target=/go/pkg/mod go mod download

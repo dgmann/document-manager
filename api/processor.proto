@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package processor;
-option go_package = "github.com/dgmann/document-manager/pdf-processor/pkg/processor";
+option go_package = "github.com/dgmann/document-manager/pkg/pdf-processor/processor";
 
 service PdfProcessor {
     // Convert the pages of a PDF file to images.

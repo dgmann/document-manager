@@ -1,6 +1,7 @@
 @PHONY:
 test:
 	go test ./...
+	cd web; npm run test
 
 @PHONY:
 api: protoc

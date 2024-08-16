@@ -37,21 +37,6 @@ jobs:
   ci:
     runs-on: ubuntu-latest
     needs: devcontainer
-    strategy:
-      fail-fast: false
-      matrix:
-        app:
-          - api
-          - directory-watcher
-          - frontend
-          - m1-adapter
-          - m1-helper
-          - ocr
-          - pdf-processor
-        include:
-          - type: go
-          - app: frontend
-            type: node
     
     steps:
       - name: Checkout
@@ -66,25 +51,12 @@ jobs:
 
       - name: Build and run dev container task (Go)
         uses: devcontainers/ci@v0.3
-        if: matrix.type == 'go'
         with:
           configFile: ${{ env.DEVCONTAINER_SUBFOLDER }}/.devcontainer/devcontainer.json
           imageName: ${{ env.IMAGE_REGISTRY }}/${{ env.DEVCONTAINER_REPOSITORY }}
           push: never
           runCmd: |
-            cd apps/${{ matrix.app }}
-            go test ./...
-      
-      - name: Build and run dev container task (Node)
-        uses: devcontainers/ci@v0.3
-        if: matrix.type == 'node'
-        with:
-          configFile: ${{ env.DEVCONTAINER_SUBFOLDER }}/.devcontainer/devcontainer.json
-          imageName: ${{ env.IMAGE_REGISTRY }}/${{ env.DEVCONTAINER_REPOSITORY }}
-          push: never
-          runCmd: |
-            cd apps/${{ matrix.app }}
             npm ci
-            npm run test
+            make test
 
       

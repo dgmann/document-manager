@@ -59,7 +59,7 @@ jobs:
           targets: cache
           set: |
             *.cache-from=type=gha
-            *.cache-to=type=gha
+            *.cache-to=type=gha,mode=max
 
   build:
     runs-on: ubuntu-latest
@@ -121,7 +121,7 @@ jobs:
             ${{ steps.meta.outputs.bake-file }}
           set: |
             *.cache-from=type=gha
-            *.cache-to=type=gha
+            *.cache-to=type=gha,mode=max
 
       - name: Upload
         uses: actions/upload-artifact@v4

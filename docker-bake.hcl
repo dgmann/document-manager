@@ -58,8 +58,8 @@ target "m1-helper" {
 
 target "frontend" {
   inherits = ["docker-metadata-action"]
-  dockerfile = "apps/frontend/Dockerfile"
+  dockerfile = "web/Dockerfile"
   args = {
-    SERVICE = "frontend"
+    SERVICE = "web"
   }
 }

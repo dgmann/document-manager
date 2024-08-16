@@ -56,7 +56,7 @@ jobs:
           imageName: ${{ env.IMAGE_REGISTRY }}/${{ env.DEVCONTAINER_REPOSITORY }}
           push: never
           runCmd: |
-            npm ci
+            (cd web && npm ci)
             make test
 
       

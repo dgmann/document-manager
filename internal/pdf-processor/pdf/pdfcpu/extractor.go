@@ -15,10 +15,10 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/dgmann/document-manager/pkg/pdf-processor/pdf"
-	"github.com/dgmann/document-manager/pkg/pdf-processor/processor"
+	"github.com/dgmann/document-manager/internal/pdf-processor/pdf"
+	"github.com/dgmann/document-manager/pkg/processor"
 
-	"github.com/dgmann/document-manager/pkg/pdf-processor/filesystem"
+	"github.com/dgmann/document-manager/internal/pdf-processor/filesystem"
 	gim "github.com/ozankasikci/go-image-merge"
 	"github.com/pdfcpu/pdfcpu/pkg/api"
 	"github.com/pdfcpu/pdfcpu/pkg/pdfcpu"

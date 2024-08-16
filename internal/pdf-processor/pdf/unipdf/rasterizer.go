@@ -5,9 +5,9 @@ import (
 	"errors"
 	"io"
 
-	"github.com/dgmann/document-manager/pkg/pdf-processor/pdf"
-	"github.com/dgmann/document-manager/pkg/pdf-processor/pool"
-	"github.com/dgmann/document-manager/pkg/pdf-processor/processor"
+	"github.com/dgmann/document-manager/internal/pdf-processor/pdf"
+	"github.com/dgmann/document-manager/internal/pdf-processor/pool"
+	"github.com/dgmann/document-manager/pkg/processor"
 	unipdf "github.com/unidoc/unipdf/v3/model"
 	"github.com/unidoc/unipdf/v3/render"
 )

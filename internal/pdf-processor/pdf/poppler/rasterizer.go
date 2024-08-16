@@ -10,18 +10,18 @@ import (
 	"os/exec"
 	"path"
 
-	"github.com/dgmann/document-manager/pkg/pdf-processor/filesystem"
-	"github.com/dgmann/document-manager/pkg/pdf-processor/pdf"
+	"github.com/dgmann/document-manager/internal/pdf-processor/filesystem"
+	"github.com/dgmann/document-manager/internal/pdf-processor/pdf"
 )
 
-type Extractor struct {
+type Rasterizer struct {
 }
 
-func NewExtractor() *Extractor {
-	return &Extractor{}
+func NewRasterizer() *Rasterizer {
+	return &Rasterizer{}
 }
 
-func (e *Extractor) ToImages(ctx context.Context, data io.ReadSeeker, writer pdf.ImageSender) (int, error) {
+func (c *Rasterizer) ToImages(ctx context.Context, data io.ReadSeeker, writer pdf.ImageSender) (int, error) {
 	var errorbuf bytes.Buffer
 
 	outdir, err := ioutil.TempDir("", "images")
@@ -34,13 +34,12 @@ func (e *Extractor) ToImages(ctx context.Context, data io.ReadSeeker, writer pdf
 		}
 	}()
 
-	cmd := exec.CommandContext(ctx, "pdfimages", "-png", "-j", "-", path.Join(outdir, "img"))
+	cmd := exec.CommandContext(ctx, "pdftoppm", "-png", "-jpeg", "-r", "200", "-", path.Join(outdir, "img"))
 	cmd.Stdin = data
 	cmd.Stderr = &errorbuf
 	err = cmd.Run()
 	if err != nil {
 		return 0, fmt.Errorf("error: %w. Message: %s", err, errorbuf.String())
 	}
-
 	return filesystem.ReadImagesFromDirectory(outdir, writer)
 }

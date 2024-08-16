@@ -3,7 +3,7 @@ package image
 import (
 	"io"
 
-	"github.com/dgmann/document-manager/pkg/pdf-processor/processor"
+	"github.com/dgmann/document-manager/pkg/processor"
 )
 
 type Rotator interface {

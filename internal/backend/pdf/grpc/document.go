@@ -10,7 +10,7 @@ import (
 	"github.com/dgmann/document-manager/pkg/api"
 
 	"github.com/dgmann/document-manager/internal/backend/storage"
-	"github.com/dgmann/document-manager/pkg/pdf-processor/processor"
+	"github.com/dgmann/document-manager/pkg/processor"
 )
 
 func NewDocument(ctx context.Context, title string, records []api.Record, images storage.ImageService, categories []api.Category) (*processor.Document, error) {

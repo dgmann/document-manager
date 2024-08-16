@@ -10,7 +10,7 @@ import (
 	"github.com/dgmann/document-manager/internal/backend/pdf"
 	"github.com/dgmann/document-manager/internal/backend/storage"
 	"github.com/dgmann/document-manager/pkg/api"
-	"github.com/dgmann/document-manager/pkg/pdf-processor/processor"
+	"github.com/dgmann/document-manager/pkg/processor"
 	"github.com/sirupsen/logrus"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"google.golang.org/grpc"

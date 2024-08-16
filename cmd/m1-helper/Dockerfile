@@ -10,7 +10,7 @@ RUN --mount=type=cache,target=/go/pkg/mod,from=cache \
 set -e
 
 mkdir "$OUTPUT"
-cd apps/${SERVICE}
+cd cmd/${SERVICE}
 GOOS=windows GOARCH=amd64 go build -ldflags="-s -w -H=windowsgui" -o "$OUTPUT"/m1-helper.exe .
 GOOS=windows GOARCH=amd64 go build -ldflags="-s -w" -o "$OUTPUT"/m1-helper_console.exe .
 zip --junk-paths "$OUTPUT"/m1-helper-64.zip "$OUTPUT"/*.exe

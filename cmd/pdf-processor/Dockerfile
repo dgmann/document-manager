@@ -7,7 +7,7 @@ RUN apt-get update && \
 WORKDIR /src
 RUN --mount=type=cache,target=/go/pkg/mod,from=cache \
     --mount=type=bind,target=.,source=. \
-    CGO_ENABLED=0 GOOS=linux CGO_ENABLED=0 go build -o /${SERVICE} ./apps/${SERVICE}
+    CGO_ENABLED=0 GOOS=linux CGO_ENABLED=0 go build -o /${SERVICE} ./cmd/${SERVICE}
 
 
 FROM alpine:latest

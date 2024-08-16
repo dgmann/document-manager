@@ -2,7 +2,6 @@ package grpc
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"io"
 
@@ -27,12 +26,11 @@ type PdfProcessor struct {
 }
 
 func NewPDFProcessor(baseUrl string, images storage.ImageService, cateogories datastore.CategoryService) (*PdfProcessor, error) {
-	conn, err := grpc.Dial(
+	conn, err := grpc.NewClient(
 		baseUrl,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(1024*1024*300), grpc.MaxCallSendMsgSize(1024*1024*300)),
-		grpc.WithUnaryInterceptor(otelgrpc.UnaryClientInterceptor()),
-		grpc.WithStreamInterceptor(otelgrpc.StreamClientInterceptor()),
+		grpc.WithStatsHandler(otelgrpc.NewClientHandler()),
 	)
 	if err != nil {
 		return nil, err
@@ -138,6 +136,9 @@ func (p *PdfProcessor) Create(ctx context.Context, title string, records []api.R
 	client := processor.NewPdfProcessorClient(p.conn)
 
 	categories, err := p.categories.All(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("error fetching categories: %w", err)
+	}
 	doc, err := NewDocument(ctx, title, records, p.images, categories)
 	if err != nil {
 		return nil, err
@@ -152,7 +153,7 @@ func (p *PdfProcessor) Create(ctx context.Context, title string, records []api.R
 func (p *PdfProcessor) Check(ctx context.Context) (string, error) {
 	state := p.conn.GetState()
 	if state == connectivity.TransientFailure || state == connectivity.Shutdown {
-		return state.String(), errors.New(fmt.Sprintf("grpc error. Connection state: %v", state))
+		return state.String(), fmt.Errorf("grpc error. Connection state: %v", state)
 	}
 	return state.String(), nil
 }

@@ -41,7 +41,7 @@ target "go-apps" {
 
 target "pdf-processor" {
   inherits = ["_go-app"]
-  dockerfile = "apps/pdf-processor/Dockerfile"
+  dockerfile = "cmd/pdf-processor/Dockerfile"
   args = {
     SERVICE = "pdf-processor"
   }
@@ -49,7 +49,7 @@ target "pdf-processor" {
 
 target "m1-helper" {
   inherits = ["_go-app"]
-  dockerfile = "apps/m1-helper/Dockerfile"
+  dockerfile = "cmd/m1-helper/Dockerfile"
   output = ["type=local,dest=out/"]
   args = {
     SERVICE = "m1-helper"

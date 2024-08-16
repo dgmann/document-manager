@@ -1,4 +1,8 @@
 @PHONY:
+test:
+	go test ./...
+
+@PHONY:
 api: protoc
 	$(PROTOC) --proto_path=./api \
 	--go_out=. --go_opt=module=github.com/dgmann/document-manager \

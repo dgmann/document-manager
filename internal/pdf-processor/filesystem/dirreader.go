@@ -6,9 +6,9 @@ import (
 	"path"
 	"strings"
 
-	"github.com/dgmann/document-manager/pkg/pdf-processor/pdf"
-	"github.com/dgmann/document-manager/pkg/pdf-processor/pool"
-	"github.com/dgmann/document-manager/pkg/pdf-processor/processor"
+	"github.com/dgmann/document-manager/internal/pdf-processor/pdf"
+	"github.com/dgmann/document-manager/internal/pdf-processor/pool"
+	"github.com/dgmann/document-manager/pkg/processor"
 )
 
 func ReadImagesFromDirectory(dirname string, writer pdf.ImageSender) (int, error) {

@@ -8,9 +8,9 @@ import (
 	"io"
 	"os"
 
-	"github.com/dgmann/document-manager/pkg/pdf-processor/image"
-	"github.com/dgmann/document-manager/pkg/pdf-processor/pdf"
-	"github.com/dgmann/document-manager/pkg/pdf-processor/processor"
+	"github.com/dgmann/document-manager/internal/pdf-processor/image"
+	"github.com/dgmann/document-manager/internal/pdf-processor/pdf"
+	"github.com/dgmann/document-manager/pkg/processor"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc/status"
 )

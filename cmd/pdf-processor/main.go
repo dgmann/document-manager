@@ -14,14 +14,14 @@ import (
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"go.opentelemetry.io/contrib/instrumentation/runtime"
 
-	"github.com/dgmann/document-manager/pkg/pdf-processor/pdf/unipdf"
-	"github.com/dgmann/document-manager/pkg/pdf-processor/processor"
+	"github.com/dgmann/document-manager/internal/pdf-processor/pdf/unipdf"
+	"github.com/dgmann/document-manager/pkg/processor"
 
-	"github.com/dgmann/document-manager/pkg/pdf-processor/image/imaging"
-	"github.com/dgmann/document-manager/pkg/pdf-processor/pdf"
-	"github.com/dgmann/document-manager/pkg/pdf-processor/pdf/gopdf"
-	"github.com/dgmann/document-manager/pkg/pdf-processor/pdf/pdfcpu"
-	"github.com/dgmann/document-manager/pkg/pdf-processor/pdf/poppler"
+	"github.com/dgmann/document-manager/internal/pdf-processor/image/imaging"
+	"github.com/dgmann/document-manager/internal/pdf-processor/pdf"
+	"github.com/dgmann/document-manager/internal/pdf-processor/pdf/gopdf"
+	"github.com/dgmann/document-manager/internal/pdf-processor/pdf/pdfcpu"
+	"github.com/dgmann/document-manager/internal/pdf-processor/pdf/poppler"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 )

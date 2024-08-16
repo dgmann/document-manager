@@ -8,9 +8,9 @@ import (
 	"io"
 	"sync"
 
-	"github.com/dgmann/document-manager/pkg/pdf-processor/pdf"
-	"github.com/dgmann/document-manager/pkg/pdf-processor/pool"
-	"github.com/dgmann/document-manager/pkg/pdf-processor/processor"
+	"github.com/dgmann/document-manager/internal/pdf-processor/pdf"
+	"github.com/dgmann/document-manager/internal/pdf-processor/pool"
+	"github.com/dgmann/document-manager/pkg/processor"
 	gim "github.com/ozankasikci/go-image-merge"
 	"github.com/unidoc/unipdf/v3/extractor"
 	unipdf "github.com/unidoc/unipdf/v3/model"

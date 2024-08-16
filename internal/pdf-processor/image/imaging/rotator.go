@@ -9,7 +9,7 @@ import (
 	_ "image/png"
 	"io"
 
-	"github.com/dgmann/document-manager/pkg/pdf-processor/processor"
+	"github.com/dgmann/document-manager/pkg/processor"
 	"github.com/disintegration/imaging"
 )
 

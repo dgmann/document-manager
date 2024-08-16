@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/dgmann/document-manager/pkg/pdf-processor/processor"
+	"github.com/dgmann/document-manager/pkg/processor"
 )
 
 type ImageSender interface {

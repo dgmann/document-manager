@@ -16,6 +16,15 @@ type NewRecord struct {
 	*api.NewRecord
 	PdfPath      string
 	RetryCounter int
+	watcher      *DirectoryWatcher
+}
+
+func (r *NewRecord) Done() {
+	r.watcher.Done(r)
+}
+
+func (r *NewRecord) Error() {
+	r.watcher.Error(r)
 }
 
 type DirectoryWatcher struct {
@@ -23,14 +32,18 @@ type DirectoryWatcher struct {
 	watchedFiles  map[string]struct{}
 	recordChannel chan *NewRecord
 	retryCount    int
+	parser        parser.Parser
+	directory     string
 }
 
-func NewDirectoryWatcher(scanInterval, retry int) *DirectoryWatcher {
+func NewDirectoryWatcher(dir string, parser parser.Parser, scanInterval time.Duration, retry int) *DirectoryWatcher {
 	return &DirectoryWatcher{
-		ticker:        time.NewTicker(time.Duration(scanInterval) * time.Second),
+		ticker:        time.NewTicker(scanInterval),
 		recordChannel: make(chan *NewRecord),
 		watchedFiles:  make(map[string]struct{}),
 		retryCount:    retry,
+		parser:        parser,
+		directory:     dir,
 	}
 }
 
@@ -39,12 +52,12 @@ func (w *DirectoryWatcher) Close() {
 	close(w.recordChannel)
 }
 
-func (w *DirectoryWatcher) Watch(dir string, parser parser.Parser) <-chan *NewRecord {
+func (w *DirectoryWatcher) Watch() <-chan *NewRecord {
 	go func() {
 		for range w.ticker.C {
-			files, err := os.ReadDir(dir)
+			files, err := os.ReadDir(w.directory)
 			if err != nil {
-				logger.Error("error reading directory", log.ErrAttr(err), slog.String("directory", dir))
+				logger.Error("error reading directory", log.ErrAttr(err), slog.String("directory", w.directory))
 				continue
 			}
 
@@ -53,9 +66,9 @@ func (w *DirectoryWatcher) Watch(dir string, parser parser.Parser) <-chan *NewRe
 					continue
 				}
 
-				parsed := parser.Parse(f.Name())
-				record := &NewRecord{NewRecord: parsed, PdfPath: f.Name(), RetryCounter: 0}
-				record.PdfPath = path.Join(dir, f.Name())
+				parsed := w.parser.Parse(f.Name())
+				record := &NewRecord{NewRecord: parsed, PdfPath: f.Name(), RetryCounter: 0, watcher: w}
+				record.PdfPath = path.Join(w.directory, f.Name())
 				w.add(record)
 			}
 		}
@@ -66,8 +79,6 @@ func (w *DirectoryWatcher) Watch(dir string, parser parser.Parser) <-chan *NewRe
 func (w *DirectoryWatcher) Done(record *NewRecord) {
 	if err := w.remove(record); err != nil {
 		logger.With(slog.String("file", record.PdfPath)).Info("could not remove processed record", log.ErrAttr(err))
-	} else {
-		logger.With(slog.String("file", record.PdfPath)).Info("record sucessfully processed")
 	}
 }
 

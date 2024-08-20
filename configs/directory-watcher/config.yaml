@@ -1,0 +1,10 @@
+retryCount: 5
+destinationUrl: https://localhost/api
+scanInterval: 10s
+timeout: 30s
+sources:
+- parser: fax
+  directory: /fax
+- parser: generic
+  directory: /scans
+  sender: Scan

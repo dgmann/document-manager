@@ -1,0 +1,8 @@
+retryCount: 5
+destinationUrl: http://localhost:8181/api
+scanInterval: 10s
+timeout: 1m
+sources:
+- directory: ../../pdfuploaddir
+  sender: test
+  parser: generic

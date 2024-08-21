@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"mime/multipart"
+	"net/http"
 	"time"
 
 	"github.com/dgmann/document-manager/pkg/api"
@@ -12,6 +13,14 @@ import (
 
 type RecordClient struct {
 	*httpClient
+}
+
+func (c *RecordClient) List() ([]api.Record, error) {
+	res, err := c.GetJson("records")
+	if err != nil {
+		return nil, err
+	}
+	return HandleResponse[[]api.Record](res)
 }
 
 func (c *RecordClient) Get(id string) (*api.Record, error) {
@@ -54,6 +63,30 @@ func (c *RecordClient) UpdatePages(recordId string, updatedPages []api.PageUpdat
 	}
 
 	return ToPointer(HandleResponse[api.Record](res))
+}
+
+func (c *RecordClient) Download(recordId string) (io.ReadCloser, error) {
+	p := c.Url.JoinPath("export")
+	query := p.Query()
+	query.Add("id", recordId)
+	p.RawQuery = query.Encode()
+	req, err := http.NewRequest(http.MethodGet, p.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := c.httpClient.Client.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error downloading file: %w", err)
+	}
+	if res.StatusCode != http.StatusOK {
+		var resBody map[string]interface{}
+		if err := ParseJsonBody(res.Body, &resBody); err != nil {
+			return nil, fmt.Errorf("error parsing json body: %w", err)
+		}
+		return nil, fmt.Errorf("error downloading file, status: %d, body: %+v", res.StatusCode, resBody)
+	}
+	return res.Body, nil
 }
 
 func createParamMap(create *api.NewRecord) map[string]string {

@@ -7,22 +7,13 @@ import (
 	"time"
 
 	"github.com/alexsergivan/transliterator"
+	"github.com/dgmann/document-manager/pkg/api"
 	go_ora "github.com/sijms/go-ora/v2"
 )
 
-type Patient struct {
-	Id        string     `json:"id"`
-	FirstName string     `json:"firstName"`
-	LastName  string     `json:"lastName"`
-	BirthDate *time.Time `json:"birthDate"`
-	Address   Address    `json:"address"`
-}
+type Patient = api.Patient
 
-type Address struct {
-	Street  *string `json:"street"`
-	ZipCode *string `json:"zipCode"`
-	City    *string `json:"city"`
-}
+type Address = api.Address
 
 type DatabaseAdapter struct {
 	connectionString string

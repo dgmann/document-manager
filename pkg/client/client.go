@@ -15,6 +15,7 @@ type HTTPClient struct {
 	client     *httpClient
 	Records    *RecordClient
 	Categories *CategoryClient
+	Patients   *PatientClient
 }
 
 func NewHTTPClient(uri string, timeout time.Duration) (*HTTPClient, error) {
@@ -34,7 +35,10 @@ func NewHTTPClient(uri string, timeout time.Duration) (*HTTPClient, error) {
 	categories := &CategoryClient{
 		httpClient: c,
 	}
-	return &HTTPClient{client: c, Records: records, Categories: categories}, nil
+	patients := &PatientClient{
+		httpClient: c,
+	}
+	return &HTTPClient{client: c, Records: records, Categories: categories, Patients: patients}, nil
 }
 
 type Category struct {

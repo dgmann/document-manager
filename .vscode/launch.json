@@ -5,21 +5,6 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "CLI",
-            "type": "go",
-            "request": "launch",
-            "mode": "auto",
-            "program": "${workspaceFolder}/cmd/cli",
-            "args": [
-                "record",
-                "download",
-                "5fe9bcf18b5973f0359aeeee",
-            ],
-            "env": {
-                "DM_URL": "http://documentmanager.praxis.gassmann-cham.de/api"
-            }
-        },
-        {
             "name": "File Watcher",
             "type": "go",
             "request": "launch",

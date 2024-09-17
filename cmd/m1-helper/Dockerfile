@@ -1,12 +1,15 @@
 ARG GO_VERSION
 ARG OUTPUT="/out"
-FROM golang:${GO_VERSION} as builder
+FROM golang:${GO_VERSION} AS builder
 ARG SERVICE
 ARG OUTPUT
 RUN apt-get update && apt-get install -y zip
 WORKDIR /src
-RUN --mount=type=cache,target=/go/pkg/mod,from=cache \
-    --mount=type=bind,target=.,source=. <<EOF
+RUN --mount=type=bind,target=go.mod,source=go.mod \
+    --mount=type=bind,target=go.sum,source=go.sum \
+    --mount=type=bind,target=cmd,source=cmd \
+    --mount=type=bind,target=pkg,source=pkg \
+    --mount=type=bind,target=internal,source=internal <<EOF
 set -e
 
 mkdir "$OUTPUT"

@@ -3,8 +3,10 @@ ARG GO_VERSION=1.23
 FROM golang:${GO_VERSION} AS builder
 ARG SERVICE
 WORKDIR /src
-RUN --mount=type=cache,target=/go/pkg/mod,from=cache \
-    --mount=type=bind,target=go.mod,source=go.mod \
+RUN --mount=type=bind,target=go.mod,source=go.mod \
+    --mount=type=bind,target=go.sum,source=go.sum \ 
+    go mod download
+RUN --mount=type=bind,target=go.mod,source=go.mod \
     --mount=type=bind,target=go.sum,source=go.sum \
     --mount=type=bind,target=cmd,source=cmd \
     --mount=type=bind,target=pkg,source=pkg \

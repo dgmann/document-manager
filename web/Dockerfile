@@ -2,8 +2,7 @@
 FROM node:20-alpine AS builder
 ARG SERVICE
 WORKDIR /build
-RUN --mount=type=cache,target=/root/.npm \
-    --mount=type=bind,source=${SERVICE}/package.json,target=package.json \
+RUN --mount=type=bind,source=${SERVICE}/package.json,target=package.json \
     --mount=type=bind,source=${SERVICE}/package-lock.json,target=package-lock.json \
     npm ci
 

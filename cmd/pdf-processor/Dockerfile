@@ -5,9 +5,12 @@ RUN apt-get update && \
     apt-get install -q -y wget build-essential pkg-config poppler-utils git g++ libjpeg-dev libpng-dev libtiff-dev libgif-dev ghostscript libgs-dev --no-install-recommends && \
 	rm -rf /var/lib/apt/lists/*
 WORKDIR /src
-RUN --mount=type=cache,target=/go/pkg/mod,from=cache \
-    --mount=type=bind,target=.,source=. \
-    CGO_ENABLED=0 GOOS=linux CGO_ENABLED=0 go build -o /${SERVICE} ./cmd/${SERVICE}
+RUN --mount=type=bind,target=go.mod,source=go.mod \
+    --mount=type=bind,target=go.sum,source=go.sum \
+    --mount=type=bind,target=cmd,source=cmd \
+    --mount=type=bind,target=pkg,source=pkg \
+    --mount=type=bind,target=internal,source=internal \
+    GOOS=linux CGO_ENABLED=0 go build -o /${SERVICE} ./cmd/${SERVICE}
 
 
 FROM alpine:latest

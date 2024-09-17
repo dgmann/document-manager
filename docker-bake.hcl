@@ -1,5 +1,5 @@
 group "default" {
-    targets = ["go-apps", "pdf-processor", "m1-adapter", "m1-helper", "frontend"]
+    targets = ["go-apps", "pdf-processor", "m1-adapter", "m1-helper", "frontend", "ocr"]
 }
 
 group "cache" {
@@ -53,6 +53,14 @@ target "m1-helper" {
   output = ["type=local,dest=out/"]
   args = {
     SERVICE = "m1-helper"
+  }
+}
+
+target "ocr" {
+  inherits = ["_go-app"]
+  dockerfile = "cmd/ocr/Dockerfile"
+  args = {
+    SERVICE = "ocr"
   }
 }
 

@@ -1,5 +1,5 @@
-ARG GO_VERSION
-FROM golang:${GO_VERSION} as builder
+ARG GO_VERSION=1.22
+FROM golang:${GO_VERSION} AS builder
 ARG SERVICE
 
 RUN apt-get update && apt-get install -y -qq \
@@ -14,7 +14,7 @@ RUN apt-get update && apt-get install -y -qq \
 WORKDIR /src
 RUN --mount=type=cache,target=/go/pkg/mod,from=cache \
     --mount=type=bind,target=.,source=. \
-    GOOS=linux go build -a -installsuffix cgo -o /${SERVICE} ./apps/${SERVICE}
+    GOOS=linux go build -a -installsuffix cgo -o /${SERVICE} ./cmd/${SERVICE}
 
 
 FROM ubuntu:22.04

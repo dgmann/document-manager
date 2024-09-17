@@ -1,4 +1,5 @@
-FROM node:20-alpine as builder
+ # syntax=docker/dockerfile:1.10
+FROM node:20-alpine AS builder
 ARG SERVICE
 WORKDIR /build
 RUN --mount=type=cache,target=/root/.npm \

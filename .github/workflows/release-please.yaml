@@ -37,6 +37,6 @@ jobs:
           name: ${{ needs.build.outputs.artifact-name }}
           path: out
       - run: |
-          gh release upload ${{ needs.release-please.outputs.tag_name }} out/*
+          gh release upload ${{ needs.release-please.outputs.tag_name }} out/* --repo $GITHUB_REPOSITORY
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

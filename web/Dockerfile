@@ -19,7 +19,7 @@ RUN --mount=type=bind,source=${SERVICE}/package.json,target=package.json \
 FROM nginx:alpine
 ARG SERVICE
 COPY --link ${SERVICE}/nginx.conf /etc/nginx/nginx.conf
-COPY --link --chmod=+x ${SERVICE}/run.sh /run.sh
+COPY --link --chmod=700 ${SERVICE}/run.sh /run.sh
 COPY --link --from=builder /build/dist/app /app
 
 ENV ENABLE_SSL=false

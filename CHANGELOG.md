@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.9.0](https://github.com/dgmann/document-manager/compare/v1.8.1...v1.9.0) (2024-09-17)
+
+
+### Features
+
+* add record downloader cli ([34b2458](https://github.com/dgmann/document-manager/commit/34b24583f6cbc4e7e65977b5ad02dda1375a0ef9))
+* **cli:** improve download command ([2dda1f5](https://github.com/dgmann/document-manager/commit/2dda1f5034cd1528ad9a6acc6847bec4bb6fc843))
+* improve build performance ([a22d41e](https://github.com/dgmann/document-manager/commit/a22d41ebcc1db80e1f5c8e2a3c9ff8bc2d562551))
+
+
+### Bug Fixes
+
+* correct Dockerfile ([f191311](https://github.com/dgmann/document-manager/commit/f191311c6041d3ddb5b2cfee1b1066fc96b2ace6))
+* correct dockerfiles ([71fd734](https://github.com/dgmann/document-manager/commit/71fd7347e5024980ed0b72aa2bee23ec96baa6fd))
+* include ocr service in build ([a1b1133](https://github.com/dgmann/document-manager/commit/a1b11334965ee4e30c7cc23b4d3b84ee2e063a3f))
+
 ## [1.8.1](https://github.com/dgmann/document-manager/compare/v1.8.0...v1.8.1) (2024-05-13)
 
 

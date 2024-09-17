@@ -12,8 +12,11 @@ RUN apt-get update && apt-get install -y -qq \
 # downloaded traineddata under ${TESSDATA_PREFIX}/tessdata.
 
 WORKDIR /src
-RUN --mount=type=cache,target=/go/pkg/mod,from=cache \
-    --mount=type=bind,target=.,source=. \
+RUN --mount=type=bind,target=go.mod,source=go.mod \
+  --mount=type=bind,target=go.sum,source=go.sum \
+  --mount=type=bind,target=cmd,source=cmd \
+  --mount=type=bind,target=pkg,source=pkg \
+  --mount=type=bind,target=internal,source=internal \
     GOOS=linux go build -a -installsuffix cgo -o /${SERVICE} ./cmd/${SERVICE}
 
 

@@ -50,17 +50,6 @@ jobs:
         with:
           target: default
 
-      - name: Build Cache
-        uses: docker/bake-action@v4
-        with:
-          push: false
-          files: |
-            docker-bake.hcl
-          targets: cache
-          set: |
-            *.cache-from=type=gha
-            *.cache-to=type=gha,mode=max
-
   build:
     runs-on: ubuntu-latest
     needs:
@@ -74,8 +63,6 @@ jobs:
           - target: m1-helper
             push: false
             upload-path: 'out/*'
-        exclude:
-          - target: _go-cache
     
     steps:
       - name: Checkout

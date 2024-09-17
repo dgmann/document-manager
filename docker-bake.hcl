@@ -2,28 +2,13 @@ group "default" {
     targets = ["go-apps", "pdf-processor", "m1-adapter", "m1-helper", "frontend", "ocr"]
 }
 
-group "cache" {
-  targets = ["_go-cache"]
-}
-
 target "docker-metadata-action" {}
 
-target "_go" {
+target "_go-app" {
+  inherits = ["docker-metadata-action"]
   context = "."
   args = {
-    GO_VERSION = "1.22"
-  }
-}
-
-target "_go-cache" {
-  inherits = ["_go"]
-  dockerfile = "docker/cache.go.Dockerfile"
-}
-
-target "_go-app" {
-  inherits = ["_go", "docker-metadata-action"]
-  contexts = {
-    cache = "target:_go-cache"
+    GO_VERSION = "1.23"
   }
 }
 

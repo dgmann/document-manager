@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.9.1](https://github.com/dgmann/document-manager/compare/v1.9.0...v1.9.1) (2024-09-18)
+
+
+### Bug Fixes
+
+* correct CMD ([a4d8763](https://github.com/dgmann/document-manager/commit/a4d8763ef4d8ed49acf4f82f37b98ecab633da3b))
+
 ## [1.9.0](https://github.com/dgmann/document-manager/compare/v1.8.1...v1.9.0) (2024-09-17)
 
 

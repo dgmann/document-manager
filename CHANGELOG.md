@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.9.2](https://github.com/dgmann/document-manager/compare/v1.9.1...v1.9.2) (2024-09-18)
+
+
+### Bug Fixes
+
+* **pdf-processor:** correct nil pointer error ([e9b2412](https://github.com/dgmann/document-manager/commit/e9b241252a11c6644195ef7103bc71122e3cf917))
+
 ## [1.9.1](https://github.com/dgmann/document-manager/compare/v1.9.0...v1.9.1) (2024-09-18)
 
 

@@ -27,6 +27,7 @@ COPY --link --from=alpine /zoneinfo.zip /
 COPY --link --from=alpine /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --link --from=builder /${SERVICE} /service
 
+ENV HTTP_PORT=8080
 EXPOSE 8080
 
 CMD ["/service"]

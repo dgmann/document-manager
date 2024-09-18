@@ -12,6 +12,7 @@ import (
 	"github.com/dgmann/document-manager/internal/pdf-processor/pdf"
 	"github.com/dgmann/document-manager/pkg/processor"
 	"github.com/sirupsen/logrus"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/status"
 )
 
@@ -19,14 +20,14 @@ type GRPCServer struct {
 	converterFactory *pdf.ConverterFactory
 	rotator          image.Rotator
 	creator          pdf.Creator
-	*processor.UnimplementedPdfProcessorServer
+	processor.UnimplementedPdfProcessorServer
 }
 
 func NewGRPCServer(c *pdf.ConverterFactory, r image.Rotator, creator pdf.Creator) *GRPCServer {
 	return &GRPCServer{converterFactory: c, rotator: r, creator: creator}
 }
 
-func (g *GRPCServer) ConvertPdfToImage(pdfFile *processor.Pdf, sender processor.PdfProcessor_ConvertPdfToImageServer) error {
+func (g *GRPCServer) ConvertPdfToImage(pdfFile *processor.Pdf, sender grpc.ServerStreamingServer[processor.Image]) error {
 	converter := g.converterFactory.Extractor()
 	if pdfFile.Method == processor.Pdf_RASTERIZE {
 		converter = g.converterFactory.Rasterizer()

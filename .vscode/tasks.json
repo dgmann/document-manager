@@ -11,7 +11,7 @@
           "isDefault": true
         },
         "options": {
-            "cwd": "${workspaceFolder}/apps/frontend"
+            "cwd": "${workspaceFolder}/web"
         }
       },
       {
@@ -24,7 +24,7 @@
           "isDefault": true
         },
         "options": {
-            "cwd": "${workspaceFolder}/apps/frontend"
+            "cwd": "${workspaceFolder}/web"
         }
       }
     ]

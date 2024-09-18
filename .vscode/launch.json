@@ -9,7 +9,7 @@
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "${workspaceFolder}/apps/directory-watcher",
+            "program": "${workspaceFolder}/cmd/directory-watcher",
             "env": {
                 "DIRECTORY": "${workspaceFolder}/pdf-upload-dir",
                 "DESTINATION": "http://localhost:8181/api"
@@ -20,13 +20,13 @@
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "${workspaceFolder}/apps/pdf-processor"
+            "program": "${workspaceFolder}/cmd/pdf-processor"
         }, {
             "name": "API",
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "${workspaceFolder}/apps/api",
+            "program": "${workspaceFolder}/cmd/api",
             "env": {
                 "HTTP_PORT": "8181"
             }
@@ -35,19 +35,19 @@
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "${workspaceFolder}/apps/ocr"
+            "program": "${workspaceFolder}/cmd/ocr"
         }, {
             "name": "M1-Adapter",
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "${workspaceFolder}/apps/m1-adapter"
+            "program": "${workspaceFolder}/cmd/m1-adapter"
         }, {
             "name": "Frontend",
             "type": "firefox",
             "request": "launch",
             "url": "http://localhost:4200/",
-            "webRoot": "${workspaceFolder}/apps/frontend",
+            "webRoot": "${workspaceFolder}/web",
             "preLaunchTask": "ng serve"
         }
     ],

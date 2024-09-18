@@ -129,8 +129,15 @@ func (a *DatabaseAdapter) FindPatientsFuzzy(firstname, lastname string, similari
 }
 
 func (a *DatabaseAdapter) GetPatient(id string) (*Patient, error) {
-	row := a.db.QueryRow(fmt.Sprintf(query, "WHERE pat.PATID_EXT = :id"), id)
-	return rowToPatient(row)
+	rows, err := a.db.Query(fmt.Sprintf(query, "WHERE pat.PATID_EXT = :id"), id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	if !rows.Next() {
+		return nil, sql.ErrNoRows
+	}
+	return rowToPatient(rows)
 }
 
 func rowsToPatient(rows *sql.Rows) ([]*Patient, error) {
@@ -149,11 +156,11 @@ type Scanable interface {
 	Scan(dest ...interface{}) error
 }
 
-func rowToPatient(row Scanable) (*Patient, error) {
+func rowToPatient(row *sql.Rows) (*Patient, error) {
 	patient := Patient{}
 	address := Address{}
 	similarity := 0
-	err := row.Scan(
+	v := []any{
 		&patient.Id,
 		&patient.LastName,
 		&patient.FirstName,
@@ -161,8 +168,17 @@ func rowToPatient(row Scanable) (*Patient, error) {
 		&address.ZipCode,
 		&address.Street,
 		&address.City,
-		&similarity,
-	)
+	}
+	col, err := row.Columns()
+	if err != nil {
+		return nil, err
+	}
+	if len(col) == 8 {
+		v = append(v, &similarity)
+	}
+	if err := row.Scan(v...); err != nil {
+		return nil, err
+	}
 	patient.Address = address
 	patient.FirstName = strings.TrimSpace(patient.FirstName)
 	patient.LastName = strings.TrimSpace(patient.LastName)

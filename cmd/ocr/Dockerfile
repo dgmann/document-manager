@@ -33,7 +33,7 @@ RUN apt-get update && apt-get install -y -qq lsb-release wget gnupg && \
     tesseract-ocr-eng-best \
     tesseract-ocr-deu-best
 
-COPY --link --from=builder /${SERVICE} /${SERVICE}
+COPY --link --from=builder /${SERVICE} /ocr
 EXPOSE 8080
 
-CMD ["/${SERVICE}"]
+CMD ["/ocr"]

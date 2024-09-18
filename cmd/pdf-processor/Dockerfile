@@ -10,7 +10,7 @@ RUN --mount=type=bind,target=go.mod,source=go.mod \
     --mount=type=bind,target=cmd,source=cmd \
     --mount=type=bind,target=pkg,source=pkg \
     --mount=type=bind,target=internal,source=internal \
-    GOOS=linux CGO_ENABLED=0 go build -o /${SERVICE} ./cmd/${SERVICE}
+    GOOS=linux CGO_ENABLED=0 go build -o /pdf-processor ./cmd/${SERVICE}
 
 
 FROM alpine:latest
@@ -20,7 +20,7 @@ RUN apk add --no-cache \
     update-ms-fonts && \
     fc-cache -f
 
-COPY --link --from=builder /${SERVICE} /${SERVICE}
+COPY --link --from=builder /pdf-processor /pdf-processor
 EXPOSE 8080 9000
 
-CMD ["/${SERVICE}"]
+CMD ["/pdf-processor"]

@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.9.3](https://github.com/dgmann/document-manager/compare/v1.9.2...v1.9.3) (2024-09-18)
+
+
+### Bug Fixes
+
+* **api:** set default port to 8080 ([9858a7b](https://github.com/dgmann/document-manager/commit/9858a7bb8dec7d2b9237d2cb2d40256dff39b9e5))
+* **m1-adapter:** correct variable columns ([bd6f08d](https://github.com/dgmann/document-manager/commit/bd6f08d53e0eb22fe9381145aa9d208726681b01))
+
 ## [1.9.2](https://github.com/dgmann/document-manager/compare/v1.9.1...v1.9.2) (2024-09-18)
 
 

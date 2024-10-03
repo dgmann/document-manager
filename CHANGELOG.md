@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.0](https://github.com/dgmann/document-manager/compare/v1.9.3...v1.10.0) (2024-10-03)
+
+
+### Features
+
+* **directory-watcher:** watch multiple folders ([ad5144d](https://github.com/dgmann/document-manager/commit/ad5144d4b169c9b08f1d3d413d707eca7894cac1))
+
 ## [1.9.3](https://github.com/dgmann/document-manager/compare/v1.9.2...v1.9.3) (2024-09-18)
 
 

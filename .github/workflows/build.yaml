@@ -63,6 +63,9 @@ jobs:
           - target: m1-helper
             push: false
             upload-path: 'out/*'
+          - target: cli
+            push: false
+            upload-path: 'out/*'
     
     steps:
       - name: Checkout
@@ -109,6 +112,7 @@ jobs:
           set: |
             *.cache-from=type=gha
             *.cache-to=type=gha,mode=max
+            *.args.SERVICE_VERSION=${{ env.DOCKER_METADATA_OUTPUT_VERSION }}
 
       - name: Upload
         uses: actions/upload-artifact@v4

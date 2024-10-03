@@ -1,6 +1,6 @@
  # syntax=docker/dockerfile:1.10
 ARG GO_VERSION=1.23
-FROM golang:${GO_VERSION} AS builder
+FROM --platform=$BUILDPLATFORM golang:${GO_VERSION} AS builder
 ARG SERVICE
 WORKDIR /src
 RUN --mount=type=bind,target=go.mod,source=go.mod \
@@ -18,8 +18,15 @@ FROM alpine:latest AS alpine
 RUN apk --no-cache add tzdata zip ca-certificates && \
     zip -r -0 /zoneinfo.zip /usr/share/zoneinfo
 
+FROM --platform=$BUILDPLATFORM scratch AS raw
+ARG SERVICE
+ARG SERVICE_NAME=${SERVICE}
+ARG SERVICE_VERSION=latest
+ARG TARGETOS
+ARG TARGETARCH
+COPY --from=builder "/${SERVICE}" "/${SERVICE_NAME}_${SERVICE_VERSION}_${TARGETOS}_${TARGETARCH}"
 
-FROM scratch
+FROM --platform=$BUILDPLATFORM scratch
 ARG SERVICE
 ENV ZONEINFO=/zoneinfo.zip
 COPY --link --from=alpine /zoneinfo.zip /

@@ -7,6 +7,7 @@ target "docker-metadata-action" {}
 target "_go-app" {
   inherits = ["docker-metadata-action"]
   context = "."
+  dockerfile = "docker/go.Dockerfile"
   args = {
     GO_VERSION = "1.23"
   }
@@ -15,7 +16,6 @@ target "_go-app" {
 target "go-apps" {
   name = "${service}"
   inherits = ["_go-app"]
-  dockerfile = "docker/go.Dockerfile"
   matrix = {
     service = ["api", "directory-watcher", "m1-adapter"]
   }
@@ -54,5 +54,15 @@ target "frontend" {
   dockerfile = "web/Dockerfile"
   args = {
     SERVICE = "web"
+  }
+}
+
+target "cli" {
+  inherits = ["_go-app"]
+  output = ["type=local,dest=out/"]
+  target = "raw"
+  args = {
+    SERVICE = "cli"
+    SERVICE_NAME = "dm"
   }
 }

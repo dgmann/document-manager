@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.1](https://github.com/dgmann/document-manager/compare/v1.10.0...v1.10.1) (2024-10-04)
+
+
+### Bug Fixes
+
+* **cli:** correct nil pointer exception ([2d5e1fa](https://github.com/dgmann/document-manager/commit/2d5e1fa63558ac019f3bf1b357566cd4ad8ded34))
+
 ## [1.10.0](https://github.com/dgmann/document-manager/compare/v1.9.3...v1.10.0) (2024-10-03)
 
 

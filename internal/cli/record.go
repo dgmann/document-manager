@@ -162,7 +162,7 @@ func (r *record) downloadAll(args []string) error {
 			patient, ok := patientMap[*d.Record.PatientId]
 			if !ok {
 				slog.Warn("unkown patient", "recordId", d.Record.Id, "patientId", *d.Record.PatientId)
-				patient = api.Patient{Id: d.Record.Id, FirstName: "unkown", LastName: "unkown"}
+				patient = api.Patient{Id: *d.Record.PatientId, FirstName: "unkown", LastName: "unkown"}
 			}
 			category := categoryMap[*d.Record.Category]
 			birthDate := ""

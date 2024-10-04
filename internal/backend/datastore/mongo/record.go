@@ -175,16 +175,6 @@ func newRecord(data api.CreateRecord) *datastore.Record {
 }
 
 func (r *RecordService) Delete(ctx context.Context, id string) error {
-	err := r.Images.Delete(storage.NewKey(id))
-	if err != nil {
-		return err
-	}
-
-	err = r.Pdfs.Delete(storage.NewKey(id))
-	if err != nil {
-		return err
-	}
-
 	key, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return datastore.NewNotFoundError(id, CollectionRecords, err)
@@ -197,10 +187,17 @@ func (r *RecordService) Delete(ctx context.Context, id string) error {
 		return datastore.NewNotFoundError(id, CollectionRecords, err)
 	}
 
+	if err := r.Images.Delete(storage.NewKey(id)); err != nil {
+		log.WithError(err).WithField("recordId", id).Warn("error deleting images")
+	}
+	if err := r.Pdfs.Delete(storage.NewKey(id)); err != nil {
+		log.WithError(err).WithField("recordId", id).Warn("error deleting PDF")
+	}
+
 	if err := r.Events.Send(ctx, api.NewEvent[*api.Record](api.RecordTopic, api.EventTypeDeleted, id, nil)); err != nil {
 		log.WithError(err).Info("error sending event")
 	}
-	return err
+	return nil
 }
 
 func (r *RecordService) Update(ctx context.Context, id string, record api.Record, updateOptions ...datastore.UpdateOption) (*api.Record, error) {

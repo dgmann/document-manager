@@ -106,7 +106,14 @@ func (r *record) downloadAll(args []string) error {
 		categoryMap[category.Id] = category
 	}
 
-	bar := progressbar.NewOptions(len(records), progressbar.OptionSetRenderBlankState(true), progressbar.OptionEnableColorCodes(true), progressbar.OptionFullWidth(), progressbar.OptionSetDescription("downloading records"))
+	bar := progressbar.NewOptions(len(records),
+		progressbar.OptionSetRenderBlankState(true),
+		progressbar.OptionEnableColorCodes(true),
+		progressbar.OptionFullWidth(),
+		progressbar.OptionSetDescription("downloading records"),
+		progressbar.OptionShowCount(),
+		progressbar.OptionSetPredictTime(true),
+	)
 
 	downloadList := make(chan api.Record)
 	downloaded := make(chan downloadedRecord)
@@ -152,9 +159,17 @@ func (r *record) downloadAll(args []string) error {
 		w := csv.NewWriter(indexFile)
 		w.Write([]string{"patient_id", "patient_lastname", "patient_firstname", "patient_birthdate", "category", "path"})
 		for d := range downloaded {
-			patient := patientMap[*d.Record.PatientId]
+			patient, ok := patientMap[*d.Record.PatientId]
+			if !ok {
+				slog.Warn("unkown patient", "recordId", d.Record.Id, "patientId", d.Record.PatientId)
+				patient = api.Patient{Id: d.Record.Id, FirstName: "unkown", LastName: "unkown"}
+			}
 			category := categoryMap[*d.Record.Category]
-			w.Write([]string{patient.Id, patient.LastName, patient.FirstName, patient.BirthDate.Format(time.RFC3339), category.Name, d.Path})
+			birthDate := ""
+			if patient.BirthDate != nil {
+				birthDate = patient.BirthDate.Format(time.RFC3339)
+			}
+			w.Write([]string{patient.Id, patient.LastName, patient.FirstName, birthDate, category.Name, d.Path})
 			bar.Add(1)
 		}
 		bar.Finish()

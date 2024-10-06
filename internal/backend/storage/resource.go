@@ -60,6 +60,12 @@ type Statter interface {
 	Stat(name string) (os.FileInfo, error)
 }
 
+type ForEachFunc func(resource KeyedResource, err error) error
+
+type Walker interface {
+	ForEach(ctx context.Context, keyed Keyed, forEachFn ForEachFunc) error
+}
+
 type GenericResource struct {
 	key    []string
 	data   []byte

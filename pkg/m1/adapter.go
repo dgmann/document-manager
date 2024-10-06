@@ -55,8 +55,8 @@ wohn.WOHN_PLZ as PLZ,
 wohn.WOHN_STR as Strasse,
 wohnort.ORT_NAME as Ort
 From M1PATNT pat
-JOIN M1ADRSS adress on pat.Entty_id = adress.entty_ID
-JOIN M1TELNR telnr on adress.ADRSS_ID = telnr.ADRSS_ID
+LEFT OUTER JOIN M1ADRSS adress on pat.Entty_id = adress.entty_ID
+LEFT OUTER JOIN M1TELNR telnr on adress.ADRSS_ID = telnr.ADRSS_ID
 LEFT OUTER JOIN M1WOHN wohn on adress.Wohn_ID = wohn.Wohn_ID
 LEFT OUTER JOIN M1ORT wohnort on wohn.ORT_ID = wohnort.ORT_ID
 %s
@@ -111,8 +111,8 @@ func (a *DatabaseAdapter) FindPatientsFuzzy(firstname, lastname string, similari
 	wohnort.ORT_NAME as Ort,
 	UTL_MATCH.JARO_WINKLER_SIMILARITY(pat.PATSNAME, UPPER(:name)) as similarity
 	From M1PATNT pat
-	JOIN M1ADRSS adress on pat.Entty_id = adress.entty_ID
-	JOIN M1TELNR telnr on adress.ADRSS_ID = telnr.ADRSS_ID
+	LEFT OUTER JOIN M1ADRSS adress on pat.Entty_id = adress.entty_ID
+	LEFT OUTER JOIN M1TELNR telnr on adress.ADRSS_ID = telnr.ADRSS_ID
 	LEFT OUTER JOIN M1WOHN wohn on adress.Wohn_ID = wohn.Wohn_ID
 	LEFT OUTER JOIN M1ORT wohnort on wohn.ORT_ID = wohnort.ORT_ID
 	%s

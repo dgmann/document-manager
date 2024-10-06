@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.11.0](https://github.com/dgmann/document-manager/compare/v1.10.1...v1.11.0) (2024-10-06)
+
+
+### Features
+
+* **api:** remove deleted pages from filesystem ([336dc1e](https://github.com/dgmann/document-manager/commit/336dc1e9869eb104b04263f52a4ea74e6ec0aed7))
+* **cli:** add data check comand ([cb7ea46](https://github.com/dgmann/document-manager/commit/cb7ea46d00c16156485f7aa94b457c0bfe7a9309))
+* enable compression ([8437fef](https://github.com/dgmann/document-manager/commit/8437fef7eb851981e6663516b905349148323e43))
+
+
+### Bug Fixes
+
+* **api:** improve deletion of records ([aaa7afd](https://github.com/dgmann/document-manager/commit/aaa7afd8925fdd6829619aba7cd9d4d2be5c3dac))
+* **cli:** correct unkown patient id ([084d62a](https://github.com/dgmann/document-manager/commit/084d62a9bcd4f60a9668f80f6291844591a1d2b2))
+* **m1-helper:** improve db query ([ea740e1](https://github.com/dgmann/document-manager/commit/ea740e14daa64d62af269784d8b6064e733888c6))
+
 ## [1.10.1](https://github.com/dgmann/document-manager/compare/v1.10.0...v1.10.1) (2024-10-04)
 
 

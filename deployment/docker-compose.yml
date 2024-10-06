@@ -86,6 +86,8 @@ services:
     restart: unless-stopped
     labels:
       - "traefik.http.routers.backend.rule=PathPrefix(`/api`)"
+      - "traefik.http.routers.backend.middlewares=compress"
+      - "traefik.http.middlewares.compress.compress=true"
     logging: *logging
   app:
     image: 'ghcr.io/dgmann/document-manager/frontend:${DOCUMENT_MANAGER_VERSION}'

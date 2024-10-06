@@ -1,11 +1,14 @@
 package cli
 
 import (
+	"errors"
 	"fmt"
 	"os"
 
 	"github.com/dgmann/document-manager/pkg/client"
 )
+
+var ErrUnknownCommand = errors.New("unkown command")
 
 var dmClient *client.HTTPClient
 

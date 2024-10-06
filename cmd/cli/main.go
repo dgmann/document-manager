@@ -16,7 +16,11 @@ func main() {
 	subArgs := args[2:] // Drop program name and command.
 	switch args[1] {
 	case "record":
-		if err := cli.Record().Execute(subArgs); err != nil {
+		if err := cli.RecordCmd().Execute(subArgs); err != nil {
+			l.Fatal(err)
+		}
+	case "check":
+		if err := cli.CheckCmd().Execute(subArgs); err != nil {
 			l.Fatal(err)
 		}
 	default:

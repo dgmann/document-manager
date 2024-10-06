@@ -20,7 +20,7 @@ import (
 
 type record struct{}
 
-func Record() *record {
+func RecordCmd() *record {
 	return &record{}
 }
 
@@ -35,7 +35,7 @@ func (r *record) Execute(args []string) error {
 		return r.show(subArgs)
 	default:
 		l.Fatalf("error: unknown command - %q\n", args[0])
-		return errors.New("unkown command")
+		return ErrUnknownCommand
 	}
 }
 
@@ -123,6 +123,7 @@ func (r *record) downloadAll(args []string) error {
 	for range *parallel {
 		wg.Add(1)
 		go func() {
+			defer wg.Done()
 			for record := range downloadList {
 				var data io.ReadCloser
 				if data, err = dmClient.Records.Download(record.Id); err != nil {
@@ -151,7 +152,6 @@ func (r *record) downloadAll(args []string) error {
 				}
 				downloaded <- downloadedRecord{Record: record, Path: destPath}
 			}
-			wg.Done()
 		}()
 	}
 

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"slices"
 	"time"
 
 	"github.com/dgmann/document-manager/internal/backend/datastore"
@@ -30,10 +31,15 @@ type recordCollection interface {
 	oneFinderUpdater
 }
 
+type resourceWriteWalker interface {
+	storage.ResourceWriter
+	storage.Walker
+}
+
 type RecordServiceConfig struct {
 	Records recordCollection
 	Events  event.Sender[*api.Record]
-	Images  storage.ResourceWriter
+	Images  resourceWriteWalker
 	Pdfs    storage.ResourceWriter
 }
 
@@ -225,6 +231,20 @@ func (r *RecordService) Update(ctx context.Context, id string, record api.Record
 	if err := res.Decode(&updated); err != nil {
 		return nil, err
 	}
+
+	// Remove deleted files from the filesystem
+	r.Images.ForEach(ctx, storage.NewKey(updated.Id), func(resource storage.KeyedResource, err error) error {
+		imageId := resource.Key()[len(resource.Key())-1]
+		exists := slices.ContainsFunc(updated.Pages, func(p api.Page) bool {
+			return p.Id == imageId
+		})
+		if !exists {
+			if err := r.Images.Delete(resource); err != nil {
+				log.WithError(err).Info("failed to delete image")
+			}
+		}
+		return nil
+	})
 
 	if err := r.Events.Send(ctx, api.NewEvent(api.RecordTopic, api.EventTypeUpdated, updated.Id, &updated)); err != nil {
 		log.WithError(err).Info("error sending event")

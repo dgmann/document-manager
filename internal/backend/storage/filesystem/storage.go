@@ -117,10 +117,8 @@ func (s *DiskStorage) Write(resource storage.KeyedResource) (err error) {
 	return nil
 }
 
-type ForEachFunc func(resource storage.KeyedResource, err error) error
-
 // ForEach executes the provided function for each stored element.
-func (s *DiskStorage) ForEach(ctx context.Context, keyed storage.Keyed, forEachFn ForEachFunc) error {
+func (s *DiskStorage) ForEach(ctx context.Context, keyed storage.Keyed, forEachFn storage.ForEachFunc) error {
 	p := s.locate(keyed)
 	return s.storage.Walk(p, func(currentPath string, info os.FileInfo, err error) error {
 		if !info.IsDir() {

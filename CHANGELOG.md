@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.12.0](https://github.com/dgmann/document-manager/compare/v1.11.0...v1.12.0) (2024-10-07)
+
+
+### Features
+
+* **cli:** add page check ([a3ac754](https://github.com/dgmann/document-manager/commit/a3ac75427b83a8e942a0d26f37eea2b288e528f0))
+
 ## [1.11.0](https://github.com/dgmann/document-manager/compare/v1.10.1...v1.11.0) (2024-10-06)
 
 

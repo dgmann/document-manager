@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.12.2](https://github.com/dgmann/document-manager/compare/v1.12.1...v1.12.2) (2024-10-07)
+
+
+### Bug Fixes
+
+* **cli:** close body, now for real ([e68b978](https://github.com/dgmann/document-manager/commit/e68b97888d384f2aa27b4cf3855e29a583fe7aed))
+
 ## [1.12.1](https://github.com/dgmann/document-manager/compare/v1.12.0...v1.12.1) (2024-10-07)
 
 

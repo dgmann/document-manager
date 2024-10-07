@@ -106,9 +106,9 @@ func (r *check) pages(args []string) error {
 					for {
 						resp, err = http.Get(page.Url)
 						if err == nil {
+							resp.Body.Close()
 							break
 						}
-						resp.Body.Close()
 						slog.Debug("error fetching page", "recordId", record.Id, log.ErrAttr(err))
 					}
 					if resp.StatusCode != 200 {

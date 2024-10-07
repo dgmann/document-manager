@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.12.1](https://github.com/dgmann/document-manager/compare/v1.12.0...v1.12.1) (2024-10-07)
+
+
+### Bug Fixes
+
+* **cli:** close response body ([4cf20b2](https://github.com/dgmann/document-manager/commit/4cf20b2fe38b23f1889f61fdfc21d140efae784c))
+
 ## [1.12.0](https://github.com/dgmann/document-manager/compare/v1.11.0...v1.12.0) (2024-10-07)
 
 

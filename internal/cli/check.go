@@ -108,6 +108,7 @@ func (r *check) pages(args []string) error {
 						if err == nil {
 							break
 						}
+						resp.Body.Close()
 						slog.Debug("error fetching page", "recordId", record.Id, log.ErrAttr(err))
 					}
 					if resp.StatusCode != 200 {

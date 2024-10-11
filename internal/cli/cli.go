@@ -3,10 +3,13 @@ package cli
 import (
 	"errors"
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/dgmann/document-manager/pkg/client"
 )
+
+var l = log.New(os.Stderr, "", 1)
 
 var ErrUnknownCommand = errors.New("unkown command")
 

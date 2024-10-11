@@ -7,7 +7,6 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"log"
 	"log/slog"
 	"os"
 	"path"
@@ -15,6 +14,7 @@ import (
 	"time"
 
 	"github.com/dgmann/document-manager/pkg/api"
+	"github.com/dgmann/document-manager/pkg/log"
 	"github.com/schollz/progressbar/v3"
 )
 
@@ -23,8 +23,6 @@ type record struct{}
 func RecordCmd() *record {
 	return &record{}
 }
-
-var l = log.New(os.Stderr, "", 1)
 
 func (r *record) Execute(args []string) error {
 	subArgs := args[1:]
@@ -126,10 +124,11 @@ func (r *record) downloadAll(args []string) error {
 			defer wg.Done()
 			for record := range downloadList {
 				var data io.ReadCloser
-				if data, err = dmClient.Records.Download(record.Id); err != nil {
-					slog.Error("error downloading PDF", "recordId", record.Id)
-					errorChan <- recordError{record, fmt.Errorf("error downloading PDF")}
-					return
+				for {
+					if data, err = dmClient.Records.Download(record.Id); err == nil {
+						break
+					}
+					slog.Error("error downloading PDF", "recordId", record.Id, log.ErrAttr(err))
 				}
 				var destPath string
 				if *record.Status == api.StatusInbox {

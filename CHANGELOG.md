@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.12.3](https://github.com/dgmann/document-manager/compare/v1.12.2...v1.12.3) (2024-10-15)
+
+
+### Bug Fixes
+
+* **cli:** retry download on error ([648ac03](https://github.com/dgmann/document-manager/commit/648ac03c1cdcf6b721badecbc9f08c9045b92ba1))
+
 ## [1.12.2](https://github.com/dgmann/document-manager/compare/v1.12.1...v1.12.2) (2024-10-07)
 
 

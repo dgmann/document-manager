@@ -76,6 +76,10 @@ func (r *record) downloadAll(args []string) error {
 	if err != nil {
 		return fmt.Errorf("error creating index file: %w", err)
 	}
+	uncategorizedFile, err := os.Create(path.Join(*output, "uncategorized.log"))
+	if err != nil {
+		return fmt.Errorf("error creating uncategorized file: %w", err)
+	}
 
 	slog.Info("fetching list of all records. This may take some time...")
 	records, err := dmClient.Records.List()
@@ -158,17 +162,28 @@ func (r *record) downloadAll(args []string) error {
 		w := csv.NewWriter(indexFile)
 		w.Write([]string{"patient_id", "patient_lastname", "patient_firstname", "patient_birthdate", "category", "path"})
 		for d := range downloaded {
+			if *d.Record.Status != api.StatusDone {
+				fmt.Fprintln(uncategorizedFile, d.Path)
+				bar.Add(1)
+				continue
+			}
+
 			patient, ok := patientMap[*d.Record.PatientId]
 			if !ok {
 				slog.Warn("unkown patient", "recordId", d.Record.Id, "patientId", *d.Record.PatientId)
 				patient = api.Patient{Id: *d.Record.PatientId, FirstName: "unkown", LastName: "unkown"}
 			}
-			category := categoryMap[*d.Record.Category]
+			categoryName := ""
+			if d.Record.Category != nil {
+				if category, ok := categoryMap[*d.Record.Category]; ok {
+					categoryName = category.Name
+				}
+			}
 			birthDate := ""
 			if patient.BirthDate != nil {
 				birthDate = patient.BirthDate.Format(time.RFC3339)
 			}
-			w.Write([]string{patient.Id, patient.LastName, patient.FirstName, birthDate, category.Name, d.Path})
+			w.Write([]string{patient.Id, patient.LastName, patient.FirstName, birthDate, categoryName, d.Path})
 			bar.Add(1)
 		}
 		bar.Finish()

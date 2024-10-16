@@ -131,7 +131,7 @@ func (r *record) downloadAll(args []string) error {
 					slog.Error("error downloading PDF", "recordId", record.Id, log.ErrAttr(err))
 				}
 				var destPath string
-				if *record.Status == api.StatusInbox {
+				if *record.Status != api.StatusDone {
 					destPath = path.Join(*output, "inbox", record.ReceivedAt.Format("2006-01-02")+".pdf")
 				} else {
 					destPath = path.Join(*output, *record.PatientId, *record.Category, record.Date.Format("2006-01-02")+".pdf")

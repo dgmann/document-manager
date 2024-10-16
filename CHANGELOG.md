@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.12.5](https://github.com/dgmann/document-manager/compare/v1.12.4...v1.12.5) (2024-10-16)
+
+
+### Bug Fixes
+
+* **cli:** write uncategorized files to different file ([b363fb8](https://github.com/dgmann/document-manager/commit/b363fb857d4c058576decff769b133d9708efca1))
+
 ## [1.12.4](https://github.com/dgmann/document-manager/compare/v1.12.3...v1.12.4) (2024-10-16)
 
 

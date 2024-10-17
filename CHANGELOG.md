@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.12.6](https://github.com/dgmann/document-manager/compare/v1.12.5...v1.12.6) (2024-10-17)
+
+
+### Bug Fixes
+
+* **cli:** correctly close resources ([0a9d1b4](https://github.com/dgmann/document-manager/commit/0a9d1b45ec8ce73ce17b4c9caacea7d60638c29b))
+
 ## [1.12.5](https://github.com/dgmann/document-manager/compare/v1.12.4...v1.12.5) (2024-10-16)
 
 

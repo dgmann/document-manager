@@ -76,10 +76,13 @@ func (r *record) downloadAll(args []string) error {
 	if err != nil {
 		return fmt.Errorf("error creating index file: %w", err)
 	}
+	defer indexFile.Close()
+
 	uncategorizedFile, err := os.Create(path.Join(*output, "uncategorized.log"))
 	if err != nil {
 		return fmt.Errorf("error creating uncategorized file: %w", err)
 	}
+	defer uncategorizedFile.Close()
 
 	slog.Info("fetching list of all records. This may take some time...")
 	records, err := dmClient.Records.List()
@@ -199,8 +202,9 @@ func (r *record) downloadAll(args []string) error {
 	for _, record := range records {
 		downloadList <- record
 	}
-	wg.Wait()
 	close(downloadList)
+
+	wg.Wait()
 	close(downloaded)
 	close(errorChan)
 
